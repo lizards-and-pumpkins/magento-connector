@@ -18,4 +18,14 @@ class Brera_MagentoConnector_Model_Product_Queue_Item extends Mage_Core_Model_Ab
     {
         $this->_init('brera_magentoconnector/product_queue_item');
     }
+
+    /**
+     * @param array $productIds
+     * @param string $action
+     */
+    public function saveProductIds(array $productIds, $action)
+    {
+        $this->getResource()->saveProductIds($productIds, $action);
+    }
+
 }
