@@ -25,6 +25,12 @@ class Brera_MagentoConnector_Model_Observer
             Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_CREATE_AND_UPDATE
         );
     }
+
+    public function catalogControllerProductDelete(Varien_Event_Observer $observer)
+    {
+        $this->logDeletedProduct($observer);
+    }
+
     /**
      * @param Varien_Event_Observer $observer
      * @throws Exception

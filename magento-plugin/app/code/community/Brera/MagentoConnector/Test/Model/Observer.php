@@ -64,6 +64,24 @@ class Brera_MagentoConnector_Test_Model_Observer extends EcomDev_PHPUnit_Test_Ca
             ->catalogProductAttributeUpdateAfter($eventObserver);
     }
 
+
+    /**
+     * @test
+     */
+    public function saveProductIdOnAttributeMassDelete()
+    {
+        $action = Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_DELETE;
+        $productId = 12;
+        $event = $this->createEventObserver($productId);
+
+        $productQueue = $this->mockProductQueue($productId, $action);
+
+        $this->replaceByMock('model', 'brera_magentoconnector/product_queue_item', $productQueue);
+
+        Mage::getModel('brera_magentoconnector/observer')
+            ->catalogControllerProductDelete($event);
+    }
+
     /**
      * @param $productId
      * @param $action

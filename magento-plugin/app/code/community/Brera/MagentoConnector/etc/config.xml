@@ -61,6 +61,15 @@
                     </brera_magentoconnector>
                 </observers>
             </catalog_product_attribute_update_after>
+            <catalog_controller_product_delete>
+                <observers>
+                    <brera_magentoconnector>
+                        <type>singleton</type>
+                        <class>brera_magentoconnector/observer</class>
+                        <method>catalogControllerProductDelete</method>
+                    </brera_magentoconnector>
+                </observers>
+            </catalog_controller_product_delete>
         </events>
     </global>
     <phpunit>

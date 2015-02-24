@@ -73,6 +73,18 @@ class Brera_MagentoConnector_Test_Config_Config extends EcomDev_PHPUnit_Test_Cas
             'brera_magentoconnector/observer',
             'catalogProductAttributeUpdateAfter'
         );
+    }
 
+    /**
+     * @test
+     */
+    public function listenOnMassDelete()
+    {
+        $this->assertEventObserverDefined(
+            'global',
+            'catalog_controller_product_delete',
+            'brera_magentoconnector/observer',
+            'catalogControllerProductDelete'
+        );
     }
 }
