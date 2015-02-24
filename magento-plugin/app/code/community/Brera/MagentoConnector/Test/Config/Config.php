@@ -34,6 +34,18 @@ class Brera_MagentoConnector_Test_Config_Config extends EcomDev_PHPUnit_Test_Cas
     public function modelAliasExists()
     {
         $this->assertModelAlias('brera_magentoconnector/observer', Brera_MagentoConnector_Model_Observer::class);
+    }
 
+    /**
+     * @test
+     */
+    public function listenOnProductAfterSave()
+    {
+        $this->assertEventObserverDefined(
+            'global',
+            'catalog_product_save_after',
+            'brera_magentoconnector/observer',
+            'catalogProductSaveAfter'
+        );
     }
 }

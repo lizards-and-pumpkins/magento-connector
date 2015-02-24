@@ -33,6 +33,17 @@
                 </setup>
             </brera_magentoconnector_setup>
         </resources>
+        <events>
+            <catalog_product_save_after>
+                <observers>
+                    <brera_magentoconnector>
+                        <type>singleton</type>
+                        <class>brera_magentoconnector/observer</class>
+                        <method>catalogProductSaveAfter</method>
+                    </brera_magentoconnector>
+                </observers>
+            </catalog_product_save_after>
+        </events>
     </global>
     <phpunit>
         <suite>
