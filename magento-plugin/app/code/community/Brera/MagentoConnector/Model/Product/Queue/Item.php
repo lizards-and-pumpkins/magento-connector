@@ -5,9 +5,14 @@
  *
  * @method $this setProductId(int)
  * @method int getProductId()
+ * @method string getAction()
+ * @method $this setAction(string)
  */
 class Brera_MagentoConnector_Model_Product_Queue_Item extends Mage_Core_Model_Abstract
 {
+
+    const ACTION_CREATE_AND_UPDATE = 'create';
+    const ACTION_DELETE = 'delete';
 
     protected function _construct()
     {
