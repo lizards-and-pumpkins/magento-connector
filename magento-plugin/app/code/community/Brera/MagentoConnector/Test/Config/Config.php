@@ -39,13 +39,26 @@ class Brera_MagentoConnector_Test_Config_Config extends EcomDev_PHPUnit_Test_Cas
     /**
      * @test
      */
-    public function listenOnProductAfterSave()
+    public function listenOnProductSaveAfter()
     {
         $this->assertEventObserverDefined(
             'global',
             'catalog_product_save_after',
             'brera_magentoconnector/observer',
             'catalogProductSaveAfter'
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function listenOnProductDeleteAfter()
+    {
+        $this->assertEventObserverDefined(
+            'global',
+            'catalog_product_delete_after',
+            'brera_magentoconnector/observer',
+            'catalogProductDeleteAfter'
         );
     }
 }
