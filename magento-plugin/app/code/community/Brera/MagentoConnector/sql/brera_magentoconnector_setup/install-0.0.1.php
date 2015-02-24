@@ -6,7 +6,8 @@ $tableName = $this->getTable('brera_magentoconnector/product_queue');
 
 $table = $this->getConnection()
     ->newTable($tableName)
-    ->addColumn('position',
+    ->addColumn(
+        'product_queue_id',
         Varien_Db_Ddl_Table::TYPE_INTEGER,
         null,
         array(
