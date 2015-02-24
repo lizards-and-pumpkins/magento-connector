@@ -1,0 +1,4 @@
+magento-plugin/app/code/community/Brera/MagentoConnector                                            app/code/community/Brera/MagentoConnector
+
+
+magento-plugin/app/etc/modules/Brera_MagentoConnector.xml                                           app/etc/modules/Brera_MagentoConnector.xml
