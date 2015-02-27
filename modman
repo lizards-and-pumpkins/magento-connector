@@ -1,4 +1,5 @@
-magento-plugin/app/code/community/Brera/MagentoConnector                                            app/code/community/Brera/MagentoConnector
-
-
-magento-plugin/app/etc/modules/Brera_MagentoConnector.xml                                           app/etc/modules/Brera_MagentoConnector.xml
+magento-plugin/app/code/community/Brera/MagentoConnector        app/code/community/Brera/MagentoConnector
+magento-plugin/app/etc/modules/Brera_MagentoConnector.xml       app/etc/modules/Brera_MagentoConnector.xml
+magento-plugin/app/design/frontend/base/default/layout/brera    app/design/frontend/base/default/layout/brera
+magento-plugin/app/design/frontend/base/default/template/brera  app/design/frontend/base/default/template/brera
+magento-plugin/skin/frontend/base/default/js/brera              skin/frontend/base/default/js/brera

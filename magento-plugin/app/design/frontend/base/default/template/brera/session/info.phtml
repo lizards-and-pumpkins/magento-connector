@@ -1,0 +1,14 @@
+<?php
+/**
+ * @var Brera_MagentoConnector_Block_Session_Info $this
+ */
+?>
+<script>
+
+    var breraTransport = {
+        "cartNumItems": <?php echo (int) $this->getSummaryCount() ?>,
+        "cartTotal": "<?php echo $this->getFormattedCartTotal() ?>",
+        "isCustomerLoggedIn": <?php echo (int) $this->isCustomerLoggedIn() ?>
+    };
+
+</script>

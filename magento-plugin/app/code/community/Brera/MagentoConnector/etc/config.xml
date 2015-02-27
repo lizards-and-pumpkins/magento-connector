@@ -6,6 +6,11 @@
         </Brera_MagentoConnector>
     </modules>
     <global>
+        <blocks>
+            <brera_magentoconnector>
+                <class>Brera_MagentoConnector_Block</class>
+            </brera_magentoconnector>
+        </blocks>
         <models>
             <brera_magentoconnector>
                 <class>Brera_MagentoConnector_Model</class>
@@ -72,6 +77,15 @@
             </catalog_controller_product_delete>
         </events>
     </global>
+    <frontend>
+        <layout>
+            <updates>
+                <brera_magentoconnector>
+                    <file>brera/magentoconnector.xml</file>
+                </brera_magentoconnector>
+            </updates>
+        </layout>
+    </frontend>
     <phpunit>
         <suite>
             <modules>
