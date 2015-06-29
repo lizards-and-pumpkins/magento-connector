@@ -31,7 +31,7 @@ $table = $this->getConnection()
         Varien_Db_Ddl_Table::TYPE_TEXT,
         10,
         array(),
-        'Type of action: update/ikonocreate, delete'
+        'Type of action: update/create, delete'
     )->addForeignKey(
         $this->getConnection()->getForeignKeyName(
             $tableName,
