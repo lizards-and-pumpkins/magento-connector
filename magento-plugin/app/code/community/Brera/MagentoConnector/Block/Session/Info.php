@@ -20,12 +20,4 @@ class Brera_MagentoConnector_Block_Session_Info extends Mage_Checkout_Block_Cart
     {
         return !empty($this->getCustomer()->getId());
     }
-
-    /**
-     * @return Mage_Checkout_Helper_Data $helper
-     */
-    private function getMageCheckoutHelper()
-    {
-        return $this->helper('checkout');
-    }
 }
