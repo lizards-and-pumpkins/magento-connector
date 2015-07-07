@@ -3,20 +3,25 @@
 class Brera_MagentoConnector_Test_Model_Observer extends EcomDev_PHPUnit_Test_Case
 {
     /**
+     * @var Brera_MagentoConnector_Model_Observer
+     */
+    private $observer;
+
+    protected function setUp()
+    {
+        $this->observer = new Brera_MagentoConnector_Model_Observer();
+    }
+
+
+    /**
      * @test
      */
     public function saveProductIdOnSave()
     {
         $action = Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_CREATE_AND_UPDATE;
-        $productId = 12;
-        $event = $this->createEventObserver($productId);
+        $event = $this->setupEventWith($action);
 
-        $productQueue = $this->mockProductQueue($productId, $action);
-
-        $this->replaceByMock('model', 'brera_magentoconnector/product_queue_item', $productQueue);
-
-        $observer = new Brera_MagentoConnector_Model_Observer();
-        $observer->catalogProductSaveAfter($event);
+        $this->observer->catalogProductSaveAfter($event);
     }
 
     /**
@@ -25,15 +30,9 @@ class Brera_MagentoConnector_Test_Model_Observer extends EcomDev_PHPUnit_Test_Ca
     public function saveProductIdOnDelete()
     {
         $action = Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_DELETE;
-        $productId = 12;
-        $event = $this->createEventObserver($productId);
+        $event = $this->setupEventWith($action);
 
-        $productQueue = $this->mockProductQueue($productId, $action);
-
-        $this->replaceByMock('model', 'brera_magentoconnector/product_queue_item', $productQueue);
-
-        $observer = new Brera_MagentoConnector_Model_Observer();
-        $observer->catalogProductDeleteAfter($event);
+        $this->observer->catalogProductDeleteAfter($event);
     }
 
     /**
@@ -60,8 +59,7 @@ class Brera_MagentoConnector_Test_Model_Observer extends EcomDev_PHPUnit_Test_Ca
 
         $this->replaceByMock('model', 'brera_magentoconnector/product_queue_item', $productQueue);
 
-        Mage::getModel('brera_magentoconnector/observer')
-            ->catalogProductAttributeUpdateAfter($eventObserver);
+        $this->observer->catalogProductAttributeUpdateAfter($eventObserver);
     }
 
 
@@ -71,15 +69,9 @@ class Brera_MagentoConnector_Test_Model_Observer extends EcomDev_PHPUnit_Test_Ca
     public function saveProductIdOnAttributeMassDelete()
     {
         $action = Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_DELETE;
-        $productId = 12;
-        $event = $this->createEventObserver($productId);
+        $event = $this->setupEventWith($action);
 
-        $productQueue = $this->mockProductQueue($productId, $action);
-
-        $this->replaceByMock('model', 'brera_magentoconnector/product_queue_item', $productQueue);
-
-        Mage::getModel('brera_magentoconnector/observer')
-            ->catalogControllerProductDelete($event);
+        $this->observer->catalogControllerProductDelete($event);
     }
 
     /**
@@ -121,6 +113,22 @@ class Brera_MagentoConnector_Test_Model_Observer extends EcomDev_PHPUnit_Test_Ca
                 'product' => $product,
             )
         );
+
+        return $event;
+    }
+
+    /**
+     * @param $action
+     * @return Varien_Event_Observer
+     */
+    private function setupEventWith($action)
+    {
+        $productId = 12;
+        $event = $this->createEventObserver($productId);
+
+        $productQueue = $this->mockProductQueue($productId, $action);
+
+        $this->replaceByMock('model', 'brera_magentoconnector/product_queue_item', $productQueue);
 
         return $event;
     }
