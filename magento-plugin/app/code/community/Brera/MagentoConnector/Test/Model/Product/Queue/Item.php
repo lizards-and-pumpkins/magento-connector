@@ -3,7 +3,8 @@
 /**
  * Class Brera_MagentoConnector_Test_Model_Item
  *
- * @covers Brera_MagentoConnector_Model_Product_Queue_Item
+ * @covers  Brera_MagentoConnector_Model_Product_Queue_Item
+ * @uses    Brera_MagentoConnector_Model_Resource_Product_Queue_Item
  */
 class Brera_MagentoConnector_Test_Model_Product_Queue_Item extends EcomDev_PHPUnit_Test_Case
 {
@@ -33,14 +34,13 @@ class Brera_MagentoConnector_Test_Model_Product_Queue_Item extends EcomDev_PHPUn
     {
         $action = Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_CREATE_AND_UPDATE;
 
-
         /** @var $resourceMock EcomDev_PHPUnit_Mock_Proxy|Brera_MagentoConnector_Model_Resource_Product_Queue_Item */
         $resourceMock = $this->getResourceModelMock('brera_magentoconnector/product_queue_item');
         $resourceMock->expects($this->once())->method('saveProductIds')->with($productIds, $action);
         $this->replaceByMock('resource_model', 'brera_magentoconnector/product_queue_item', $resourceMock);
 
-        Mage::getModel('brera_magentoconnector/product_queue_item')
-            ->saveProductIds($productIds, $action);
+        $productQueueItem = Mage::getModel('brera_magentoconnector/product_queue_item');
+        $productQueueItem->saveProductIds($productIds, $action);
     }
 
     public function getProductIds()

@@ -46,10 +46,6 @@ class Brera_MagentoConnector_Model_Resource_Product_Queue_Item extends Mage_Core
 
         $object->setId($this->_getWriteAdapter()->lastInsertId($this->getMainTable()));
 
-        if ($this->_useIsObjectNew) {
-            $object->isObjectNew(false);
-        }
-
         $this->unserializeFields($object);
         $this->_afterSave($object);
 
