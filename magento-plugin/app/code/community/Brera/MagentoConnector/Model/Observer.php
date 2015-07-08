@@ -29,13 +29,13 @@ class Brera_MagentoConnector_Model_Observer
         $this->logProductAction(array($productId), Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_DELETE);
     }
 
-    public function catalogInventorySave(Varien_Event_Observer $observer)
+    public function cataloginventoryStockItemSaveCommitAfter(Varien_Event_Observer $observer)
     {
         $productId = $observer->getItem()->getProductId();
         $this->logProductAction($productId, Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_STOCK_UPDATE);
     }
 
-    public function subtractQuoteInventory(Varien_Event_Observer $observer)
+    public function salesModelServiceQuoteSubmitBefore(Varien_Event_Observer $observer)
     {
         $productIds = [];
         foreach ($observer->getQuote()->getAllItems() as $item) {
@@ -44,7 +44,7 @@ class Brera_MagentoConnector_Model_Observer
         $this->logProductAction($productIds, Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_STOCK_UPDATE);
     }
 
-    public function revertQuoteInventory(Varien_Event_Observer $observer)
+    public function salesModelServiceQuoteSubmitFailure(Varien_Event_Observer $observer)
     {
         $productIds = [];
         foreach ($observer->getQuote()->getAllItems() as $item) {
@@ -54,14 +54,14 @@ class Brera_MagentoConnector_Model_Observer
         $this->logProductAction($productIds, Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_STOCK_UPDATE);
     }
 
-    public function cancelOrderItem(Varien_Event_Observer $observer)
+    public function salesOrderItemCancel(Varien_Event_Observer $observer)
     {
         $this->logProductAction(
             $observer->getItem()->getProductId(), Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_STOCK_UPDATE
         );
     }
 
-    public function refundOrderInventory(Varien_Event_Observer $observer)
+    public function salesOrderCreditmemoSaveAfter(Varien_Event_Observer $observer)
     {
         $productIds = [];
         foreach ($observer->getCreditmemo()->getAllItems() as $item) {

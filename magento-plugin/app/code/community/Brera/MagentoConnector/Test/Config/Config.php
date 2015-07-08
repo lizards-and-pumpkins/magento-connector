@@ -87,4 +87,23 @@ class Brera_MagentoConnector_Test_Config_Config extends EcomDev_PHPUnit_Test_Cas
             'catalogControllerProductDelete'
         );
     }
+
+    public function testForStockQtyIsChanged()
+    {
+        $events = [
+            'cataloginventory_stock_item_save_commit_after' => 'cataloginventoryStockItemSaveCommitAfter',
+            'sales_model_service_quote_submit_before' => 'salesModelServiceQuoteSubmitBefore',
+            'sales_model_service_quote_submit_failure' => 'salesModelServiceQuoteSubmitFailure',
+            'sales_order_item_cancel' => 'salesOrderItemCancel',
+            'sales_order_creditmemo_save_after' => 'salesOrderCreditmemoSaveAfter',
+        ];
+        foreach ($events as $eventname => $observerMethod) {
+            $this->assertEventObserverDefined(
+                'global',
+                $eventname,
+                'brera_magentoconnector/observer',
+                $observerMethod
+            );
+        }
+    }
 }
