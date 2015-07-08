@@ -87,4 +87,10 @@ class Brera_MagentoConnector_Test_Config_Config extends EcomDev_PHPUnit_Test_Cas
             'catalogControllerProductDelete'
         );
     }
+
+    public function testLayoutFileIsLoaded()
+    {
+        $this->assertLayoutFileDefined('frontend', 'brera/magentoconnector.xml');
+        $this->assertLayoutFileExists('frontend', 'brera/magentoconnector.xml');
+    }
 }
