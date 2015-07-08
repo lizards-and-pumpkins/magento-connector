@@ -41,7 +41,9 @@ $table = $this->getConnection()
         ),
         'product_id',
         $this->getTable('catalog/product'),
-        'entity_id'
+        'entity_id',
+        Varien_Db_Ddl_Table::ACTION_CASCADE,
+        Varien_Db_Ddl_Table::ACTION_CASCADE
     );
 
 $this->getConnection()->createTable($table);
