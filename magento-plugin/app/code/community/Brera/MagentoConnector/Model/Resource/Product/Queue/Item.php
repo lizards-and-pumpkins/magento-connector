@@ -9,22 +9,27 @@ class Brera_MagentoConnector_Model_Resource_Product_Queue_Item extends Mage_Core
     }
 
     /**
-     * @param array $productIds
+     * @param int[] $productIds
      * @param string $action
      */
     public function saveProductIds(array $productIds, $action)
     {
-        $dataToInsert = array();
+        $dataToInsert = [];
         foreach ($productIds as $productId) {
-            $dataToInsert[] = array(
+            $dataToInsert[] = [
                 'product_id' => $productId,
                 'action' => $action,
-            );
+            ];
         }
         $this->_getWriteAdapter()->insertOnDuplicate($this->getMainTable(), $dataToInsert);
     }
 
-    public function save(Mage_Core_Model_Abstract $object)
+
+    /**
+     * @param Brera_MagentoConnector_Model_Product_Queue_Item $object
+     * @return $this
+     */
+    public function save(Brera_MagentoConnector_Model_Product_Queue_Item $object)
     {
         if ($object->isDeleted()) {
             return $this->delete($object);

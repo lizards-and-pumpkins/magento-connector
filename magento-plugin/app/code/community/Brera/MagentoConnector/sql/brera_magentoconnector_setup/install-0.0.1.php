@@ -10,27 +10,27 @@ $table = $this->getConnection()
         'product_queue_id',
         Varien_Db_Ddl_Table::TYPE_INTEGER,
         null,
-        array(
+        [
             'identity' => true,
             'unsigned' => true,
             'nullable' => false,
             'primary' => true,
-        ),
+        ],
         'Order of inserted product ids'
     )->addColumn(
         'product_id',
         Varien_Db_Ddl_Table::TYPE_INTEGER,
         null,
-        array(
+        [
             'unsigned' => true,
             'nullable' => false,
-        ),
+        ],
         'Product ID'
     )->addColumn(
         'action',
         Varien_Db_Ddl_Table::TYPE_TEXT,
         10,
-        array(),
+        [],
         'Type of action: update/create, delete'
     )->addForeignKey(
         $this->getConnection()->getForeignKeyName(

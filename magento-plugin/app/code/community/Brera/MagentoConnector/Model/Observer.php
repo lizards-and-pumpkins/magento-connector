@@ -6,7 +6,7 @@ class Brera_MagentoConnector_Model_Observer
     {
         $productId = $observer->getProduct()->getId();
         $this->logProductAction(
-            array($productId),
+            [$productId],
             Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_CREATE_AND_UPDATE
         );
     }
@@ -14,7 +14,7 @@ class Brera_MagentoConnector_Model_Observer
     public function catalogProductDeleteAfter(Varien_Event_Observer $observer)
     {
         $productId = $observer->getProduct()->getId();
-        $this->logProductAction(array($productId), Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_DELETE);
+        $this->logProductAction([$productId], Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_DELETE);
     }
 
     public function catalogProductAttributeUpdateAfter(Varien_Event_Observer $observer)
@@ -26,7 +26,7 @@ class Brera_MagentoConnector_Model_Observer
     public function catalogControllerProductDelete(Varien_Event_Observer $observer)
     {
         $productId = $observer->getProduct()->getId();
-        $this->logProductAction(array($productId), Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_DELETE);
+        $this->logProductAction([$productId], Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_DELETE);
     }
 
     /**

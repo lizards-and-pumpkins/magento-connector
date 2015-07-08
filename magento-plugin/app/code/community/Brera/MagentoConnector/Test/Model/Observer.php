@@ -44,16 +44,17 @@ class Brera_MagentoConnector_Test_Model_Observer extends EcomDev_PHPUnit_Test_Ca
      */
     public function saveProductIdOnAttributeMassAction()
     {
-        $productIds = array(1, 2, 3, 4, 5, 6);
+        $productIds =
+            [1, 2, 3, 4, 5, 6];
 
         $eventObserver = new Varien_Event_Observer();
         $eventObserver->setData(
-            array(
+            [
                 'product_ids' => $productIds
-            )
+            ]
         );
 
-        $productQueue = $this->getModelMock('brera_magentoconnector/product_queue_item', array('saveProductIds'));
+        $productQueue = $this->getModelMock('brera_magentoconnector/product_queue_item', ['saveProductIds']);
         $productQueue->expects($this->once())
             ->method('saveProductIds')
             ->with(
@@ -86,7 +87,7 @@ class Brera_MagentoConnector_Test_Model_Observer extends EcomDev_PHPUnit_Test_Ca
     private function mockProductQueue($productId, $action)
     {
         $productQueue = $this->getModelMock('brera_magentoconnector/product_queue_item',
-            array('saveProductIds'));
+            ['saveProductIds']);
         $productQueue->expects($this->once())
             ->method('saveProductIds')
             ->with(
@@ -105,13 +106,13 @@ class Brera_MagentoConnector_Test_Model_Observer extends EcomDev_PHPUnit_Test_Ca
     {
         $product = new Varien_Object();
         $product->setData(
-            array('id' => $productId)
+            ['id' => $productId]
         );
         $event = new Varien_Event_Observer();
         $event->setData(
-            array(
+            [
                 'product' => $product,
-            )
+            ]
         );
 
         return $event;
