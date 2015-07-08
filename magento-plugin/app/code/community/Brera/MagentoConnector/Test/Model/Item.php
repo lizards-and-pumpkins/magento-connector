@@ -3,7 +3,7 @@
 class Brera_MagentoConnector_Test_Model_Item extends EcomDev_PHPUnit_Test_Case
 {
     /**
-     * @loadFixtures
+     * @loadFixture
      */
     public function testAddingAProductTwoTimesWithSameActionDoesntFail()
     {
@@ -17,6 +17,6 @@ class Brera_MagentoConnector_Test_Model_Item extends EcomDev_PHPUnit_Test_Case
             ->setAction(Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_CREATE_AND_UPDATE)
             ->save();
 
-        $this->assertCount(1, Mage::getResourceModel('brera_magentoconnector/product_queue_item_collection')->count());
+        $this->assertEquals(1, Mage::getResourceModel('brera_magentoconnector/product_queue_item_collection')->count());
     }
 }

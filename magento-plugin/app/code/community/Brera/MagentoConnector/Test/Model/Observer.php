@@ -12,7 +12,6 @@ class Brera_MagentoConnector_Test_Model_Observer extends EcomDev_PHPUnit_Test_Ca
         $this->observer = new Brera_MagentoConnector_Model_Observer();
     }
 
-
     /**
      * @test
      */
@@ -75,24 +74,17 @@ class Brera_MagentoConnector_Test_Model_Observer extends EcomDev_PHPUnit_Test_Ca
     }
 
     /**
-     * @param $productId
-     * @param $action
+     * @param int[] $productId
+     * @param string $action
      * @return EcomDev_PHPUnit_Mock_Proxy
      */
     private function mockProductQueue($productId, $action)
     {
         $productQueue = $this->getModelMock('brera_magentoconnector/product_queue_item',
-            array('setProductId', 'setAction', 'save'));
+            array('saveProductIds'));
         $productQueue->expects($this->once())
-            ->method('setProductId')
-            ->with($this->equalTo($productId))
-            ->will($this->returnSelf());
-        $productQueue->expects($this->once())
-            ->method('setAction')
-            ->with($this->equalTo($action))
-            ->will($this->returnSelf());
-        $productQueue->expects($this->once())
-            ->method('save');
+            ->method('saveProductIds')
+            ->with($this->equalTo($productId), $this->equalTo($action));
 
         return $productQueue;
     }
@@ -126,7 +118,7 @@ class Brera_MagentoConnector_Test_Model_Observer extends EcomDev_PHPUnit_Test_Ca
         $productId = 12;
         $event = $this->createEventObserver($productId);
 
-        $productQueue = $this->mockProductQueue($productId, $action);
+        $productQueue = $this->mockProductQueue([$productId], $action);
 
         $this->replaceByMock('model', 'brera_magentoconnector/product_queue_item', $productQueue);
 
