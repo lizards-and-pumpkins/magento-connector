@@ -54,6 +54,7 @@ class Brera_MagentoConnector_Test_Model_Xml_Product_Collection extends EcomDev_P
 
         $product2 = $this->getProductWithId(2);
         $this->collection->addProduct($product2);
+        $productArray = [];
         $productArray[] = $product2;
         $productArray[] = $product1;
         foreach ($this->collection as $product) {
