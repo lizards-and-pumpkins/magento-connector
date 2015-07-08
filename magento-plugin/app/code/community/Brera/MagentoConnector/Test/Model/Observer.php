@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * Class Brera_MagentoConnector_Test_Model_Observer
+ *
+ * @covers Brera_MagentoConnector_Model_Observer
+ */
 class Brera_MagentoConnector_Test_Model_Observer extends EcomDev_PHPUnit_Test_Case
 {
     /**
