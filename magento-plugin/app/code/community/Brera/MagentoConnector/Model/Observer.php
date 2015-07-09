@@ -35,25 +35,6 @@ class Brera_MagentoConnector_Model_Observer
         $this->logProductAction([$productId], Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_STOCK_UPDATE);
     }
 
-    public function salesModelServiceQuoteSubmitBefore(Varien_Event_Observer $observer)
-    {
-        $productIds = [];
-        foreach ($observer->getQuote()->getAllItems() as $item) {
-            $productIds[] = $item->getProductId();
-        }
-        $this->logProductAction($productIds, Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_STOCK_UPDATE);
-    }
-
-    public function salesModelServiceQuoteSubmitFailure(Varien_Event_Observer $observer)
-    {
-        $productIds = [];
-        foreach ($observer->getQuote()->getAllItems() as $item) {
-            $productIds[] = $item->getProductId();
-        }
-
-        $this->logProductAction($productIds, Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_STOCK_UPDATE);
-    }
-
     public function salesOrderItemCancel(Varien_Event_Observer $observer)
     {
         $productId = $observer->getItem()->getProductId();
@@ -62,14 +43,38 @@ class Brera_MagentoConnector_Model_Observer
         );
     }
 
+    public function salesModelServiceQuoteSubmitBefore(Varien_Event_Observer $observer)
+    {
+        $productIds = $this->getProductIdsFrom($observer, 'quote');
+        $this->logProductAction($productIds, Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_STOCK_UPDATE);
+    }
+
+    public function salesModelServiceQuoteSubmitFailure(Varien_Event_Observer $observer)
+    {
+        $productIds = $this->getProductIdsFrom($observer, 'quote');
+        $this->logProductAction($productIds, Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_STOCK_UPDATE);
+    }
+
     public function salesOrderCreditmemoSaveAfter(Varien_Event_Observer $observer)
     {
+        $productIds = $this->getProductIdsFrom($observer, 'creditmemo');
+        $this->logProductAction($productIds, Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_STOCK_UPDATE);
+    }
+
+    /**
+     * @param Varien_Event_Observer $observer
+     * @param string $itemHolder
+     * @return int[]
+     */
+    private function getProductIdsFrom(Varien_Event_Observer $observer, $itemHolder)
+    {
+        $itemHolder = $observer->getDataUsingMethod($itemHolder);
         $productIds = [];
-        foreach ($observer->getCreditmemo()->getAllItems() as $item) {
+        foreach ($itemHolder->getAllItems() as $item) {
             $productIds[] = $item->getProductId();
         }
 
-        $this->logProductAction($productIds, Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_STOCK_UPDATE);
+        return $productIds;
     }
 
     /**
