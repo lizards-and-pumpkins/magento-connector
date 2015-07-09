@@ -111,6 +111,5 @@ class Brera_MagentoConnector_Test_Config_Config extends EcomDev_PHPUnit_Test_Cas
                 $observerMethod
             );
         }
-
     }
 }

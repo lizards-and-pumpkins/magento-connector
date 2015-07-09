@@ -32,7 +32,7 @@ class Brera_MagentoConnector_Model_Observer
     public function cataloginventoryStockItemSaveCommitAfter(Varien_Event_Observer $observer)
     {
         $productId = $observer->getItem()->getProductId();
-        $this->logProductAction($productId, Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_STOCK_UPDATE);
+        $this->logProductAction([$productId], Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_STOCK_UPDATE);
     }
 
     public function salesModelServiceQuoteSubmitBefore(Varien_Event_Observer $observer)
@@ -56,8 +56,9 @@ class Brera_MagentoConnector_Model_Observer
 
     public function salesOrderItemCancel(Varien_Event_Observer $observer)
     {
+        $productId = $observer->getItem()->getProductId();
         $this->logProductAction(
-            $observer->getItem()->getProductId(), Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_STOCK_UPDATE
+            [$productId], Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_STOCK_UPDATE
         );
     }
 

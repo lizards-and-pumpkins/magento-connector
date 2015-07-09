@@ -16,10 +16,15 @@ class Brera_MagentoConnector_Test_Model_Resource_Product_Queue_Item extends Ecom
     protected function setUp()
     {
         $this->resource = Mage::getResourceModel('brera_magentoconnector/product_queue_item');
+
+        $collection = Mage::getResourceModel('brera_magentoconnector/product_queue_item_collection');
+        $conn = $collection->getConnection();
+        $conn->truncateTable($collection->getMainTable());
     }
 
     /**
      * @loadFixture
+     * @medium
      */
     public function testSaving()
     {
@@ -44,6 +49,7 @@ class Brera_MagentoConnector_Test_Model_Resource_Product_Queue_Item extends Ecom
      * @param int[] $productIds
      * @dataProvider getProductIds
      * @loadFixture
+     * @medium
      */
     public function testSavingOfProductIds($productIds)
     {

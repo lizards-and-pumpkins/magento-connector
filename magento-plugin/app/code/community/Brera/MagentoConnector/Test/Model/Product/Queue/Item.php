@@ -8,8 +8,16 @@
  */
 class Brera_MagentoConnector_Test_Model_Product_Queue_Item extends EcomDev_PHPUnit_Test_Case
 {
+    protected function setUp()
+    {
+        $collection = Mage::getResourceModel('brera_magentoconnector/product_queue_item_collection');
+        $conn = $collection->getConnection();
+        $conn->truncateTable($collection->getMainTable());
+    }
+
     /**
      * @loadFixture
+     * @medium
      */
     public function testAddingAProductTwoTimesWithSameActionDoesntFail()
     {
@@ -29,6 +37,7 @@ class Brera_MagentoConnector_Test_Model_Product_Queue_Item extends EcomDev_PHPUn
     /**
      * @param int[] $productIds
      * @dataProvider getProductIds
+     * @medium
      */
     public function testSavingOfProductIds($productIds)
     {

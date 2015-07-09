@@ -12,18 +12,14 @@ class Brera_MagentoConnector_Test_Model_Observer extends EcomDev_PHPUnit_Test_Ca
      */
     private $observer;
 
-    protected function setUp()
-    {
-        $this->observer = new Brera_MagentoConnector_Model_Observer();
-    }
-
     /**
      * @test
      */
     public function saveProductIdOnSave()
     {
         $action = Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_CREATE_AND_UPDATE;
-        $event = $this->setupEventWith($action);
+        $event = $this->createEventObserver();
+        $this->setupEventWith($action);
 
         $this->observer->catalogProductSaveAfter($event);
     }
@@ -34,7 +30,8 @@ class Brera_MagentoConnector_Test_Model_Observer extends EcomDev_PHPUnit_Test_Ca
     public function saveProductIdOnDelete()
     {
         $action = Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_DELETE;
-        $event = $this->setupEventWith($action);
+        $event = $this->createEventObserver();
+        $this->setupEventWith($action);
 
         $this->observer->catalogProductDeleteAfter($event);
     }
@@ -44,8 +41,7 @@ class Brera_MagentoConnector_Test_Model_Observer extends EcomDev_PHPUnit_Test_Ca
      */
     public function saveProductIdOnAttributeMassAction()
     {
-        $productIds =
-            [1, 2, 3, 4, 5, 6];
+        $productIds = [1, 2, 3, 4, 5, 6];
 
         $eventObserver = new Varien_Event_Observer();
         $eventObserver->setData(
@@ -67,16 +63,103 @@ class Brera_MagentoConnector_Test_Model_Observer extends EcomDev_PHPUnit_Test_Ca
         $this->observer->catalogProductAttributeUpdateAfter($eventObserver);
     }
 
-
     /**
      * @test
      */
     public function saveProductIdOnAttributeMassDelete()
     {
         $action = Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_DELETE;
-        $event = $this->setupEventWith($action);
+        $event = $this->createEventObserver();
+        $this->setupEventWith($action);
 
         $this->observer->catalogControllerProductDelete($event);
+    }
+
+    public function testCataloginventoryStockItemSaveCommitAfterIsLogged()
+    {
+        $observerMock = $this->setupForItemOnlyTest();
+
+        $this->observer->cataloginventoryStockItemSaveCommitAfter($observerMock);
+    }
+
+    public function testSalesModelServiceQuoteSubmitBeforeIsLogged()
+    {
+        $itemHolder = 'quote';
+        $observerMock = $this->setupTestWith($itemHolder);
+
+        $this->observer->salesModelServiceQuoteSubmitBefore($observerMock);
+    }
+
+    public function testSalesModelServiceQuoteSubmitFailureIsLogged()
+    {
+        $itemHolder = 'quote';
+        $observerMock = $this->setupTestWith($itemHolder);
+
+        $this->observer->salesModelServiceQuoteSubmitFailure($observerMock);
+    }
+
+    public function testSalesOrderItemCancelIsLogged()
+    {
+        $observerMock = $this->setupForItemOnlyTest();
+
+        $this->observer->salesOrderItemCancel($observerMock);
+    }
+
+    public function testSalesOrderCreditmemoSaveAfterIsLogged()
+    {
+        $itemHolder = 'creditmemo';
+        $observerMock = $this->setupTestWith($itemHolder);
+
+        $this->observer->salesOrderCreditmemoSaveAfter($observerMock);
+    }
+
+    protected function setUp()
+    {
+        $this->observer = new Brera_MagentoConnector_Model_Observer();
+    }
+
+    /**
+     * @param int[] $ids
+     * @return Varien_Object[]
+     */
+    private function getItemsWithId($ids)
+    {
+        $items = [];
+        foreach ($ids as $id) {
+            $mock = $this->getMock(Varien_Object::class, ['getProductId']);
+            $mock->expects($this->any())->method('getProductId')->willReturn($id);
+            $items[] = $mock;
+        }
+
+        return $items;
+    }
+
+    /**
+     * @param string $action
+     * @param int[] $productId
+     * @return Varien_Event_Observer
+     */
+    private function setupEventWith($action, $productId = [12])
+    {
+        $productQueue = $this->mockProductQueue($productId, $action);
+
+        $this->replaceByMock('model', 'brera_magentoconnector/product_queue_item', $productQueue);
+    }
+
+    /**
+     * @param  int $productId
+     * @return Varien_Event_Observer
+     */
+    private function createEventObserver($productId = 12)
+    {
+        $product = new Varien_Object();
+        $product->setData(
+            ['id' => $productId]
+        );
+        $event = new Varien_Event_Observer();
+        $event->setData(['product' => $product]);
+
+        return $event;
     }
 
     /**
@@ -86,12 +169,14 @@ class Brera_MagentoConnector_Test_Model_Observer extends EcomDev_PHPUnit_Test_Ca
      */
     private function mockProductQueue($productId, $action)
     {
-        $productQueue = $this->getModelMock('brera_magentoconnector/product_queue_item',
-            ['saveProductIds']);
+        $productQueue = $this->getModelMock(
+            'brera_magentoconnector/product_queue_item',
+            ['saveProductIds']
+        );
         $productQueue->expects($this->once())
             ->method('saveProductIds')
             ->with(
-                $this->equalTo([$productId]),
+                $this->equalTo($productId),
                 $this->equalTo($action)
             );
 
@@ -99,38 +184,48 @@ class Brera_MagentoConnector_Test_Model_Observer extends EcomDev_PHPUnit_Test_Ca
     }
 
     /**
-     * @param $productId
-     * @return Varien_Event_Observer
+     * @return EcomDev_PHPUnit_Mock_Proxy|Varien_Event_Observer
      */
-    private function createEventObserver($productId)
+    private function setupForItemOnlyTest()
     {
-        $product = new Varien_Object();
-        $product->setData(
-            ['id' => $productId]
-        );
-        $event = new Varien_Event_Observer();
-        $event->setData(
-            [
-                'product' => $product,
-            ]
-        );
+        $itemMock = $this->getModelMock('cataloginventory/stock_item', ['getProductId']);
+        $productId = 4;
+        $itemMock->expects($this->any())
+            ->method('getProductId')
+            ->willReturn($productId);
+        /** @var $observerMock EcomDev_PHPUnit_Mock_Proxy|Varien_Event_Observer */
+        $observerMock = $this->getMock(Varien_Event_Observer::class, ['getItem']);
+        $observerMock->expects($this->any())
+            ->method('getItem')
+            ->willReturn($itemMock);
 
-        return $event;
+        $this->setupEventWith(Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_STOCK_UPDATE, [$productId]);
+
+        return $observerMock;
     }
 
     /**
-     * @param $action
-     * @return Varien_Event_Observer
+     * @param $itemHolder
+     * @return PHPUnit_Framework_MockObject_MockObject|Varien_Event_Observer
      */
-    private function setupEventWith($action)
+    private function setupTestWith($itemHolder)
     {
-        $productId = 12;
-        $event = $this->createEventObserver($productId);
+        $productIds = [1, 3, 4];
+        $quoteItems = $this->getItemsWithId($productIds);
 
-        $productQueue = $this->mockProductQueue($productId, $action);
+        $quoteMock = $this->getModelMock("sales/$itemHolder", ['getAllItems'], false, [], '', false);
+        $quoteMock->expects($this->any())
+            ->method('getAllItems')
+            ->willReturn($quoteItems);
 
-        $this->replaceByMock('model', 'brera_magentoconnector/product_queue_item', $productQueue);
+        /** @var $observerMock Varien_Event_Observer|PHPUnit_Framework_MockObject_MockObject */
+        $observerMock = $this->getMock(Varien_Event_Observer::class, ['get' . ucfirst($itemHolder)]);
+        $observerMock->expects($this->any())
+            ->method('get' . ucfirst($itemHolder))
+            ->willReturn($quoteMock);
 
-        return $event;
+        $this->setupEventWith(Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_STOCK_UPDATE, $productIds);
+
+        return $observerMock;
     }
 }
