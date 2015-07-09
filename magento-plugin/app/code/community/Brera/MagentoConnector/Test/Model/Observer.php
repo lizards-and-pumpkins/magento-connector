@@ -128,6 +128,21 @@ class Brera_MagentoConnector_Test_Model_Observer extends EcomDev_PHPUnit_Test_Ca
         $this->observer->cobbyAfterProductImport($observerMock);
     }
 
+    public function testListenOnMagmiEvent()
+    {
+        $skus = ['a', 'b', 'c', 'd'];
+        $observerMock = $this->getMock(Varien_Event_Observer::class, ['getSkus']);
+        /** @var $observerMock PHPUnit_Framework_MockObject_InvocationMocker|Varien_Event_Observer */
+        $observerMock->expects($this->any())->method('getSkus')->willReturn($skus);
+
+        $this->mockProductQueueForSkus(
+            $skus,
+            Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_STOCK_UPDATE
+        );
+
+        $this->observer->magmiStockWasUpdated($observerMock);
+    }
+
     protected function setUp()
     {
         $this->observer = new Brera_MagentoConnector_Model_Observer();

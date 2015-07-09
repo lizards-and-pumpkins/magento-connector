@@ -77,7 +77,15 @@ class Brera_MagentoConnector_Model_Observer
             $skus,
             Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_CREATE_AND_UPDATE
         );
+    }
 
+    public function magmiStockWasUpdated(Varien_Event_Observer $observer)
+    {
+        $skus = $observer->getSkus();
+        $this->logProductActionForProductSkus(
+            $skus,
+            Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_STOCK_UPDATE
+        );
     }
 
     /**
