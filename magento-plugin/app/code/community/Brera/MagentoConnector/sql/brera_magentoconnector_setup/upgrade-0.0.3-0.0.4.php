@@ -23,7 +23,7 @@ $this->getConnection()->addForeignKey(
     $tableName,
     'product_sku',
     'catalog/product',
-    'entity_id'
+    'sku'
 );
 
 $this->endSetup();

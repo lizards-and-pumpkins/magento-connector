@@ -2,7 +2,7 @@ eav:
   catalog_product:
     - entity_id: 1
       type_id: simple
-      sku: book
+      sku: book1
       name: Book
       short_description: Book
       description: Book
@@ -21,7 +21,7 @@ eav:
       attribute_set_id: 4
     - entity_id: 2
       type_id: simple
-      sku: book
+      sku: book2
       name: Book
       short_description: Book
       description: Book
@@ -40,7 +40,7 @@ eav:
       attribute_set_id: 4
     - entity_id: 3
       type_id: simple
-      sku: book
+      sku: book3
       name: Book
       short_description: Book
       description: Book
@@ -60,7 +60,7 @@ eav:
 
     - entity_id: 4
       type_id: simple
-      sku: book
+      sku: book4
       name: Book
       short_description: Book
       description: Book
