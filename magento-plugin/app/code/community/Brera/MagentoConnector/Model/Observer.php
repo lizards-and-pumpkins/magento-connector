@@ -29,11 +29,53 @@ class Brera_MagentoConnector_Model_Observer
         $this->logProductAction([$productId], Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_DELETE);
     }
 
+    public function cataloginventoryStockItemSaveCommitAfter(Varien_Event_Observer $observer)
+    {
+        $productId = $observer->getItem()->getProductId();
+        $this->logProductAction($productId, Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_STOCK_UPDATE);
+    }
+
+    public function salesModelServiceQuoteSubmitBefore(Varien_Event_Observer $observer)
+    {
+        $productIds = [];
+        foreach ($observer->getQuote()->getAllItems() as $item) {
+            $productIds[] = $item->getProductId();
+        }
+        $this->logProductAction($productIds, Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_STOCK_UPDATE);
+    }
+
+    public function salesModelServiceQuoteSubmitFailure(Varien_Event_Observer $observer)
+    {
+        $productIds = [];
+        foreach ($observer->getQuote()->getAllItems() as $item) {
+            $productIds[] = $item->getProductId();
+        }
+
+        $this->logProductAction($productIds, Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_STOCK_UPDATE);
+    }
+
+    public function salesOrderItemCancel(Varien_Event_Observer $observer)
+    {
+        $this->logProductAction(
+            $observer->getItem()->getProductId(), Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_STOCK_UPDATE
+        );
+    }
+
+    public function salesOrderCreditmemoSaveAfter(Varien_Event_Observer $observer)
+    {
+        $productIds = [];
+        foreach ($observer->getCreditmemo()->getAllItems() as $item) {
+            $productIds[] = $item->getProductId();
+        }
+
+        $this->logProductAction($productIds, Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_STOCK_UPDATE);
+    }
+
     /**
      * @param int[] $productIds
      * @param string $action
      */
-    public function logProductAction($productIds, $action)
+    private function logProductAction($productIds, $action)
     {
         $productQueue = Mage::getModel('brera_magentoconnector/product_queue_item');
         $productQueue->saveProductIds($productIds, $action);

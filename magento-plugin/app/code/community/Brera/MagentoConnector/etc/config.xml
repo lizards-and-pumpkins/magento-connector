@@ -75,6 +75,46 @@
                     </brera_magentoconnector>
                 </observers>
             </catalog_controller_product_delete>
+            <cataloginventory_stock_item_save_commit_after>
+                <observers>
+                    <brera_magentoconnector>
+                        <class>brera_magentoconnector/observer</class>
+                        <method>cataloginventoryStockItemSaveCommitAfter</method>
+                    </brera_magentoconnector>
+                </observers>
+            </cataloginventory_stock_item_save_commit_after>
+            <sales_model_service_quote_submit_before>
+                <observers>
+                    <brera_magentoconnector>
+                        <class>brera_magentoconnector/observer</class>
+                        <method>salesModelServiceQuoteSubmitBefore</method>
+                    </brera_magentoconnector>
+                </observers>
+            </sales_model_service_quote_submit_before>
+            <sales_model_service_quote_submit_failure>
+                <observers>
+                    <brera_magentoconnector>
+                        <class>brera_magentoconnector/observer</class>
+                        <method>salesModelServiceQuoteSubmitFailure</method>
+                    </brera_magentoconnector>
+                </observers>
+            </sales_model_service_quote_submit_failure>
+            <sales_order_item_cancel>
+                <observers>
+                    <brera_magentoconnector>
+                        <class>brera_magentoconnector/observer</class>
+                        <method>salesOrderItemCancel</method>
+                    </brera_magentoconnector>
+                </observers>
+            </sales_order_item_cancel>
+            <sales_order_creditmemo_save_after>
+                <observers>
+                    <brera_magentoconnector>
+                        <class>brera_magentoconnector/observer</class>
+                        <method>salesOrderCreditmemoSaveAfter</method>
+                    </brera_magentoconnector>
+                </observers>
+            </sales_order_creditmemo_save_after>
         </events>
     </global>
     <frontend>
