@@ -45,62 +45,28 @@ class Brera_MagentoConnector_Test_Config_Config extends EcomDev_PHPUnit_Test_Cas
         $this->assertModelAlias('brera_magentoconnector/observer', Brera_MagentoConnector_Model_Observer::class);
     }
 
-    /**
-     * @test
-     */
-    public function listenOnProductSaveAfter()
-    {
-        $this->assertEventObserverDefined(
-            'global',
-            'catalog_product_save_after',
-            'brera_magentoconnector/observer',
-            'catalogProductSaveAfter'
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function listenOnProductDeleteAfter()
-    {
-        $this->assertEventObserverDefined(
-            'global',
-            'catalog_product_delete_after',
-            'brera_magentoconnector/observer',
-            'catalogProductDeleteAfter'
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function listenOnAttributeUpdate()
-    {
-        $this->assertEventObserverDefined(
-            'global',
-            'catalog_product_attribute_update_after',
-            'brera_magentoconnector/observer',
-            'catalogProductAttributeUpdateAfter'
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function listenOnMassDelete()
-    {
-        $this->assertEventObserverDefined(
-            'global',
-            'catalog_controller_product_delete',
-            'brera_magentoconnector/observer',
-            'catalogControllerProductDelete'
-        );
-    }
-
     public function testLayoutFileIsLoaded()
     {
         $this->assertLayoutFileDefined('frontend', 'brera/magentoconnector.xml');
         $this->assertLayoutFileExists('frontend', 'brera/magentoconnector.xml');
+    }
+
+    public function testForProductUpdate()
+    {
+        $events = [
+            'catalog_product_save_after' => 'catalogProductSaveAfter',
+            'catalog_product_attribute_update_after' => 'catalogProductAttributeUpdateAfter',
+            'catalog_product_delete_after' => 'catalogProductDeleteAfter',
+            'catalog_controller_product_delete' => 'catalogControllerProductDelete',
+        ];
+        foreach ($events as $eventname => $observerMethod) {
+            $this->assertEventObserverDefined(
+                'global',
+                $eventname,
+                'brera_magentoconnector/observer',
+                $observerMethod
+            );
+        }
     }
 
     public function testForStockQtyIsChanged()
@@ -111,6 +77,7 @@ class Brera_MagentoConnector_Test_Config_Config extends EcomDev_PHPUnit_Test_Cas
             'sales_model_service_quote_submit_failure' => 'salesModelServiceQuoteSubmitFailure',
             'sales_order_item_cancel' => 'salesOrderItemCancel',
             'sales_order_creditmemo_save_after' => 'salesOrderCreditmemoSaveAfter',
+            'magmi_stock_was_updated' => 'magmiStockWasUpdated'
         ];
         foreach ($events as $eventname => $observerMethod) {
             $this->assertEventObserverDefined(
