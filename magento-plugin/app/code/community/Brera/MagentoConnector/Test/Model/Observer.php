@@ -113,6 +113,21 @@ class Brera_MagentoConnector_Test_Model_Observer extends EcomDev_PHPUnit_Test_Ca
         $this->observer->salesOrderCreditmemoSaveAfter($observerMock);
     }
 
+    public function testListenOnCobbyEvent()
+    {
+        $skus = ['a', 'b', 'c', 'd'];
+        $observerMock = $this->getMock(Varien_Event_Observer::class, ['getEntities']);
+        /** @var $observerMock PHPUnit_Framework_MockObject_InvocationMocker|Varien_Event_Observer */
+        $observerMock->expects($this->any())->method('getEntities')->willReturn($skus);
+
+        $this->mockProductQueueForSkus(
+            $skus,
+            Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_CREATE_AND_UPDATE
+        );
+
+        $this->observer->cobbyAfterProductImport($observerMock);
+    }
+
     protected function setUp()
     {
         $this->observer = new Brera_MagentoConnector_Model_Observer();
@@ -141,9 +156,8 @@ class Brera_MagentoConnector_Test_Model_Observer extends EcomDev_PHPUnit_Test_Ca
      */
     private function setupEventWith($action, $productId = [12])
     {
-        $productQueue = $this->mockProductQueue($productId, $action);
-
-        $this->replaceByMock('model', 'brera_magentoconnector/product_queue_item', $productQueue);
+        $productQueue = $this->mockProductQueueForIds($productId, $action);
+        $this->replaceByMock('singleton', 'brera_magentoconnector/product_queue_item', $productQueue);
     }
 
     /**
@@ -163,24 +177,24 @@ class Brera_MagentoConnector_Test_Model_Observer extends EcomDev_PHPUnit_Test_Ca
     }
 
     /**
-     * @param int[] $productId
+     * @param int[] $productIds
      * @param string $action
      * @return EcomDev_PHPUnit_Mock_Proxy
      */
-    private function mockProductQueue($productId, $action)
+    private function mockProductQueueForIds($productIds, $action)
     {
-        $productQueue = $this->getModelMock(
-            'brera_magentoconnector/product_queue_item',
-            ['saveProductIds']
-        );
-        $productQueue->expects($this->once())
-            ->method('saveProductIds')
-            ->with(
-                $this->equalTo($productId),
-                $this->equalTo($action)
-            );
+        return $this->mockProductQueue($productIds, $action, 'ids');
+    }
 
-        return $productQueue;
+    /**
+     * @param int[] $skus
+     * @param string $action
+     * @return EcomDev_PHPUnit_Mock_Proxy
+     */
+    private function mockProductQueueForSkus($skus, $action)
+    {
+        $productQueue = $this->mockProductQueue($skus, $action, 'skus');
+        $this->replaceByMock('singleton', 'brera_magentoconnector/product_queue_item', $productQueue);
     }
 
     /**
@@ -205,7 +219,7 @@ class Brera_MagentoConnector_Test_Model_Observer extends EcomDev_PHPUnit_Test_Ca
     }
 
     /**
-     * @param $itemHolder
+     * @param string $itemHolder
      * @return PHPUnit_Framework_MockObject_MockObject|Varien_Event_Observer
      */
     private function setupTestWith($itemHolder)
@@ -227,5 +241,26 @@ class Brera_MagentoConnector_Test_Model_Observer extends EcomDev_PHPUnit_Test_Ca
         $this->setupEventWith(Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_STOCK_UPDATE, $productIds);
 
         return $observerMock;
+    }
+
+    /**
+     * @param int[] $identifier
+     * @param string $action
+     * @return EcomDev_PHPUnit_Mock_Proxy
+     */
+    private function mockProductQueue($identifier, $action, $for)
+    {
+        $productQueue = $this->getModelMock(
+            'brera_magentoconnector/product_queue_item',
+            ['saveProduct' . ucfirst($for)]
+        );
+        $productQueue->expects($this->once())
+            ->method('saveProduct' . ucfirst($for))
+            ->with(
+                $this->equalTo($identifier),
+                $this->equalTo($action)
+            );
+
+        return $productQueue;
     }
 }

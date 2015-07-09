@@ -21,6 +21,15 @@ class Brera_MagentoConnector_Test_Config_Config extends EcomDev_PHPUnit_Test_Cas
     }
 
     /**
+     * @loadExpectation config
+     */
+    public function testCurrentVersion()
+    {
+        $config = $this->expected('config');
+        $this->assertModuleVersion($config->getVersion());
+    }
+
+    /**
      * @test
      */
     public function tableAliasExists()
@@ -111,5 +120,15 @@ class Brera_MagentoConnector_Test_Config_Config extends EcomDev_PHPUnit_Test_Cas
                 $observerMethod
             );
         }
+    }
+
+    public function testCobbyEventListenerIsRegistered()
+    {
+        $this->assertEventObserverDefined(
+            'global',
+            'cobby_after_product_import',
+            'brera_magentoconnector/observer',
+            'cobbyAfterProductImport'
+        );
     }
 }

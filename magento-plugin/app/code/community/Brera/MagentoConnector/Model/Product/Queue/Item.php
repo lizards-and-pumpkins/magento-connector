@@ -28,4 +28,13 @@ class Brera_MagentoConnector_Model_Product_Queue_Item extends Mage_Core_Model_Ab
     {
         $this->getResource()->saveProductIds($productIds, $action);
     }
+
+    /**
+     * @param string[] $skus
+     * @param string $action
+     */
+    public function saveProductSkus(array $skus, $action)
+    {
+        $this->getResource()->saveProductSkus($skus, $action);
+    }
 }
