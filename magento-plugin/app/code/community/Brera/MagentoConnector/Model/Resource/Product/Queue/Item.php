@@ -14,16 +14,34 @@ class Brera_MagentoConnector_Model_Resource_Product_Queue_Item extends Mage_Core
      */
     public function saveProductIds(array $productIds, $action)
     {
+        $this->insert($productIds, $action, 'id');
+    }
+
+    /**
+     * @param string[] $skus
+     * @param string $action
+     */
+    public function saveProductSkus(array $skus, $action)
+    {
+        $this->insert($skus, $action, 'sku');
+    }
+
+    /**
+     * @param string[]|int[] $identifier
+     * @param string $action
+     * @param string $column
+     */
+    private function insert($identifier, $action, $column)
+    {
         $dataToInsert = [];
-        foreach ($productIds as $productId) {
+        foreach ($identifier as $value) {
             $dataToInsert[] = [
-                'product_id' => $productId,
+                'product_' . $column => $value,
                 'action' => $action,
             ];
         }
         $this->_getWriteAdapter()->insertOnDuplicate($this->getMainTable(), $dataToInsert);
     }
-
 
     /**
      * @param Brera_MagentoConnector_Model_Product_Queue_Item $object

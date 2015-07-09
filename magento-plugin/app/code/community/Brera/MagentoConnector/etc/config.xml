@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Brera_MagentoConnector>
-            <version>0.0.3</version>
+            <version>0.0.4</version>
         </Brera_MagentoConnector>
     </modules>
     <global>
@@ -115,6 +115,15 @@
                     </brera_magentoconnector>
                 </observers>
             </sales_order_creditmemo_save_after>
+            <cobby_after_product_import>
+                <observers>
+                    <brera_magentoconnector>
+                        <type>singleton</type>
+                        <class>brera_magentoconnector/observer</class>
+                        <method>cobbyAfterProductImport</method>
+                    </brera_magentoconnector>
+                </observers>
+            </cobby_after_product_import>
         </events>
     </global>
     <frontend>

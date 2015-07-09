@@ -23,14 +23,14 @@ class Brera_MagentoConnector_Test_Model_Resource_Product_Queue_Item extends Ecom
     }
 
     /**
-     * @loadFixture
+     * @loadFixture products
      * @medium
      */
     public function testSaving()
     {
         $itemMock = new Brera_MagentoConnector_Model_Product_Queue_Item();
         $itemMock->setAction(Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_DELETE)
-            ->setProductId(8);
+            ->setProductId(4);
 
         $this->resource->save($itemMock);
     }
@@ -39,7 +39,7 @@ class Brera_MagentoConnector_Test_Model_Resource_Product_Queue_Item extends Ecom
     {
         $itemMock = new Brera_MagentoConnector_Model_Product_Queue_Item();
         $itemMock->setAction(Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_DELETE)
-            ->setProductId(8)
+            ->setProductId(4)
             ->isDeleted(true);
 
         $this->resource->save($itemMock);
@@ -48,7 +48,7 @@ class Brera_MagentoConnector_Test_Model_Resource_Product_Queue_Item extends Ecom
     /**
      * @param int[] $productIds
      * @dataProvider getProductIds
-     * @loadFixture
+     * @loadFixture products
      * @medium
      */
     public function testSavingOfProductIds($productIds)
@@ -62,14 +62,46 @@ class Brera_MagentoConnector_Test_Model_Resource_Product_Queue_Item extends Ecom
             count($productIds),
             Mage::getResourceModel('brera_magentoconnector/product_queue_item_collection')->count()
         );
-
     }
 
+    /**
+     * @param int[] $skus
+     * @dataProvider getProductSkus
+     * @loadFixture products
+     * @medium
+     */
+    public function testSavingOfProductSkus($skus)
+    {
+        $action = Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_CREATE_AND_UPDATE;
+
+        Mage::getResourceModel('brera_magentoconnector/product_queue_item')
+            ->saveProductSkus($skus, $action);
+
+        $this->assertEquals(
+            count($skus),
+            Mage::getResourceModel('brera_magentoconnector/product_queue_item_collection')->count()
+        );
+    }
+
+    /**
+     * @return int[][][]
+     */
     public function getProductIds()
     {
         return [
             [[1]],
             [[1, 2, 3, 4]],
+        ];
+    }
+
+    /**
+     * @return string[][][]
+     */
+    public function getProductSkus()
+    {
+        return [
+            [['book1']],
+            [['book1', 'book2', 'book3', 'book4']],
         ];
     }
 
