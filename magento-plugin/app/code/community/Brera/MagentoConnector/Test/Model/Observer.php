@@ -103,32 +103,12 @@ class Brera_MagentoConnector_Test_Model_Observer extends EcomDev_PHPUnit_Test_Ca
 
     public function testListenOnCobbyEvent()
     {
-        $skus = ['a', 'b', 'c', 'd'];
-        $observerMock = $this->getMock(Varien_Event_Observer::class, ['getEntities']);
-        /** @var $observerMock PHPUnit_Framework_MockObject_InvocationMocker|Varien_Event_Observer */
-        $observerMock->expects($this->any())->method('getEntities')->willReturn($skus);
-
-        $this->mockProductQueueForSkus(
-            $skus,
-            Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_CREATE_AND_UPDATE
-        );
-
-        $this->observer->cobbyAfterProductImport($observerMock);
+        $this->testSkuObserver('getEntities', 'cobbyAfterProductImport');
     }
 
     public function testListenOnMagmiEvent()
     {
-        $skus = ['a', 'b', 'c', 'd'];
-        $observerMock = $this->getMock(Varien_Event_Observer::class, ['getSkus']);
-        /** @var $observerMock PHPUnit_Framework_MockObject_InvocationMocker|Varien_Event_Observer */
-        $observerMock->expects($this->any())->method('getSkus')->willReturn($skus);
-
-        $this->mockProductQueueForSkus(
-            $skus,
-            Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_STOCK_UPDATE
-        );
-
-        $this->observer->magmiStockWasUpdated($observerMock);
+        $this->testSkuObserver('getSkus', 'magmiStockWasUpdated');
     }
 
     protected function setUp()
@@ -265,5 +245,24 @@ class Brera_MagentoConnector_Test_Model_Observer extends EcomDev_PHPUnit_Test_Ca
             );
 
         return $productQueue;
+    }
+
+    /**
+     * @param $getSkuMethodName
+     * @param $observerMethod
+     */
+    private function testSkuObserver($getSkuMethodName, $observerMethod)
+    {
+        $skus = ['a', 'b', 'c', 'd'];
+        $observerMock = $this->getMock(Varien_Event_Observer::class, [$getSkuMethodName]);
+        /** @var $observerMock PHPUnit_Framework_MockObject_InvocationMocker|Varien_Event_Observer */
+        $observerMock->expects($this->any())->method($getSkuMethodName)->willReturn($skus);
+
+        $this->mockProductQueueForSkus(
+            $skus,
+            Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_STOCK_UPDATE
+        );
+
+        $this->observer->$observerMethod($observerMock);
     }
 }
