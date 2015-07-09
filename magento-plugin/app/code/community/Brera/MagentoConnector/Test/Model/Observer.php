@@ -12,10 +12,7 @@ class Brera_MagentoConnector_Test_Model_Observer extends EcomDev_PHPUnit_Test_Ca
      */
     private $observer;
 
-    /**
-     * @test
-     */
-    public function saveProductIdOnSave()
+    public function testSaveProductIdOnSave()
     {
         $action = Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_CREATE_AND_UPDATE;
         $event = $this->createEventObserver();
@@ -24,10 +21,7 @@ class Brera_MagentoConnector_Test_Model_Observer extends EcomDev_PHPUnit_Test_Ca
         $this->observer->catalogProductSaveAfter($event);
     }
 
-    /**
-     * @test
-     */
-    public function saveProductIdOnDelete()
+    public function testSaveProductIdOnDelete()
     {
         $action = Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_DELETE;
         $event = $this->createEventObserver();
@@ -36,10 +30,7 @@ class Brera_MagentoConnector_Test_Model_Observer extends EcomDev_PHPUnit_Test_Ca
         $this->observer->catalogProductDeleteAfter($event);
     }
 
-    /**
-     * @test
-     */
-    public function saveProductIdOnAttributeMassAction()
+    public function testSaveProductIdOnAttributeMassAction()
     {
         $productIds = [1, 2, 3, 4, 5, 6];
 
@@ -63,10 +54,7 @@ class Brera_MagentoConnector_Test_Model_Observer extends EcomDev_PHPUnit_Test_Ca
         $this->observer->catalogProductAttributeUpdateAfter($eventObserver);
     }
 
-    /**
-     * @test
-     */
-    public function saveProductIdOnAttributeMassDelete()
+    public function testSaveProductIdOnAttributeMassDelete()
     {
         $action = Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_DELETE;
         $event = $this->createEventObserver();

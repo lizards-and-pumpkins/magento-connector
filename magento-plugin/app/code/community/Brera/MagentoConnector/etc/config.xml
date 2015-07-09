@@ -139,7 +139,7 @@
         <layout>
             <updates>
                 <brera_magentoconnector>
-                    <file>brera/magentoconnector.xml</file>
+                    <file>brera_magentoconnector.xml</file>
                 </brera_magentoconnector>
             </updates>
         </layout>

@@ -2,19 +2,15 @@
 
 class Brera_MagentoConnector_Test_Config_Config extends EcomDev_PHPUnit_Test_Case_Config
 {
-    /**
-     * @test
-     */
-    public function isInstalled()
+    public function testIsInstalled()
     {
         $this->assertModuleIsActive();
     }
 
     /**
-     * @test
      * @loadExpectation config
      */
-    public function hasInstallScripts()
+    public function testHasInstallScripts()
     {
         $config = $this->expected('config');
         $this->assertSchemeSetupScriptVersions('0.0.1', $config->getVersion());
@@ -29,26 +25,39 @@ class Brera_MagentoConnector_Test_Config_Config extends EcomDev_PHPUnit_Test_Cas
         $this->assertModuleVersion($config->getVersion());
     }
 
-    /**
-     * @test
-     */
-    public function tableAliasExists()
+    public function testTableAliasExists()
     {
         $this->assertTableAlias('brera_magentoconnector/product_queue', 'brera_product_queue');
     }
 
-    /**
-     * @test
-     */
-    public function modelAliasExists()
+    public function testModelAliasExists()
     {
         $this->assertModelAlias('brera_magentoconnector/observer', Brera_MagentoConnector_Model_Observer::class);
+        $this->assertModelAlias(
+            'brera_magentoconnector/xml_product_collection', Brera_MagentoConnector_Model_Xml_Product_Collection::class
+        );
+        $this->assertModelAlias('brera_magentoconnector/xml_product', Brera_MagentoConnector_Model_Xml_Product::class);
+        $this->assertModelAlias(
+            'brera_magentoconnector/product_queue_item', Brera_MagentoConnector_Model_Product_Queue_Item::class
+        );
+    }
+
+    public function testResourceModelAliasExists()
+    {
+        $this->assertResourceModelAlias(
+            'brera_magentoconnector/product_queue_item',
+            Brera_MagentoConnector_Model_Resource_Product_Queue_Item::class
+        );
+        $this->assertResourceModelAlias(
+            'brera_magentoconnector/product_queue_item_collection',
+            Brera_MagentoConnector_Model_Resource_Product_Queue_Item_Collection::class
+        );
     }
 
     public function testLayoutFileIsLoaded()
     {
-        $this->assertLayoutFileDefined('frontend', 'brera/magentoconnector.xml');
-        $this->assertLayoutFileExists('frontend', 'brera/magentoconnector.xml');
+        $this->assertLayoutFileDefined('frontend', 'brera_magentoconnector.xml');
+        $this->assertLayoutFileExists('frontend', 'brera_magentoconnector.xml');
     }
 
     public function testForProductUpdate()
