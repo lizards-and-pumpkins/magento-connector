@@ -103,12 +103,25 @@ class Brera_MagentoConnector_Test_Model_Observer extends EcomDev_PHPUnit_Test_Ca
 
     public function testListenOnCobbyEvent()
     {
-        $this->testSkuObserver('getEntities', 'cobbyAfterProductImport');
+        $this->checkSkuObserver(
+            'getEntities',
+            'cobbyAfterProductImport',
+            Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_CREATE_AND_UPDATE
+        );
     }
 
-    public function testListenOnMagmiEvent()
+    public function testListenOnMagmiProductEvent()
     {
-        $this->testSkuObserver('getSkus', 'magmiStockWasUpdated');
+        $this->checkSkuObserver('getSkus', 'magmiStockWasUpdated');
+    }
+
+    public function testListenOnMagemiProdctUpdateEvent()
+    {
+        $this->checkSkuObserver(
+            'getSkus',
+            'magmiProductsWereUpdated',
+            Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_CREATE_AND_UPDATE
+        );
     }
 
     protected function setUp()
@@ -248,11 +261,15 @@ class Brera_MagentoConnector_Test_Model_Observer extends EcomDev_PHPUnit_Test_Ca
     }
 
     /**
-     * @param $getSkuMethodName
-     * @param $observerMethod
+     * @param string $getSkuMethodName
+     * @param string $observerMethod
+     * @param string $action
      */
-    private function testSkuObserver($getSkuMethodName, $observerMethod)
-    {
+    private function checkSkuObserver(
+        $getSkuMethodName,
+        $observerMethod,
+        $action = Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_STOCK_UPDATE
+    ) {
         $skus = ['a', 'b', 'c', 'd'];
         $observerMock = $this->getMock(Varien_Event_Observer::class, [$getSkuMethodName]);
         /** @var $observerMock PHPUnit_Framework_MockObject_InvocationMocker|Varien_Event_Observer */
@@ -260,7 +277,7 @@ class Brera_MagentoConnector_Test_Model_Observer extends EcomDev_PHPUnit_Test_Ca
 
         $this->mockProductQueueForSkus(
             $skus,
-            Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_STOCK_UPDATE
+            $action
         );
 
         $this->observer->$observerMethod($observerMock);

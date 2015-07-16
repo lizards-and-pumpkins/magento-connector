@@ -88,6 +88,15 @@ class Brera_MagentoConnector_Model_Observer
         );
     }
 
+    public function magmiProductsWereUpdated(Varien_Event_Observer $observer)
+    {
+        $skus = $observer->getSkus();
+        $this->logProductActionForProductSkus(
+            $skus,
+            Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_CREATE_AND_UPDATE
+        );
+    }
+
     /**
      * @param Varien_Event_Observer $observer
      * @param string $itemHolder

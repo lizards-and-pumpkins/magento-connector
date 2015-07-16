@@ -67,6 +67,7 @@ class Brera_MagentoConnector_Test_Config_Config extends EcomDev_PHPUnit_Test_Cas
             'catalog_product_attribute_update_after' => 'catalogProductAttributeUpdateAfter',
             'catalog_product_delete_after' => 'catalogProductDeleteAfter',
             'catalog_controller_product_delete' => 'catalogControllerProductDelete',
+            'magmi_products_were_updated' => 'magmiProductsWereUpdated'
         ];
         foreach ($events as $eventname => $observerMethod) {
             $this->assertEventObserverDefined(

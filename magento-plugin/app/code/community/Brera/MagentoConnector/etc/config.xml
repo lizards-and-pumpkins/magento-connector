@@ -133,6 +133,15 @@
                     </brera_magentoconnector>
                 </observers>
             </magmi_stock_was_updated>
+            <magmi_products_were_updated>
+                <observers>
+                    <brera_magentoconnector>
+                        <type>singleton</type>
+                        <class>brera_magentoconnector/observer</class>
+                        <method>magmiProductsWereUpdated</method>
+                    </brera_magentoconnector>
+                </observers>
+            </magmi_products_were_updated>
         </events>
     </global>
     <frontend>
