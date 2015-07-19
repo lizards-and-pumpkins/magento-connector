@@ -17,7 +17,9 @@ class XmlBuilderTest extends \PHPUnit_Framework_TestCase
     {
         $xmlBuilder = new XmlBuilder([], []);
         $xml = $xmlBuilder->getXmlString();
-        $this->assertContains('<product', $xml);
+        
+        // TODO implement XPath Constraint and use this here
+        $this->assertRegExp('#<product( |/>).*#', $xml);
     }
 
     public function testXmlWithAttributes()
@@ -30,9 +32,34 @@ class XmlBuilderTest extends \PHPUnit_Framework_TestCase
         ];
         $xmlBuilder = new XmlBuilder($productData, []);
         $xml = $xmlBuilder->getXmlString();
+
+        // TODO exchange with XPath constraint
         $this->assertContains('type="simple"', $xml);
         $this->assertContains('sku="123"', $xml);
         $this->assertContains('visibility="3"', $xml);
         $this->assertContains('tax_class_id="7"', $xml);
+    }
+
+    public function testXmlWithNodes()
+    {
+        $productData = [
+            'url_key' => ''
+        ];
+        $xmlBuilder = new XmlBuilder($productData, []);
+        $xml = $xmlBuilder->getXmlString();
+
+        // TODO exchange with XPath constraint
+        $this->assertContains('<url_key></url_key>', $xml);
+    }
+
+    public function testXmlWithEmptyNodeName()
+    {
+        $this->setExpectedException(\DOMException::class, 'Invalid Character Error');
+        $productData = [
+            'url_key'
+        ];
+        $xmlBuilder = new XmlBuilder($productData, []);
+        $xml = $xmlBuilder->getXmlString();
+
     }
 }

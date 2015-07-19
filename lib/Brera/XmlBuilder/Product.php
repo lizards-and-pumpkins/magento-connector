@@ -3,6 +3,12 @@ namespace Brera\MagentoConnector\Product;
 
 class XmlBuilder
 {
+    const ATTRIBUTE_TYPES = [
+        'type',
+        'sku',
+        'visibility',
+        'tax_class_id',
+    ];
 
     /**
      * @var \DOMDocument
@@ -38,10 +44,26 @@ class XmlBuilder
     {
         $product = $this->xml->createElement('product');
         foreach ($this->productData as $attributeName => $value) {
-            $attribute = $this->xml->createAttribute($attributeName);
-            $attribute->value = $value;
-            $product->appendChild($attribute);
+            if ($this->isAttributeProductAttribute($attributeName)) {
+                $attribute = $this->xml->createAttribute($attributeName);
+                $attribute->value = $value;
+                $product->appendChild($attribute);
+            } else {
+                $node = $this->xml->createElement($attributeName);
+                $node->nodeValue = $value;
+                $product->appendChild($node);
+            }
         }
         $this->xml->appendChild($product);
     }
+
+    /**
+     * @param string $attribute
+     * @return bool
+     */
+    private function isAttributeProductAttribute($attribute)
+    {
+        return in_array($attribute, self::ATTRIBUTE_TYPES);
+    }
+
 }
