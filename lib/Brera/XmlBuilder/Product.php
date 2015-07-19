@@ -70,6 +70,10 @@ class XmlBuilder
         $this->xml->appendChild($product);
     }
 
+    /**
+     * @param string $attributeName
+     * @return bool
+     */
     private function checkAttributeName($attributeName)
     {
         new \DOMElement($attributeName);
@@ -100,7 +104,7 @@ class XmlBuilder
         $imageNode = $this->xml->createElement('image');
 
         $mainNode = $this->xml->createElement('main');
-        $mainNode->nodeValue = $image['main'] ? 'true' : 'false';
+        $mainNode->nodeValue = isset($image['main']) && $image['main'] ? 'true' : 'false';
         $imageNode->appendChild($mainNode);
 
         $fileNode = $this->xml->createElement('file');
@@ -119,8 +123,8 @@ class XmlBuilder
      */
     private function checkValidImageValues(array $image)
     {
-        $main = $image['main'];
-        if (!is_bool($main)) {
+        $main = isset($image['main']) ? $image['main'] : null;
+        if (!is_bool($main) && $main !== null) {
             throw new InvalidImageDefinitionException('"main" must be either "true" or "false".');
         }
 

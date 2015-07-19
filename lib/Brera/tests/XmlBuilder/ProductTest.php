@@ -83,9 +83,26 @@ class XmlBuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertContains('<label>This is the label</label>', $xml);
     }
 
+    public function testImageMainIsNull()
+    {
+        $productData = [
+            'images' => [
+                [
+                    'file' => 'some/file/somewhereElse.png',
+                    'label' => 'Label',
+                ]
+            ]
+        ];
+        $xmlBuilder = new XmlBuilder($productData, []);
+        $xml = $xmlBuilder->getXmlString();
+
+        // TODO exchange with XPath constraint
+        $this->assertContains('<main>false</main>', $xml);
+    }
 
     /**
-     * @param $productData
+     * @param string[] $productData
+     * @param string $exceptionMessage
      * @dataProvider getInvalidImageData
      */
     public function testInvalidImageArgument($productData, $exceptionMessage)
