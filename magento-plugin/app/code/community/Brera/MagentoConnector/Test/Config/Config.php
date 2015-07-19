@@ -108,4 +108,14 @@ class Brera_MagentoConnector_Test_Config_Config extends EcomDev_PHPUnit_Test_Cas
             'cobbyAfterProductImport'
         );
     }
+
+    public function testAddToCartPredispatchIsObserver()
+    {
+        $this->assertEventObserverDefined(
+            'frontend',
+            'controller_action_predispatch_checkout_cart_add',
+            'brera_magentoconnector/observer',
+            'controllerActionPredispatchCheckoutCartAdd'
+        );
+    }
 }

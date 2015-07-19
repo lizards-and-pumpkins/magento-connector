@@ -124,6 +124,38 @@ class Brera_MagentoConnector_Test_Model_Observer extends EcomDev_PHPUnit_Test_Ca
         );
     }
 
+    public function testAddToCartFormKeyIsChanged()
+    {
+        $wrongFormKey = 'wrongFormKey';
+        $rightFormKey = 'rightFormKey';
+
+        $coreSessionMock = $this->getModelMock('core/session', ['getFormKey'], false, [], '', false);
+        $coreSessionMock->method('getFormKey')->willReturn($rightFormKey);
+        $this->replaceByMock('singleton', 'core/session', $coreSessionMock);
+
+        $request = new Mage_Core_Controller_Request_Http();
+        $request->setPost('form_key', $wrongFormKey);
+
+        $this->assertNotEquals($rightFormKey, $request->getParam('form_key'));
+        $this->assertEquals($wrongFormKey, $request->getParam('form_key'));
+
+        $controller = $this->getMock(Mage_Checkout_CartController::class, ['getRequest']);
+        $controller->method('getRequest')->willReturn($request);
+
+        $event = new Varien_Object();
+        $event->setData(
+            ['controller_action' => $controller]
+        );
+        $observer = new Varien_Event_Observer();
+        $observer->setData(['controller_action' => $controller]);
+
+        $this->observer->controllerActionPredispatchCheckoutCartAdd($observer);
+
+        $this->assertEquals($rightFormKey, $request->getParam('form_key'));
+
+        return $observer;
+    }
+
     protected function setUp()
     {
         $this->observer = new Brera_MagentoConnector_Model_Observer();

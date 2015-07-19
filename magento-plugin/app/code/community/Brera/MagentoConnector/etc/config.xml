@@ -152,6 +152,17 @@
                 </brera_magentoconnector>
             </updates>
         </layout>
+        <events>
+            <controller_action_predispatch_checkout_cart_add>
+                <observers>
+                    <brera_magentoconnector>
+                        <type>singleton</type>
+                        <class>brera_magentoconnector/observer</class>
+                        <method>controllerActionPredispatchCheckoutCartAdd</method>
+                    </brera_magentoconnector>
+                </observers>
+            </controller_action_predispatch_checkout_cart_add>
+        </events>
     </frontend>
     <phpunit>
         <suite>

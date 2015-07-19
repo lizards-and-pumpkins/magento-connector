@@ -97,6 +97,15 @@ class Brera_MagentoConnector_Model_Observer
         );
     }
 
+    public function controllerActionPredispatchCheckoutCartAdd(Varien_Event_Observer $observer)
+    {
+        $formKey = Mage::getSingleton('core/session')->getFormKey();
+
+        /** @var $request Mage_Core_Controller_Request_Http */
+        $request = $observer->getControllerAction()->getRequest();
+        $request->setPost('form_key', $formKey);
+    }
+
     /**
      * @param Varien_Event_Observer $observer
      * @param string $itemHolder
