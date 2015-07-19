@@ -7,6 +7,7 @@ spl_autoload_register(
         static $classes = null;
         if ($classes === null) {
             $classes = array(
+                'brera\\magentoconnector\\product\\invalidimagedefinitionexception' => '/XmlBuilder/InvalidImageDefinitionException.php',
                 'brera\\magentoconnector\\product\\xmlbuilder' => '/XmlBuilder/Product.php',
                 'brera\\magentoconnector\\product\\xmlbuildertest' => '/tests/XmlBuilder/ProductTest.php'
             );

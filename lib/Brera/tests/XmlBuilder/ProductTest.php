@@ -17,7 +17,7 @@ class XmlBuilderTest extends \PHPUnit_Framework_TestCase
     {
         $xmlBuilder = new XmlBuilder([], []);
         $xml = $xmlBuilder->getXmlString();
-        
+
         // TODO implement XPath Constraint and use this here
         $this->assertRegExp('#<product( |/>).*#', $xml);
     }
@@ -59,7 +59,93 @@ class XmlBuilderTest extends \PHPUnit_Framework_TestCase
             'url_key'
         ];
         $xmlBuilder = new XmlBuilder($productData, []);
+        $xmlBuilder->getXmlString();
+    }
+
+    public function testImageNode()
+    {
+        $productData = [
+            'images' => [
+                [
+                    'main' => true,
+                    'file' => 'some/file/somewhere.png',
+                    'label' => 'This is the label',
+                ]
+            ]
+        ];
+        $xmlBuilder = new XmlBuilder($productData, []);
         $xml = $xmlBuilder->getXmlString();
 
+        // TODO exchange with XPath constraint
+        $this->assertContains('<image>', $xml);
+        $this->assertContains('<main>true</main>', $xml);
+        $this->assertContains('<file>some/file/somewhere.png</file>', $xml);
+        $this->assertContains('<label>This is the label</label>', $xml);
+    }
+
+
+    /**
+     * @param $productData
+     * @dataProvider getInvalidImageData
+     */
+    public function testInvalidImageArgument($productData, $exceptionMessage)
+    {
+        $this->setExpectedException(InvalidImageDefinitionException::class, $exceptionMessage);
+        $xmlBuilder = new XmlBuilder($productData, []);
+        $xmlBuilder->getXmlString();
+    }
+
+    public function getInvalidImageData()
+    {
+        return [
+            [
+                [
+                    'images' => [
+                        [
+                            'main' => 2,
+                            'file' => 'some/file/somewhere.png',
+                            'label' => 'This is the label',
+                        ]
+                    ]
+                ],
+                '"main" must be either "true" or "false".',
+            ],
+            [
+                [
+                    'images' => [
+                        [
+                            'main' => true,
+                            'file' => 8,
+                            'label' => 'This is the label',
+                        ]
+                    ]
+                ],
+                '"file" must be a string.'
+            ],
+            [
+                [
+                    'images' => [
+                        [
+                            'main' => true,
+                            'file' => 'some/file/somewhere.png',
+                            'label' => 20,
+                        ]
+                    ]
+                ],
+                '"label" must be a string.'
+            ],
+            [
+                [
+                    'images' =>
+                        [
+                            'main' => true,
+                            'file' => 'some/file/somewhere.png',
+                            'label' => 20,
+                        ]
+
+                ],
+                'images must be an array of image definitions.',
+            ]
+        ];
     }
 }

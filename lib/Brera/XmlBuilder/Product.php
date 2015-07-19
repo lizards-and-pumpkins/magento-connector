@@ -16,14 +16,18 @@ class XmlBuilder
     private $xml;
 
     /**
-     * @var array
+     * @var string[]
      */
     private $productData;
     /**
-     * @var array
+     * @var string[]
      */
     private $context;
 
+    /**
+     * @param string[] $productData
+     * @param string[] $context
+     */
     function __construct(array $productData, array $context)
     {
         $this->productData = $productData;
@@ -31,6 +35,9 @@ class XmlBuilder
         $this->xml = new \DOMDocument('1.0', 'utf-8');
     }
 
+    /**
+     * @return string
+     */
     public function getXmlString()
     {
         $this->parseProduct();
@@ -44,7 +51,13 @@ class XmlBuilder
     {
         $product = $this->xml->createElement('product');
         foreach ($this->productData as $attributeName => $value) {
-            if ($this->isAttributeProductAttribute($attributeName)) {
+            $this->checkAttributeName($attributeName);
+            if ($attributeName == 'images') {
+                foreach ($value as $image) {
+                    $imageNode = $this->createImageNode($image);
+                    $product->appendChild($imageNode);
+                }
+            } elseif ($this->isAttributeProductAttribute($attributeName)) {
                 $attribute = $this->xml->createAttribute($attributeName);
                 $attribute->value = $value;
                 $product->appendChild($attribute);
@@ -57,6 +70,14 @@ class XmlBuilder
         $this->xml->appendChild($product);
     }
 
+    private function checkAttributeName($attributeName)
+    {
+        new \DOMElement($attributeName);
+
+        return true;
+
+    }
+
     /**
      * @param string $attribute
      * @return bool
@@ -64,6 +85,55 @@ class XmlBuilder
     private function isAttributeProductAttribute($attribute)
     {
         return in_array($attribute, self::ATTRIBUTE_TYPES);
+    }
+
+    /**
+     * @param string[] $image
+     * @return \DOMElement
+     */
+    private function createImageNode($image)
+    {
+        if (!is_array($image)) {
+            throw new InvalidImageDefinitionException('images must be an array of image definitions.');
+        }
+        $this->checkValidImageValues($image);
+        $imageNode = $this->xml->createElement('image');
+
+        $mainNode = $this->xml->createElement('main');
+        $mainNode->nodeValue = $image['main'] ? 'true' : 'false';
+        $imageNode->appendChild($mainNode);
+
+        $fileNode = $this->xml->createElement('file');
+        $fileNode->nodeValue = $image['file'];
+        $imageNode->appendChild($fileNode);
+
+        $labelNode = $this->xml->createElement('label');
+        $labelNode->nodeValue = $image['label'];
+        $imageNode->appendChild($labelNode);
+
+        return $imageNode;
+    }
+
+    /**
+     * @param string[] $image
+     */
+    private function checkValidImageValues(array $image)
+    {
+        $main = $image['main'];
+        if (!is_bool($main)) {
+            throw new InvalidImageDefinitionException('"main" must be either "true" or "false".');
+        }
+
+        $file = $image['file'];
+        if (!is_string($file)) {
+            throw new InvalidImageDefinitionException('"file" must be a string.');
+        }
+
+        $label = $image['label'];
+        if (!is_string($label)) {
+            throw new InvalidImageDefinitionException('"label" must be a string.');
+        }
+
     }
 
 }
