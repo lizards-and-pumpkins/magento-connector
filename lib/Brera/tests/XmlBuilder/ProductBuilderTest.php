@@ -2,21 +2,19 @@
 
 namespace Brera\MagentoConnector\Xml\Product;
 
-class XmlBuilderTest extends \PHPUnit_Framework_TestCase
+class ProductBuilderTest extends \PHPUnit_Framework_TestCase
 {
     const XML_START = '<?xml version="1.0" encoding="utf-8"?>';
 
     public function testProductBuildsEmptyXml()
     {
-        $xmlBuilder = new ProductBuilder([], []);
-        $xml = $xmlBuilder->getXmlString();
+        $xml = $this->getProductBuilderXml([]);
         $this->assertStringStartsWith(self::XML_START, $xml);
     }
 
     public function testXmlWithProductNode()
     {
-        $xmlBuilder = new ProductBuilder([], []);
-        $xml = $xmlBuilder->getXmlString();
+        $xml = $this->getProductBuilderXml([]);
 
         // TODO implement XPath Constraint and use this here
         $this->assertRegExp('#<product( |/>).*#', $xml);
@@ -30,8 +28,7 @@ class XmlBuilderTest extends \PHPUnit_Framework_TestCase
             'visibility' => 3,
             'tax_class_id' => 7,
         ];
-        $xmlBuilder = new ProductBuilder($productData, []);
-        $xml = $xmlBuilder->getXmlString();
+        $xml = $this->getProductBuilderXml($productData);
 
         // TODO exchange with XPath constraint
         $this->assertContains('type="simple"', $xml);
@@ -45,8 +42,7 @@ class XmlBuilderTest extends \PHPUnit_Framework_TestCase
         $productData = [
             'url_key' => ''
         ];
-        $xmlBuilder = new ProductBuilder($productData, []);
-        $xml = $xmlBuilder->getXmlString();
+        $xml = $this->getProductBuilderXml($productData);
 
         // TODO exchange with XPath constraint
         $this->assertContains('<url_key></url_key>', $xml);
@@ -58,8 +54,7 @@ class XmlBuilderTest extends \PHPUnit_Framework_TestCase
         $productData = [
             'url_key'
         ];
-        $xmlBuilder = new ProductBuilder($productData, []);
-        $xmlBuilder->getXmlString();
+        $xml = $this->getProductBuilderXml($productData);
     }
 
     public function testImageNode()
@@ -73,8 +68,7 @@ class XmlBuilderTest extends \PHPUnit_Framework_TestCase
                 ]
             ]
         ];
-        $xmlBuilder = new ProductBuilder($productData, []);
-        $xml = $xmlBuilder->getXmlString();
+        $xml = $this->getProductBuilderXml($productData);
 
         // TODO exchange with XPath constraint
         $this->assertContains('<image>', $xml);
@@ -93,8 +87,7 @@ class XmlBuilderTest extends \PHPUnit_Framework_TestCase
                 ]
             ]
         ];
-        $xmlBuilder = new ProductBuilder($productData, []);
-        $xml = $xmlBuilder->getXmlString();
+        $xml = $this->getProductBuilderXml($productData);
 
         // TODO exchange with XPath constraint
         $this->assertContains('<main>false</main>', $xml);
@@ -108,8 +101,7 @@ class XmlBuilderTest extends \PHPUnit_Framework_TestCase
     public function testInvalidImageArgument($productData, $exceptionMessage)
     {
         $this->setExpectedException(InvalidImageDefinitionException::class, $exceptionMessage);
-        $xmlBuilder = new ProductBuilder($productData, []);
-        $xmlBuilder->getXmlString();
+        $this->getProductBuilderXml($productData);
     }
 
     public function getInvalidImageData()
@@ -164,5 +156,23 @@ class XmlBuilderTest extends \PHPUnit_Framework_TestCase
                 'images must be an array of image definitions.',
             ]
         ];
+    }
+
+    /**
+     * @param string[] $productData
+     * @return string
+     */
+    private function getProductBuilderXml($productData)
+    {
+        $xmlBuilder = new ProductBuilder($productData, []);
+        $reflectionProperty = new \ReflectionProperty($xmlBuilder, 'xml');
+        $reflectionProperty->setAccessible(true);
+
+        /** @var $xml \DOMDocument */
+        $xml = $reflectionProperty->getValue($xmlBuilder);
+        $xml->formatOutput = true;
+        $xml = $xml->saveXML();
+
+        return $xml;
     }
 }

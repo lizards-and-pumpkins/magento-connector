@@ -16,7 +16,7 @@ class ProductBuilder
     private $xml;
 
     /**
-     * @var string[]
+     * @var string[][][]
      */
     private $productData;
     /**
@@ -33,18 +33,15 @@ class ProductBuilder
         $this->productData = $productData;
         $this->context = $context;
         $this->xml = new \DOMDocument('1.0', 'utf-8');
+        $this->parseProduct();
     }
 
     /**
-     * @return string
+     * @return \DOMDocument
      */
-    public function getXmlString()
+    public function getDomDocument()
     {
-        $this->parseProduct();
-
-        $this->xml->formatOutput = true;
-
-        return trim($this->xml->saveXML());
+        return new ProductContainer($this->xml);
     }
 
     private function parseProduct()
