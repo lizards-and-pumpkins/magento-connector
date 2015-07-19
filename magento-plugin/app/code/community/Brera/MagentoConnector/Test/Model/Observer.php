@@ -139,10 +139,6 @@ class Brera_MagentoConnector_Test_Model_Observer extends EcomDev_PHPUnit_Test_Ca
         $this->assertNotEquals($rightFormKey, $request->getParam('form_key'));
         $this->assertEquals($wrongFormKey, $request->getParam('form_key'));
 
-        // controller needs to be included by hand because magento doesn't autoload it
-        // if it is not included PHPUnit creates the class Mage_Checkout_CartController
-        // which fucks up later tests
-        require Mage::getBaseDir() . '/app/code/core/Mage/Checkout/controllers/CartController.php';
         $controller = $this->getMock(Mage_Checkout_CartController::class, ['getRequest'], [], '', false);
         $controller->method('getRequest')->willReturn($request);
 
@@ -163,6 +159,13 @@ class Brera_MagentoConnector_Test_Model_Observer extends EcomDev_PHPUnit_Test_Ca
     protected function setUp()
     {
         $this->observer = new Brera_MagentoConnector_Model_Observer();
+
+        // controller needs to be included by hand because magento doesn't autoload it
+        // if it is not included PHPUnit creates the class Mage_Checkout_CartController
+        // which fucks up later tests
+        if (!class_exists('Mage_Checkout_CartController', false)) {
+            Mage::getModuleDir('controllers', 'Mage_Checkout') . 'CartController.php';
+        }
     }
 
     /**
