@@ -1,6 +1,6 @@
 <?php
 
-namespace Brera\MagentoConnector\Product;
+namespace Brera\MagentoConnector\Xml\Product;
 
 class XmlBuilderTest extends \PHPUnit_Framework_TestCase
 {
@@ -8,14 +8,14 @@ class XmlBuilderTest extends \PHPUnit_Framework_TestCase
 
     public function testProductBuildsEmptyXml()
     {
-        $xmlBuilder = new XmlBuilder([], []);
+        $xmlBuilder = new ProductBuilder([], []);
         $xml = $xmlBuilder->getXmlString();
         $this->assertStringStartsWith(self::XML_START, $xml);
     }
 
     public function testXmlWithProductNode()
     {
-        $xmlBuilder = new XmlBuilder([], []);
+        $xmlBuilder = new ProductBuilder([], []);
         $xml = $xmlBuilder->getXmlString();
 
         // TODO implement XPath Constraint and use this here
@@ -30,7 +30,7 @@ class XmlBuilderTest extends \PHPUnit_Framework_TestCase
             'visibility' => 3,
             'tax_class_id' => 7,
         ];
-        $xmlBuilder = new XmlBuilder($productData, []);
+        $xmlBuilder = new ProductBuilder($productData, []);
         $xml = $xmlBuilder->getXmlString();
 
         // TODO exchange with XPath constraint
@@ -45,7 +45,7 @@ class XmlBuilderTest extends \PHPUnit_Framework_TestCase
         $productData = [
             'url_key' => ''
         ];
-        $xmlBuilder = new XmlBuilder($productData, []);
+        $xmlBuilder = new ProductBuilder($productData, []);
         $xml = $xmlBuilder->getXmlString();
 
         // TODO exchange with XPath constraint
@@ -58,7 +58,7 @@ class XmlBuilderTest extends \PHPUnit_Framework_TestCase
         $productData = [
             'url_key'
         ];
-        $xmlBuilder = new XmlBuilder($productData, []);
+        $xmlBuilder = new ProductBuilder($productData, []);
         $xmlBuilder->getXmlString();
     }
 
@@ -73,7 +73,7 @@ class XmlBuilderTest extends \PHPUnit_Framework_TestCase
                 ]
             ]
         ];
-        $xmlBuilder = new XmlBuilder($productData, []);
+        $xmlBuilder = new ProductBuilder($productData, []);
         $xml = $xmlBuilder->getXmlString();
 
         // TODO exchange with XPath constraint
@@ -93,7 +93,7 @@ class XmlBuilderTest extends \PHPUnit_Framework_TestCase
                 ]
             ]
         ];
-        $xmlBuilder = new XmlBuilder($productData, []);
+        $xmlBuilder = new ProductBuilder($productData, []);
         $xml = $xmlBuilder->getXmlString();
 
         // TODO exchange with XPath constraint
@@ -108,7 +108,7 @@ class XmlBuilderTest extends \PHPUnit_Framework_TestCase
     public function testInvalidImageArgument($productData, $exceptionMessage)
     {
         $this->setExpectedException(InvalidImageDefinitionException::class, $exceptionMessage);
-        $xmlBuilder = new XmlBuilder($productData, []);
+        $xmlBuilder = new ProductBuilder($productData, []);
         $xmlBuilder->getXmlString();
     }
 

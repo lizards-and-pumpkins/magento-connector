@@ -7,9 +7,10 @@ spl_autoload_register(
         static $classes = null;
         if ($classes === null) {
             $classes = array(
-                'brera\\magentoconnector\\product\\invalidimagedefinitionexception' => '/src/XmlBuilder/InvalidImageDefinitionException.php',
-                'brera\\magentoconnector\\product\\xmlbuilder' => '/src/XmlBuilder/Product.php',
-                'brera\\magentoconnector\\product\\xmlbuildertest' => '/tests/XmlBuilder/ProductTest.php'
+                'brera\\magentoconnector\\xml\\product\\invalidimagedefinitionexception' => '/src/XmlBuilder/InvalidImageDefinitionException.php',
+                'brera\\magentoconnector\\xml\\product\\productbuilder' => '/src/XmlBuilder/Product.php',
+                'brera\\magentoconnector\\xml\\product\\productmerge' => '/src/XmlBuilder/Products.php',
+                'brera\\magentoconnector\\xml\\product\\xmlbuildertest' => '/tests/XmlBuilder/ProductTest.php'
             );
         }
         $cn = strtolower($class);

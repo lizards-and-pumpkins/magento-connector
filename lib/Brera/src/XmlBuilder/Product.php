@@ -1,7 +1,7 @@
 <?php
-namespace Brera\MagentoConnector\Product;
+namespace Brera\MagentoConnector\Xml\Product;
 
-class XmlBuilder
+class ProductBuilder
 {
     const ATTRIBUTE_TYPES = [
         'type',
