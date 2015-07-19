@@ -15,6 +15,13 @@ class XmlBuilderTest extends \PHPUnit_Framework_TestCase
 
     public function testXmlWithProductNode()
     {
+        $xmlBuilder = new XmlBuilder([], []);
+        $xml = $xmlBuilder->getXmlString();
+        $this->assertContains('<product', $xml);
+    }
+
+    public function testXmlWithAttributes()
+    {
         $productData = [
             'type' => 'simple',
             'sku' => '123',
