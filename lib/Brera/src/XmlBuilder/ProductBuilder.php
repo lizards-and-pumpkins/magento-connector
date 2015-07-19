@@ -37,7 +37,7 @@ class ProductBuilder
     }
 
     /**
-     * @return \DOMDocument
+     * @return ProductContainer
      */
     public function getDomDocument()
     {
