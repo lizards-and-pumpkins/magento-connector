@@ -27,9 +27,21 @@ class XmlBuilder
 
     public function getXmlString()
     {
+        $this->parseProduct();
+
         $this->xml->formatOutput = true;
 
         return trim($this->xml->saveXML());
     }
 
+    private function parseProduct()
+    {
+        $product = $this->xml->createElement('product');
+        foreach ($this->productData as $attributeName => $value) {
+            $attribute = $this->xml->createAttribute($attributeName);
+            $attribute->value = $value;
+            $product->appendChild($attribute);
+        }
+        $this->xml->appendChild($product);
+    }
 }

@@ -10,11 +10,22 @@ class XmlBuilderTest extends \PHPUnit_Framework_TestCase
     {
         $xmlBuilder = new XmlBuilder([], []);
         $xml = $xmlBuilder->getXmlString();
-        $this->assertEquals(self::XML_START, $xml);
+        $this->assertStringStartsWith(self::XML_START, $xml);
     }
 
     public function testXmlWithProductNode()
     {
-        $productDate = array();
+        $productData = [
+            'type' => 'simple',
+            'sku' => '123',
+            'visibility' => 3,
+            'tax_class_id' => 7,
+        ];
+        $xmlBuilder = new XmlBuilder($productData, []);
+        $xml = $xmlBuilder->getXmlString();
+        $this->assertContains('type="simple"', $xml);
+        $this->assertContains('sku="123"', $xml);
+        $this->assertContains('visibility="3"', $xml);
+        $this->assertContains('tax_class_id="7"', $xml);
     }
 }
