@@ -28,7 +28,7 @@ class ProductBuilder
      * @param string[] $productData
      * @param string[] $context
      */
-    function __construct(array $productData, array $context)
+    public function __construct(array $productData, array $context)
     {
         $this->productData = $productData;
         $this->context = $context;

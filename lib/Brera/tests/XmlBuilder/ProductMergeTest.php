@@ -33,7 +33,7 @@ class ProductMergeTest extends \PHPUnit_Framework_TestCase
     public function testProductIsAdded()
     {
         $product = new \DOMDocument('1.0', 'utf-8');
-        $node =  $product->createElement('product', 'my product');
+        $node = $product->createElement('product', 'my product');
         $product->appendChild($node);
 
         $this->merge->addProduct(new ProductContainer($product));

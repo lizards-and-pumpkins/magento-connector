@@ -14,7 +14,7 @@ class ProductMerge
      */
     private $productsNode;
 
-    function __construct()
+    public function __construct()
     {
         $this->xml = new \DOMDocument('1.0', 'utf-8');
         $catalogNode = $this->createCatalogNode();
