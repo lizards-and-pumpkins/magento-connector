@@ -10,11 +10,6 @@ class ProductMergeTest extends \PHPUnit_Framework_TestCase
      */
     private $merge;
 
-    protected function setUp()
-    {
-        $this->merge = new ProductMerge();
-    }
-
     public function testEmptyXml()
     {
         $xml = $this->merge->getXmlString();
@@ -39,5 +34,10 @@ class ProductMergeTest extends \PHPUnit_Framework_TestCase
         $this->merge->addProduct(new ProductContainer($product));
         $xml = $this->merge->getXmlString();
         $this->assertContains('<product>my product</product>', $xml);
+    }
+
+    protected function setUp()
+    {
+        $this->merge = new ProductMerge();
     }
 }
