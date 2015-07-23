@@ -14,6 +14,10 @@ class Brera_MagentoConnector_Model_XmlUploader
      */
     private $xmlString;
 
+    /**
+     * @param string $xmlString
+     * @param string $target
+     */
     function __construct($xmlString, $target)
     {
         $this->checkTarget($target);
@@ -21,12 +25,15 @@ class Brera_MagentoConnector_Model_XmlUploader
         $this->xmlString = $xmlString;
     }
 
-
-    public function uploadXmlTo()
+    public function upload()
     {
         file_put_contents($this->target, $this->xmlString);
     }
 
+    /**
+     * @param string $target
+     * @throws Mage_Core_Exception
+     */
     private function checkTarget($target)
     {
         $protocol = strtok($target, self::PROTOCOL_DELIMITER) . self::PROTOCOL_DELIMITER;
