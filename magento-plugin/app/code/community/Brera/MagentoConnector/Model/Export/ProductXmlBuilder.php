@@ -45,6 +45,9 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilder
 
     private function getContext()
     {
-        return [];
+        return array(
+            'website' => $this->store->getWebsite()->getName(),
+            'language' => $this->store->getLanguageCode(),
+        );
     }
 }
