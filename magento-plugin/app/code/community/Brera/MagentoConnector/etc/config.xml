@@ -164,6 +164,34 @@
             </controller_action_predispatch_checkout_cart_add>
         </events>
     </frontend>
+    <adminhtml>
+        <acl>
+            <resources>
+                <admin>
+                    <children>
+                        <system>
+                            <children>
+                                <config>
+                                    <children>
+                                        <brera>
+                                            <title>Brera</title>
+                                        </brera>
+                                    </children>
+                                </config>
+                            </children>
+                        </system>
+                    </children>
+                </admin>
+            </resources>
+        </acl>
+    </adminhtml>
+    <default>
+        <brera>
+            <magentoconnector>
+                <product_xml_target><![CDATA[file://tmp/magento.xml]]></product_xml_target>
+            </magentoconnector>
+        </brera>
+    </default>
     <phpunit>
         <suite>
             <modules>
