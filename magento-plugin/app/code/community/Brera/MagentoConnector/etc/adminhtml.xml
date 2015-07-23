@@ -6,9 +6,9 @@
                 <convert translate="title">
                     <children>
                         <brera_export translate="title">
-                            <title>Export All Products to Brera XML</title>
+                            <title>Brera Export All Products</title>
                             <action>adminhtml/brera/exportAllProducts</action>
-                            <sort_order>20</sort_order>
+                            <sort_order>0</sort_order>
                         </brera_export>
                     </children>
                 </convert>
@@ -25,7 +25,7 @@
                                 <children>
                                     <brera_export translate="title">
                                         <title>Brera Export</title>
-                                        <sort_order>20</sort_order>
+                                        <sort_order>0</sort_order>
                                     </brera_export>
                                 </children>
                             </convert>
