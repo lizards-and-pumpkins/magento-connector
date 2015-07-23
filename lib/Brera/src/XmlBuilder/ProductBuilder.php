@@ -39,7 +39,7 @@ class ProductBuilder
     /**
      * @return ProductContainer
      */
-    public function getDomDocument()
+    public function getProductContainer()
     {
         return new ProductContainer($this->xml);
     }
