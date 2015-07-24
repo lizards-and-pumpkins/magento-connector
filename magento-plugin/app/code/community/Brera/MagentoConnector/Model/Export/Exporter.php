@@ -7,26 +7,19 @@ class Brera_MagentoConnector_Model_Export_Exporter
 
     public function exportAllProducts()
     {
-        $xml = new ProductMerge();
+        $xmlMerge = new ProductMerge();
         foreach (Mage::app()->getStores() as $store) {
             $productCollection = Mage::getModel('brera_magentoconnector/export_productCollector')
                 ->getAllProducts($store);
-            $arguments = [
-                $productCollection,
-                $store,
-                $xml
-            ];
-            $xml = Mage::getModel('brera_magentoconnector/export_productXmlBuilder', $arguments)
-                ->getXml();
+
+            (new Brera_MagentoConnector_Model_Export_ProductXmlBuilder($productCollection, $store, $xmlMerge))
+                ->process();
         }
 
-        $xmlString = $xml->getXmlString();
+        $xmlString = $xmlMerge->getXmlString();
 
         $target = Mage::getStoreConfig('brera/magentoconnector/product_xml_target');
-
-        $arguments = array($xmlString, $target);
-        /** @var $uploader Brera_MagentoConnector_Model_XmlUploader */
-        $uploader = Mage::getModel('brera_magentoconnector/xmlUploader', $arguments);
+        $uploader = new Brera_MagentoConnector_Model_XmlUploader($xmlString, $target);
         $uploader->upload();
     }
 }
