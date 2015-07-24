@@ -167,7 +167,7 @@
     <default>
         <brera>
             <magentoconnector>
-                <product_xml_target><![CDATA[file://tmp/magento.xml]]></product_xml_target>
+                <product_xml_target><![CDATA[file:///tmp/magento.xml]]></product_xml_target>
             </magentoconnector>
         </brera>
     </default>
