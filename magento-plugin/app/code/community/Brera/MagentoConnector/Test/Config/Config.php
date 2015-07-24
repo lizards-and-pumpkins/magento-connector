@@ -34,10 +34,6 @@ class Brera_MagentoConnector_Test_Config_Config extends EcomDev_PHPUnit_Test_Cas
     {
         $this->assertModelAlias('brera_magentoconnector/observer', Brera_MagentoConnector_Model_Observer::class);
         $this->assertModelAlias(
-            'brera_magentoconnector/xml_product_collection', Brera_MagentoConnector_Model_Xml_Product_Collection::class
-        );
-        $this->assertModelAlias('brera_magentoconnector/xml_product', Brera_MagentoConnector_Model_Xml_Product::class);
-        $this->assertModelAlias(
             'brera_magentoconnector/product_queue_item', Brera_MagentoConnector_Model_Product_Queue_Item::class
         );
     }
