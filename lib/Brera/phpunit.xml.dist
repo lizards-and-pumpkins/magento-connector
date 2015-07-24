@@ -25,5 +25,8 @@
         <testsuite name="XmlBuilder">
             <directory>tests/XmlBuilder</directory>
         </testsuite>
+            <testsuite name="Api">
+                    <directory>tests/Api</directory>
+            </testsuite>
     </testsuites>
 </phpunit>

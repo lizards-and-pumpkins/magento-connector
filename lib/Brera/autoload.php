@@ -7,6 +7,9 @@ spl_autoload_register(
         static $classes = null;
         if ($classes === null) {
             $classes = array(
+                'brera\\magentoconnector\\api\\api' => '/src/Api/Api.php',
+                'brera\\magentoconnector\\api\\apitest' => '/tests/Api/ApiTest.php',
+                'brera\\magentoconnector\\api\\invalidhostexception' => '/src/Api/InvalidHostException.php',
                 'brera\\magentoconnector\\xmlbuilder\\invalidimagedefinitionexception' => '/src/XmlBuilder/InvalidImageDefinitionException.php',
                 'brera\\magentoconnector\\xmlbuilder\\productbuilder' => '/src/XmlBuilder/ProductBuilder.php',
                 'brera\\magentoconnector\\xmlbuilder\\productbuildertest' => '/tests/XmlBuilder/ProductBuilderTest.php',
