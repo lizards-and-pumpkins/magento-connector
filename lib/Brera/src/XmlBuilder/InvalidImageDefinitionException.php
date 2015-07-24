@@ -1,5 +1,5 @@
 <?php
-namespace Brera\MagentoConnector\Xml\Product;
+namespace Brera\MagentoConnector\XmlBuilder;
 
 class  InvalidImageDefinitionException extends \InvalidArgumentException
 {
