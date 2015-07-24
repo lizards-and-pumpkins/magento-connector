@@ -164,6 +164,17 @@
             </controller_action_predispatch_checkout_cart_add>
         </events>
     </frontend>
+    <admin>
+        <routers>
+            <adminhtml>
+                <args>
+                    <modules>
+                        <brera_magentoconnector after="Mage_Adminhtml">Brera_MagentoConnector_Adminhtml</brera_magentoconnector>
+                    </modules>
+                </args>
+            </adminhtml>
+        </routers>
+    </admin>
     <default>
         <brera>
             <magentoconnector>
