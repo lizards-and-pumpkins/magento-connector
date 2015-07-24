@@ -7,13 +7,13 @@ spl_autoload_register(
         static $classes = null;
         if ($classes === null) {
             $classes = array(
-                'brera\\magentoconnector\\xml\\product\\invalidimagedefinitionexception' => '/src/XmlBuilder/InvalidImageDefinitionException.php',
-                'brera\\magentoconnector\\xml\\product\\productbuilder' => '/src/XmlBuilder/ProductBuilder.php',
-                'brera\\magentoconnector\\xml\\product\\productbuildertest' => '/tests/XmlBuilder/ProductBuilderTest.php',
-                'brera\\magentoconnector\\xml\\product\\productcontainer' => '/src/XmlBuilder/ProductContainer.php',
-                'brera\\magentoconnector\\xml\\product\\productcontainertest' => '/tests/XmlBuilder/ProductContainerTest.php',
-                'brera\\magentoconnector\\xml\\product\\productmerge' => '/src/XmlBuilder/ProductMerge.php',
-                'brera\\magentoconnector\\xml\\product\\productmergetest' => '/tests/XmlBuilder/ProductMergeTest.php'
+                'brera\\magentoconnector\\xmlbuilder\\invalidimagedefinitionexception' => '/src/XmlBuilder/InvalidImageDefinitionException.php',
+                'brera\\magentoconnector\\xmlbuilder\\productbuilder' => '/src/XmlBuilder/ProductBuilder.php',
+                'brera\\magentoconnector\\xmlbuilder\\productbuildertest' => '/tests/XmlBuilder/ProductBuilderTest.php',
+                'brera\\magentoconnector\\xmlbuilder\\productcontainer' => '/src/XmlBuilder/ProductContainer.php',
+                'brera\\magentoconnector\\xmlbuilder\\productcontainertest' => '/tests/XmlBuilder/ProductContainerTest.php',
+                'brera\\magentoconnector\\xmlbuilder\\productmerge' => '/src/XmlBuilder/ProductMerge.php',
+                'brera\\magentoconnector\\xmlbuilder\\productmergetest' => '/tests/XmlBuilder/ProductMergeTest.php'
             );
         }
         $cn = strtolower($class);

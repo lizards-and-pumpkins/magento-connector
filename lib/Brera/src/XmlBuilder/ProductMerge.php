@@ -1,6 +1,6 @@
 <?php
 
-namespace Brera\MagentoConnector\Xml\Product;
+namespace Brera\MagentoConnector\XmlBuilder;
 
 require_once('ProductContainer.php');
 

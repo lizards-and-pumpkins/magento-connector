@@ -1,6 +1,6 @@
 <?php
 
-namespace Brera\MagentoConnector\Xml\Product;
+namespace Brera\MagentoConnector\XmlBuilder;
 
 class ProductMergeTest extends \PHPUnit_Framework_TestCase
 {

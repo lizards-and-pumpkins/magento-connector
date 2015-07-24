@@ -1,5 +1,5 @@
 <?php
-namespace Brera\MagentoConnector\Xml\Product;
+namespace Brera\MagentoConnector\XmlBuilder;
 
 require_once('ProductContainer.php');
 require_once('InvalidImageDefinitionException.php');
