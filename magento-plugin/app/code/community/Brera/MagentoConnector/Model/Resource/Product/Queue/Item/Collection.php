@@ -1,5 +1,5 @@
 <?php
- 
+
 class Brera_MagentoConnector_Model_Resource_Product_Queue_Item_Collection extends Mage_Core_Model_Resource_Db_Collection_Abstract
 {
 
