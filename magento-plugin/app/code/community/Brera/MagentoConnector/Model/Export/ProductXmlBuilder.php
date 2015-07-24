@@ -44,7 +44,7 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilder
     {
         return array(
             'website' => $this->store->getWebsite()->getCode(),
-            'language' => $this->store->getLanguageCode(),
+            'language' => Mage::getStoreConfig('general/locale/code', $this->store),
         );
     }
 
