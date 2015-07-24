@@ -1,0 +1,45 @@
+<?xml version="1.0" ?>
+<config>
+    <menu>
+        <system>
+            <children>
+                <convert translate="title">
+                    <children>
+                        <brera_export translate="title">
+                            <title>Brera Export All Products</title>
+                            <action>adminhtml/brera/exportAllProducts</action>
+                            <sort_order>0</sort_order>
+                        </brera_export>
+                    </children>
+                </convert>
+            </children>
+        </system>
+    </menu>
+    <acl>
+        <resources>
+            <admin>
+                <children>
+                    <system>
+                        <children>
+                            <convert module="importexport">
+                                <children>
+                                    <brera_export translate="title">
+                                        <title>Brera Export</title>
+                                        <sort_order>0</sort_order>
+                                    </brera_export>
+                                </children>
+                            </convert>
+                            <config>
+                                <children>
+                                    <brera>
+                                        <title>Brera</title>
+                                    </brera>
+                                </children>
+                            </config>
+                        </children>
+                    </system>
+                </children>
+            </admin>
+        </resources>
+    </acl>
+</config>
