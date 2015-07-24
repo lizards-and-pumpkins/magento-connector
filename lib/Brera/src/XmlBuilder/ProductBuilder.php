@@ -141,11 +141,13 @@ class ProductBuilder
      */
     private function createNode($attributeName, $value, $product)
     {
-        $node = $this->xml->createElement($attributeName);
-        $node->nodeValue = $value;
-        $product->appendChild($node);
+        if (is_string($value)) {
+            $node = $this->xml->createElement($attributeName);
+            $node->nodeValue = htmlspecialchars($value, ENT_XML1, 'UTF-8');
+            $product->appendChild($node);
 
-        $this->addContextAttributes($node);
+            $this->addContextAttributes($node);
+        }
     }
 
     /**

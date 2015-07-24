@@ -104,6 +104,16 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         $this->getProductBuilderXml($productData);
     }
 
+    public function testEntityInNodeValue()
+    {
+        $productData = [
+            'accessories_type' => 'Bags & Luggage'
+        ];
+        $xml = $this->getProductBuilderXml($productData);
+
+        $this->assertContains('<accessories_type>Bags &amp; Luggage</accessories_type>', $xml);
+    }
+
     public function getInvalidImageData()
     {
         return [
