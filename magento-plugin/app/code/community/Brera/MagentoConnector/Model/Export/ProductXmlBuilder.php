@@ -29,16 +29,10 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilder
         $this->merge = $merge;
     }
 
+
     public function getXml()
     {
-        /** @var $product Mage_Catalog_Model_Product */
-        foreach ($this->collection as $product) {
-            $productContainer = (new ProductBuilder(
-                $product->getData(),
-                $this->getContext()
-            ))->getProductContainer();
-            $this->merge->addProduct($productContainer);
-        }
+        $this->process();
 
         return $this->merge->getXmlString();
     }
@@ -49,5 +43,17 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilder
             'website' => $this->store->getWebsite()->getName(),
             'language' => $this->store->getLanguageCode(),
         );
+    }
+
+    public function process()
+    {
+        /** @var $product Mage_Catalog_Model_Product */
+        foreach ($this->collection as $product) {
+            $productContainer = (new ProductBuilder(
+                $product->getData(),
+                $this->getContext()
+            ))->getProductContainer();
+            $this->merge->addProduct($productContainer);
+        }
     }
 }
