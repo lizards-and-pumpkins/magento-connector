@@ -2,6 +2,8 @@
 
 namespace Brera\MagentoConnector\Xml\Product;
 
+require_once('ProductContainer.php');
+
 class ProductMerge
 {
     /**

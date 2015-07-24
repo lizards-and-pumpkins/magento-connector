@@ -1,5 +1,8 @@
 <?php
 
+require_once 'Brera/src/XmlBuilder/ProductBuilder.php';
+require_once 'Brera/src/XmlBuilder/ProductMerge.php';
+
 use Brera\MagentoConnector\Xml\Product\ProductBuilder;
 use Brera\MagentoConnector\Xml\Product\ProductMerge;
 

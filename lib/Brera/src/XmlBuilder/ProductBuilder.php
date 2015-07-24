@@ -1,6 +1,9 @@
 <?php
 namespace Brera\MagentoConnector\Xml\Product;
 
+require_once('ProductContainer.php');
+require_once('InvalidImageDefinitionException.php');
+
 class ProductBuilder
 {
     const ATTRIBUTE_TYPES = [
