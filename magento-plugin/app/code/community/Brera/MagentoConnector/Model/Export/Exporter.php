@@ -1,8 +1,6 @@
 <?php
 
-require_once 'Brera/src/XmlBuilder/ProductMerge.php';
-
-use Brera\MagentoConnector\Xml\Product\ProductMerge;
+use Brera\MagentoConnector\XmlBuilder\ProductMerge;
 
 class Brera_MagentoConnector_Model_Export_Exporter
 {
