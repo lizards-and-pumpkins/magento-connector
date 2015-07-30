@@ -3,7 +3,7 @@
         xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/4.5/phpunit.xsd"
         backupGlobals="true"
         backupStaticAttributes="false"
-        bootstrap="./autoload.php"
+        bootstrap="./bootstrap.php"
         cacheTokens="false"
         colors="false"
         convertErrorsToExceptions="true"
@@ -21,12 +21,17 @@
         timeoutForMediumTests="10"
         timeoutForLargeTests="60"
         verbose="true">
+    <php>
+        <ini name="display_errors" value="On"/>
+        <ini name="display_startup_errors" value="On"/>
+        <ini name="error_reporting" value="32767"/>
+    </php>
     <testsuites>
         <testsuite name="XmlBuilder">
             <directory>tests/XmlBuilder</directory>
         </testsuite>
-            <testsuite name="Api">
-                    <directory>tests/Api</directory>
-            </testsuite>
+        <testsuite name="Api">
+            <directory>tests/Api</directory>
+        </testsuite>
     </testsuites>
 </phpunit>
