@@ -3,8 +3,8 @@
 require_once 'Brera/src/XmlBuilder/ProductBuilder.php';
 require_once 'Brera/src/XmlBuilder/ProductMerge.php';
 
-use Brera\MagentoConnector\Xml\Product\ProductBuilder;
-use Brera\MagentoConnector\Xml\Product\ProductMerge;
+use Brera\MagentoConnector\XmlBuilder\ProductBuilder;
+use Brera\MagentoConnector\XmlBuilder\ProductMerge;
 
 class Brera_MagentoConnector_Model_Export_ProductXmlBuilder
 {

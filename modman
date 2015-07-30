@@ -6,4 +6,4 @@ magento-plugin/app/design/frontend/base/default/template/brera_magentoconnector 
 
 magento-plugin/skin/frontend/base/default/js/brera_magentoconnector                 skin/frontend/base/default/js/brera_magentoconnector
 
-lib/Brera                                                                           lib/Brera
+lib/*                                                                               lib/
