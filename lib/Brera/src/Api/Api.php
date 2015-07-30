@@ -5,8 +5,14 @@ namespace Brera\MagentoConnector\Api;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 
+// TODO fix autoloading
+require 'guzzlehttp/psr7/src/functions.php';
+require 'guzzlehttp/guzzle/src/functions.php';
+require 'guzzlehttp/promises/src/functions.php';
+
 class Api
 {
+    const API_ENDPOINT_CATALOG_IMPORT = 'catalog_import/';
     /**
      * @var string
      */
@@ -19,7 +25,7 @@ class Api
     {
         $this->checkHost($url);
 
-        $this->url = $url;
+        $this->url = rtrim($url, '/') . '/';
     }
 
     /**
@@ -29,7 +35,8 @@ class Api
     {
         $headers = ['Accept' => 'application/vnd.brera.catalog_import.v1+json'];
         $body = json_encode(['file' => $filename]);
-        $request = $this->createHttpRequest('PUT', $this->url . 'catalog_import', $headers, $body);
+        $url = $this->url . self::API_ENDPOINT_CATALOG_IMPORT;
+        $request = $this->createHttpRequest('PUT', $url, $headers, $body);
         $client = new Client();
         $response = $client->send($request);
         if (!json_decode($response->getBody()) == 'OK') {
