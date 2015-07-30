@@ -6,9 +6,9 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 
 // TODO fix autoloading
-require 'guzzlehttp/psr7/src/functions.php';
-require 'guzzlehttp/guzzle/src/functions.php';
-require 'guzzlehttp/promises/src/functions.php';
+require_once __DIR__ . '/../../../guzzlehttp/psr7/src/functions.php';
+require_once __DIR__ . '/../../../guzzlehttp/guzzle/src/functions.php';
+require_once __DIR__ . '/../../../guzzlehttp/promises/src/functions.php';
 
 class Api
 {
