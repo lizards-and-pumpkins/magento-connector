@@ -4,3 +4,4 @@ lib/schema/catalog.xsd
 lib/guzzlehttp
 lib/composer
 lib/psr
+composer.lock
