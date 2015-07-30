@@ -2,7 +2,8 @@
 
 namespace Brera\MagentoConnector\Api;
 
-use Symfony\Component\Config\Definition\Exception\InvalidDefinitionException;
+use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\Request;
 
 class Api
 {
@@ -21,6 +22,24 @@ class Api
         $this->url = $url;
     }
 
+    /**
+     * @param string $filename
+     */
+    public function triggerProductImport($filename)
+    {
+        $headers = ['Accept' => 'application/vnd.brera.catalog_import.v1+json'];
+        $body = json_encode(['file' => $filename]);
+        $request = $this->createHttpRequest('PUT', $this->url . 'catalog_import', $headers, $body);
+        $client = new Client();
+        $response = $client->send($request);
+        if (!json_decode($response->getBody()) == 'OK') {
+            throw new RequestFailedException();
+        }
+    }
+
+    /**
+     * @param string $url
+     */
     private function checkHost($url)
     {
         if (!is_string($url)) {
@@ -37,9 +56,19 @@ class Api
         }
 
         if (empty($urlParts['host'])) {
-            throw new InvalidDefinitionException('Domain must be specified.');
+            throw new InvalidHostException('Domain must be specified.');
         }
     }
 
-
+    /**
+     * @param string $method
+     * @param string $url
+     * @param string[] $headers
+     * @param string $body
+     * @return Request
+     */
+    private function createHttpRequest($method, $url, $headers, $body)
+    {
+        return new Request($method, $url, $headers, $body);
+    }
 }
