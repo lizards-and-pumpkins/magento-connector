@@ -168,6 +168,13 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
+    public function testProductContainerIsOne()
+    {
+        $xmlBuilder = new ProductBuilder([], []);
+        $productContainer = $xmlBuilder->getProductContainer();
+        $this->assertInstanceOf(ProductContainer::class, $productContainer);
+    }
+
     /**
      * @param string[] $productData
      * @return string

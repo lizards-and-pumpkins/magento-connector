@@ -74,7 +74,6 @@ class ProductBuilder
         new \DOMElement($attributeName);
 
         return true;
-
     }
 
     /**
@@ -123,7 +122,6 @@ class ProductBuilder
         if (!is_string($label)) {
             throw new InvalidImageDefinitionException('"label" must be a string.');
         }
-
     }
 
     /**
@@ -169,5 +167,4 @@ class ProductBuilder
             $this->xml->endAttribute();
         }
     }
-
 }
