@@ -14,7 +14,7 @@ class ProductBuilder
     ];
 
     /**
-     * @var \DOMDocument
+     * @var \XMLWriter
      */
     private $xml;
 
@@ -35,7 +35,9 @@ class ProductBuilder
     {
         $this->productData = $productData;
         $this->context = $context;
-        $this->xml = new \DOMDocument('1.0', 'utf-8');
+        $this->xml = new \XMLWriter();
+        $this->xml->openMemory();
+        $this->xml->startDocument('1.0', 'UTF-8');
         $this->parseProduct();
     }
 
@@ -49,19 +51,18 @@ class ProductBuilder
 
     private function parseProduct()
     {
-        /** @var $product \DOMElement */
-        $product = $this->xml->createElement('product');
+        $this->xml->startElement('product');
         foreach ($this->productData as $attributeName => $value) {
             $this->checkAttributeName($attributeName);
             if ($attributeName == 'images') {
-                $this->createImageNodes($value, $product);
+                $this->createImageNodes($value);
             } elseif ($this->isAttributeProductAttribute($attributeName)) {
-                $this->createAttribute($attributeName, $value, $product);
+                $this->createAttribute($attributeName, $value);
             } else {
-                $this->createNode($attributeName, $value, $product);
+                $this->createNode($attributeName, $value);
             }
         }
-        $this->xml->appendChild($product);
+        $this->xml->endElement();
     }
 
     /**
@@ -87,7 +88,6 @@ class ProductBuilder
 
     /**
      * @param string[] $image
-     * @return \DOMElement
      */
     private function createImageNode($image)
     {
@@ -95,21 +95,13 @@ class ProductBuilder
             throw new InvalidImageDefinitionException('images must be an array of image definitions.');
         }
         $this->checkValidImageValues($image);
-        $imageNode = $this->xml->createElement('image');
+        $this->xml->startElement('image');
 
-        $mainNode = $this->xml->createElement('main');
-        $mainNode->nodeValue = isset($image['main']) && $image['main'] ? 'true' : 'false';
-        $imageNode->appendChild($mainNode);
+        $this->xml->writeElement('main', isset($image['main']) && $image['main'] ? 'true' : 'false');
+        $this->xml->writeElement('file', $image['file']);
+        $this->xml->writeElement('label', $image['label']);
 
-        $fileNode = $this->xml->createElement('file');
-        $fileNode->nodeValue = $image['file'];
-        $imageNode->appendChild($fileNode);
-
-        $labelNode = $this->xml->createElement('label');
-        $labelNode->nodeValue = $image['label'];
-        $imageNode->appendChild($labelNode);
-
-        return $imageNode;
+        $this->xml->endElement();
     }
 
     /**
@@ -137,52 +129,44 @@ class ProductBuilder
     /**
      * @param string $attributeName
      * @param string $value
-     * @param \DOMElement $product
      */
-    private function createNode($attributeName, $value, $product)
+    private function createNode($attributeName, $value)
     {
         if (is_string($value)) {
-            $node = $this->xml->createElement($attributeName);
-            $node->nodeValue = htmlspecialchars($value, ENT_XML1, 'UTF-8');
-            $product->appendChild($node);
-
-            $this->addContextAttributes($node);
+            $this->xml->startElement($attributeName);
+            $this->addContextAttributes();
+            $this->xml->text($value);
+            $this->xml->endElement();
         }
     }
 
     /**
      * @param string $attributeName
      * @param string $value
-     * @param \DOMElement $product
      */
-    private function createAttribute($attributeName, $value, $product)
+    private function createAttribute($attributeName, $value)
     {
-        $attribute = $this->xml->createAttribute($attributeName);
-        $attribute->value = $value;
-        $product->appendChild($attribute);
+        $this->xml->startAttribute($attributeName);
+        $this->xml->text($value);
+        $this->xml->endAttribute();
     }
 
     /**
      * @param string[][] $images
-     * @param \DOMElement $product
      */
-    private function createImageNodes($images, $product)
+    private function createImageNodes($images)
     {
         foreach ($images as $image) {
-            $imageNode = $this->createImageNode($image);
-            $product->appendChild($imageNode);
+            $this->createImageNode($image);
         }
     }
 
-    /**
-     * @param \DomElement $node
-     */
-    private function addContextAttributes($node)
+    private function addContextAttributes()
     {
         foreach ($this->context as $key => $value) {
-            $attributeNode = $this->xml->createAttribute($key);
-            $attributeNode->value = $value;
-            $node->appendChild($attributeNode);
+            $this->xml->startAttribute($key);
+            $this->xml->text($value);
+            $this->xml->endAttribute();
         }
     }
 
