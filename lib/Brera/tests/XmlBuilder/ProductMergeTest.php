@@ -35,7 +35,16 @@ class ProductMergeTest extends \PHPUnit_Framework_TestCase
 
     public function testPartialString()
     {
-        $this->markTestSkipped('To be implemented.');
+        $expectedXml = '<product>my product</product>';
+        $this->merge->addProduct(new ProductContainer('<?xml version="1.0"?>' . $expectedXml));
+        $xml = $this->merge->getPartialXmlString();
+        $this->assertContains($expectedXml, $xml);
+        $this->assertRegExp('#<products>#', $xml);
+        $this->assertNotContains('</products>', $xml);
+
+        $xml = $this->merge->finish();
+        $this->assertContains('</products>', $xml);
+        $this->assertContains('</catalog>', $xml);
     }
 
     protected function setUp()
