@@ -15,19 +15,34 @@ class Brera_MagentoConnector_Model_XmlUploader
     private $xmlString;
 
     /**
-     * @param string $xmlString
+     * @var resource
+     */
+    private $stream;
+
+    /**
      * @param string $target
      */
-    function __construct($xmlString, $target)
+    function __construct($target)
     {
         $this->checkTarget($target);
         $this->target = $target;
-        $this->xmlString = $xmlString;
     }
 
-    public function upload()
+    public function upload($xmlString)
     {
-        file_put_contents($this->target, $this->xmlString);
+        file_put_contents($this->target, $xmlString);
+    }
+
+    /**
+     * @return resource
+     */
+    public function getUploadStream()
+    {
+        if (!$this->stream) {
+            $this->stream = fopen($this->target, 'w');
+        }
+
+        return $this->stream;
     }
 
     /**
