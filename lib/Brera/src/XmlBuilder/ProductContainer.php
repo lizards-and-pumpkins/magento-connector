@@ -3,6 +3,9 @@ namespace Brera\MagentoConnector\XmlBuilder;
 
 class ProductContainer
 {
+    /**
+     * @var \SimpleXMLElement
+     */
     private $xml;
 
     /**
@@ -10,7 +13,8 @@ class ProductContainer
      */
     public function __construct($productXml)
     {
-        $this->xml = $productXml;
+        $this->xml = new \DOMDocument();
+        $this->xml->loadXML($productXml);
     }
 
     /**
@@ -18,8 +22,6 @@ class ProductContainer
      */
     public function getXml()
     {
-        return $this->xml;
+        return $this->xml->saveXML($this->xml->documentElement);
     }
-
-
 }

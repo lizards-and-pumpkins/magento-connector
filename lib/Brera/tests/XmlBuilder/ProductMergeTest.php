@@ -12,7 +12,7 @@ class ProductMergeTest extends \PHPUnit_Framework_TestCase
 
     public function testEmptyXml()
     {
-        $xml = $this->merge->getXmlString();
+        $xml = $this->merge->finish();
 
         $namespaces = [
             'xmlns="http://brera\.io"',
@@ -22,18 +22,20 @@ class ProductMergeTest extends \PHPUnit_Framework_TestCase
         foreach ($namespaces as $ns) {
             $this->assertRegExp("#<catalog .*$ns.*>#Us", $xml);
         }
-        $this->assertRegExp('#<products( |/>).*#', $xml);
     }
 
     public function testProductIsAdded()
     {
-        $product = new \DOMDocument('1.0', 'utf-8');
-        $node = $product->createElement('product', 'my product');
-        $product->appendChild($node);
+        $expectedXml = '<product>my product</product>';
+        $this->merge->addProduct(new ProductContainer('<?xml version="1.0"?>' . $expectedXml));
+        $xml = $this->merge->finish();
+        $this->assertContains($expectedXml, $xml);
+        $this->assertRegExp('#<products>#', $xml);
+    }
 
-        $this->merge->addProduct(new ProductContainer($product));
-        $xml = $this->merge->getXmlString();
-        $this->assertContains('<product>my product</product>', $xml);
+    public function testPartialString()
+    {
+        $this->markTestSkipped('To be implemented.');
     }
 
     protected function setUp()

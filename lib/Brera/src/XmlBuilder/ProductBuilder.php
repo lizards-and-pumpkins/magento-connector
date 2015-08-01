@@ -46,7 +46,7 @@ class ProductBuilder
      */
     public function getProductContainer()
     {
-        return new ProductContainer($this->xml);
+        return new ProductContainer($this->xml->flush());
     }
 
     private function parseProduct()
