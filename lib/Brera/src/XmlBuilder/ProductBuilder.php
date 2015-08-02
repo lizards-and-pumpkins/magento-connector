@@ -119,7 +119,7 @@ class ProductBuilder
         }
 
         $label = $image['label'];
-        if (!is_string($label)) {
+        if (!is_string($label) && $label !== null) {
             throw new InvalidImageDefinitionException('"label" must be a string.');
         }
     }
