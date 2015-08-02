@@ -7,7 +7,7 @@ class Brera_MagentoConnector_Model_Export_Exporter
 
     public function exportAllProducts()
     {
-        $this->createXmlAndUpload();
+        $this->createAndUploadCatalogXml();
 
         try {
             $apiUrl = Mage::getStoreConfig('brera/magentoconnector/api_url');
@@ -23,38 +23,21 @@ class Brera_MagentoConnector_Model_Export_Exporter
         Mage::getSingleton('core/session')->addSuccess('Export was successfull.');
     }
 
-    private function createXmlAndUpload()
-    {
-        $xmlString = $this->createCatalogXml();
-        $this->uploadXml($xmlString);
-    }
-
-    /**
-     * @return string
-     */
-    private function createCatalogXml()
+    private function createAndUploadCatalogXml()
     {
         $xmlMerge = new ProductMerge();
+        $uploader = Mage::getModel('brera_magentoconnector/xmlUploader');
         foreach (Mage::app()->getStores() as $store) {
             $productCollection = Mage::getModel('brera_magentoconnector/export_productCollector')
                 ->getAllProducts($store);
 
-            (new Brera_MagentoConnector_Model_Export_ProductXmlBuilder($productCollection, $store, $xmlMerge))
-                ->process();
+            $xmlBuilderAndUploader = new Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader(
+                $productCollection, $store, $xmlMerge, $uploader
+            );
+
+            $xmlBuilderAndUploader->process();
         }
 
-        $xmlString = $xmlMerge->getXmlString();
-
-        return $xmlString;
-    }
-
-    /**
-     * @param $xmlString
-     */
-    private function uploadXml($xmlString)
-    {
-        $target = Mage::getStoreConfig('brera/magentoconnector/product_xml_target');
-        $uploader = new Brera_MagentoConnector_Model_XmlUploader($xmlString, $target);
-        $uploader->upload();
+        $uploader->writePartialString($xmlMerge->finish());
     }
 }
