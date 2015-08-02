@@ -12,10 +12,12 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
      * @var Mage_Catalog_Model_Resource_Product_Collection
      */
     private $collection;
+
     /**
      * @var Mage_Core_Model_Store
      */
     private $store;
+
     /**
      * @var ProductMerge
      */
@@ -64,7 +66,7 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
         /** @var $product Mage_Catalog_Model_Product */
         foreach ($this->collection as $product) {
             $productContainer = (new ProductBuilder(
-                $product->getData(),
+                $this->transformData($product),
                 $this->getContext()
             ))->getProductContainer();
             $this->merge->addProduct($productContainer);
@@ -73,8 +75,42 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
         }
     }
 
+    /**
+     * @return Brera_MagentoConnector_Model_XmlUploader
+     */
     private function getUploader()
     {
         return $this->uploader;
+    }
+
+    /**
+     * @param $product
+     * @return string[]
+     */
+    private function transformData(Mage_Catalog_Model_Product $product)
+    {
+        $productData = array();
+        foreach ($product->getData() as $key => $value) {
+            if ($this->isCastableToString($value)) {
+                $productData[$key] = $value;
+            }
+            if ($key == 'media_gallery') {
+                foreach ($value['images'] as $image) {
+                    $productData['images'][] = array(
+                        'main' => $image['file'] == $product->getImage(),
+                        'label' => $image['label'],
+                        'file' => $image['file'],
+                    );
+                }
+            }
+
+        }
+
+        return $productData;
+    }
+
+    private function isCastableToString($value)
+    {
+        return is_string($value) || is_float($value) || is_bool($value) || is_int($value) || is_double($value);
     }
 }

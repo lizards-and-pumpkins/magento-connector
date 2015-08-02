@@ -93,6 +93,22 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertContains('<main>false</main>', $xml);
     }
 
+    public function testImageLabelIsNull()
+    {
+        $productData = [
+            'images' => [
+                [
+                    'file' => 'some/file/somewhereElse.png',
+                    'label' => null,
+                ]
+            ]
+        ];
+        $xml = $this->getProductBuilderXml($productData);
+
+        // TODO exchange with XPath constraint
+        $this->assertContains('<label/>', $xml);
+    }
+
     /**
      * @param string[] $productData
      * @param string $exceptionMessage
