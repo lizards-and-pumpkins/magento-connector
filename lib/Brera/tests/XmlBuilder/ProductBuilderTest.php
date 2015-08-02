@@ -4,7 +4,7 @@ namespace Brera\MagentoConnector\XmlBuilder;
 
 class ProductBuilderTest extends \PHPUnit_Framework_TestCase
 {
-    const XML_START = '<?xml version="1.0" encoding="utf-8"?>';
+    const XML_START = '<?xml version="1.0" encoding="UTF-8"?>';
 
     public function testProductBuildsEmptyXml()
     {
@@ -168,6 +168,13 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
+    public function testProductContainerIsOne()
+    {
+        $xmlBuilder = new ProductBuilder([], []);
+        $productContainer = $xmlBuilder->getProductContainer();
+        $this->assertInstanceOf(ProductContainer::class, $productContainer);
+    }
+
     /**
      * @param string[] $productData
      * @return string
@@ -178,11 +185,9 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         $reflectionProperty = new \ReflectionProperty($xmlBuilder, 'xml');
         $reflectionProperty->setAccessible(true);
 
-        /** @var $xml \DOMDocument */
+        /** @var $xml \XMLWriter */
         $xml = $reflectionProperty->getValue($xmlBuilder);
-        $xml->formatOutput = true;
-        $xml = $xml->saveXML();
 
-        return $xml;
+        return $xml->flush();
     }
 }

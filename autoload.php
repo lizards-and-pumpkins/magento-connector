@@ -23,7 +23,7 @@ spl_autoload_register(
                 'brera_magentoconnector_helper_data' => '/magento-plugin/app/code/community/Brera/MagentoConnector/Helper/Data.php',
                 'brera_magentoconnector_model_export_exporter' => '/magento-plugin/app/code/community/Brera/MagentoConnector/Model/Export/Exporter.php',
                 'brera_magentoconnector_model_export_productcollector' => '/magento-plugin/app/code/community/Brera/MagentoConnector/Model/Export/ProductCollector.php',
-                'brera_magentoconnector_model_export_productxmlbuilder' => '/magento-plugin/app/code/community/Brera/MagentoConnector/Model/Export/ProductXmlBuilder.php',
+                'brera_magentoconnector_model_export_productxmlbuilderanduploader' => '/magento-plugin/app/code/community/Brera/MagentoConnector/Model/Export/ProductXmlBuilderAndUploader.php',
                 'brera_magentoconnector_model_observer' => '/magento-plugin/app/code/community/Brera/MagentoConnector/Model/Observer.php',
                 'brera_magentoconnector_model_product_queue_item' => '/magento-plugin/app/code/community/Brera/MagentoConnector/Model/Product/Queue/Item.php',
                 'brera_magentoconnector_model_resource_product_queue_item' => '/magento-plugin/app/code/community/Brera/MagentoConnector/Model/Resource/Product/Queue/Item.php',

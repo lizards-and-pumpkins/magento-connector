@@ -7,47 +7,51 @@ require_once('ProductContainer.php');
 class ProductMerge
 {
     /**
-     * @var \DOMDocument
+     * @var \XmlWriter
      */
     private $xml;
 
-    /**
-     * @var \DOMElement
-     */
-    private $productsNode;
+    private $started = false;
 
     public function __construct()
     {
-        $this->xml = new \DOMDocument('1.0', 'utf-8');
-        $catalogNode = $this->createCatalogNode();
-
-        $this->productsNode = $this->xml->createElement('products');
-        $catalogNode->appendChild($this->productsNode);
-        $this->xml->appendChild($catalogNode);
+        $this->xml = new \XMLWriter();
+        $this->xml->openMemory();
+        $this->xml->startDocument('1.0', 'UTF-8');
+        $this->startXml();
     }
 
     public function addProduct(ProductContainer $product)
     {
-        $node = $this->xml->importNode($product->getProductDomDocument()->firstChild, true);
-        $this->productsNode->appendChild($node);
+        $this->xml->writeRaw($product->getXml());
     }
 
     /**
      * @return string
      */
-    public function getXmlString()
+    public function finish()
     {
-        $this->xml->formatOutput = true;
+        $this->endXml();
 
-        return $this->xml->saveXML();
+        return $this->getPartialXmlString();
     }
 
     /**
-     * @return \DOMElement
+     * @return string
      */
-    private function createCatalogNode()
+    public function getPartialXmlString()
     {
-        $catalogNode = $this->xml->createElement('catalog');
+        return $this->xml->flush();
+    }
+
+    private function startXml()
+    {
+        if ($this->started) {
+            return;
+        }
+        $this->started = true;
+        $this->xml->startElement('catalog');
+
         $attributes = [
             'xmlns' => 'http://brera.io',
             'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
@@ -55,11 +59,15 @@ class ProductMerge
         ];
 
         foreach ($attributes as $attribute => $value) {
-            $attribute = $this->xml->createAttribute($attribute);
-            $attribute->value = $value;
-            $catalogNode->appendChild($attribute);
+            $this->xml->writeAttribute($attribute, $value);
         }
 
-        return $catalogNode;
+        $this->xml->startElement('products');
+    }
+
+    private function endXml()
+    {
+        $this->xml->endElement();
+        $this->xml->endElement();
     }
 }

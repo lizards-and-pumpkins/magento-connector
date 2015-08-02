@@ -10,24 +10,44 @@ class Brera_MagentoConnector_Model_XmlUploader
     private $target;
 
     /**
-     * @var string
+     * @var resource
      */
-    private $xmlString;
+    private $stream;
+
+    function __construct()
+    {
+        $target = Mage::getStoreConfig('brera/magentoconnector/product_xml_target');
+        $this->checkTarget($target);
+        $this->target = $target;
+    }
 
     /**
      * @param string $xmlString
-     * @param string $target
      */
-    function __construct($xmlString, $target)
+    public function upload($xmlString)
     {
-        $this->checkTarget($target);
-        $this->target = $target;
-        $this->xmlString = $xmlString;
+        file_put_contents($this->target, $xmlString);
     }
 
-    public function upload()
+    /**
+     * @param string $partialString
+     * @return int
+     */
+    public function writePartialString($partialString)
     {
-        file_put_contents($this->target, $this->xmlString);
+        return fwrite($this->getUploadStream(), $partialString);
+    }
+
+    /**
+     * @return resource
+     */
+    private function getUploadStream()
+    {
+        if (!$this->stream) {
+            $this->stream = fopen($this->target, 'w');
+        }
+
+        return $this->stream;
     }
 
     /**
