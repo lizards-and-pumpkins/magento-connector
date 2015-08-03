@@ -19,10 +19,7 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
         )
             ->addAttributeToSelect('*');
 
-        Mage::getSingleton('cataloginventory/stock')
-            ->addItemsToProducts($collection);
-
-        return $this->addMediaGalleryAttributeToCollection($collection, $store);
+        return $collection;
     }
 
     public function getAllProducts($store)
@@ -32,10 +29,7 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
         $collection->setStore($store);
         $collection->addAttributeToSelect('*');
 
-        Mage::getSingleton('cataloginventory/stock')
-            ->addItemsToProducts($collection);
-
-        return $this->addMediaGalleryAttributeToCollection($collection, $store);
+        return $collection;
     }
 
     public function getAllProductStockUpdates($store)
@@ -52,11 +46,7 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
         )
             ->addAttributeToSelect('*');
 
-        Mage::getSingleton('cataloginventory/stock')
-            ->addItemsToProducts($collection);
-
-        return $this->addMediaGalleryAttributeToCollection($collection, $store);
-
+        return $collection;
     }
 
 
@@ -116,5 +106,20 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
         unset($mediaGalleryByProductId);
 
         return $productCollection;
+    }
+
+    /**
+     * @param Mage_Core_Model_Store $store
+     * @param Mage_Catalog_Model_Resource_Product_Collection $collection
+     * @return Mage_Catalog_Model_Resource_Eav_Mysql4_Product_Collection
+     */
+    public function addStockItemsAndMediaGallery(
+        Mage_Core_Model_Store $store,
+        Mage_Catalog_Model_Resource_Product_Collection $collection
+    ) {
+        Mage::getSingleton('cataloginventory/stock')
+            ->addItemsToProducts($collection);
+
+        return $this->addMediaGalleryAttributeToCollection($collection, $store);
     }
 }
