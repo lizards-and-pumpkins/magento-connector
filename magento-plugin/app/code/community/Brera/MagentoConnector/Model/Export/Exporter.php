@@ -5,6 +5,8 @@ use Brera\MagentoConnector\XmlBuilder\ProductMerge;
 class Brera_MagentoConnector_Model_Export_Exporter
 {
 
+    const PAGE_SIZE = 100;
+
     public function exportAllProducts()
     {
         $this->createAndUploadCatalogXml();
@@ -27,15 +29,29 @@ class Brera_MagentoConnector_Model_Export_Exporter
     {
         $xmlMerge = new ProductMerge();
         $uploader = Mage::getModel('brera_magentoconnector/xmlUploader');
+        $productCollector = Mage::getModel('brera_magentoconnector/export_productCollector');
         foreach (Mage::app()->getStores() as $store) {
-            $productCollection = Mage::getModel('brera_magentoconnector/export_productCollector')
+            $productCollection = $productCollector
                 ->getAllProducts($store);
+            $productCollection->setPageSize(self::PAGE_SIZE);
+            $pages = $productCollection->getLastPageNumber();
+            $currentPage = 1;
 
-            $xmlBuilderAndUploader = new Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader(
-                $productCollection, $store, $xmlMerge, $uploader
-            );
 
-            $xmlBuilderAndUploader->process();
+            do {
+                $productCollection->setCurPage($currentPage);
+                $productCollector->addStockItemsAndMediaGallery($productCollection, $store);
+
+                $xmlBuilderAndUploader = new Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader(
+                    $productCollection, $store, $xmlMerge, $uploader
+                );
+
+                $xmlBuilderAndUploader->process();
+
+                $currentPage++;
+                //clear collection and free memory
+                $productCollection->clear();
+            } while ($currentPage <= $pages);
         }
 
         $uploader->writePartialString($xmlMerge->finish());
