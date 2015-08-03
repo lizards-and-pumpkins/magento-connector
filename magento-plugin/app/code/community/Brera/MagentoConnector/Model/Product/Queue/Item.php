@@ -7,13 +7,15 @@
  * @method int getProductId()
  * @method string getAction()
  * @method $this setAction(string)
+ * @method $this setSku(string)
+ * @method string getSku()
  */
 class Brera_MagentoConnector_Model_Product_Queue_Item extends Mage_Core_Model_Abstract
 {
 
     const ACTION_CREATE_AND_UPDATE = 'create';
     const ACTION_DELETE = 'delete';
-    const ACTION_STOCK_UPDATE = 'stock_update';
+    const ACTION_STOCK_UPDATE = 'stock_upda';
 
     protected function _construct()
     {

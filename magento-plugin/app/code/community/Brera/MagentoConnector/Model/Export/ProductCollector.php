@@ -2,27 +2,37 @@
 
 class Brera_MagentoConnector_Model_Export_ProductCollector
 {
+    private $queuedProductUpdates;
+
     /**
      * @param Mage_Core_Model_Store $store
      * @return Mage_Catalog_Model_Resource_Product_Collection
      */
-    public function getAllQueuedProductUpdates($store)
+    public function getAllQueuedProductUpdates(Mage_Core_Model_Store $store)
     {
-        $productUpdateAction = Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_STOCK_UPDATE;
-        $collection = Mage::getResourceModel('catalog/product_collection');
-        $collection->setStore($store);
-        $collection->joinTable(
-            'brera_magentoconnector/product_queue',
-            'entity_id=product_id',
-            '',
-            'action=' . $productUpdateAction
-        )
-            ->addAttributeToSelect('*');
+        $queuedProductUpdates = $this->getQueuedProductUpdates();
 
-        return $collection;
+        $filter = array();
+        if (!empty($queuedProductUpdates['skus'])) {
+            $filter[] = array('attribute' => 'sku', 'in' => $queuedProductUpdates['skus']);
+        }
+        if (!empty($queuedProductUpdates['ids'])) {
+            $filter[] = array('attribute' => 'entity_id', 'in' => $queuedProductUpdates['ids']);
+        }
+
+        if (empty($filter)) {
+            Mage::throwException('No queued updates to export.');
+        }
+
+        return $this->getAllProductsCollection($store)
+            ->addAttributeToFilter($filter);
     }
 
-    public function getAllProducts($store)
+    /**
+     * @param Mage_Core_Model_Store $store
+     * @return Mage_Catalog_Model_Resource_Product_Collection
+     */
+    public function getAllProductsCollection($store)
     {
         /** @var $collection Mage_Catalog_Model_Resource_Product_Collection */
         $collection = Mage::getResourceModel('catalog/product_collection');
@@ -49,6 +59,32 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
         return $collection;
     }
 
+    /**
+     * @return string[][]
+     */
+    public function getQueuedProductUpdates()
+    {
+        if (!$this->queuedProductUpdates) {
+            $collection = Mage::getResourceModel('brera_magentoconnector/product_queue_item_collection')
+                ->addFieldToFilter('action', Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_CREATE_AND_UPDATE);
+
+            $queuedProductUpdates = array('skus' => array(), 'ids' => array());
+            /** @var $item Brera_MagentoConnector_Model_Product_Queue_Item */
+            foreach ($collection as $item) {
+                if ($item->getId()) {
+                    $queuedProductUpdates['ids'][] = $item->getProductId();
+                }
+                if ($item->getSku()) {
+                    $queuedProductUpdates['skus'][] = $item->getSku();
+                }
+            }
+
+            $this->queuedProductUpdates = $queuedProductUpdates;
+        }
+
+        return $this->queuedProductUpdates;
+    }
+
 
     /**
      * add media gallery images to collection
@@ -62,6 +98,9 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
         Mage_Catalog_Model_Resource_Product_Collection $productCollection,
         Mage_Core_Model_Store $store
     ) {
+        if ($productCollection->count() == 0) {
+            return $productCollection;
+        }
         $storeId = $store->getId();
         $mediaGalleryAttributeId = Mage::getSingleton('eav/config')->getAttribute('catalog_product', 'media_gallery')
             ->getAttributeId();

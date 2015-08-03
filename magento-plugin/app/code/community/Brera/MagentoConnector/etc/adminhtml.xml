@@ -5,11 +5,16 @@
             <children>
                 <convert translate="title">
                     <children>
-                        <brera_export translate="title">
+                        <brera_export_all translate="title">
                             <title>Brera Export All Products</title>
                             <action>adminhtml/brera/exportAllProducts</action>
                             <sort_order>0</sort_order>
-                        </brera_export>
+                        </brera_export_all>
+                        <brera_export_product_updates translate="title">
+                            <title>Brera Export Product Updates</title>
+                            <action>adminhtml/brera/exportQueuedProductUpdates</action>
+                            <sort_order>0</sort_order>
+                        </brera_export_product_updates>
                     </children>
                 </convert>
             </children>
@@ -23,10 +28,13 @@
                         <children>
                             <convert module="importexport">
                                 <children>
-                                    <brera_export translate="title">
-                                        <title>Brera Export</title>
+                                    <brera_export_all translate="title">
+                                        <title>Brera Export All</title>
                                         <sort_order>0</sort_order>
-                                    </brera_export>
+                                    </brera_export_all>
+                                    <brera_export_product_updates translate="title">
+                                        <title>Brera Export Product Updates</title>
+                                    </brera_export_product_updates>
                                 </children>
                             </convert>
                             <config>
