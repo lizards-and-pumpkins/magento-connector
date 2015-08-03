@@ -7,6 +7,8 @@
  * @method int getProductId()
  * @method string getAction()
  * @method $this setAction(string)
+ * @method $this setSku(string)
+ * @method string getSku()
  */
 class Brera_MagentoConnector_Model_Product_Queue_Item extends Mage_Core_Model_Abstract
 {
