@@ -69,4 +69,17 @@ class Brera_MagentoConnector_Model_Resource_Product_Queue_Item extends Mage_Core
 
         return $this;
     }
+
+    /**
+     * @param int[] $ids
+     * @param string[] $skus
+     * @param string $action
+     */
+    public function cleanupQueue(array $ids, array $skus, $action)
+    {
+        $ids = implode(',', $ids);
+        $skus = "'" . implode('","', $skus) . "'";
+        $where = new Zend_Db_Expr("action = $action AND (product_id IN ($ids) OR product_sku IN ($skus))");
+        $this->_getWriteAdapter()->delete($this->getMainTable(), $where);
+    }
 }

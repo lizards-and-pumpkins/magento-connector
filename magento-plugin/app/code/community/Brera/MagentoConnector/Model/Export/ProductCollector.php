@@ -2,27 +2,30 @@
 
 class Brera_MagentoConnector_Model_Export_ProductCollector
 {
+    private $queuedProductUpdates;
+
     /**
      * @param Mage_Core_Model_Store $store
      * @return Mage_Catalog_Model_Resource_Product_Collection
      */
-    public function getAllQueuedProductUpdates($store)
+    public function getAllQueuedProductUpdates(Mage_Core_Model_Store $store)
     {
-        $productUpdateAction = Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_STOCK_UPDATE;
-        $collection = Mage::getResourceModel('catalog/product_collection');
-        $collection->setStore($store);
-        $collection->joinTable(
-            'brera_magentoconnector/product_queue',
-            'entity_id=product_id',
-            '',
-            'action=' . $productUpdateAction
-        )
-            ->addAttributeToSelect('*');
+        $queuedProductUpdates = $this->getQueuedProductUpdates();
 
-        return $collection;
+        return $this->getAllProductsCollection($store)
+            ->addAttributeToFilter(
+                array(
+                    array('attribute' => 'sku', 'in' => $queuedProductUpdates['skus']),
+                    array('attribute' => 'id', 'in' => $queuedProductUpdates['ids']),
+                )
+            );
     }
 
-    public function getAllProducts($store)
+    /**
+     * @param Mage_Core_Model_Store $store
+     * @return Mage_Catalog_Model_Resource_Product_Collection
+     */
+    public function getAllProductsCollection($store)
     {
         /** @var $collection Mage_Catalog_Model_Resource_Product_Collection */
         $collection = Mage::getResourceModel('catalog/product_collection');
@@ -47,6 +50,32 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
             ->addAttributeToSelect('*');
 
         return $collection;
+    }
+
+    /**
+     * @return string[][]
+     */
+    public function getQueuedProductUpdates()
+    {
+        if (!$this->queuedProductUpdates) {
+            $collection = Mage::getResourceModel('brera_magentoconnector/product_queue_item_collection')
+                ->addFieldToFilter('action', Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_STOCK_UPDATE);
+
+            $queuedProductUpdates = array('skus' => array(), 'ids' => array());
+            /** @var $item Brera_MagentoConnector_Model_Product_Queue_Item */
+            foreach ($collection as $item) {
+                if ($item->getId()) {
+                    $queuedProductUpdates['ids'][] = $item->getId();
+                }
+                if ($item->getSku()) {
+                    $queuedProductUpdates['skus'][] = $item->getSku();
+                }
+            }
+
+            $this->queuedProductUpdates = $queuedProductUpdates;
+        }
+
+        return $this->queuedProductUpdates;
     }
 
 
