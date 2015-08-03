@@ -114,8 +114,8 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
      * @return Mage_Catalog_Model_Resource_Eav_Mysql4_Product_Collection
      */
     public function addStockItemsAndMediaGallery(
-        Mage_Core_Model_Store $store,
-        Mage_Catalog_Model_Resource_Product_Collection $collection
+        Mage_Catalog_Model_Resource_Product_Collection $collection,
+        Mage_Core_Model_Store $store
     ) {
         Mage::getSingleton('cataloginventory/stock')
             ->addItemsToProducts($collection);
