@@ -40,6 +40,9 @@ class Api
         $this->sendApiRequest($filename, $url, $headers);
     }
 
+    /**
+     * @param string $filename
+     */
     public function triggerProductStockImport($filename)
     {
         $headers = ['Accept' => 'application/vnd.brera.multiple_product_stock_quantity.v1+json'];
@@ -84,9 +87,9 @@ class Api
     }
 
     /**
-     * @param $filename
-     * @param $url
-     * @param $headers
+     * @param string $filename
+     * @param string $url
+     * @param string[] $headers
      */
     private function sendApiRequest($filename, $url, $headers)
     {
