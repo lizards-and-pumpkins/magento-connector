@@ -47,7 +47,7 @@ class Brera_MagentoConnector_Model_Resource_Product_Queue_Item extends Mage_Core
      * @param Brera_MagentoConnector_Model_Product_Queue_Item $object
      * @return $this
      */
-    public function save(Brera_MagentoConnector_Model_Product_Queue_Item $object)
+    public function save(Mage_Core_Model_Abstract $object)
     {
         if ($object->isDeleted()) {
             return $this->delete($object);
@@ -79,7 +79,7 @@ class Brera_MagentoConnector_Model_Resource_Product_Queue_Item extends Mage_Core
     {
         $ids = implode(',', $ids);
         $skus = "'" . implode('","', $skus) . "'";
-        $where = new Zend_Db_Expr("action = $action AND (product_id IN ($ids) OR product_sku IN ($skus))");
+        $where = new Zend_Db_Expr("action = '$action' AND (product_id IN ($ids) OR product_sku IN ($skus))");
         $this->_getWriteAdapter()->delete($this->getMainTable(), $where);
     }
 }

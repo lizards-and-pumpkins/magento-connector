@@ -12,13 +12,20 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
     {
         $queuedProductUpdates = $this->getQueuedProductUpdates();
 
+        $filter = array();
+        if (!empty($queuedProductUpdates['skus'])) {
+            $filter[] = array('attribute' => 'sku', 'in' => $queuedProductUpdates['skus']);
+        }
+        if (!empty($queuedProductUpdates['ids'])) {
+            $filter[] = array('attribute' => 'entity_id', 'in' => $queuedProductUpdates['ids']);
+        }
+
+        if (empty($filter)) {
+            Mage::throwException('No queued updates to export.');
+        }
+
         return $this->getAllProductsCollection($store)
-            ->addAttributeToFilter(
-                array(
-                    array('attribute' => 'sku', 'in' => $queuedProductUpdates['skus']),
-                    array('attribute' => 'id', 'in' => $queuedProductUpdates['ids']),
-                )
-            );
+            ->addAttributeToFilter($filter);
     }
 
     /**
@@ -59,13 +66,13 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
     {
         if (!$this->queuedProductUpdates) {
             $collection = Mage::getResourceModel('brera_magentoconnector/product_queue_item_collection')
-                ->addFieldToFilter('action', Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_STOCK_UPDATE);
+                ->addFieldToFilter('action', Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_CREATE_AND_UPDATE);
 
             $queuedProductUpdates = array('skus' => array(), 'ids' => array());
             /** @var $item Brera_MagentoConnector_Model_Product_Queue_Item */
             foreach ($collection as $item) {
                 if ($item->getId()) {
-                    $queuedProductUpdates['ids'][] = $item->getId();
+                    $queuedProductUpdates['ids'][] = $item->getProductId();
                 }
                 if ($item->getSku()) {
                     $queuedProductUpdates['skus'][] = $item->getSku();
@@ -91,6 +98,9 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
         Mage_Catalog_Model_Resource_Product_Collection $productCollection,
         Mage_Core_Model_Store $store
     ) {
+        if ($productCollection->count() == 0) {
+            return $productCollection;
+        }
         $storeId = $store->getId();
         $mediaGalleryAttributeId = Mage::getSingleton('eav/config')->getAttribute('catalog_product', 'media_gallery')
             ->getAttributeId();
