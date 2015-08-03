@@ -95,12 +95,14 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
                 $productData[$key] = $value;
             }
             if ($key == 'media_gallery') {
-                foreach ($value['images'] as $image) {
-                    $productData['images'][] = array(
-                        'main' => $image['file'] == $product->getImage(),
-                        'label' => $image['label'],
-                        'file' => $image['file'],
-                    );
+                if (is_array($value['images'])) {
+                    foreach ($value['images'] as $image) {
+                        $productData['images'][] = array(
+                            'main' => $image['file'] == $product->getImage(),
+                            'label' => $image['label'],
+                            'file' => $image['file'],
+                        );
+                    }
                 }
             }
 
