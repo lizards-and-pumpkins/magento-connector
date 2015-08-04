@@ -91,7 +91,7 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
      *
      * @param Mage_Catalog_Model_Resource_Product_Collection $productCollection
      * @param Mage_Core_Model_Store $store
-     * @return Mage_Catalog_Model_Resource_Eav_Mysql4_Product_Collection
+     * @return Mage_Catalog_Model_Resource_Product_Collection
      * @see  http://www.magentocommerce.com/boards/viewthread/17414/#t141830
      */
     private function addMediaGalleryAttributeToCollection(
@@ -150,12 +150,48 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
     /**
      * @param Mage_Core_Model_Store $store
      * @param Mage_Catalog_Model_Resource_Product_Collection $collection
-     * @return Mage_Catalog_Model_Resource_Eav_Mysql4_Product_Collection
+     * @return Mage_Catalog_Model_Resource_Product_Collection
      */
-    public function addStockItemsAndMediaGallery(
+    public function addStockItemsCategoriesAndMediaGallery(
         Mage_Catalog_Model_Resource_Product_Collection $collection,
         Mage_Core_Model_Store $store
     ) {
+        $this->addCategories($collection);
+        $this->addStockInformation($collection);
+        $this->addMediaGalleryAttributeToCollection($collection, $store);
+
+        return $collection;
+    }
+
+    private function addCategories(Mage_Catalog_Model_Resource_Product_Collection $collection)
+    {
+        $categoryIds = array();
+        $collection->addCategoryIds();
+        foreach ($collection as $product) {
+            $categoryIds += $product->getCategoryIds();
+        }
+        /** @var $categoryCollection Mage_Catalog_Model_Resource_Category_Collection */
+        $categoryCollection = Mage::getResourceModel('catalog/category_collection')
+            ->setStore($collection->getStoreId())
+            ->addAttributeToSelect('url_key');
+        $categoryCollection->addIdFilter($categoryIds);
+
+        foreach ($collection as $product) {
+            $categories = array();
+            foreach ($product->getCategoryIds() as $categoryId) {
+                $categories[] = $categoryCollection->getItemById($categoryId)->getUrlKey();
+            }
+            $product->setCategories($categories);
+        }
+    }
+
+
+    /**
+     * @param Mage_Catalog_Model_Resource_Product_Collection $collection
+     * @return Mage_Catalog_Model_Resource_Product_Collection
+     */
+    private function addStockInformation(Mage_Catalog_Model_Resource_Product_Collection $collection)
+    {
         Mage::getSingleton('cataloginventory/stock')
             ->addItemsToProducts($collection);
 

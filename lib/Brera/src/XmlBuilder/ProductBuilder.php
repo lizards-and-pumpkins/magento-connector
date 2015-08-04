@@ -56,6 +56,8 @@ class ProductBuilder
             $this->checkAttributeName($attributeName);
             if ($attributeName == 'images') {
                 $this->createImageNodes($value);
+            } elseif ($attributeName == 'categories') {
+                $this->createCategoryNodes($value);
             } elseif ($this->isAttributeProductAttribute($attributeName)) {
                 $this->createAttribute($attributeName, $value);
             } else {
@@ -63,6 +65,16 @@ class ProductBuilder
             }
         }
         $this->xml->endElement();
+    }
+
+    /**
+     * @param string[] $categories
+     */
+    private function createCategoryNodes(array $categories)
+    {
+        foreach ($categories as $category) {
+            $this->createNode('category', $category);
+        }
     }
 
     /**

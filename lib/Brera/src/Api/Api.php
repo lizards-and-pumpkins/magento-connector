@@ -13,6 +13,7 @@ require_once __DIR__ . '/../../../guzzlehttp/promises/src/functions.php';
 class Api
 {
     const API_ENDPOINT_CATALOG_IMPORT = 'catalog_import/';
+    const API_ENDPOINT_STOCK_UPDATE = 'multiple_product_stock_quantity/';
     /**
      * @var string
      */
@@ -34,14 +35,20 @@ class Api
     public function triggerProductImport($filename)
     {
         $headers = ['Accept' => 'application/vnd.brera.catalog_import.v1+json'];
-        $body = json_encode(['file' => $filename]);
+
         $url = $this->url . self::API_ENDPOINT_CATALOG_IMPORT;
-        $request = $this->createHttpRequest('PUT', $url, $headers, $body);
-        $client = new Client();
-        $response = $client->send($request);
-        if (!json_decode($response->getBody()) == 'OK') {
-            throw new RequestFailedException();
-        }
+        $this->sendApiRequest($filename, $url, $headers);
+    }
+
+    /**
+     * @param string $filename
+     */
+    public function triggerProductStockImport($filename)
+    {
+        $headers = ['Accept' => 'application/vnd.brera.multiple_product_stock_quantity.v1+json'];
+
+        $url = $this->url . self::API_ENDPOINT_STOCK_UPDATE;
+        $this->sendApiRequest($filename, $url, $headers);
     }
 
     /**
@@ -77,5 +84,21 @@ class Api
     private function createHttpRequest($method, $url, $headers, $body)
     {
         return new Request($method, $url, $headers, $body);
+    }
+
+    /**
+     * @param string $filename
+     * @param string $url
+     * @param string[] $headers
+     */
+    private function sendApiRequest($filename, $url, $headers)
+    {
+        $body = json_encode(['file' => $filename]);
+        $request = $this->createHttpRequest('PUT', $url, $headers, $body);
+        $client = new Client();
+        $response = $client->send($request);
+        if (!json_decode($response->getBody()) == 'OK') {
+            throw new RequestFailedException();
+        }
     }
 }
