@@ -91,7 +91,6 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
      *
      * @param Mage_Catalog_Model_Resource_Product_Collection $productCollection
      * @param Mage_Core_Model_Store $store
-     * @return Mage_Catalog_Model_Resource_Product_Collection
      * @see  http://www.magentocommerce.com/boards/viewthread/17414/#t141830
      */
     private function addMediaGalleryAttributeToCollection(
@@ -99,7 +98,7 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
         Mage_Core_Model_Store $store
     ) {
         if ($productCollection->count() == 0) {
-            return $productCollection;
+            return;
         }
         $storeId = $store->getId();
         $mediaGalleryAttributeId = Mage::getSingleton('eav/config')->getAttribute('catalog_product', 'media_gallery')
@@ -143,8 +142,6 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
             }
         }
         unset($mediaGalleryByProductId);
-
-        return $productCollection;
     }
 
     /**
@@ -156,15 +153,17 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
         Mage_Catalog_Model_Resource_Product_Collection $collection,
         Mage_Core_Model_Store $store
     ) {
-        $this->addCategories($collection);
+        $this->addCategories($collection, $store);
         $this->addStockInformation($collection);
         $this->addMediaGalleryAttributeToCollection($collection, $store);
 
         return $collection;
     }
 
-    private function addCategories(Mage_Catalog_Model_Resource_Product_Collection $collection)
-    {
+    private function addCategories(
+        Mage_Catalog_Model_Resource_Product_Collection $collection,
+        Mage_Core_Model_Store $store
+    ) {
         $categoryIds = array();
         $collection->addCategoryIds();
         foreach ($collection as $product) {
@@ -172,7 +171,7 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
         }
         /** @var $categoryCollection Mage_Catalog_Model_Resource_Category_Collection */
         $categoryCollection = Mage::getResourceModel('catalog/category_collection')
-            ->setStore($collection->getStoreId())
+            ->setStore($store)
             ->addAttributeToSelect('url_key');
         $categoryCollection->addIdFilter($categoryIds);
 
@@ -188,13 +187,16 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
 
     /**
      * @param Mage_Catalog_Model_Resource_Product_Collection $collection
-     * @return Mage_Catalog_Model_Resource_Product_Collection
      */
     private function addStockInformation(Mage_Catalog_Model_Resource_Product_Collection $collection)
     {
         Mage::getSingleton('cataloginventory/stock')
             ->addItemsToProducts($collection);
 
-        return $this->addMediaGalleryAttributeToCollection($collection, $store);
+        foreach ($collection as $product) {
+            $stockItem = $product->getStockItem();
+            $product->setStockQty($stockItem->getQty());
+            $product->setBackorders($stockItem->getBackorders() ? 'true' : 'false');
+        }
     }
 }
