@@ -105,6 +105,7 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
             ->getAttributeId();
         $readConnection = Mage::getSingleton('core/resource')->getConnection('catalog_read');
 
+        $productIds = $productCollection->getLoadedIds();
         $mediaGalleryData = $readConnection->fetchAll(
             '
         SELECT
@@ -119,7 +120,7 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
                 ON main.value_id=default_value.value_id AND default_value.store_id=0
         WHERE (
             main.attribute_id = ' . $readConnection->quote($mediaGalleryAttributeId) . ')
-            AND (main.entity_id IN (' . $readConnection->quote($productCollection->getAllIds()) . '))
+            AND (main.entity_id IN (' . $readConnection->quote($productIds) . '))
         ORDER BY IF(value.position IS NULL, default_value.position, value.position) ASC
     '
         );
