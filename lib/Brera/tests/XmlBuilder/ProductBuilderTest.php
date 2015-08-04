@@ -130,6 +130,27 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertContains('<accessories_type>Bags &amp; Luggage</accessories_type>', $xml);
     }
 
+    public function testCategoryForProduct()
+    {
+        $productData = [
+            'categories' => ['shirts']
+        ];
+        $xml = $this->getProductBuilderXml($productData);
+
+        $this->assertContains('<category>shirts</category>', $xml);
+    }
+
+    public function testMultipleCategories()
+    {
+        $productData = [
+            'categories' => ['shirts', 'clothing']
+        ];
+        $xml = $this->getProductBuilderXml($productData);
+
+        $this->assertContains('<category>shirts</category>', $xml);
+        $this->assertContains('<category>clothing</category>', $xml);
+    }
+
     public function getInvalidImageData()
     {
         return [
