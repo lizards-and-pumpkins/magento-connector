@@ -168,8 +168,11 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
         $categoryIds = array();
         $collection->addCategoryIds();
         foreach ($collection as $product) {
-            $categoryIds += $product->getCategoryIds();
+            $categoryIds += array_flip($product->getCategoryIds());
         }
+
+        $categoryIds = array_keys($categoryIds);
+
         /** @var $categoryCollection Mage_Catalog_Model_Resource_Category_Collection */
         $categoryCollection = Mage::getResourceModel('catalog/category_collection')
             ->setStore($store)
