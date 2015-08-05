@@ -1,12 +1,12 @@
 <?php
 require_once 'abstract.php';
+require '../lib/autoload_brera.php';
 
 class Brera_Export extends Mage_Shell_Abstract
 {
     public function __construct()
     {
         parent::__construct();
-        require 'autoload_brera.php';
     }
 
     protected function _applyPhpVariables()
