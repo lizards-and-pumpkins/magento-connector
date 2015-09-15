@@ -168,6 +168,32 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
 
         $this->assertNotContains('<associated_products', $xml);
     }
+
+    public function testAssociatedProducts()
+    {
+        $productData = [
+            'associated_products' => [
+                [
+                    'stock_qty' => 12,
+                    'sku' => 'associated-product-1',
+                    'visible' => true,
+                    'tax_class_id' => 4,
+                    'attributes' => [
+                        'color' => 'green',
+                    ]
+                ]
+            ]
+        ];
+        $xml = $this->getProductBuilderXml($productData, ['language' => 'de_DE']);
+
+        $this->assertContains('<product sku="associated-product-1" visible="true" tax_class_id="4"', $xml);
+        $this->assertContains('<attributes>', $xml);
+        $this->assertContains('<stock_qty>12</stock_qty>', $xml);
+        $this->assertContains('<color>', $xml);
+        $this->assertContains('<label language="', $xml);
+        $this->assertContains('green</label>', $xml);
+    }
+
     public function getInvalidImageData()
     {
         return [
@@ -231,11 +257,12 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param string[] $productData
+     * @param string[] $context
      * @return string
      */
-    private function getProductBuilderXml($productData)
+    private function getProductBuilderXml($productData, $context = [])
     {
-        $xmlBuilder = new ProductBuilder($productData, []);
+        $xmlBuilder = new ProductBuilder($productData, $context);
         $reflectionProperty = new \ReflectionProperty($xmlBuilder, 'xml');
         $reflectionProperty->setAccessible(true);
 

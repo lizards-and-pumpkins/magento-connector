@@ -34,6 +34,7 @@ class ProductBuilder
     public function __construct(array $productData, array $context)
     {
         $this->productData = $productData;
+        $this->validateContext($context);
         $this->context = $context;
         $this->xml = new \XMLWriter();
         $this->xml->openMemory();
@@ -182,8 +183,47 @@ class ProductBuilder
         }
     }
 
+    /**
+     * @param string[][][] $products
+     */
     private function createAssociatedProductNodes(array $products)
     {
-        $this->xml->writeElement('associated_products');
+        $this->validateAssociatedProducts($products);
+        $xml = $this->xml;
+        $xml->startElement('associated_products');
+        foreach ($products as $product) {
+            $xml->startElement('product');
+            $xml->writeAttribute('sku', $product['sku']);
+            $xml->writeAttribute('visible', $product['visible'] ? 'true' : 'false');
+            $xml->writeAttribute('tax_class_id', $product['tax_class_id']);
+            $xml->startElement('attributes');
+            $xml->writeElement('stock_qty', $product['stock_qty']);
+            foreach ($product['attributes'] as $attributeName => $value) {
+                $xml->startElement($attributeName);
+                $xml->startElement('label');
+                $xml->writeAttribute('language', $this->context['language']);
+                $xml->text($value);
+                $xml->endElement(); // label
+                $xml->endElement(); // $attributeName
+            }
+            $xml->endElement(); // attributes
+        }
+        $xml->endElement();
+    }
+
+    /**
+     * @param string[][] $products
+     */
+    private function validateAssociatedProducts(array $products)
+    {
+        // TODO implement, make sure $products[]['attributes'] is an array
+    }
+
+    /**
+     * @param string[] $context
+     */
+    private function validateContext(array $context)
+    {
+        // TODO make sure language exists
     }
 }
