@@ -58,6 +58,8 @@ class ProductBuilder
                 $this->createImageNodes($value);
             } elseif ($attributeName == 'categories') {
                 $this->createCategoryNodes($value);
+            } elseif ($attributeName == 'associated_products') {
+                $this->createAssociatedProductNodes($value);
             } elseif ($this->isAttributeProductAttribute($attributeName)) {
                 $this->createAttribute($attributeName, $value);
             } else {
@@ -178,5 +180,10 @@ class ProductBuilder
             $this->xml->text($value);
             $this->xml->endAttribute();
         }
+    }
+
+    private function createAssociatedProductNodes(array $products)
+    {
+        $this->xml->writeElement('associated_products');
     }
 }

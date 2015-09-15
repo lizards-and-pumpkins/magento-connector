@@ -151,6 +151,23 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertContains('<category>clothing</category>', $xml);
     }
 
+    public function testNoAssociatedProducts()
+    {
+        $productData = [
+            'associated_products' => []
+        ];
+        $xml = $this->getProductBuilderXml($productData);
+
+        $this->assertContains('<associated_products/>', $xml);
+    }
+
+    public function testUndefinedAssociatedProducts()
+    {
+        $productData = [];
+        $xml = $this->getProductBuilderXml($productData);
+
+        $this->assertNotContains('<associated_products', $xml);
+    }
     public function getInvalidImageData()
     {
         return [
