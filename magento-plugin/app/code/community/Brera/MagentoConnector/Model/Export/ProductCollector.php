@@ -6,6 +6,7 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
 
     /**
      * @param Mage_Core_Model_Store $store
+     *
      * @return Mage_Catalog_Model_Resource_Product_Collection
      */
     public function getAllQueuedProductUpdates(Mage_Core_Model_Store $store)
@@ -14,10 +15,12 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
 
         $filter = array();
         if (!empty($queuedProductUpdates['skus'])) {
-            $filter[] = array('attribute' => 'sku', 'in' => $queuedProductUpdates['skus']);
+            $filter[] = array('attribute' => 'sku',
+                              'in'        => $queuedProductUpdates['skus']);
         }
         if (!empty($queuedProductUpdates['ids'])) {
-            $filter[] = array('attribute' => 'entity_id', 'in' => $queuedProductUpdates['ids']);
+            $filter[] = array('attribute' => 'entity_id',
+                              'in'        => $queuedProductUpdates['ids']);
         }
 
         if (empty($filter)) {
@@ -30,6 +33,7 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
 
     /**
      * @param Mage_Core_Model_Store $store
+     *
      * @return Mage_Catalog_Model_Resource_Product_Collection
      */
     public function getAllProductsCollection($store)
@@ -44,7 +48,8 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
 
     public function getAllProductStockUpdates($store)
     {
-        $stockUpdateAction = Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_STOCK_UPDATE;
+        $stockUpdateAction
+            = Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_STOCK_UPDATE;
 
         $collection = Mage::getResourceModel('catalog/product_collection');
         $collection->setStore($store);
@@ -65,8 +70,13 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
     public function getQueuedProductUpdates()
     {
         if (!$this->queuedProductUpdates) {
-            $collection = Mage::getResourceModel('brera_magentoconnector/product_queue_item_collection')
-                ->addFieldToFilter('action', Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_CREATE_AND_UPDATE);
+            $collection = Mage::getResourceModel(
+                'brera_magentoconnector/product_queue_item_collection'
+            )
+                ->addFieldToFilter(
+                    'action',
+                    Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_CREATE_AND_UPDATE
+                );
 
             $queuedProductUpdates = array('skus' => array(), 'ids' => array());
             /** @var $item Brera_MagentoConnector_Model_Product_Queue_Item */
@@ -90,7 +100,8 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
      * add media gallery images to collection
      *
      * @param Mage_Catalog_Model_Resource_Product_Collection $productCollection
-     * @param Mage_Core_Model_Store $store
+     * @param Mage_Core_Model_Store                          $store
+     *
      * @see  http://www.magentocommerce.com/boards/viewthread/17414/#t141830
      */
     private function addMediaGalleryAttributeToCollection(
@@ -101,7 +112,8 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
             return;
         }
         $storeId = $store->getId();
-        $mediaGalleryAttributeId = Mage::getSingleton('eav/config')->getAttribute('catalog_product', 'media_gallery')
+        $mediaGalleryAttributeId = Mage::getSingleton('eav/config')
+            ->getAttribute('catalog_product', 'media_gallery')
             ->getAttributeId();
         $readConnection = Mage::getSingleton('core/resource')->getConnection('catalog_read');
 
@@ -139,7 +151,10 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
         foreach ($productCollection as $product) {
             $productId = $product->getData('entity_id');
             if (isset($mediaGalleryByProductId[$productId])) {
-                $product->setData('media_gallery', array('images' => $mediaGalleryByProductId[$productId]));
+                $product->setData(
+                    'media_gallery',
+                    array('images' => $mediaGalleryByProductId[$productId])
+                );
             }
         }
         unset($mediaGalleryByProductId);
@@ -148,6 +163,7 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
     /**
      * @param Mage_Core_Model_Store $store
      * @param Mage_Catalog_Model_Resource_Product_Collection $collection
+     *
      * @return Mage_Catalog_Model_Resource_Product_Collection
      */
     public function addStockItemsCategoriesAndMediaGallery(
@@ -157,6 +173,8 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
         $this->addCategories($collection, $store);
         $this->addStockInformation($collection);
         $this->addMediaGalleryAttributeToCollection($collection, $store);
+        $helper = Mage::helper('brera_magentoconnector/productCollection');
+        $helper->setProductCollection($collection);
 
         return $collection;
     }
@@ -174,7 +192,9 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
         $categoryIds = array_keys($categoryIds);
 
         /** @var $categoryCollection Mage_Catalog_Model_Resource_Category_Collection */
-        $categoryCollection = Mage::getResourceModel('catalog/category_collection')
+        $categoryCollection = Mage::getResourceModel(
+            'catalog/category_collection'
+        )
             ->setStore($store)
             ->addAttributeToSelect('url_key');
         $categoryCollection->addIdFilter($categoryIds);
@@ -182,7 +202,8 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
         foreach ($collection as $product) {
             $categories = array();
             foreach ($product->getCategoryIds() as $categoryId) {
-                $categories[] = $categoryCollection->getItemById($categoryId)->getUrlKey();
+                $categories[] = $categoryCollection->getItemById($categoryId)
+                    ->getUrlKey();
             }
             $product->setCategories($categories);
         }
@@ -192,15 +213,17 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
     /**
      * @param Mage_Catalog_Model_Resource_Product_Collection $collection
      */
-    private function addStockInformation(Mage_Catalog_Model_Resource_Product_Collection $collection)
-    {
+    private function addStockInformation(Mage_Catalog_Model_Resource_Product_Collection $collection
+    ) {
         Mage::getSingleton('cataloginventory/stock')
             ->addItemsToProducts($collection);
 
         foreach ($collection as $product) {
             $stockItem = $product->getStockItem();
             $product->setStockQty($stockItem->getQty());
-            $product->setBackorders($stockItem->getBackorders() ? 'true' : 'false');
+            $product->setBackorders(
+                $stockItem->getBackorders() ? 'true' : 'false'
+            );
         }
     }
 }
