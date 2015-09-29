@@ -115,27 +115,39 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
         $mediaGalleryAttributeId = Mage::getSingleton('eav/config')
             ->getAttribute('catalog_product', 'media_gallery')
             ->getAttributeId();
-        $readConnection = Mage::getSingleton('core/resource')->getConnection('catalog_read');
+        /* @var $coreResource Mage_Core_Model_Resource */
+        $coreResource = Mage::getSingleton('core/resource');
+        /* @var $readConnection Varien_Db_Adapter_Interface */
+        $readConnection = $coreResource->getConnection('catalog_read');
+        $mediaGalleryTable = $coreResource->getTableName(
+            'catalog/product_attribute_media_gallery'
+        );
+        $mediaGalleryValueTable = $coreResource->getTableName(
+            'catalog/product_attribute_media_gallery_value'
+        );
 
         $productIds = $productCollection->getLoadedIds();
-        $mediaGalleryData = $readConnection->fetchAll(
-            '
+        $query
+            = <<<SQL
         SELECT
             main.entity_id, `main`.`value_id`, `main`.`value` AS `file`,
             `value`.`label`, `value`.`position`, `value`.`disabled`, `default_value`.`label` AS `label_default`,
             `default_value`.`position` AS `position_default`,
             `default_value`.`disabled` AS `disabled_default`
-        FROM `catalog_product_entity_media_gallery` AS `main`
-            LEFT JOIN `catalog_product_entity_media_gallery_value` AS `value`
+        FROM `$mediaGalleryTable` AS `main`
+            LEFT JOIN `$mediaGalleryValueTable` AS `value`
                 ON main.value_id=value.value_id AND value.store_id=' . $storeId . '
-            LEFT JOIN `catalog_product_entity_media_gallery_value` AS `default_value`
+            LEFT JOIN `$mediaGalleryValueTable` AS `default_value`
                 ON main.value_id=default_value.value_id AND default_value.store_id=0
         WHERE (
-            main.attribute_id = ' . $readConnection->quote($mediaGalleryAttributeId) . ')
-            AND (main.entity_id IN (' . $readConnection->quote($productIds) . '))
+            main.attribute_id =  {$readConnection->quote(
+            $mediaGalleryAttributeId
+        )} )
+            AND (main.entity_id IN ({$readConnection->quote($productIds)} ))
         ORDER BY IF(value.position IS NULL, default_value.position, value.position) ASC
-    '
-        );
+SQL;
+
+        $mediaGalleryData = $readConnection->fetchAll($query);
 
         $mediaGalleryByProductId = array();
         foreach ($mediaGalleryData as $galleryImage) {
