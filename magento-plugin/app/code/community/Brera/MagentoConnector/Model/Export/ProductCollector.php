@@ -2,7 +2,30 @@
 
 class Brera_MagentoConnector_Model_Export_ProductCollector
 {
+    /**
+     * @var string[][]
+     */
     private $queuedProductUpdates;
+    /**
+     * @var Mage_Catalog_Model_Product[]
+     */
+    private $_simpleProducts;
+    /**
+     * @var Mage_Catalog_Model_Product[][]
+     */
+    private $_associatedSimpleProducts;
+    /**
+     * @var int[]
+     */
+    private $_configurableProductIds;
+    /**
+     * @var string[]
+     */
+    private $_configurableAttributeCodes;
+    /**
+     * @var array
+     */
+    private $_configurableProductAttributes;
 
     /**
      * @param Mage_Core_Model_Store $store
@@ -41,7 +64,8 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
         /** @var $collection Mage_Catalog_Model_Resource_Product_Collection */
         $collection = Mage::getResourceModel('catalog/product_collection');
         $collection->setStore($store);
-        $collection->addAttributeToSelect('*');
+        $collection->addAttributeToSelect('*')
+            ->addIdFilter('69455');
 
         return $collection;
     }
@@ -173,7 +197,7 @@ SQL;
     }
 
     /**
-     * @param Mage_Core_Model_Store $store
+     * @param Mage_Core_Model_Store                          $store
      * @param Mage_Catalog_Model_Resource_Product_Collection $collection
      *
      * @return Mage_Catalog_Model_Resource_Product_Collection
@@ -225,7 +249,8 @@ SQL;
     /**
      * @param Mage_Catalog_Model_Resource_Product_Collection $collection
      */
-    private function addStockInformation(Mage_Catalog_Model_Resource_Product_Collection $collection
+    private function addStockInformation(
+        Mage_Catalog_Model_Resource_Product_Collection $collection
     ) {
         Mage::getSingleton('cataloginventory/stock')
             ->addItemsToProducts($collection);
@@ -238,4 +263,157 @@ SQL;
             );
         }
     }
+
+    private function addAssociatedProductsToConfigurables(
+        Mage_Catalog_Model_Resource_Product_Collection $collection
+    ) {
+        $associatedProducts = $this->getSimpleProducts($collection);
+        foreach ($collection as $product) {
+            /* @var $product Mage_Catalog_Model_Product */
+            $product->setSimpleProducts($associatedProducts[$product->getId()]);
+        }
+    }
+
+    /**
+     * Return all associated simple products for the configurable products in
+     * the current product collection.
+     * Array key is the configurable product
+     *
+     * @param Mage_Catalog_Model_Resource_Product_Collection $collection
+     *
+     * @return array
+     */
+    private function getSimpleProducts(
+        Mage_Catalog_Model_Resource_Product_Collection $collection
+    ) {
+        if (is_null($this->_simpleProducts)) {
+            $parentIds = $this->_getConfigurableProductIds($collection);
+            $collection = Mage::getResourceModel(
+                'catalog/product_type_configurable_product_collection'
+            )
+                ->addAttributeToFilter('is_saleable', 1)
+                ->addAttributeToSelect('parent_id');
+            $collection->getSelect()->where(
+                'link_table.parent_id IN(?)', $parentIds
+            );
+            $collection->groupByAttribute('entity_id');
+
+            $attributeCodes = $this->_getConfigurableAttributeCodes(
+                $collection
+            );
+            $collection->addAttributeToSelect($attributeCodes);
+
+            foreach ($collection->getItems() as $row) {
+                /* @var $row Varien_Object */
+                $row = $row->getData();
+                $simpleId = $row['entity_id'];
+                $parentId = $row['parent_id'];
+                $this->_simpleProducts[$simpleId] = $row;
+                $this->_associatedSimpleProducts[$parentId][] = $simpleId;
+            }
+        }
+
+        return $this->_simpleProducts;
+    }
+
+    private function _getConfigurableProductIds(
+        Mage_Catalog_Model_Resource_Product_Collection $collection
+    ) {
+        if (is_null($this->_configurableProductIds)) {
+            $this->_configurableProductIds = array();
+            foreach ($collection as $product) {
+                /* @var $product Mage_Catalog_Model_Product */
+                if ($product->getTypeId()
+                    == Mage_Catalog_Model_Product_Type_Configurable::TYPE_CODE
+                ) {
+                    $this->_configurableProductIds[] = $product->getId();
+                }
+            }
+        }
+
+        return $this->_configurableProductIds;
+    }
+
+    /**
+     * Return array of all configurable attributes in the current collection.
+     * Array indexes are the attribute ids, array values the attribute code
+     *
+     * @return array
+     */
+    private function _getConfigurableAttributeCodes(
+        Mage_Catalog_Model_Resource_Product_Collection $collection
+    ) {
+        if (is_null($this->_configurableAttributeCodes)) {
+            // build list of all configurable attribute codes for the current collection
+            $this->_configurableAttributeCodes = array();
+            foreach (
+                $this->_getConfigurableProductAttributes($collection) as
+                $attributes
+            ) {
+                $attributes = explode(',', $attributes);
+                foreach ($attributes as $attributeId) {
+                    if ($attributeId
+                        && !isset($this->_configurableAttributeCodes[$attributeId])
+                    ) {
+                        $attributeModel = Mage::getSingleton('eav/config')
+                            ->getAttribute('catalog_product', $attributeId);
+                        $this->_configurableAttributeCodes[$attributeId]
+                            = $attributeModel->getAttributeCode();
+                    }
+                }
+            }
+        }
+
+        return $this->_configurableAttributeCodes;
+    }
+
+    /**
+     * Load all configurable attributes used in the current product collection
+     *
+     * @return string[]
+     */
+    private function _getConfigurableProductAttributes(
+        Mage_Catalog_Model_Resource_Product_Collection $collection
+    ) {
+        if (!$this->_configurableProductAttributes) {
+            $productIds = $this->_getConfigurableProductIds($collection);
+            $attributes
+                = $this->_getConfigurableAttributesForProductsFromResource(
+                $productIds
+            );
+            $this->_configurableProductAttributes = $attributes;
+        }
+
+        return $this->_configurableProductAttributes;
+    }
+
+    /**
+     * This method actually would belong into a resource model, but for easier
+     * reference I dropped it into the helper here.
+     *
+     * @param array $productIds
+     *
+     * @return array
+     */
+    private function _getConfigurableAttributesForProductsFromResource(array $productIds
+    ) {
+        /** @var Mage_Core_Model_Resource_Helper_Mysql4 $resourceHelper */
+        $resourceHelper = Mage::getResourceHelper('core');
+        $resource = Mage::getSingleton('core/resource');
+        $adapter = $resource->getConnection('catalog_read');
+        $select = $adapter->select()
+            ->from(
+                $resource->getTableName('catalog/product_super_attribute'),
+                array('product_id')
+            )
+            ->group('product_id')
+            ->where('product_id IN(?)', $productIds);
+        $resourceHelper->addGroupConcatColumn(
+            $select, 'attribute_ids', 'attribute_id'
+        );
+        $attributes = $adapter->fetchPairs($select);
+
+        return $attributes;
+    }
+
 }
