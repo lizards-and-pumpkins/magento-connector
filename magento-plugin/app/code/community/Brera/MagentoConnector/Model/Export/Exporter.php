@@ -106,7 +106,7 @@ class Brera_MagentoConnector_Model_Export_Exporter
 
         do {
             $productCollection->setCurPage($currentPage);
-            $this->productCollector->addStockItemsCategoriesAndMediaGallery($productCollection, $store);
+            $this->productCollector->addAdditionalData($productCollection, $store);
 
             $xmlBuilderAndUploader = new Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader(
                 $productCollection, $store, $xmlMerge, $uploader
