@@ -178,9 +178,9 @@
     <default>
         <brera>
             <magentoconnector>
-                <product_xml_target><![CDATA[file:///tmp/magento.xml]]></product_xml_target>
-                <remote_catalog_xml_location><![CDATA[file:///tmp/magento.xml]]></remote_catalog_xml_location>
-                <api_url><![CDATA[http://brera-magento-connector.dev/brera-api/]]></api_url>
+                <product_xml_target><![CDATA[file:///vagrant/magento.xml]]></product_xml_target>
+                <remote_catalog_xml_location><![CDATA[file:///vagrant/magento-remote.xml]]></remote_catalog_xml_location>
+                <api_url><![CDATA[http://brera-magento-connector.dev/brera/api/]]></api_url>
             </magentoconnector>
         </brera>
     </default>

@@ -40,7 +40,8 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
         Mage_Core_Model_Store $store,
         ProductMerge $merge,
         Brera_MagentoConnector_Model_XmlUploader $uploader
-    ) {
+    )
+    {
         $this->collection = $collection;
         $this->store = $store;
         $this->merge = $merge;
@@ -104,8 +105,29 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
                         );
                     }
                 }
-            }
+            } elseif ($key == 'simple_products') {
+                if (is_array($value)) {
+                    /** @var Mage_Catalog_Model_Product $simpleProduct */
+                    foreach ($value as $simpleProduct) {
+                        $associatedProduct = array(
+                            'sku' => $simpleProduct->getSku(),
+                            'type' => $simpleProduct->getTypeId(),
+                            'visible' => $simpleProduct->getVisibility(),
+                            'tax_class_id' => $simpleProduct->getTaxClassId(),
+                            'stock_qty' => $simpleProduct->getStockQty(),
+                        );
 
+                        foreach ($product->getConfigurableAttributes() as $attribute) {
+                            $associatedProduct['attributes'][$attribute] = $simpleProduct->getAttributeText($attribute);
+                        }
+                        $productData['associated_products'][] = $associatedProduct;
+                    }
+                }
+            } elseif ($key == 'configurable_attributes') {
+                if (is_array($value)) {
+                    $productData['variations'] = $value;
+                }
+            }
         }
 
         return $productData;
