@@ -293,8 +293,7 @@ SQL;
             $parentIds = $this->getConfigurableProductIds($collection);
             /** @var Mage_Catalog_Model_Resource_Product_Type_Configurable_Product_Collection $simpleProductCollection */
             $simpleProductCollection = Mage::getResourceModel('catalog/product_type_configurable_product_collection');
-            $simpleProductCollection->addAttributeToSelect('parent_id');
-
+            $simpleProductCollection->addAttributeToSelect(array('parent_id', 'visibility', 'tax_class_id'));
             $simpleProductCollection->getSelect()->where(
                 'link_table.parent_id IN(?)', $parentIds
             );
