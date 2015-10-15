@@ -23,9 +23,9 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
     public function testXmlWithAttributes()
     {
         $productData = [
-            'type' => 'simple',
-            'sku' => '123',
-            'visibility' => 3,
+            'type'         => 'simple',
+            'sku'          => '123',
+            'visibility'   => 3,
             'tax_class_id' => 7,
         ];
         $xml = $this->getProductBuilderXml($productData);
@@ -62,8 +62,8 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         $productData = [
             'images' => [
                 [
-                    'main' => true,
-                    'file' => 'some/file/somewhere.png',
+                    'main'  => true,
+                    'file'  => 'some/file/somewhere.png',
                     'label' => 'This is the label',
                 ]
             ]
@@ -82,7 +82,7 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         $productData = [
             'images' => [
                 [
-                    'file' => 'some/file/somewhereElse.png',
+                    'file'  => 'some/file/somewhereElse.png',
                     'label' => 'Label',
                 ]
             ]
@@ -98,7 +98,7 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         $productData = [
             'images' => [
                 [
-                    'file' => 'some/file/somewhereElse.png',
+                    'file'  => 'some/file/somewhereElse.png',
                     'label' => null,
                 ]
             ]
@@ -111,7 +111,8 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param string[] $productData
-     * @param string $exceptionMessage
+     * @param string   $exceptionMessage
+     *
      * @dataProvider getInvalidImageData
      */
     public function testInvalidImageArgument($productData, $exceptionMessage)
@@ -174,11 +175,11 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         $productData = [
             'associated_products' => [
                 [
-                    'stock_qty' => 12,
-                    'sku' => 'associated-product-1',
-                    'visible' => true,
+                    'stock_qty'    => 12,
+                    'sku'          => 'associated-product-1',
+                    'visible'      => true,
                     'tax_class_id' => 4,
-                    'attributes' => [
+                    'attributes'   => [
                         'color' => 'green',
                     ]
                 ]
@@ -189,9 +190,23 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertContains('<product sku="associated-product-1" visible="true" tax_class_id="4"', $xml);
         $this->assertContains('<attributes>', $xml);
         $this->assertContains('<stock_qty>12</stock_qty>', $xml);
-        $this->assertContains('<color>', $xml);
-        $this->assertContains('<label language="', $xml);
-        $this->assertContains('green</label>', $xml);
+        $this->assertContains('<color locale="', $xml);
+        $this->assertNotContains('<label language="', $xml);
+        $this->assertContains('green</color>', $xml);
+    }
+
+    public function testVariations()
+    {
+        $productData = [
+            'variations' => [
+                'size',
+                'color',
+            ]
+        ];
+        $xml = $this->getProductBuilderXml($productData, ['language' => 'de_DE']);
+        $this->assertContains('<variations>', $xml);
+        $this->assertContains('<attribute>color</attribute>', $xml);
+        $this->assertContains('<attribute>size</attribute>', $xml);
     }
 
     public function getInvalidImageData()
@@ -201,8 +216,8 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
                 [
                     'images' => [
                         [
-                            'main' => 2,
-                            'file' => 'some/file/somewhere.png',
+                            'main'  => 2,
+                            'file'  => 'some/file/somewhere.png',
                             'label' => 'This is the label',
                         ]
                     ]
@@ -213,8 +228,8 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
                 [
                     'images' => [
                         [
-                            'main' => true,
-                            'file' => 8,
+                            'main'  => true,
+                            'file'  => 8,
                             'label' => 'This is the label',
                         ]
                     ]
@@ -225,8 +240,8 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
                 [
                     'images' => [
                         [
-                            'main' => true,
-                            'file' => 'some/file/somewhere.png',
+                            'main'  => true,
+                            'file'  => 'some/file/somewhere.png',
                             'label' => 20,
                         ]
                     ]
@@ -237,8 +252,8 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
                 [
                     'images' =>
                         [
-                            'main' => true,
-                            'file' => 'some/file/somewhere.png',
+                            'main'  => true,
+                            'file'  => 'some/file/somewhere.png',
                             'label' => 20,
                         ]
 
@@ -258,6 +273,7 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
     /**
      * @param string[] $productData
      * @param string[] $context
+     *
      * @return string
      */
     private function getProductBuilderXml($productData, $context = [])

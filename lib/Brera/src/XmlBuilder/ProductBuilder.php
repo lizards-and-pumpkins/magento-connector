@@ -7,11 +7,11 @@ require_once('InvalidImageDefinitionException.php');
 class ProductBuilder
 {
     const ATTRIBUTE_TYPES = [
-        'type',
-        'sku',
-        'visibility',
-        'tax_class_id',
-    ];
+            'type',
+            'sku',
+            'visibility',
+            'tax_class_id',
+        ];
 
     /**
      * @var \XMLWriter
@@ -61,6 +61,8 @@ class ProductBuilder
                 $this->createCategoryNodes($value);
             } elseif ($attributeName == 'associated_products') {
                 $this->createAssociatedProductNodes($value);
+            } elseif ($attributeName == 'variations') {
+                $this->createVariations($value);
             } elseif ($this->isAttributeProductAttribute($attributeName)) {
                 $this->createAttribute($attributeName, $value);
             } else {
@@ -68,6 +70,15 @@ class ProductBuilder
             }
         }
         $this->xml->endElement();
+    }
+
+    private function createVariations($attributes)
+    {
+        $this->xml->startElement('variations');
+        foreach ($attributes as $attribute) {
+            $this->xml->writeElement('attribute', $attribute);
+        }
+        $this->xml->endElement(); // variations
     }
 
     /**
@@ -200,15 +211,14 @@ class ProductBuilder
             $xml->writeElement('stock_qty', $product['stock_qty']);
             foreach ($product['attributes'] as $attributeName => $value) {
                 $xml->startElement($attributeName);
-                $xml->startElement('label');
-                $xml->writeAttribute('language', $this->context['language']);
+                $xml->writeAttribute('locale', $this->context['language']);
                 $xml->text($value);
-                $xml->endElement(); // label
                 $xml->endElement(); // $attributeName
             }
             $xml->endElement(); // attributes
+            $xml->endElement(); // product
         }
-        $xml->endElement();
+        $xml->endElement(); // associated_products
     }
 
     /**
