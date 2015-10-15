@@ -40,7 +40,8 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
         Mage_Core_Model_Store $store,
         ProductMerge $merge,
         Brera_MagentoConnector_Model_XmlUploader $uploader
-    ) {
+    )
+    {
         $this->collection = $collection;
         $this->store = $store;
         $this->merge = $merge;
@@ -57,9 +58,7 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
     {
         return array(
             'website'  => $this->store->getWebsite()->getCode(),
-            'language' => Mage::getStoreConfig(
-                'general/locale/code', $this->store
-            ),
+            'language' => Mage::getStoreConfig('general/locale/code', $this->store),
         );
     }
 
@@ -67,12 +66,10 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
     {
         /** @var $product Mage_Catalog_Model_Product */
         foreach ($this->collection as $product) {
-            $productContainer = (
-            new ProductBuilder(
+            $productContainer = (new ProductBuilder(
                 $this->transformData($product),
                 $this->getContext()
-            )
-            )->getProductContainer();
+            ))->getProductContainer();
             $this->merge->addProduct($productContainer);
             $partialXmlString = $this->merge->getPartialXmlString() . "\n";
             $this->getUploader()->writePartialString($partialXmlString);
@@ -89,7 +86,6 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
 
     /**
      * @param $product
-     *
      * @return string[]
      */
     private function transformData(Mage_Catalog_Model_Product $product)
@@ -118,8 +114,6 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
 
     private function isCastableToString($value)
     {
-        return is_string($value) || is_float($value) || is_bool($value)
-        || is_int($value)
-        || is_double($value);
+        return is_string($value) || is_float($value) || is_bool($value) || is_int($value) || is_double($value);
     }
 }

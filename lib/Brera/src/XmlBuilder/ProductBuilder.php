@@ -6,7 +6,8 @@ require_once('InvalidImageDefinitionException.php');
 
 class ProductBuilder
 {
-    const ATTRIBUTE_TYPES = [
+    const ATTRIBUTE_TYPES
+        = [
             'type',
             'sku',
             'visibility',
@@ -93,6 +94,7 @@ class ProductBuilder
 
     /**
      * @param string $attributeName
+     *
      * @return bool
      */
     private function checkAttributeName($attributeName)
@@ -104,6 +106,7 @@ class ProductBuilder
 
     /**
      * @param string $attribute
+     *
      * @return bool
      */
     private function isAttributeProductAttribute($attribute)
