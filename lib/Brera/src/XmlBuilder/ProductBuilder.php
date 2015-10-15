@@ -183,9 +183,11 @@ class ProductBuilder
      */
     private function createImageNodes($images)
     {
+        $this->xml->startElement('images');
         foreach ($images as $image) {
             $this->createImageNode($image);
         }
+        $this->xml->endElement();
     }
 
     private function addContextAttributes()

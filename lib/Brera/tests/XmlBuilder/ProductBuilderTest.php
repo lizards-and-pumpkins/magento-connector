@@ -71,6 +71,7 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         $xml = $this->getProductBuilderXml($productData);
 
         // TODO exchange with XPath constraint
+        $this->assertContains('<images>', $xml);
         $this->assertContains('<image>', $xml);
         $this->assertContains('<main>true</main>', $xml);
         $this->assertContains('<file>some/file/somewhere.png</file>', $xml);
