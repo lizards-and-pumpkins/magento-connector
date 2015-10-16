@@ -39,4 +39,9 @@ class Brera_MagentoConnector_Model_Product_Queue_Item extends Mage_Core_Model_Ab
     {
         $this->getResource()->saveProductSkus($skus, $action);
     }
+
+    public function addAllProductIds()
+    {
+        $this->getResource()->addAllProductIds();
+    }
 }

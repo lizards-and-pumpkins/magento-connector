@@ -1,6 +1,6 @@
 <?php
 
-class Brera_MagentoConnector_Model_XmlUploader
+abstract class Brera_MagentoConnector_Model_XmlUploader
 {
     const PROTOCOL_DELIMITER = '://';
 
@@ -14,9 +14,11 @@ class Brera_MagentoConnector_Model_XmlUploader
      */
     private $stream;
 
-    function __construct()
+    /**
+     * @param string $target
+     */
+    protected function __construct($target)
     {
-        $target = Mage::getStoreConfig('brera/magentoconnector/product_xml_target');
         $this->checkTarget($target);
         $this->target = $target;
     }

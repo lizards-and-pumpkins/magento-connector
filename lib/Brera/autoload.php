@@ -17,7 +17,9 @@ spl_autoload_register(
                 'brera\\magentoconnector\\xmlbuilder\\productcontainer' => '/src/XmlBuilder/ProductContainer.php',
                 'brera\\magentoconnector\\xmlbuilder\\productcontainertest' => '/tests/XmlBuilder/ProductContainerTest.php',
                 'brera\\magentoconnector\\xmlbuilder\\productmerge' => '/src/XmlBuilder/ProductMerge.php',
-                'brera\\magentoconnector\\xmlbuilder\\productmergetest' => '/tests/XmlBuilder/ProductMergeTest.php'
+                'brera\\magentoconnector\\xmlbuilder\\productmergetest' => '/tests/XmlBuilder/ProductMergeTest.php',
+                'brera\\magentoconnector\\xmlbuilder\\stockbuilder' => '/src/XmlBuilder/StockBuilder.php',
+                'brera\\magentoconnector\\xmlbuilder\\stockbuildertest' => '/tests/XmlBuilder/StockBuilderTest.php'
             );
         }
         $cn = strtolower($class);

@@ -15,6 +15,11 @@
                             <action>adminhtml/brera/exportQueuedProductUpdates</action>
                             <sort_order>0</sort_order>
                         </brera_export_product_updates>
+                        <brera_export_all_product_stockss translate="title">
+                            <title>Brera Export All Product Stock Updates</title>
+                            <action>adminhtml/brera/exportAllStocks</action>
+                            <sort_order>0</sort_order>
+                        </brera_export_all_product_stockss>
                     </children>
                 </convert>
             </children>
