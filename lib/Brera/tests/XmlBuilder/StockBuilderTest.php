@@ -18,6 +18,12 @@ class StockBuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf(StockBuilder::class, $this->stockBuilder);
     }
 
+    public function testRootNode()
+    {
+        $xml = $this->stockBuilder->getXml();
+        $this->assertContains('<update/>', $xml);
+    }
+
     public function testAddStockData()
     {
         $this->stockBuilder->addStockData('foo', 200);

@@ -14,6 +14,7 @@ class StockBuilder
         $this->xml = new \XMLWriter();
         $this->xml->openMemory();
         $this->xml->startDocument('1.0', 'UTF-8');
+        $this->xml->startElement('update');
     }
 
     public function addStockData($sku, $qty)
@@ -26,6 +27,7 @@ class StockBuilder
 
     public function getXml()
     {
+        $this->xml->endElement(); // update
         return $this->xml->flush();
     }
 }
