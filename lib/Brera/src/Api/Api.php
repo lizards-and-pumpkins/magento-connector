@@ -14,6 +14,7 @@ class Api
 {
     const API_ENDPOINT_CATALOG_IMPORT = 'catalog_import/';
     const API_ENDPOINT_STOCK_UPDATE = 'multiple_product_stock_quantity/';
+    const API_ENDPOINT_CONTENT_BLOCK_UPDATE = '/content_blocks/';
     /**
      * @var string
      */
@@ -49,6 +50,29 @@ class Api
 
         $url = $this->url . self::API_ENDPOINT_STOCK_UPDATE;
         $this->sendApiRequestWithFilename($filename, $url, $headers);
+    }
+
+    /**
+     * @param string $id
+     * @param string $content
+     * @param string[] $context
+     */
+    public function triggerCmsBlockUpdate($id, $content, $context)
+    {
+        if (!is_string($id)) {
+            throw new InvalidUrlException();
+        }
+        $headers = ['Accept' => 'application/vnd.brera.content_blocks.v1+json'];
+        $url = $this->url . self::API_ENDPOINT_CONTENT_BLOCK_UPDATE . $id;
+
+        $body = json_encode(
+            [
+                'content' => $content,
+                'context' => $context,
+            ]
+        );
+
+        $this->sendApiRequest($url, $headers, $body);
     }
 
     /**
