@@ -18,6 +18,8 @@ spl_autoload_register(
                 'brera\\magentoconnector\\xmlbuilder\\productcontainertest' => '/Brera/tests/XmlBuilder/ProductContainerTest.php',
                 'brera\\magentoconnector\\xmlbuilder\\productmerge' => '/Brera/src/XmlBuilder/ProductMerge.php',
                 'brera\\magentoconnector\\xmlbuilder\\productmergetest' => '/Brera/tests/XmlBuilder/ProductMergeTest.php',
+                'brera\\magentoconnector\\xmlbuilder\\stockbuilder' => '/Brera/src/XmlBuilder/StockBuilder.php',
+                'brera\\magentoconnector\\xmlbuilder\\stockbuildertest' => '/Brera/tests/XmlBuilder/StockBuilderTest.php',
                 'guzzlehttp\\client' => '/guzzlehttp/guzzle/src/Client.php',
                 'guzzlehttp\\clientinterface' => '/guzzlehttp/guzzle/src/ClientInterface.php',
                 'guzzlehttp\\cookie\\cookiejar' => '/guzzlehttp/guzzle/src/Cookie/CookieJar.php',
