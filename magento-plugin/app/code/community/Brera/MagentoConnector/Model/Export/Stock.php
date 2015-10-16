@@ -1,16 +1,29 @@
 <?php
 
+use Brera\MagentoConnector\Api\Api;
 use Brera\MagentoConnector\XmlBuilder\StockBuilder;
 
 class Brera_MagentoConnector_Model_Export_Stock
 {
+    /**
+     * @var Zend_Queue_Message[]
+     */
     private $messagesToDelete = array();
+
+    /**
+     * @var Brera_MagentoConnector_Model_StockXmlUploader
+     */
+    private $stockUploader;
+
+    public function __construct()
+    {
+        $this->stockUploader = new Brera_MagentoConnector_Model_StockXmlUploader();
+    }
 
     public function export()
     {
         $helper = Mage::helper('brera_magentoconnector/export');
         $stockBuilder = new StockBuilder();
-        $messagesToDelete = array();
 
         /* @var $messages Zend_Queue_Message_Iterator */
         $messages = $helper->getStockUpdatesToExport();
@@ -21,8 +34,9 @@ class Brera_MagentoConnector_Model_Export_Stock
             $messages = $helper->getStockUpdatesToExport();
         }
 
-        $helper->deleteStockMessages($this->messagesToDelete);
         $this->uploadXml($stockBuilder->getXml());
+        $this->triggerStockUpdateApi();
+        $helper->deleteStockMessages($this->messagesToDelete);
     }
 
     /**
@@ -70,7 +84,21 @@ class Brera_MagentoConnector_Model_Export_Stock
      */
     private function uploadXml($xml)
     {
-        $stockUploader = new Brera_MagentoConnector_Model_StockXmlUploader();
-        $stockUploader->upload($xml);
+        $this->getStockUploader()->upload($xml);
+    }
+
+    /**
+     * @return Brera_MagentoConnector_Model_StockXmlUploader
+     */
+    private function getStockUploader()
+    {
+        return $this->stockUploader;
+    }
+
+    private function triggerStockUpdateApi()
+    {
+        $apiUrl = Mage::getStoreConfig('brera/magentoconnector/api_url');
+        $api = new Api($apiUrl);
+        $api->triggerProductStockImport($this->getStockUploader()->getFileName());
     }
 }
