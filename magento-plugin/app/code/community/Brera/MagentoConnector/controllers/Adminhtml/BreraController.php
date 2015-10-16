@@ -25,11 +25,23 @@ class Brera_MagentoConnector_Adminhtml_BreraController extends Mage_Adminhtml_Co
     public function exportAllStocksAction()
     {
         try {
-        Mage::helper('brera_magentoconnector/export')->addAllProductIdsToStockExport();
-        Mage::getModel('brera_magentoconnector/export_stock')->export();
+            Mage::helper('brera_magentoconnector/export')->addAllProductIdsToStockExport();
+            Mage::getModel('brera_magentoconnector/export_stock')->export();
         } catch (Mage_Core_Exception $e) {
             Mage::getSingleton('core/session')->addNotice($e->getMessage());
         }
         $this->_redirect('/');
+    }
+
+    public function exportAllCmsBlocksAction()
+    {
+        try {
+            $exporter = Mage::getModel('brera_magentoconnector/export_cms_block');
+            $exporter->export();
+        } catch (Mage_Core_Exception $e) {
+            Mage::getSingleton('core/session')->addNotice($e->getMessage());
+        }
+        $this->_redirect('/');
+
     }
 }
