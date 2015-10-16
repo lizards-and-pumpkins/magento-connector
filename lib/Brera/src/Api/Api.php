@@ -14,6 +14,7 @@ class Api
 {
     const API_ENDPOINT_CATALOG_IMPORT = 'catalog_import/';
     const API_ENDPOINT_STOCK_UPDATE = 'multiple_product_stock_quantity/';
+    const API_ENDPOINT_CONTENT_BLOCK_UPDATE = '/content_blocks/';
     /**
      * @var string
      */
@@ -37,7 +38,7 @@ class Api
         $headers = ['Accept' => 'application/vnd.brera.catalog_import.v1+json'];
 
         $url = $this->url . self::API_ENDPOINT_CATALOG_IMPORT;
-        $this->sendApiRequest($filename, $url, $headers);
+        $this->sendApiRequestWithFilename($filename, $url, $headers);
     }
 
     /**
@@ -48,7 +49,30 @@ class Api
         $headers = ['Accept' => 'application/vnd.brera.multiple_product_stock_quantity.v1+json'];
 
         $url = $this->url . self::API_ENDPOINT_STOCK_UPDATE;
-        $this->sendApiRequest($filename, $url, $headers);
+        $this->sendApiRequestWithFilename($filename, $url, $headers);
+    }
+
+    /**
+     * @param string $id
+     * @param string $content
+     * @param string[] $context
+     */
+    public function triggerCmsBlockUpdate($id, $content, $context)
+    {
+        if (!is_string($id)) {
+            throw new InvalidUrlException();
+        }
+        $headers = ['Accept' => 'application/vnd.brera.content_blocks.v1+json'];
+        $url = $this->url . self::API_ENDPOINT_CONTENT_BLOCK_UPDATE . $id;
+
+        $body = json_encode(
+            [
+                'content' => $content,
+                'context' => $context,
+            ]
+        );
+
+        $this->sendApiRequest($url, $headers, $body);
     }
 
     /**
@@ -91,9 +115,19 @@ class Api
      * @param string $url
      * @param string[] $headers
      */
-    private function sendApiRequest($filename, $url, $headers)
+    private function sendApiRequestWithFilename($filename, $url, $headers)
     {
         $body = json_encode(['file' => $filename]);
+        $this->sendApiRequest($url, $headers, $body);
+    }
+
+    /**
+     * @param string $url
+     * @param string[] $headers
+     * @param string $body
+     */
+    private function sendApiRequest($url, $headers, $body)
+    {
         $request = $this->createHttpRequest('PUT', $url, $headers, $body);
         $client = new Client();
         $response = $client->send($request);
