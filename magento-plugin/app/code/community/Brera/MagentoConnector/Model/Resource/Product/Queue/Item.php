@@ -82,4 +82,14 @@ class Brera_MagentoConnector_Model_Resource_Product_Queue_Item extends Mage_Core
         $where = new Zend_Db_Expr("action = '$action' AND (product_id IN ($ids) OR product_sku IN ($skus))");
         $this->_getWriteAdapter()->delete($this->getMainTable(), $where);
     }
+
+    public function addAllProductIdsToStockExport()
+    {
+        $helper = Mage::helper('brera_magentoconnector');
+        $ids = Mage::getResourceModel('catalog/product_collection')
+            ->getAllIds();
+        foreach ($ids as $id) {
+            $helper->addStockUpdateToQueue($id);
+        }
+    }
 }
