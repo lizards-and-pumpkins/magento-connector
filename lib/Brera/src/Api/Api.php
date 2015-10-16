@@ -37,7 +37,7 @@ class Api
         $headers = ['Accept' => 'application/vnd.brera.catalog_import.v1+json'];
 
         $url = $this->url . self::API_ENDPOINT_CATALOG_IMPORT;
-        $this->sendApiRequest($filename, $url, $headers);
+        $this->sendApiRequestWithFilename($filename, $url, $headers);
     }
 
     /**
@@ -48,7 +48,7 @@ class Api
         $headers = ['Accept' => 'application/vnd.brera.multiple_product_stock_quantity.v1+json'];
 
         $url = $this->url . self::API_ENDPOINT_STOCK_UPDATE;
-        $this->sendApiRequest($filename, $url, $headers);
+        $this->sendApiRequestWithFilename($filename, $url, $headers);
     }
 
     /**
@@ -91,9 +91,19 @@ class Api
      * @param string $url
      * @param string[] $headers
      */
-    private function sendApiRequest($filename, $url, $headers)
+    private function sendApiRequestWithFilename($filename, $url, $headers)
     {
         $body = json_encode(['file' => $filename]);
+        $this->sendApiRequest($url, $headers, $body);
+    }
+
+    /**
+     * @param string $url
+     * @param string[] $headers
+     * @param string $body
+     */
+    private function sendApiRequest($url, $headers, $body)
+    {
         $request = $this->createHttpRequest('PUT', $url, $headers, $body);
         $client = new Client();
         $response = $client->send($request);
