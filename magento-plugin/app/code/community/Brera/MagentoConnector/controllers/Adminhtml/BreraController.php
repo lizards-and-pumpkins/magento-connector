@@ -24,7 +24,7 @@ class Brera_MagentoConnector_Adminhtml_BreraController extends Mage_Adminhtml_Co
 
     public function exportAllStocksAction()
     {
-        Mage::getModel('brera_magentoconnector/product_queue_item')
-            ->addAllProductIdsToStockExport();
+        Mage::helper('brera_magentoconnector/export')->addAllProductIdsToStockExport();
+        Mage::getModel('brera_magentoconnector/export_stock')->export();
     }
 }
