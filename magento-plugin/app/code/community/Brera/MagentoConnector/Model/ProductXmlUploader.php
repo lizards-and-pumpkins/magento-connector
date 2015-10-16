@@ -1,6 +1,6 @@
 <?php
 
-class Brera_MagentoConnector_Model_XmlUploader
+class Brera_MagentoConnector_Model_ProductXmlUploader
 {
     const PROTOCOL_DELIMITER = '://';
 

@@ -58,7 +58,7 @@ class Brera_MagentoConnector_Model_Export_Exporter
     {
         $xmlMerge = new ProductMerge();
         /** @var Brera_MagentoConnector_Model_XmlUploader $uploader */
-        $uploader = Mage::getModel('brera_magentoconnector/xmlUploader');
+        $uploader = Mage::getModel('brera_magentoconnector/productXmlUploader');
 
         foreach (Mage::app()->getStores() as $store) {
             $this->exportProductsFromStore($collectorCollection, $store, $xmlMerge, $uploader);
