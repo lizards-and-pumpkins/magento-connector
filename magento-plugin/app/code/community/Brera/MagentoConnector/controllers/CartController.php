@@ -22,7 +22,6 @@ class Brera_MagentoConnector_CartController extends Mage_Core_Controller_Front_A
             $quote->addProduct($product, $qty);
         }
 
-        die();
         $this->_getCart()->save();
         $this->_getSession()->setCartWasUpdated(true);
 
@@ -114,7 +113,8 @@ class Brera_MagentoConnector_CartController extends Mage_Core_Controller_Front_A
             $simpleProductAttributeValue = $product->getDataUsingMethod($productAttribute->getAttributeCode());
             $superAttributes[$productAttribute->getId()] = $simpleProductAttributeValue;
         }
-
+        $stockItem = Mage::getModel('cataloginventory/stock_item')->loadByProduct($configProduct);
+        $configProduct->setStockItem($stockItem);
         $params = array(
             'product' => $configProduct->getId(),
             'super_attribute' => $superAttributes,
