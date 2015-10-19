@@ -96,6 +96,7 @@ class Brera_MagentoConnector_CartController extends Mage_Core_Controller_Front_A
         $configProduct = Mage::getResourceModel('catalog/product_collection')
             ->addAttributeToFilter('visibility', $product->getVisibleInSiteVisibilities())
             ->addIdFilter($configProductIds)
+            ->setOrder('entity_id', Varien_Data_Collection::SORT_ORDER_ASC)
             ->setPageSize(1)
             ->getFirstItem();
 
