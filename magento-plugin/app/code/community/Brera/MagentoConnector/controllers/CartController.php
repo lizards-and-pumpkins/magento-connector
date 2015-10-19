@@ -15,8 +15,14 @@ class Brera_MagentoConnector_CartController extends Mage_Core_Controller_Front_A
         $product->load($product->getIdBySku($sku));
 
         $quote = Mage::getSingleton('checkout/session')->getQuote();
-        $quote->addProduct($product, $qty);
 
+        if (!$product->isVisibleInSiteVisibility()) {
+            $this->addConfigurableProductForSimpleProduct($product, $qty);
+        } else {
+            $quote->addProduct($product, $qty);
+        }
+
+        die();
         $this->_getCart()->save();
         $this->_getSession()->setCartWasUpdated(true);
 
@@ -39,6 +45,9 @@ class Brera_MagentoConnector_CartController extends Mage_Core_Controller_Front_A
         }
     }
 
+    /**
+     * @return Mage_Checkout_Model_Session
+     */
     private function _getSession()
     {
         return Mage::getSingleton('checkout/session');
@@ -68,8 +77,50 @@ class Brera_MagentoConnector_CartController extends Mage_Core_Controller_Front_A
         }
     }
 
+    /**
+     * @return Mage_Checkout_Model_Cart
+     */
     private function _getCart()
     {
         return Mage::getSingleton('checkout/cart');
+    }
+
+    /**
+     * @param Mage_Catalog_Model_Product $product
+     * @param int $qty
+     */
+    private function addConfigurableProductForSimpleProduct(Mage_Catalog_Model_Product $product, $qty)
+    {
+        $configProductIds = Mage::getResourceSingleton('catalog/product_type_configurable')
+            ->getParentIdsByChild($product->getId());
+        /* @var Mage_Catalog_Model_Product $configProduct */
+        $configProduct = Mage::getResourceModel('catalog/product_collection')
+            ->addAttributeToFilter('visibility', $product->getVisibleInSiteVisibilities())
+            ->addIdFilter($configProductIds)
+            ->setPageSize(1)
+            ->getFirstItem();
+
+        if ($configProduct->isObjectNew()) {
+            Mage::throwException('Product was not found.');
+        }
+
+        /** @var $typeConfig Mage_Catalog_Model_Product_Type_Configurable */
+        $typeConfig = $configProduct->getTypeInstance(true);
+        $attributes = $typeConfig->getConfigurableAttributes($configProduct);
+
+        $superAttributes = array();
+        foreach ($attributes as $attributeId => $attribute) {
+            $productAttribute = $attribute->getProductAttribute();
+            $simpleProductAttributeValue = $product->getDataUsingMethod($productAttribute->getAttributeCode());
+            $superAttributes[$productAttribute->getId()] = $simpleProductAttributeValue;
+        }
+
+        $params = array(
+            'product' => $configProduct->getId(),
+            'super_attribute' => $superAttributes,
+            'qty' => $qty,
+        );
+
+        $this->_getCart()->addProduct($configProduct, $params);
     }
 }
