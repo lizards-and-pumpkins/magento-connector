@@ -147,6 +147,15 @@
         </brera_magentoconnector>
       </updates>
     </layout>
+    <routers>
+      <brera_magentoconnector>
+        <use>standard</use>
+        <args>
+          <module>Brera_MagentoConnector</module>
+          <frontName>cart</frontName>
+        </args>
+      </brera_magentoconnector>
+    </routers>
     <events>
       <controller_action_predispatch_checkout_cart_add>
         <observers>
