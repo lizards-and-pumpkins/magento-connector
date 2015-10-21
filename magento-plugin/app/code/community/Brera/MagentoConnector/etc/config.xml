@@ -186,6 +186,9 @@
         <stock_xml_target><![CDATA[file:///vagrant/stock.xml]]></stock_xml_target>
         <remote_catalog_xml_location><![CDATA[file:///vagrant/magento-remote.xml]]></remote_catalog_xml_location>
         <api_url><![CDATA[http://brera-magento-connector.dev/brera/api/]]></api_url>
+        <cms_special_blocks>
+            <top.menu/>
+        </cms_special_blocks>
       </magentoconnector>
     </brera>
   </default>
