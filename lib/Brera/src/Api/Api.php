@@ -90,7 +90,7 @@ class Api
         }
 
         if (empty($urlParts['scheme']) || $urlParts['scheme'] !== 'https') {
-            throw new InvalidHostException('Host should be called via HTTPS!');
+            #throw new InvalidHostException('Host should be called via HTTPS!');
         }
 
         if (empty($urlParts['host'])) {
@@ -131,7 +131,7 @@ class Api
         $request = $this->createHttpRequest('PUT', $url, $headers, $body);
         $client = new Client();
         $response = $client->send($request);
-        if (!json_decode($response->getBody()) == 'OK') {
+        if (json_decode($response->getBody()) != 'OK') {
             throw new RequestFailedException();
         }
     }
