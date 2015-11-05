@@ -4,7 +4,7 @@ $this->startSetup();
 
 $this->getConnection()->dropTable('brera_product_queue');
 
-$zendQueueInstallQuery = file_get_contents('lib/Zend/Queue/Adapter/Db/mysql.sql');
+$zendQueueInstallQuery = file_get_contents(Mage::getBaseDir('base') . '/lib/Zend/Queue/Adapter/Db/mysql.sql');
 
 $this->getConnection()->multiQuery($zendQueueInstallQuery);
 
