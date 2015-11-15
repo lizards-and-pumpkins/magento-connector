@@ -15,6 +15,7 @@ class Api
     const API_ENDPOINT_CATALOG_IMPORT = 'catalog_import/';
     const API_ENDPOINT_STOCK_UPDATE = 'multiple_product_stock_quantity/';
     const API_ENDPOINT_CONTENT_BLOCK_UPDATE = '/content_blocks/';
+
     /**
      * @var string
      */
@@ -117,7 +118,7 @@ class Api
      */
     private function sendApiRequestWithFilename($filename, $url, $headers)
     {
-        $body = json_encode(['file' => $filename]);
+        $body = json_encode(['fileName' => $filename]);
         $this->sendApiRequest($url, $headers, $body);
     }
 
