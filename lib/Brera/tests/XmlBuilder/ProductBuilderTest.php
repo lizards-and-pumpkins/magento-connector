@@ -2,6 +2,9 @@
 
 namespace Brera\MagentoConnector\XmlBuilder;
 
+/**
+ * @covers \Brera\MagentoConnector\XmlBuilder\ProductBuilder
+ */
 class ProductBuilderTest extends \PHPUnit_Framework_TestCase
 {
     const XML_START = '<?xml version="1.0" encoding="UTF-8"?>';

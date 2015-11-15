@@ -2,6 +2,9 @@
 
 namespace Brera\MagentoConnector\XmlBuilder;
 
+/**
+ * @covers \Brera\MagentoConnector\XmlBuilder\ProductMerge
+ */
 class ProductMergeTest extends \PHPUnit_Framework_TestCase
 {
 

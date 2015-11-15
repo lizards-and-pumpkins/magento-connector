@@ -1,6 +1,9 @@
 <?php
 namespace Brera\MagentoConnector\XmlBuilder;
 
+/**
+ * @covers \Brera\MagentoConnector\XmlBuilder\ProductContainer
+ */
 class ProductContainerTest extends \PHPUnit_Framework_TestCase
 {
     public function testReturnsSameDocument()
