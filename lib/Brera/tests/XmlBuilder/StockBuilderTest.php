@@ -1,6 +1,9 @@
 <?php
 namespace Brera\MagentoConnector\XmlBuilder;
 
+/**
+ * @covers \Brera\MagentoConnector\XmlBuilder\StockBuilder
+ */
 class StockBuilderTest extends \PHPUnit_Framework_TestCase
 {
     /**

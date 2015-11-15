@@ -2,6 +2,9 @@
 
 namespace Brera\MagentoConnector\Api;
 
+/**
+ * @covers \Brera\MagentoConnector\Api\Api
+ */
 class ApiTest extends \PHPUnit_Framework_TestCase
 {
     /**
