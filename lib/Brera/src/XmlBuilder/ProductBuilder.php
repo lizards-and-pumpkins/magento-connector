@@ -10,8 +10,6 @@ class ProductBuilder
         = [
             'type',
             'sku',
-            'visibility',
-            'tax_class_id',
         ];
 
     /**
@@ -54,8 +52,13 @@ class ProductBuilder
     private function parseProduct()
     {
         $this->xml->startElement('product');
+        $this->xml->writeAttribute('sku', $this->productData['sku']);
+        $this->xml->writeAttribute('type', $this->productData['type_id']);
         foreach ($this->productData as $attributeName => $value) {
             $this->checkAttributeName($attributeName);
+            if ($this->isAttributeProductAttribute($attributeName)) {
+                continue;
+            }
             if ($attributeName == 'images') {
                 $this->createImageNodes($value);
             } elseif ($attributeName == 'categories') {
@@ -64,8 +67,6 @@ class ProductBuilder
                 $this->createAssociatedProductNodes($value);
             } elseif ($attributeName == 'variations') {
                 $this->createVariations($value);
-            } elseif ($this->isAttributeProductAttribute($attributeName)) {
-                $this->createAttribute($attributeName, $value);
             } else {
                 $this->createNode($attributeName, $value);
             }
