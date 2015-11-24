@@ -54,8 +54,8 @@ class Api
     }
 
     /**
-     * @param string $id
-     * @param string $content
+     * @param string   $id
+     * @param string   $content
      * @param string[] $context
      */
     public function triggerCmsBlockUpdate($id, $content, $context)
@@ -91,6 +91,7 @@ class Api
         }
 
         if (empty($urlParts['scheme']) || $urlParts['scheme'] !== 'https') {
+            // TODO comment
             #throw new InvalidHostException('Host should be called via HTTPS!');
         }
 
@@ -100,10 +101,11 @@ class Api
     }
 
     /**
-     * @param string $method
-     * @param string $url
+     * @param string   $method
+     * @param string   $url
      * @param string[] $headers
-     * @param string $body
+     * @param string   $body
+     *
      * @return Request
      */
     private function createHttpRequest($method, $url, $headers, $body)
@@ -112,8 +114,8 @@ class Api
     }
 
     /**
-     * @param string $filename
-     * @param string $url
+     * @param string   $filename
+     * @param string   $url
      * @param string[] $headers
      */
     private function sendApiRequestWithFilename($filename, $url, $headers)
@@ -123,9 +125,9 @@ class Api
     }
 
     /**
-     * @param string $url
+     * @param string   $url
      * @param string[] $headers
-     * @param string $body
+     * @param string   $body
      */
     private function sendApiRequest($url, $headers, $body)
     {
