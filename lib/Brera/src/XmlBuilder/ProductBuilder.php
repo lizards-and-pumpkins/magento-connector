@@ -6,11 +6,10 @@ require_once('InvalidImageDefinitionException.php');
 
 class ProductBuilder
 {
-    const ATTRIBUTE_TYPES
-        = [
-            'type_id',
-            'sku',
-        ];
+    const ATTRIBUTE_TYPES = [
+        'type_id',
+        'sku',
+    ];
 
     /**
      * @var \XMLWriter
@@ -158,12 +157,13 @@ class ProductBuilder
      */
     private function createNode($attributeName, $value)
     {
-        if ($this->isCastableToString($value)) {
-            $this->xml->startElement($attributeName);
-            $this->addContextAttributes();
-            $this->xml->text($value);
-            $this->xml->endElement();
+        if (!$this->isCastableToString($value)) {
+            return;
         }
+        $this->xml->startElement($attributeName);
+        $this->addContextAttributes();
+        $this->xml->text($value);
+        $this->xml->endElement();
     }
 
     /**
