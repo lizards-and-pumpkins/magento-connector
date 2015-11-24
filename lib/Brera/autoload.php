@@ -10,6 +10,7 @@ spl_autoload_register(
                 'brera\\magentoconnector\\api\\api' => '/src/Api/Api.php',
                 'brera\\magentoconnector\\api\\apitest' => '/tests/Api/ApiTest.php',
                 'brera\\magentoconnector\\api\\invalidhostexception' => '/src/Api/InvalidHostException.php',
+                'brera\\magentoconnector\\api\\invalidurlexception' => '/src/Api/InvalidUrlException.php',
                 'brera\\magentoconnector\\api\\requestfailedexception' => '/src/Api/RequestFailedException.php',
                 'brera\\magentoconnector\\xmlbuilder\\invalidimagedefinitionexception' => '/src/XmlBuilder/InvalidImageDefinitionException.php',
                 'brera\\magentoconnector\\xmlbuilder\\productbuilder' => '/src/XmlBuilder/ProductBuilder.php',

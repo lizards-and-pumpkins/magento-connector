@@ -26,7 +26,7 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
     public function testXmlWithAttributes()
     {
         $productData = [
-            'type'         => 'simple',
+            'type_id'      => 'simple',
             'sku'          => '123',
             'visibility'   => 3,
             'tax_class_id' => 7,
@@ -36,8 +36,8 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         // TODO exchange with XPath constraint
         $this->assertContains('type="simple"', $xml);
         $this->assertContains('sku="123"', $xml);
-        $this->assertContains('visibility="3"', $xml);
-        $this->assertContains('tax_class_id="7"', $xml);
+        $this->assertContains('<visibility>3</visibility>', $xml);
+        $this->assertContains('<tax_class_id>7</tax_class_id>', $xml);
     }
 
     public function testXmlWithNodes()

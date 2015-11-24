@@ -8,7 +8,7 @@ class ProductBuilder
 {
     const ATTRIBUTE_TYPES
         = [
-            'type',
+            'type_id',
             'sku',
         ];
 
@@ -51,9 +51,7 @@ class ProductBuilder
 
     private function parseProduct()
     {
-        $this->xml->startElement('product');
-        $this->xml->writeAttribute('sku', $this->productData['sku']);
-        $this->xml->writeAttribute('type', $this->productData['type_id']);
+        $this->createProductNode();
         foreach ($this->productData as $attributeName => $value) {
             $this->checkAttributeName($attributeName);
             if ($this->isAttributeProductAttribute($attributeName)) {
@@ -160,12 +158,30 @@ class ProductBuilder
      */
     private function createNode($attributeName, $value)
     {
-        if (is_string($value)) {
+        if ($this->isCastableToString($value)) {
             $this->xml->startElement($attributeName);
             $this->addContextAttributes();
             $this->xml->text($value);
             $this->xml->endElement();
         }
+    }
+
+    /**
+     * @param mixed $value
+     *
+     * @return bool
+     */
+    private function isCastabletoString($value)
+    {
+        if (is_array($value)) {
+            return false;
+        }
+
+        if (!is_object($value) && settype($value, 'string') !== false) {
+            return true;
+        }
+
+        return (is_object($value) && method_exists($value, '__toString'));
     }
 
     /**
@@ -241,5 +257,16 @@ class ProductBuilder
     private function validateContext(array $context)
     {
         // TODO make sure language exists
+    }
+
+    private function createProductNode()
+    {
+        $this->xml->startElement('product');
+        if (isset($this->productData['sku'])) {
+            $this->xml->writeAttribute('sku', $this->productData['sku']);
+        }
+        if (isset($this->productData['type_id'])) {
+            $this->xml->writeAttribute('type', $this->productData['type_id']);
+        }
     }
 }
