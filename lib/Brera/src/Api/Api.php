@@ -120,6 +120,7 @@ class Api
      */
     private function sendApiRequestWithFilename($filename, $url, $headers)
     {
+        $this->validateFilename($filename);
         $body = json_encode(['fileName' => $filename]);
         $this->sendApiRequest($url, $headers, $body);
     }
@@ -136,6 +137,19 @@ class Api
         $response = $client->send($request);
         if (json_decode($response->getBody()) != 'OK') {
             throw new RequestFailedException();
+        }
+    }
+
+    /**
+     * @param string $filename
+     */
+    private function validateFilename($filename)
+    {
+        $dir = dirname($filename);
+        if ($dir != '.') {
+            throw new \UnexpectedValueException(
+                sprintf('Filename "%s" should be a filename, no path.', $filename)
+            );
         }
     }
 }

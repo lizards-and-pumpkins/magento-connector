@@ -9,6 +9,7 @@ class ApiTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @param string $url
+     *
      * @dataProvider getInvalidHosts
      */
     public function testWrongHost($url)
