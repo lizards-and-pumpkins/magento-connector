@@ -66,7 +66,8 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
         /** @var $product Mage_Catalog_Model_Product */
         foreach ($this->collection as $product) {
             $productBuilder = new ProductBuilder(
-                $this->transformData($product), $this->getContext()
+                $this->transformData($product),
+                $this->getContext()
             );
             $productContainer = $productBuilder->getProductContainer();
             $this->merge->addProduct($productContainer);
