@@ -189,7 +189,7 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
                 ]
             ]
         ];
-        $xml = $this->getProductBuilderXml($productData, ['language' => 'de_DE']);
+        $xml = $this->getProductBuilderXml($productData, ['locale' => 'de_DE']);
 
         $this->assertContains('<product sku="associated-product-1" visible="true" tax_class_id="4"', $xml);
         $this->assertContains('<attributes>', $xml);
