@@ -185,17 +185,6 @@ class ProductBuilder
     }
 
     /**
-     * @param string $attributeName
-     * @param string $value
-     */
-    private function createAttribute($attributeName, $value)
-    {
-        $this->xml->startAttribute($attributeName);
-        $this->xml->text($value);
-        $this->xml->endAttribute();
-    }
-
-    /**
      * @param string[][] $images
      */
     private function createImageNodes($images)
