@@ -135,7 +135,7 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
         return $productData;
     }
 
-    private function isCastabletoString($value)
+    private function isCastableToString($value)
     {
         if (is_array($value)) {
             return false;
