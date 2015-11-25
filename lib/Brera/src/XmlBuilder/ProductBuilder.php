@@ -221,8 +221,9 @@ class ProductBuilder
             $xml->startElement('attributes');
             $xml->writeElement('stock_qty', $product['stock_qty']);
             foreach ($product['attributes'] as $attributeName => $value) {
+                $locale = isset($this->context['language']) ? $this->context['language'] : '';
                 $xml->startElement($attributeName);
-                $xml->writeAttribute('locale', $this->context['language']);
+                $xml->writeAttribute('locale', $locale);
                 $xml->text($value);
                 $xml->endElement(); // $attributeName
             }
