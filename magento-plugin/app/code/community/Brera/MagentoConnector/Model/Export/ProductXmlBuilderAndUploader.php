@@ -93,7 +93,8 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
     {
         $productData = array();
         foreach ($product->getData() as $key => $value) {
-            if ($product->getAttributeText($key)) {
+            $attribute = $product->getResource()->getAttribute($key);
+            if ($attribute && $attribute->hasSource()) {
                 $productData[$key] = $product->getAttributeText($key);
             } elseif ($this->isCastableToString($value)) {
                 $productData[$key] = $value;
