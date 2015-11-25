@@ -93,10 +93,11 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
     {
         $productData = array();
         foreach ($product->getData() as $key => $value) {
-            if ($this->isCastableToString($value)) {
+            if ($product->getAttributeText($key)) {
+                $productData[$key] = $product->getAttributeText($key);
+            } elseif ($this->isCastableToString($value)) {
                 $productData[$key] = $value;
-            }
-            if ($key == 'media_gallery') {
+            } elseif ($key == 'media_gallery') {
                 if (isset($value['images']) && is_array($value['images'])) {
                     foreach ($value['images'] as $image) {
                         $productData['images'][] = array(
@@ -134,8 +135,16 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
         return $productData;
     }
 
-    private function isCastableToString($value)
+    private function isCastabletoString($value)
     {
-        return is_string($value) || is_float($value) || is_bool($value) || is_int($value) || is_double($value);
+        if (is_array($value)) {
+            return false;
+        }
+
+        if (!is_object($value) && settype($value, 'string') !== false) {
+            return true;
+        }
+
+        return (is_object($value) && method_exists($value, '__toString'));
     }
 }
