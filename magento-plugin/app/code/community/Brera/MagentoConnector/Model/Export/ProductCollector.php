@@ -64,10 +64,7 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
         /** @var $collection Mage_Catalog_Model_Resource_Product_Collection */
         $collection = Mage::getResourceModel('catalog/product_collection');
         $collection->setStore($store);
-        $collection->addAttributeToSelect(
-            '*');
-        $collection->addIdFilter(array(231));
-
+        $collection->addAttributeToSelect('*');
 
         return $collection;
     }
