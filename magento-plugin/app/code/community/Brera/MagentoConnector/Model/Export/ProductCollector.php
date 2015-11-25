@@ -69,6 +69,10 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
         $collection = Mage::getResourceModel('catalog/product_collection');
         $collection->setStore($store);
         $collection->addAttributeToSelect('*');
+        $collection->addAttributeToFilter(
+            'visibility',
+            array('neq' => Mage_Catalog_Model_Product_Visibility::VISIBILITY_NOT_VISIBLE)
+        );
 
         return $collection;
     }
