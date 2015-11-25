@@ -38,12 +38,16 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
 
         $filter = array();
         if (!empty($queuedProductUpdates['skus'])) {
-            $filter[] = array('attribute' => 'sku',
-                              'in'        => $queuedProductUpdates['skus']);
+            $filter[] = array(
+                'attribute' => 'sku',
+                'in'        => $queuedProductUpdates['skus']
+            );
         }
         if (!empty($queuedProductUpdates['ids'])) {
-            $filter[] = array('attribute' => 'entity_id',
-                              'in'        => $queuedProductUpdates['ids']);
+            $filter[] = array(
+                'attribute' => 'entity_id',
+                'in'        => $queuedProductUpdates['ids']
+            );
         }
 
         if (empty($filter)) {
@@ -65,14 +69,17 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
         $collection = Mage::getResourceModel('catalog/product_collection');
         $collection->setStore($store);
         $collection->addAttributeToSelect('*');
+        $collection->addAttributeToFilter(
+            'visibility',
+            array('neq' => Mage_Catalog_Model_Product_Visibility::VISIBILITY_NOT_VISIBLE)
+        );
 
         return $collection;
     }
 
     public function getAllProductStockUpdates($store)
     {
-        $stockUpdateAction
-            = Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_STOCK_UPDATE;
+        $stockUpdateAction = Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_STOCK_UPDATE;
 
         $collection = Mage::getResourceModel('catalog/product_collection');
         $collection->setStore($store);
