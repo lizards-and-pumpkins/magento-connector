@@ -96,7 +96,7 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
                 $productData[$key] = $value;
             }
             if ($key == 'media_gallery') {
-                if (is_array($value['images'])) {
+                if (isset($value['images']) && is_array($value['images'])) {
                     foreach ($value['images'] as $image) {
                         $productData['images'][] = array(
                             'main' => $image['file'] == $product->getImage(),
