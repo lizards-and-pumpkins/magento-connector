@@ -6,21 +6,19 @@ require_once('InvalidImageDefinitionException.php');
 
 class ProductBuilder
 {
-    const NO_NODE_TYPES = [
+    const IGNORED_PRODUCT_ATTRIBUTES = [
         'images',
         'variations',
         'associated_products',
     ];
 
-    const ATTRIBUTE_TYPES = [
-        // magento_type   => LaP type
+    const PRODUCT_ATTRIBUTES_MAGENTO_TO_LAP_MAP = [
         'type_id'      => 'type',
         'sku'          => 'sku',
         'tax_class_id' => 'tax_class',
     ];
 
-    const ASSOCIATED_PRODUCT_NODE_TYPES = [
-        // magento_type   => LaP type
+    const ASSOCIATED_PRODUCT_ATTRIBUTES_MAGENTO_TO_LAP_MAP = [
         'type_id'      => 'type',
         'sku'          => 'sku',
         'tax_class_id' => 'tax_class',
@@ -68,7 +66,7 @@ class ProductBuilder
         $this->xml->startElement('product');
         $this->createProductAttributesAsAttributes();
 
-        $this->createImageNodes();
+        $this->createImagesNodes();
         $this->createAssociatedProductsNode();
         $this->createVariationsNode();
 
@@ -118,7 +116,8 @@ class ProductBuilder
      */
     private function isANodeRequiredForAttribute($attribute)
     {
-        return !in_array($attribute, self::NO_NODE_TYPES) && !in_array($attribute, array_keys(self::ATTRIBUTE_TYPES));
+        return !in_array($attribute, self::IGNORED_PRODUCT_ATTRIBUTES)
+        && !in_array($attribute, array_keys(self::PRODUCT_ATTRIBUTES_MAGENTO_TO_LAP_MAP));
     }
 
     /**
@@ -222,7 +221,7 @@ class ProductBuilder
         return (is_object($value) && method_exists($value, '__toString'));
     }
 
-    private function createImageNodes()
+    private function createImagesNodes()
     {
         if (!isset($this->productData['images'])) {
             return;
@@ -252,7 +251,7 @@ class ProductBuilder
         $xml->startElement('associated_products');
         foreach ($products as $product) {
             $xml->startElement('product');
-            foreach (self::ASSOCIATED_PRODUCT_NODE_TYPES as $magentoName => $lpName) {
+            foreach (self::ASSOCIATED_PRODUCT_ATTRIBUTES_MAGENTO_TO_LAP_MAP as $magentoName => $lpName) {
                 if (isset($product[$magentoName])) {
                     $xml->writeAttribute($lpName, $product[$magentoName]);
                 }
@@ -290,7 +289,7 @@ class ProductBuilder
 
     private function createProductAttributesAsAttributes()
     {
-        foreach (self::ATTRIBUTE_TYPES as $magentoAttribute => $lpAttribute) {
+        foreach (self::PRODUCT_ATTRIBUTES_MAGENTO_TO_LAP_MAP as $magentoAttribute => $lpAttribute) {
             if (isset($this->productData[$magentoAttribute])) {
                 $this->xml->writeAttribute($lpAttribute, $this->productData[$magentoAttribute]);
             }
