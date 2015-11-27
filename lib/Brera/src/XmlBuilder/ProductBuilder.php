@@ -16,7 +16,13 @@ class ProductBuilder
         // magento_type   => LaP type
         'type_id'      => 'type',
         'sku'          => 'sku',
-        'tax_class_id' => 'tax_class_id',
+        'tax_class_id' => 'tax_class',
+    ];
+
+    const ASSOCIATED_PRODUCT_NODE_TYPES = [
+        // magento_type   => LaP type
+        'type_id' => 'type',
+        'sku'     => 'sku',
     ];
 
     /**
@@ -223,9 +229,11 @@ class ProductBuilder
         $xml->startElement('associated_products');
         foreach ($products as $product) {
             $xml->startElement('product');
-            $xml->writeAttribute('sku', $product['sku']);
-            $xml->writeAttribute('visible', $product['visible'] ? 'true' : 'false');
-            $xml->writeAttribute('tax_class_id', $product['tax_class_id']);
+            foreach (self::ASSOCIATED_PRODUCT_NODE_TYPES as $magentoName => $lpName) {
+                if (isset($product[$magentoName])) {
+                    $xml->writeAttribute($lpName, $product[$magentoName]);
+                }
+            }
             $xml->startElement('attributes');
             $xml->writeElement('stock_qty', $product['stock_qty']);
             foreach ($product['attributes'] as $attributeName => $value) {
@@ -276,7 +284,7 @@ class ProductBuilder
     private function createVariationsNode()
     {
         if (isset($this->productData['variations'])) {
-            return $this->createVariations();
+            $this->createVariations();
         }
     }
 }
