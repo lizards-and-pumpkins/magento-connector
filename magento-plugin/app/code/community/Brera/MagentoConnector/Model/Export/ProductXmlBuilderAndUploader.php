@@ -94,11 +94,7 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
         $productData = array();
         foreach ($product->getData() as $key => $value) {
             $attribute = $product->getResource()->getAttribute($key);
-            if ($attribute && $attribute->getSource() && $product->getAttributeText($key) !== false) {
-                $productData[$key] = $product->getAttributeText($key);
-            } elseif ($this->isCastableToString($value)) {
-                $productData[$key] = $value;
-            } elseif ($key == 'media_gallery') {
+            if ($key == 'media_gallery') {
                 if (isset($value['images']) && is_array($value['images'])) {
                     foreach ($value['images'] as $image) {
                         $productData['images'][] = array(
@@ -108,6 +104,10 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
                         );
                     }
                 }
+            } elseif ($attribute && $attribute->getSource() && $product->getAttributeText($key)) {
+                $productData[$key] = $product->getAttributeText($key);
+            } elseif ($this->isCastableToString($value)) {
+                $productData[$key] = $value;
             } elseif ($key == 'simple_products') {
                 if (is_array($value)) {
                     /** @var Mage_Catalog_Model_Product $simpleProduct */
