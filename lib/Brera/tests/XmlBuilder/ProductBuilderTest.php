@@ -36,7 +36,7 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         // TODO exchange with XPath constraint
         $this->assertContains('type="simple"', $xml);
         $this->assertContains('sku="123"', $xml);
-        $this->assertContains('<visibility>3</visibility>', $xml);
+        $this->assertContains('<visibility><![CDATA[3]]></visibility>', $xml);
         $this->assertContains('tax_class_id="7"', $xml);
     }
 
@@ -48,7 +48,7 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         $xml = $this->getProductBuilderXml($productData);
 
         // TODO exchange with XPath constraint
-        $this->assertContains('<url_key></url_key>', $xml);
+        $this->assertContains('<url_key><![CDATA[]]></url_key>', $xml);
     }
 
     public function testXmlWithEmptyNodeName()
@@ -132,7 +132,7 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         ];
         $xml = $this->getProductBuilderXml($productData);
 
-        $this->assertContains('<accessories_type>Bags &amp; Luggage</accessories_type>', $xml);
+        $this->assertContains('<accessories_type><![CDATA[Bags & Luggage]]></accessories_type>', $xml);
     }
 
     public function testCategoryForProduct()
@@ -142,7 +142,7 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         ];
         $xml = $this->getProductBuilderXml($productData);
 
-        $this->assertContains('<category>shirts</category>', $xml);
+        $this->assertContains('<category><![CDATA[shirts]]></category>', $xml);
     }
 
     public function testMultipleCategories()
@@ -152,8 +152,8 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         ];
         $xml = $this->getProductBuilderXml($productData);
 
-        $this->assertContains('<category>shirts</category>', $xml);
-        $this->assertContains('<category>clothing</category>', $xml);
+        $this->assertContains('<category><![CDATA[shirts]]></category>', $xml);
+        $this->assertContains('<category><![CDATA[clothing]]></category>', $xml);
     }
 
     public function testNoAssociatedProducts()

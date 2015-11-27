@@ -59,7 +59,7 @@ class ProductBuilder
     private function parseProduct()
     {
         $this->xml->startElement('product');
-        $this->createProductAttributes();
+        $this->createProductAttributesAsAttributes();
 
         $this->createImageNodes();
         $this->createAssociatedProductsNode();
@@ -174,7 +174,7 @@ class ProductBuilder
         }
         $this->xml->startElement($attributeName);
         $this->addContextAttributes();
-        $this->xml->text($value);
+        $this->xml->writeCdata($value);
         $this->xml->endElement();
     }
 
@@ -260,7 +260,7 @@ class ProductBuilder
         // TODO make sure locale exists
     }
 
-    private function createProductAttributes()
+    private function createProductAttributesAsAttributes()
     {
         foreach (self::ATTRIBUTE_TYPES as $magentoAttribute => $lpAttribute) {
             if (isset($this->productData[$magentoAttribute])) {
