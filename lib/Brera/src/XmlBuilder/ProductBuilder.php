@@ -197,7 +197,7 @@ class ProductBuilder
         $forbidden = ['&', '<'];
 
         foreach ($forbidden as $string) {
-            if (strpos($value, $string)) {
+            if (strpos($value, $string) !== false) {
                 return true;
             }
         }
