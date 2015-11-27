@@ -21,8 +21,9 @@ class ProductBuilder
 
     const ASSOCIATED_PRODUCT_NODE_TYPES = [
         // magento_type   => LaP type
-        'type_id' => 'type',
-        'sku'     => 'sku',
+        'type_id'      => 'type',
+        'sku'          => 'sku',
+        'tax_class_id' => 'tax_class',
     ];
 
     /**
@@ -176,9 +177,31 @@ class ProductBuilder
         foreach ($values as $value) {
             $this->xml->startElement($attributeName);
             $this->addContextAttributes();
-            $this->xml->writeCdata($value);
+            if ($this->isCdataNeeded($value)) {
+                $value = str_replace(']]>', ']]]]><![CDATA[', $value);
+                $this->xml->writeCdata($value);
+            } else {
+                $this->xml->text($value);
+            }
             $this->xml->endElement();
         }
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return bool
+     */
+    private function isCdataNeeded($value)
+    {
+        $forbidden = ['&', '<'];
+
+        foreach ($forbidden as $string) {
+            if (strpos($value, $string)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

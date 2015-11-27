@@ -73,6 +73,7 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
             'visibility',
             array('neq' => Mage_Catalog_Model_Product_Visibility::VISIBILITY_NOT_VISIBLE)
         );
+        $collection->addAttributeToFilter('status', Mage_Catalog_Model_Product_Status::STATUS_ENABLED);
 
         return $collection;
     }
@@ -295,6 +296,7 @@ SQL;
             /** @var Mage_Catalog_Model_Resource_Product_Type_Configurable_Product_Collection $simpleProductCollection */
             $simpleProductCollection = Mage::getResourceModel('catalog/product_type_configurable_product_collection');
             $simpleProductCollection->addAttributeToSelect(array('parent_id', 'visibility', 'tax_class_id'));
+            $simpleProductCollection->addAttributeToFilter('status', Mage_Catalog_Model_Product_Status::STATUS_ENABLED);
             $simpleProductCollection->getSelect()->where(
                 'link_table.parent_id IN(?)', $parentIds
             );

@@ -36,8 +36,8 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         // TODO exchange with XPath constraint
         $this->assertContains('type="simple"', $xml);
         $this->assertContains('sku="123"', $xml);
-        $this->assertContains('<visibility><![CDATA[3]]></visibility>', $xml);
-        $this->assertContains('tax_class_id="7"', $xml);
+        $this->assertContains('<visibility>3</visibility>', $xml);
+        $this->assertContains('tax_class="7"', $xml);
     }
 
     public function testXmlWithNodes()
@@ -48,7 +48,7 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         $xml = $this->getProductBuilderXml($productData);
 
         // TODO exchange with XPath constraint
-        $this->assertContains('<url_key><![CDATA[]]></url_key>', $xml);
+        $this->assertContains('<url_key></url_key>', $xml);
     }
 
     public function testXmlWithEmptyNodeName()
@@ -135,6 +135,19 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertContains('<accessories_type><![CDATA[Bags & Luggage]]></accessories_type>', $xml);
     }
 
+    public function testCdataInNodeValue()
+    {
+        $productData = [
+            'accessories_type' => '<![CDATA[Bags & Luggage]]>'
+        ];
+        $xml = $this->getProductBuilderXml($productData);
+
+        $this->assertContains(
+            '<accessories_type><![CDATA[<![CDATA[Bags & Luggage]]]]><![CDATA[]]></accessories_type>',
+            $xml
+        );
+    }
+
     public function testCategoryForProduct()
     {
         $productData = [
@@ -142,7 +155,7 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         ];
         $xml = $this->getProductBuilderXml($productData);
 
-        $this->assertContains('<category><![CDATA[shirts]]></category>', $xml);
+        $this->assertContains('<category>shirts</category>', $xml);
     }
 
     public function testMultipleCategories()
@@ -152,8 +165,8 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         ];
         $xml = $this->getProductBuilderXml($productData);
 
-        $this->assertContains('<category><![CDATA[shirts]]></category>', $xml);
-        $this->assertContains('<category><![CDATA[clothing]]></category>', $xml);
+        $this->assertContains('<category>shirts</category>', $xml);
+        $this->assertContains('<category>clothing</category>', $xml);
     }
 
     public function testNoAssociatedProducts()
@@ -191,7 +204,7 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         ];
         $xml = $this->getProductBuilderXml($productData, ['locale' => 'de_DE']);
 
-        $this->assertContains('<product sku="associated-product-1" visible="true" tax_class_id="4"', $xml);
+        $this->assertContains('<product sku="associated-product-1" tax_class="4"', $xml);
         $this->assertContains('<attributes>', $xml);
         $this->assertContains('<stock_qty>12</stock_qty>', $xml);
         $this->assertContains('<color locale="', $xml);

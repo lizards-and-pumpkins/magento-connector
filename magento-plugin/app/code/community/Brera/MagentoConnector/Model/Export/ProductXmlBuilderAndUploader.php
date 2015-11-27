@@ -115,8 +115,8 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
                         $associatedProduct = array(
                             'sku'          => $simpleProduct->getSku(),
                             'type_id'      => $simpleProduct->getTypeId(),
-                            'visible'      => $simpleProduct->getVisibility(),
-                            'tax_class_id' => $simpleProduct->getTaxClassId(),
+                            'visibility'   => $simpleProduct->getAttributeText('visibility'),
+                            'tax_class_id' => $simpleProduct->getAttributeText('tax_class_id'),
                             'stock_qty'    => $simpleProduct->getStockQty(),
                         );
 
