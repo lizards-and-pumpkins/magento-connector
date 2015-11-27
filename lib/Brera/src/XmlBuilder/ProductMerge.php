@@ -53,9 +53,9 @@ class ProductMerge
         $this->xml->startElement('catalog');
 
         $attributes = [
-            'xmlns' => 'http://brera.io',
+            'xmlns' => 'http://lizardsandpumpkins.com',
             'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
-            'xsi:schemaLocation' => 'http://brera.io ../../schema/catalog.xsd'
+            'xsi:schemaLocation' => 'http://lizardsandpumpkins.com ../../schema/catalog.xsd'
         ];
 
         foreach ($attributes as $attribute => $value) {
