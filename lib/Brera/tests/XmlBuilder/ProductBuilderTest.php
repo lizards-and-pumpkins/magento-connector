@@ -20,7 +20,7 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         $xml = $this->getProductBuilderXml([]);
 
         // TODO implement XPath Constraint and use this here
-        $this->assertRegExp('#<product( |/>).*#', $xml);
+        $this->assertContains('<product><attributes/></product>', $xml);
     }
 
     public function testXmlWithAttributes()
@@ -37,7 +37,7 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertContains('type="simple"', $xml);
         $this->assertContains('sku="123"', $xml);
         $this->assertContains('<visibility>3</visibility>', $xml);
-        $this->assertContains('<tax_class_id>7</tax_class_id>', $xml);
+        $this->assertContains('tax_class_id="7"', $xml);
     }
 
     public function testXmlWithNodes()
@@ -195,7 +195,7 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertContains('<attributes>', $xml);
         $this->assertContains('<stock_qty>12</stock_qty>', $xml);
         $this->assertContains('<color locale="', $xml);
-        $this->assertNotContains('<label language="', $xml);
+        $this->assertNotContains('<label locale="', $xml);
         $this->assertContains('green</color>', $xml);
     }
 
@@ -207,7 +207,7 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
                 'color',
             ]
         ];
-        $xml = $this->getProductBuilderXml($productData, ['language' => 'de_DE']);
+        $xml = $this->getProductBuilderXml($productData, ['locale' => 'de_DE']);
         $this->assertContains('<variations>', $xml);
         $this->assertContains('<attribute>color</attribute>', $xml);
         $this->assertContains('<attribute>size</attribute>', $xml);

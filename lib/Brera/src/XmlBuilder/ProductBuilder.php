@@ -6,9 +6,17 @@ require_once('InvalidImageDefinitionException.php');
 
 class ProductBuilder
 {
+    const NO_NODE_TYPES = [
+        'images',
+        'variations',
+        'associated_products',
+    ];
+
     const ATTRIBUTE_TYPES = [
-        'type_id',
-        'sku',
+        // magento_type   => LaP type
+        'type_id'      => 'type',
+        'sku'          => 'sku',
+        'tax_class_id' => 'tax_class_id',
     ];
 
     /**
@@ -50,29 +58,33 @@ class ProductBuilder
 
     private function parseProduct()
     {
-        $this->createProductNode();
+        $this->xml->startElement('product');
+        $this->createProductAttributes();
+
+        $this->createImageNodes();
+        $this->createAssociatedProductsNode();
+        $this->createVariationsNode();
+
+        $this->xml->startElement('attributes');
         foreach ($this->productData as $attributeName => $value) {
             $this->checkAttributeName($attributeName);
-            if ($this->isAttributeProductAttribute($attributeName)) {
+            if (!$this->isANodeRequiredForAttribute($attributeName)) {
                 continue;
             }
-            if ($attributeName == 'images') {
-                $this->createImageNodes($value);
-            } elseif ($attributeName == 'categories') {
+
+            if ($attributeName == 'categories') {
                 $this->createCategoryNodes($value);
-            } elseif ($attributeName == 'associated_products') {
-                $this->createAssociatedProductNodes($value);
-            } elseif ($attributeName == 'variations') {
-                $this->createVariations($value);
             } else {
                 $this->createNode($attributeName, $value);
             }
         }
-        $this->xml->endElement();
+        $this->xml->endElement(); // attributes
+        $this->xml->endElement(); // product
     }
 
-    private function createVariations($attributes)
+    private function createVariations()
     {
+        $attributes = $this->productData['variations'];
         $this->xml->startElement('variations');
         foreach ($attributes as $attribute) {
             $this->xml->writeElement('attribute', $attribute);
@@ -107,9 +119,9 @@ class ProductBuilder
      *
      * @return bool
      */
-    private function isAttributeProductAttribute($attribute)
+    private function isANodeRequiredForAttribute($attribute)
     {
-        return in_array($attribute, self::ATTRIBUTE_TYPES);
+        return !in_array($attribute, self::NO_NODE_TYPES) && !in_array($attribute, array_keys(self::ATTRIBUTE_TYPES));
     }
 
     /**
@@ -184,13 +196,13 @@ class ProductBuilder
         return (is_object($value) && method_exists($value, '__toString'));
     }
 
-    /**
-     * @param string[][] $images
-     */
-    private function createImageNodes($images)
+    private function createImageNodes()
     {
+        if (!isset($this->productData['images'])) {
+            return;
+        }
         $this->xml->startElement('images');
-        foreach ($images as $image) {
+        foreach ($this->productData['images'] as $image) {
             $this->createImageNode($image);
         }
         $this->xml->endElement();
@@ -205,11 +217,10 @@ class ProductBuilder
         }
     }
 
-    /**
-     * @param string[][][] $products
-     */
-    private function createAssociatedProductNodes(array $products)
+    private function createAssociatedProductNodes()
     {
+        /** @var $products string[] */
+        $products = $this->productData['associated_products'];
         $this->validateAssociatedProducts($products);
         $xml = $this->xml;
         $xml->startElement('associated_products');
@@ -221,7 +232,7 @@ class ProductBuilder
             $xml->startElement('attributes');
             $xml->writeElement('stock_qty', $product['stock_qty']);
             foreach ($product['attributes'] as $attributeName => $value) {
-                $locale = isset($this->context['language']) ? $this->context['language'] : '';
+                $locale = isset($this->context['locale']) ? $this->context['locale'] : '';
                 $xml->startElement($attributeName);
                 $xml->writeAttribute('locale', $locale);
                 $xml->text($value);
@@ -246,17 +257,29 @@ class ProductBuilder
      */
     private function validateContext(array $context)
     {
-        // TODO make sure language exists
+        // TODO make sure locale exists
     }
 
-    private function createProductNode()
+    private function createProductAttributes()
     {
-        $this->xml->startElement('product');
-        if (isset($this->productData['sku'])) {
-            $this->xml->writeAttribute('sku', $this->productData['sku']);
+        foreach (self::ATTRIBUTE_TYPES as $magentoAttribute => $lpAttribute) {
+            if (isset($this->productData[$magentoAttribute])) {
+                $this->xml->writeAttribute($lpAttribute, $this->productData[$magentoAttribute]);
+            }
         }
-        if (isset($this->productData['type_id'])) {
-            $this->xml->writeAttribute('type', $this->productData['type_id']);
+    }
+
+    private function createAssociatedProductsNode()
+    {
+        if (isset($this->productData['associated_products'])) {
+            $this->createAssociatedProductNodes();
+        }
+    }
+
+    private function createVariationsNode()
+    {
+        if (isset($this->productData['variations'])) {
+            return $this->createVariations();
         }
     }
 }
