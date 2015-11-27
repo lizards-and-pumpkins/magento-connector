@@ -73,7 +73,7 @@ class ProductBuilder
             }
 
             if ($attributeName == 'categories') {
-                $this->createCategoryNodes($value);
+                $this->createNode('category', $value);
             } else {
                 $this->createNode($attributeName, $value);
             }
@@ -90,16 +90,6 @@ class ProductBuilder
             $this->xml->writeElement('attribute', $attribute);
         }
         $this->xml->endElement(); // variations
-    }
-
-    /**
-     * @param string[] $categories
-     */
-    private function createCategoryNodes(array $categories)
-    {
-        foreach ($categories as $category) {
-            $this->createNode('category', $category);
-        }
     }
 
     /**
@@ -169,13 +159,20 @@ class ProductBuilder
      */
     private function createNode($attributeName, $value)
     {
-        if (!$this->isCastableToString($value)) {
+        if (!is_array($value) && !$this->isCastabletoString($value)) {
             return;
         }
-        $this->xml->startElement($attributeName);
-        $this->addContextAttributes();
-        $this->xml->writeCdata($value);
-        $this->xml->endElement();
+        $values = $value;
+        if ($this->isCastableToString($value)) {
+            $values = array($value);
+        }
+
+        foreach ($values as $value) {
+            $this->xml->startElement($attributeName);
+            $this->addContextAttributes();
+            $this->xml->writeCdata($value);
+            $this->xml->endElement();
+        }
     }
 
     /**
