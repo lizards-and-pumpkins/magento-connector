@@ -9,6 +9,7 @@ class Brera_MagentoConnector_Helper_Export
 
     const MAX_MESSAGES = 10;
     const TIMEOUT = 30;
+
     /**
      * @var Zend_Queue[]
      */
@@ -29,7 +30,7 @@ class Brera_MagentoConnector_Helper_Export
             $queueOptions = [
                 Zend_Queue::NAME => $queueName,
                 'driverOptions'  => $config + [
-                        Zend_Queue::TIMEOUT => 1,
+                        Zend_Queue::TIMEOUT            => 1,
                         Zend_Queue::VISIBILITY_TIMEOUT => 1
                     ]
             ];
@@ -40,22 +41,51 @@ class Brera_MagentoConnector_Helper_Export
         return $this->_queues[$queueName];
     }
 
+    /**
+     * @param int[] $ids
+     *
+     * @throws Zend_Queue_Exception
+     */
+    public function addStockUpdatesToQueue(array $ids)
+    {
+        foreach ($ids as $id) {
+            $this->addStockUpdateToQueue($id);
+        }
+    }
+
+    /**
+     * @param int $id
+     *
+     * @throws Zend_Queue_Exception
+     */
     private function addStockUpdateToQueue($id)
     {
-        $queue = $this->getQueue(self::QUEUE_STOCK_UPDATES);
-        try {
-            $queue->send($id);
-        } catch (Zend_Queue_Exception $e) {
-            if ($e->getCode() == self::MYSQL_DUPLICATE_ENTRY_ERROR_NUMBER) {
-                // do nothing
-            } else {
-                throw $e;
-            }
+        $this->addToQueue($id, self::QUEUE_STOCK_UPDATES);
+    }
+
+    /**
+     * @param int[] $ids
+     */
+    public function addProductUpdatesToQueue(array $ids)
+    {
+        foreach ($ids as $id) {
+            $this->addProductUpdateToQueue($id);
         }
+    }
+
+    /**
+     * @param int $id
+     *
+     * @throws Zend_Queue_Exception
+     */
+    private function addProductUpdateToQueue($id)
+    {
+        $this->addToQueue($id, self::QUEUE_PRODUCT_UPDATES);
     }
 
     public function addAllProductIdsToStockExport()
     {
+        /** @var int[] $ids */
         $ids = Mage::getResourceModel('catalog/product_collection')->getAllIds();
         foreach ($ids as $id) {
             $this->addStockUpdateToQueue($id);
@@ -82,13 +112,33 @@ class Brera_MagentoConnector_Helper_Export
 
     /**
      * @param Zend_Queue_Message[] $messages
-     * @param string $queueName
+     * @param string               $queueName
      */
     private function deleteMessages(array $messages, $queueName)
     {
         $queue = $this->getQueue($queueName);
         foreach ($messages as $message) {
             $queue->deleteMessage($message);
+        }
+    }
+
+    /**
+     * @param int    $id
+     * @param string $queue
+     *
+     * @throws Zend_Queue_Exception
+     */
+    private function addToQueue($id, $queue)
+    {
+        $queue = $this->getQueue($queue);
+        try {
+            $queue->send($id);
+        } catch (Zend_Queue_Exception $e) {
+            if ($e->getCode() == self::MYSQL_DUPLICATE_ENTRY_ERROR_NUMBER) {
+                // do nothing
+            } else {
+                throw $e;
+            }
         }
     }
 }
