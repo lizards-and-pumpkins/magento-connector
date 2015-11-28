@@ -25,14 +25,14 @@ class Brera_MagentoConnector_Model_Export_Exporter
     public function exportAllProducts()
     {
         Mage::app()->setCurrentStore(Mage::app()->getStore(Mage_Core_Model_App::ADMIN_STORE_ID));
-        $collectorCollection = array($this->productCollector, 'getAllProductsCollection');
+        $collectorCollection = [$this->productCollector, 'getAllProductsCollection'];
         $this->exportProductsWith($collectorCollection);
     }
 
     public function exportProductsInQueue()
     {
         Mage::app()->setCurrentStore(Mage::app()->getStore(Mage_Core_Model_App::ADMIN_STORE_ID));
-        $collectorCollection = array($this->productCollector, 'getAllQueuedProductUpdates');
+        $collectorCollection = [$this->productCollector, 'getAllQueuedProductUpdates'];
         $this->exportProductsWith($collectorCollection);
         $updates = $this->productCollector->getQueuedProductUpdates();
         $this->cleanupQueue(

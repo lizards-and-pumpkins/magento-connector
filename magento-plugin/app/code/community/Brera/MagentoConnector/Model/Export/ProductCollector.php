@@ -36,18 +36,18 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
     {
         $queuedProductUpdates = $this->getQueuedProductUpdates();
 
-        $filter = array();
+        $filter = [];
         if (!empty($queuedProductUpdates['skus'])) {
-            $filter[] = array(
+            $filter[] = [
                 'attribute' => 'sku',
                 'in'        => $queuedProductUpdates['skus']
-            );
+            ];
         }
         if (!empty($queuedProductUpdates['ids'])) {
-            $filter[] = array(
+            $filter[] = [
                 'attribute' => 'entity_id',
                 'in'        => $queuedProductUpdates['ids']
-            );
+            ];
         }
 
         if (empty($filter)) {
@@ -71,7 +71,7 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
         $collection->addAttributeToSelect('*');
         $collection->addAttributeToFilter(
             'visibility',
-            array('neq' => Mage_Catalog_Model_Product_Visibility::VISIBILITY_NOT_VISIBLE)
+            ['neq' => Mage_Catalog_Model_Product_Visibility::VISIBILITY_NOT_VISIBLE]
         );
         $collection->addAttributeToFilter('status', Mage_Catalog_Model_Product_Status::STATUS_ENABLED);
         $collection->addWebsiteFilter($store->getWebsiteId());
@@ -104,7 +104,7 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
             $collection = Mage::getResourceModel('brera_magentoconnector/product_queue_item_collection')
                 ->addFieldToFilter('action', Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_CREATE_AND_UPDATE);
 
-            $queuedProductUpdates = array('skus' => array(), 'ids' => array());
+            $queuedProductUpdates = ['skus' => [], 'ids' => []];
             /** @var $item Brera_MagentoConnector_Model_Product_Queue_Item */
             foreach ($collection as $item) {
                 if ($item->getId()) {
@@ -171,12 +171,12 @@ SQL;
 
         $mediaGalleryData = $readConnection->fetchAll($query);
 
-        $mediaGalleryByProductId = array();
+        $mediaGalleryByProductId = [];
         foreach ($mediaGalleryData as $galleryImage) {
             $k = $galleryImage['entity_id'];
             unset($galleryImage['entity_id']);
             if (!isset($mediaGalleryByProductId[$k])) {
-                $mediaGalleryByProductId[$k] = array();
+                $mediaGalleryByProductId[$k] = [];
             }
             $mediaGalleryByProductId[$k][] = $galleryImage;
         }
@@ -185,7 +185,7 @@ SQL;
         foreach ($productCollection as $product) {
             $productId = $product->getData('entity_id');
             if (isset($mediaGalleryByProductId[$productId])) {
-                $product->setData('media_gallery', array('images' => $mediaGalleryByProductId[$productId]));
+                $product->setData('media_gallery', ['images' => $mediaGalleryByProductId[$productId]]);
             }
         }
         unset($mediaGalleryByProductId);
@@ -213,7 +213,7 @@ SQL;
         Mage_Catalog_Model_Resource_Product_Collection $collection,
         Mage_Core_Model_Store $store
     ) {
-        $categoryIds = array();
+        $categoryIds = [];
         $collection->addCategoryIds();
         foreach ($collection as $product) {
             $categoryIds += array_flip($product->getCategoryIds());
@@ -228,7 +228,7 @@ SQL;
         $categoryCollection->addIdFilter($categoryIds);
 
         foreach ($collection as $product) {
-            $categories = array();
+            $categories = [];
             foreach ($product->getCategoryIds() as $categoryId) {
                 $categories[] = $categoryCollection->getItemById($categoryId)
                     ->getUrlKey();
@@ -257,16 +257,16 @@ SQL;
     private function addAssociatedProductsToConfigurables(
         Mage_Catalog_Model_Resource_Product_Collection $collection
     ) {
-        $this->simpleProducts = array();
-        $this->associatedSimpleProducts = array();
-        $this->configurableProductIds = array();
-        $this->configurableAttributeCodes = array();
-        $this->configurableProductAttributes = array();
+        $this->simpleProducts = [];
+        $this->associatedSimpleProducts = [];
+        $this->configurableProductIds = [];
+        $this->configurableAttributeCodes = [];
+        $this->configurableProductAttributes = [];
 
         $associatedProducts = $this->getAssociatedSimpleProducts($collection);
         $configurableAttributes = $this->getConfigurableAttributeCodes($collection);
         foreach ($collection as $product) {
-            $productAttributeCodes = array();
+            $productAttributeCodes = [];
             if ($product->getTypeId() == Mage_Catalog_Model_Product_Type_Configurable::TYPE_CODE) {
                 $configurableProductAttributes = explode(',', $this->configurableProductAttributes[$product->getId()]);
                 foreach ($configurableProductAttributes as $attributeId) {
@@ -295,7 +295,7 @@ SQL;
             $parentIds = $this->getConfigurableProductIds($collection);
             /** @var Mage_Catalog_Model_Resource_Product_Type_Configurable_Product_Collection $simpleProductCollection */
             $simpleProductCollection = Mage::getResourceModel('catalog/product_type_configurable_product_collection');
-            $simpleProductCollection->addAttributeToSelect(array('parent_id', 'tax_class_id'));
+            $simpleProductCollection->addAttributeToSelect(['parent_id', 'tax_class_id']);
             $simpleProductCollection->addAttributeToFilter('status', Mage_Catalog_Model_Product_Status::STATUS_ENABLED);
             $simpleProductCollection->addWebsiteFilter(
                 Mage::app()->getStore($collection->getStoreId())->getWebsiteId()
@@ -337,7 +337,7 @@ SQL;
         Mage_Catalog_Model_Resource_Product_Collection $collection
     ) {
         if (!$this->configurableProductIds) {
-            $this->configurableProductIds = array();
+            $this->configurableProductIds = [];
             foreach ($collection as $product) {
                 /* @var $product Mage_Catalog_Model_Product */
                 if ($product->getTypeId() == Mage_Catalog_Model_Product_Type_Configurable::TYPE_CODE) {
@@ -360,7 +360,7 @@ SQL;
     ) {
         if (!$this->configurableAttributeCodes) {
             // build list of all configurable attribute codes for the current collection
-            $this->configurableAttributeCodes = array();
+            $this->configurableAttributeCodes = [];
             foreach ($this->getConfigurableProductAttributes($collection) as $attributes) {
                 $attributes = explode(',', $attributes);
                 foreach ($attributes as $attributeId) {
@@ -401,8 +401,8 @@ SQL;
      *
      * @return string[]
      */
-    private function getConfigurableAttributesForProductsFromResource(array $productIds
-    ) {
+    private function getConfigurableAttributesForProductsFromResource(array $productIds)
+    {
         /** @var Mage_Core_Model_Resource_Helper_Mysql4 $resourceHelper */
         $resourceHelper = Mage::getResourceHelper('core');
         $resource = Mage::getSingleton('core/resource');
@@ -410,7 +410,7 @@ SQL;
         $select = $adapter->select()
             ->from(
                 $resource->getTableName('catalog/product_super_attribute'),
-                array('product_id')
+                ['product_id']
             )
             ->group('product_id')
             ->where('product_id IN(?)', $productIds);

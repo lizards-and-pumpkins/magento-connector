@@ -71,10 +71,10 @@ abstract class Brera_MagentoConnector_Model_XmlUploader
      */
     private function getAllowedProtocols()
     {
-        return array(
+        return [
             'ssh2.scp://',
             'ssh2.sftp://',
             'file://',
-        );
+        ];
     }
 }

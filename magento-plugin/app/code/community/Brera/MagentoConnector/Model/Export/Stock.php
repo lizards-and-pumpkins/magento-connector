@@ -8,7 +8,7 @@ class Brera_MagentoConnector_Model_Export_Stock
     /**
      * @var Zend_Queue_Message[]
      */
-    private $messagesToDelete = array();
+    private $messagesToDelete = [];
 
     /**
      * @var Brera_MagentoConnector_Model_StockXmlUploader
@@ -55,7 +55,7 @@ class Brera_MagentoConnector_Model_Export_Stock
      */
     private function collectIdsFromMessages($messages)
     {
-        $ids = array();
+        $ids = [];
         foreach ($messages as $message) {
             /* @var $message Zend_Queue_Message */
             $ids[] = $message->body;
@@ -72,7 +72,7 @@ class Brera_MagentoConnector_Model_Export_Stock
     {
         $stockItems = Mage::getResourceModel('cataloginventory/stock_item_collection')
             ->addProductsFilter($ids)
-            ->join(array('product' => 'catalog/product'), 'product_id=product.entity_id', 'sku');
+            ->join(['product' => 'catalog/product'], 'product_id=product.entity_id', 'sku');
 
         foreach ($stockItems->getData() as $stockItem) {
             $stockBuilder->addStockData($stockItem['sku'], $stockItem['qty']);

@@ -55,10 +55,10 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
 
     private function getContext()
     {
-        return array(
+        return [
             'website' => $this->store->getWebsite()->getCode(),
             'locale'  => Mage::getStoreConfig('general/locale/code', $this->store),
-        );
+        ];
     }
 
     public function process()
@@ -91,17 +91,17 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
      */
     private function transformData(Mage_Catalog_Model_Product $product)
     {
-        $productData = array();
+        $productData = [];
         foreach ($product->getData() as $key => $value) {
             $attribute = $product->getResource()->getAttribute($key);
             if ($key == 'media_gallery') {
                 if (isset($value['images']) && is_array($value['images'])) {
                     foreach ($value['images'] as $image) {
-                        $productData['images'][] = array(
+                        $productData['images'][] = [
                             'main'  => $image['file'] == $product->getImage(),
                             'label' => $image['label'],
                             'file'  => $image['file'],
-                        );
+                        ];
                     }
                 }
             } elseif ($attribute && $attribute->getSource() && $product->getAttributeText($key)) {
@@ -112,13 +112,13 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
                 if (is_array($value)) {
                     /** @var Mage_Catalog_Model_Product $simpleProduct */
                     foreach ($value as $simpleProduct) {
-                        $associatedProduct = array(
+                        $associatedProduct = [
                             'sku'          => $simpleProduct->getSku(),
                             'type_id'      => $simpleProduct->getTypeId(),
                             'visibility'   => $simpleProduct->getAttributeText('visibility'),
                             'tax_class_id' => $simpleProduct->getAttributeText('tax_class_id'),
                             'stock_qty'    => $simpleProduct->getStockQty(),
-                        );
+                        ];
 
                         foreach ($product->getConfigurableAttributes() as $attribute) {
                             $associatedProduct['attributes'][$attribute] = $simpleProduct->getAttributeText($attribute);

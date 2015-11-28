@@ -12,11 +12,12 @@ class Brera_MagentoConnector_Helper_Export
     /**
      * @var Zend_Queue[]
      */
-    protected $_queues = array();
+    protected $_queues = [];
 
 
     /**
      * @param string $queueName
+     *
      * @return Zend_Queue
      * @throws Zend_Queue_Exception
      */
@@ -25,13 +26,13 @@ class Brera_MagentoConnector_Helper_Export
         if (!isset($this->_queues[$queueName])) {
             $config = (array)Mage::getConfig()->getResourceConnectionConfig("default_setup");
 
-            $queueOptions = array(
+            $queueOptions = [
                 Zend_Queue::NAME => $queueName,
-                'driverOptions' => $config + array(
+                'driverOptions'  => $config + [
                         Zend_Queue::TIMEOUT => 1,
                         Zend_Queue::VISIBILITY_TIMEOUT => 1
-                    )
-            );
+                    ]
+            ];
 
             $this->_queues[$queueName] = new Zend_Queue('Db', $queueOptions);
             $this->_queues[$queueName]->createQueue($queueName);

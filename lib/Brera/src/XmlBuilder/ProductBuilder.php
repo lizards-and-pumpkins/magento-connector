@@ -170,7 +170,7 @@ class ProductBuilder
         }
         $values = $value;
         if ($this->isCastableToString($value)) {
-            $values = array($value);
+            $values = [$value];
         }
 
         foreach ($values as $value) {

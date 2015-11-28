@@ -109,6 +109,7 @@ class Brera_MagentoConnector_Model_Observer
     /**
      * @param Varien_Event_Observer $observer
      * @param string $itemHolder
+     *
      * @return int[]
      */
     private function getProductIdsFrom(Varien_Event_Observer $observer, $itemHolder)

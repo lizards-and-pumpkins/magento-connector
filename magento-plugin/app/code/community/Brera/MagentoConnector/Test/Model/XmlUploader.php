@@ -34,11 +34,11 @@ class Brera_MagentoConnector_Test_Model_XmlUploader extends PHPUnit_Framework_Te
      */
     public function getAllowedProtocols()
     {
-        return array(
-            array('ssh2.scp://'),
-            array('ssh2.sftp://'),
-            array('file://'),
-        );
+        return [
+            ['ssh2.scp://'],
+            ['ssh2.sftp://'],
+            ['file://'],
+        ];
     }
 
     /**
@@ -46,25 +46,25 @@ class Brera_MagentoConnector_Test_Model_XmlUploader extends PHPUnit_Framework_Te
      */
     public function getDisallowedProtocols()
     {
-        return array(
-            array('http://'),
-            array('ftp://'),
-            array('php://'),
-            array('zlib://'),
-            array('data://'),
-            array('glob://'),
-            array('phar://'),
-            array('ssh2://'),
-            array('rar://'),
-            array('ogg://'),
-            array('expect://'),
-            array('compress.zlib://'),
-            array('compress.bzip2://'),
-            array('zip://'),
-            array('ssh2.shell://'),
-            array('ssh2.exec://'),
-            array('ssh2.tunnel://'),
-        );
+        return [
+            ['http://'],
+            ['ftp://'],
+            ['php://'],
+            ['zlib://'],
+            ['data://'],
+            ['glob://'],
+            ['phar://'],
+            ['ssh2://'],
+            ['rar://'],
+            ['ogg://'],
+            ['expect://'],
+            ['compress.zlib://'],
+            ['compress.bzip2://'],
+            ['zip://'],
+            ['ssh2.shell://'],
+            ['ssh2.exec://'],
+            ['ssh2.tunnel://'],
+        ];
 
     }
 }
