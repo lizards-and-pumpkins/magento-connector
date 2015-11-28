@@ -193,7 +193,7 @@ class ProductBuilder
      */
     private function isCdataNeeded($value)
     {
-        $forbidden = ['&', '<'];
+        $forbidden = ['&', '<', '"', "'", '>'];
 
         foreach ($forbidden as $string) {
             if (strpos($value, $string) !== false) {
