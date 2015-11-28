@@ -80,6 +80,9 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
         $this->addAdditionalData();
 
         $this->productIterator = $this->collection->getIterator();
+        if ($this->productIterator->current() === null) {
+            return $this->getProduct();
+        }
         return $this->productIterator->current();
     }
 
@@ -149,20 +152,26 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
         }
     }
 
-    /**
-     * @return Mage_Core_Model_App
-     */
     private function setAdminStoreToAvoidFlatTables()
     {
-        return Mage::app()->setCurrentStore(Mage::app()->getStore(Mage_Core_Model_App::ADMIN_STORE_ID));
+        Mage::app()->setCurrentStore(Mage::app()->getStore(Mage_Core_Model_App::ADMIN_STORE_ID));
     }
 
     public function addAdditionalData()
     {
+        $this->addStore();
         $this->addCategories();
         $this->addStockInformation($this->collection);
         $this->addMediaGalleryAttributeToCollection();
         $this->addAssociatedProductsToConfigurables();
+    }
+
+    private function addStore()
+    {
+        /** @var $product Mage_Catalog_Model_Product */
+        foreach ($this->collection as $product) {
+            $product->setStoreId($this->store->getId());
+        }
     }
 
     /**

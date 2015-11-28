@@ -15,6 +15,26 @@ class Brera_MagentoConnector_Helper_Export
      */
     protected $_queues = [];
 
+    public function addAllProductIdsToProductUpdateQueue()
+    {
+        $resource = Mage::getSingleton('core/resource');
+        $writeConnection = $resource->getConnection('core_write');
+
+        $query = "SELECT queue_id FROM queue WHERE queue_name = :queueName";
+
+        $result = $writeConnection->query($query, [':queueName' => self::QUEUE_PRODUCT_UPDATES]);
+        $queueId = $result->fetchColumn();
+        $time = time();
+
+        $query = <<<SQL
+INSERT IGNORE INTO `message`
+  (queue_id, created, body, md5)
+  (SELECT $queueId, $time, entity_id, MD5(entity_id) FROM `catalog_product_entity`)
+SQL;
+
+        $writeConnection->query($query)->execute();
+
+    }
 
     /**
      * @param string $queueName
