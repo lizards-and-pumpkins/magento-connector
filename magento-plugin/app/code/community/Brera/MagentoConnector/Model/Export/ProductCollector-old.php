@@ -3,93 +3,59 @@
 class Brera_MagentoConnector_Model_Export_ProductCollector
 {
     /**
-     * @var int[]
+     * @var string[][]
      */
-    private $queuedProductIds;
-
-    /**
-     * @var Mage_Core_Model_Store
-     */
-    private $store;
-
-    /**
-     * @var Mage_Catalog_Model_Resource_Product_Collection
-     */
-    private $collection;
-
-    /**
-     * @var ArrayIterator
-     */
-    private $productIterator;
-
-    /**
-     * @var Zend_Queue_Message_Iterator
-     */
-    private $messageIterator;
-
-    /**
-     * @var Mage_Core_Model_Store[]
-     */
-    private $storesToExport;
-
+    private $queuedProductUpdates;
     /**
      * @var Mage_Catalog_Model_Product[]
      */
     private $simpleProducts;
-
     /**
      * @var Mage_Catalog_Model_Product[][]
      */
     private $associatedSimpleProducts;
-
     /**
      * @var int[]
      */
     private $configurableProductIds;
-
     /**
      * @var string[]
      */
     private $configurableAttributeCodes;
-
     /**
      * @var array
      */
     private $configurableProductAttributes;
 
     /**
-     * @return Mage_Catalog_Model_Product
+     * @param Mage_Core_Model_Store $store
+     *
+     * @return Mage_Catalog_Model_Resource_Product_Collection
      */
-    public function getProduct()
+    public function getAllQueuedProductUpdates(Mage_Core_Model_Store $store)
     {
+        $queuedProductUpdates = $this->getQueuedProductUpdates();
 
-        if ($this->existsNextProduct()) {
-            return $this->productIterator->current();
+        $filter = [];
+        if (!empty($queuedProductUpdates['skus'])) {
+            $filter[] = [
+                'attribute' => 'sku',
+                'in'        => $queuedProductUpdates['skus']
+            ];
+        }
+        if (!empty($queuedProductUpdates['ids'])) {
+            $filter[] = [
+                'attribute' => 'entity_id',
+                'in'        => $queuedProductUpdates['ids']
+            ];
         }
 
-        $this->cleanupAndPrepareForNextBunchOfProducts();
-
-        $this->store = array_pop($this->storesToExport);
-        if (empty($this->queuedProductIds)) {
-            return null;
+        if (empty($filter)) {
+            Mage::throwException('No queued updates to export.');
         }
 
-        $this->collection = $this->createCollection($this->store);
-        $this->collection->addIdFilter($this->queuedProductIds);
-
-        $this->addAdditionalData();
-
-        $this->productIterator = $this->collection->getIterator();
-        return $this->productIterator->current();
-    }
-
-    private function existsNextProduct()
-    {
-        if ($this->productIterator) {
-            $this->productIterator->next();
-            return $this->productIterator->valid();
-        }
-        return false;
+        return $this->getAllProductsCollection($store)
+            ->addAttributeToFilter($filter);
     }
 
     /**
@@ -97,9 +63,8 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
      *
      * @return Mage_Catalog_Model_Resource_Product_Collection
      */
-    private function createCollection($store)
+    public function getAllProductsCollection($store)
     {
-        $this->setAdminStoreToAvoidFlatTables();
         /** @var $collection Mage_Catalog_Model_Resource_Product_Collection */
         $collection = Mage::getResourceModel('catalog/product_collection');
         $collection->setStore($store);
@@ -109,71 +74,71 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
             ['neq' => Mage_Catalog_Model_Product_Visibility::VISIBILITY_NOT_VISIBLE]
         );
         $collection->addAttributeToFilter('status', Mage_Catalog_Model_Product_Status::STATUS_ENABLED);
+        $collection->addIdFilter([709122, 709123, 709124, 709125, 709126, 709127, 709128]);
         $collection->addWebsiteFilter($store->getWebsiteId());
         return $collection;
     }
 
-    private function cleanupQueueForLastLoop()
+    public function getAllProductStockUpdates($store)
     {
-        // TODO find better solution
-        // if this part of the code is called again, we already returned all products and
-        // we expect no error, so we can delete these
-        if ($this->messageIterator) {
-            /** @var $message Zend_Queue_Message */
-            foreach ($this->messageIterator as $message) {
-                $message->getQueue()->deleteMessage($message);
+        $stockUpdateAction = Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_STOCK_UPDATE;
+
+        $collection = Mage::getResourceModel('catalog/product_collection');
+        $collection->setStore($store);
+        $collection->joinTable(
+            'brera_magentoconnector/product_queue',
+            'entity_id=product_id',
+            '',
+            'action=' . $stockUpdateAction
+        )
+            ->addAttributeToSelect('*');
+
+        return $collection;
+    }
+
+    /**
+     * @return string[][]
+     */
+    public function getQueuedProductUpdates()
+    {
+        if (!$this->queuedProductUpdates) {
+            $collection = Mage::getResourceModel('brera_magentoconnector/product_queue_item_collection')
+                ->addFieldToFilter('action', Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_CREATE_AND_UPDATE);
+
+            $queuedProductUpdates = ['skus' => [], 'ids' => []];
+            /** @var $item Brera_MagentoConnector_Model_Product_Queue_Item */
+            foreach ($collection as $item) {
+                if ($item->getId()) {
+                    $queuedProductUpdates['ids'][] = $item->getProductId();
+                }
+                if ($item->getSku()) {
+                    $queuedProductUpdates['skus'][] = $item->getSku();
+                }
             }
+
+            $this->queuedProductUpdates = $queuedProductUpdates;
         }
+
+        return $this->queuedProductUpdates;
     }
+
 
     /**
-     * @return int[]
-     */
-    private function getQueuedProductIds()
-    {
-        $this->messageIterator = Mage::helper('brera_magentoconnector/export')->getProductUpdatesToExport();
-        $productIds = [];
-        foreach ($this->messageIterator as $item) {
-            /** @var $item Zend_Queue_Message */
-            $productIds[] = $item->body;
-        }
-        return $productIds;
-    }
-
-    private function cleanupAndPrepareForNextBunchOfProducts()
-    {
-        if (empty($this->storesToExport)) {
-            $this->storesToExport = Mage::app()->getStores();
-            $this->cleanupQueueForLastLoop();
-            $this->queuedProductIds = $this->getQueuedProductIds();
-        }
-    }
-
-    /**
-     * @return Mage_Core_Model_App
-     */
-    private function setAdminStoreToAvoidFlatTables()
-    {
-        return Mage::app()->setCurrentStore(Mage::app()->getStore(Mage_Core_Model_App::ADMIN_STORE_ID));
-    }
-
-    public function addAdditionalData()
-    {
-        $this->addCategories();
-        $this->addStockInformation($this->collection);
-        $this->addMediaGalleryAttributeToCollection();
-        $this->addAssociatedProductsToConfigurables();
-    }
-
-    /**
+     * add media gallery images to collection
+     *
+     * @param Mage_Catalog_Model_Resource_Product_Collection $productCollection
+     * @param Mage_Core_Model_Store                          $store
+     *
      * @see  http://www.magentocommerce.com/boards/viewthread/17414/#t141830
      */
-    private function addMediaGalleryAttributeToCollection()
-    {
-        if ($this->collection->count() == 0) {
+    private function addMediaGalleryAttributeToCollection(
+        Mage_Catalog_Model_Resource_Product_Collection $productCollection,
+        Mage_Core_Model_Store $store
+    ) {
+        if ($productCollection->count() == 0) {
             return;
         }
-        $storeId = $this->store->getId();
+        $storeId = $store->getId();
         $mediaGalleryAttributeId = Mage::getSingleton('eav/config')
             ->getAttribute('catalog_product', 'media_gallery')
             ->getAttributeId();
@@ -184,7 +149,7 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
         $mediaGalleryTable = $coreResource->getTableName('catalog/product_attribute_media_gallery');
         $mediaGalleryValueTable = $coreResource->getTableName('catalog/product_attribute_media_gallery_value');
 
-        $productIds = $this->collection->getLoadedIds();
+        $productIds = $productCollection->getLoadedIds();
         $query
             = <<<SQL
         SELECT
@@ -218,7 +183,7 @@ SQL;
         }
         unset($mediaGalleryData);
 
-        foreach ($this->collection as $product) {
+        foreach ($productCollection as $product) {
             $productId = $product->getData('entity_id');
             if (isset($mediaGalleryByProductId[$productId])) {
                 $product->setData('media_gallery', ['images' => $mediaGalleryByProductId[$productId]]);
@@ -227,11 +192,31 @@ SQL;
         unset($mediaGalleryByProductId);
     }
 
-    private function addCategories()
-    {
+    /**
+     * @param Mage_Core_Model_Store                          $store
+     * @param Mage_Catalog_Model_Resource_Product_Collection $collection
+     *
+     * @return Mage_Catalog_Model_Resource_Product_Collection
+     */
+    public function addAdditionalData(
+        Mage_Catalog_Model_Resource_Product_Collection $collection,
+        Mage_Core_Model_Store $store
+    ) {
+        $this->addCategories($collection, $store);
+        $this->addStockInformation($collection);
+        $this->addMediaGalleryAttributeToCollection($collection, $store);
+        $this->addAssociatedProductsToConfigurables($collection);
+
+        return $collection;
+    }
+
+    private function addCategories(
+        Mage_Catalog_Model_Resource_Product_Collection $collection,
+        Mage_Core_Model_Store $store
+    ) {
         $categoryIds = [];
-        $this->collection->addCategoryIds();
-        foreach ($this->collection as $product) {
+        $collection->addCategoryIds();
+        foreach ($collection as $product) {
             $categoryIds += array_flip($product->getCategoryIds());
         }
 
@@ -239,11 +224,11 @@ SQL;
 
         /** @var $categoryCollection Mage_Catalog_Model_Resource_Category_Collection */
         $categoryCollection = Mage::getResourceModel('catalog/category_collection')
-            ->setStore($this->store)
+            ->setStore($store)
             ->addAttributeToSelect('url_key');
         $categoryCollection->addIdFilter($categoryIds);
 
-        foreach ($this->collection as $product) {
+        foreach ($collection as $product) {
             $categories = [];
             foreach ($product->getCategoryIds() as $categoryId) {
                 $categories[] = $categoryCollection->getItemById($categoryId)
@@ -253,29 +238,35 @@ SQL;
         }
     }
 
-    private function addStockInformation($collection)
-    {
+
+    /**
+     * @param Mage_Catalog_Model_Resource_Product_Collection $collection
+     */
+    private function addStockInformation(
+        Mage_Catalog_Model_Resource_Product_Collection $collection
+    ) {
         Mage::getSingleton('cataloginventory/stock')
             ->addItemsToProducts($collection);
 
-        foreach ($this->collection as $product) {
+        foreach ($collection as $product) {
             $stockItem = $product->getStockItem();
             $product->setStockQty($stockItem->getQty());
             $product->setBackorders($stockItem->getBackorders() ? 'true' : 'false');
         }
     }
 
-    private function addAssociatedProductsToConfigurables()
-    {
+    private function addAssociatedProductsToConfigurables(
+        Mage_Catalog_Model_Resource_Product_Collection $collection
+    ) {
         $this->simpleProducts = [];
         $this->associatedSimpleProducts = [];
         $this->configurableProductIds = [];
         $this->configurableAttributeCodes = [];
         $this->configurableProductAttributes = [];
 
-        $associatedProducts = $this->getAssociatedSimpleProducts();
-        $configurableAttributes = $this->getConfigurableAttributeCodes();
-        foreach ($this->collection as $product) {
+        $associatedProducts = $this->getAssociatedSimpleProducts($collection);
+        $configurableAttributes = $this->getConfigurableAttributeCodes($collection);
+        foreach ($collection as $product) {
             $productAttributeCodes = [];
             if ($product->getTypeId() == Mage_Catalog_Model_Product_Type_Configurable::TYPE_CODE) {
                 $configurableProductAttributes = explode(',', $this->configurableProductAttributes[$product->getId()]);
@@ -294,18 +285,21 @@ SQL;
      * the current product collection.
      * Array key is the configurable product
      *
+     * @param Mage_Catalog_Model_Resource_Product_Collection $collection
+     *
      * @return array
      */
-    private function getSimpleProducts()
-    {
+    private function getSimpleProducts(
+        Mage_Catalog_Model_Resource_Product_Collection $collection
+    ) {
         if (!$this->simpleProducts) {
-            $parentIds = $this->getConfigurableProductIds($this->collection);
+            $parentIds = $this->getConfigurableProductIds($collection);
             /** @var Mage_Catalog_Model_Resource_Product_Type_Configurable_Product_Collection $simpleProductCollection */
             $simpleProductCollection = Mage::getResourceModel('catalog/product_type_configurable_product_collection');
             $simpleProductCollection->addAttributeToSelect(['parent_id', 'tax_class_id']);
             $simpleProductCollection->addAttributeToFilter('status', Mage_Catalog_Model_Product_Status::STATUS_ENABLED);
             $simpleProductCollection->addWebsiteFilter(
-                Mage::app()->getStore($this->collection->getStoreId())->getWebsiteId()
+                Mage::app()->getStore($collection->getStoreId())->getWebsiteId()
             );
             $simpleProductCollection->getSelect()->where(
                 'link_table.parent_id IN(?)', $parentIds
@@ -315,7 +309,7 @@ SQL;
             );
             $simpleProductCollection->groupByAttribute('entity_id');
 
-            $attributeCodes = $this->getConfigurableAttributeCodes();
+            $attributeCodes = $this->getConfigurableAttributeCodes($collection);
             $simpleProductCollection->addAttributeToSelect($attributeCodes);
             $this->addStockInformation($simpleProductCollection);
 
@@ -333,17 +327,19 @@ SQL;
         return $this->simpleProducts;
     }
 
-    private function getAssociatedSimpleProducts()
-    {
-        $this->getSimpleProducts();
+    private function getAssociatedSimpleProducts(
+        Mage_Catalog_Model_Resource_Product_Collection $collection
+    ) {
+        $this->getSimpleProducts($collection);
         return $this->associatedSimpleProducts;
     }
 
-    private function getConfigurableProductIds()
-    {
+    private function getConfigurableProductIds(
+        Mage_Catalog_Model_Resource_Product_Collection $collection
+    ) {
         if (!$this->configurableProductIds) {
             $this->configurableProductIds = [];
-            foreach ($this->collection as $product) {
+            foreach ($collection as $product) {
                 /* @var $product Mage_Catalog_Model_Product */
                 if ($product->getTypeId() == Mage_Catalog_Model_Product_Type_Configurable::TYPE_CODE) {
                     $this->configurableProductIds[] = $product->getId();
@@ -360,12 +356,13 @@ SQL;
      *
      * @return array
      */
-    private function getConfigurableAttributeCodes()
-    {
+    private function getConfigurableAttributeCodes(
+        Mage_Catalog_Model_Resource_Product_Collection $collection
+    ) {
         if (!$this->configurableAttributeCodes) {
             // build list of all configurable attribute codes for the current collection
             $this->configurableAttributeCodes = [];
-            foreach ($this->getConfigurableProductAttributes() as $attributes) {
+            foreach ($this->getConfigurableProductAttributes($collection) as $attributes) {
                 $attributes = explode(',', $attributes);
                 foreach ($attributes as $attributeId) {
                     if ($attributeId && !isset($this->configurableAttributeCodes[$attributeId])) {
@@ -385,10 +382,11 @@ SQL;
      *
      * @return string[]
      */
-    private function getConfigurableProductAttributes()
-    {
+    private function getConfigurableProductAttributes(
+        Mage_Catalog_Model_Resource_Product_Collection $collection
+    ) {
         if (!$this->configurableProductAttributes) {
-            $productIds = $this->getConfigurableProductIds();
+            $productIds = $this->getConfigurableProductIds($collection);
             $attributes = $this->getConfigurableAttributesForProductsFromResource($productIds);
             $this->configurableProductAttributes = $attributes;
         }

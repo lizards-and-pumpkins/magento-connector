@@ -11,12 +11,7 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
     /**
      * @var Mage_Catalog_Model_Resource_Product_Collection
      */
-    private $collection;
-
-    /**
-     * @var Mage_Core_Model_Store
-     */
-    private $store;
+    private $product;
 
     /**
      * @var ProductMerge
@@ -30,50 +25,41 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
 
 
     /**
-     * @param Mage_Catalog_Model_Resource_Product_Collection $collection
-     * @param Mage_Core_Model_Store                          $store
-     * @param ProductMerge                                   $merge
-     * @param Brera_MagentoConnector_Model_XmlUploader       $uploader
+     * @param Mage_Catalog_Model_Product               $product
+     * @param ProductMerge                             $merge
+     * @param Brera_MagentoConnector_Model_XmlUploader $uploader
      */
     public function __construct(
-        Mage_Catalog_Model_Resource_Product_Collection $collection,
-        Mage_Core_Model_Store $store,
+        Mage_Catalog_Model_Product $product,
         ProductMerge $merge,
         Brera_MagentoConnector_Model_XmlUploader $uploader
     ) {
-        $this->collection = $collection;
-        $this->store = $store;
+        $this->product = $product;
         $this->merge = $merge;
         $this->uploader = $uploader;
     }
 
 
-    public function getXml()
-    {
-        $this->process();
-    }
-
     private function getContext()
     {
         return [
-            'website' => $this->store->getWebsite()->getCode(),
-            'locale'  => Mage::getStoreConfig('general/locale/code', $this->store),
+            'website' => $this->product->getStore()->getWebsite()->getCode(),
+            'locale'  => Mage::getStoreConfig('general/locale/code', $this->product->getStore()),
         ];
     }
 
     public function process()
     {
         /** @var $product Mage_Catalog_Model_Product */
-        foreach ($this->collection as $product) {
-            $productBuilder = new ProductBuilder(
-                $this->transformData($product),
-                $this->getContext()
-            );
-            $productContainer = $productBuilder->getProductContainer();
-            $this->merge->addProduct($productContainer);
-            $partialXmlString = $this->merge->getPartialXmlString() . "\n";
-            $this->getUploader()->writePartialString($partialXmlString);
-        }
+        $productBuilder = new ProductBuilder(
+            $this->transformData($this->product),
+            $this->getContext()
+        );
+        $productContainer = $productBuilder->getProductContainer();
+        $this->merge->addProduct($productContainer);
+        $partialXmlString = $this->merge->getPartialXmlString() . "\n";
+        $this->getUploader()->writePartialString($partialXmlString);
+
     }
 
     /**
@@ -105,6 +91,7 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
                     }
                 }
             } elseif ($attribute && $attribute->getSource() && $product->getAttributeText($key)) {
+                // TODO macht description kaputt
                 $productData[$key] = $product->getAttributeText($key);
             } elseif ($this->isCastableToString($value)) {
                 $productData[$key] = $value;

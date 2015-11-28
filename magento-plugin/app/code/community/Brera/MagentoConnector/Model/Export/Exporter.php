@@ -5,7 +5,6 @@ use Brera\MagentoConnector\XmlBuilder\ProductMerge;
 class Brera_MagentoConnector_Model_Export_Exporter
 {
 
-    const PAGE_SIZE = 100;
     /**
      * @var Mage_Core_Model_Session
      */
@@ -24,65 +23,29 @@ class Brera_MagentoConnector_Model_Export_Exporter
 
     public function exportAllProducts()
     {
-        Mage::app()->setCurrentStore(Mage::app()->getStore(Mage_Core_Model_App::ADMIN_STORE_ID));
-        $collectorCollection = [$this->productCollector, 'getAllProductsCollection'];
-        $this->exportProductsWith($collectorCollection);
+        Mage::helper('brera_magentoconnector/export')
+            ->addProductUpdatesToQueue(Mage::getResourceModel('catalog/product_collection')->getAllIds());
+        $this->exportProductsInQueue();
     }
 
     public function exportProductsInQueue()
     {
-        Mage::app()->setCurrentStore(Mage::app()->getStore(Mage_Core_Model_App::ADMIN_STORE_ID));
-        $collectorCollection = [$this->productCollector, 'getAllQueuedProductUpdates'];
-        $this->exportProductsWith($collectorCollection);
-        $updates = $this->productCollector->getQueuedProductUpdates();
-        $this->cleanupQueue(
-            $updates['ids'],
-            $updates['skus'],
-            Brera_MagentoConnector_Model_Product_Queue_Item::ACTION_STOCK_UPDATE
-        );
-    }
-
-    /**
-     * @param int[]    $ids
-     * @param string[] $skus
-     * @param string   $action
-     */
-    private function cleanupQueue(array $ids, array $skus, $action)
-    {
-        Mage::getResourceModel('brera_magentoconnector/product_queue_item')
-            ->cleanupQueue($ids, $skus, $action);
-    }
-
-    /**
-     * @param callable $collectorCollection
-     */
-    private function createAndUploadCatalogXml(callable $collectorCollection)
-    {
+        $collector = Mage::getModel('brera_magentoconnector/export_productCollector');
         $xmlMerge = new ProductMerge();
         /** @var Brera_MagentoConnector_Model_XmlUploader $uploader */
         $uploader = Mage::getModel('brera_magentoconnector/productXmlUploader');
 
-        foreach (Mage::app()->getStores() as $store) {
-            $this->exportProductsFromStore($collectorCollection, $store, $xmlMerge, $uploader);
+        while ($product = $collector->getProduct()) {
+            $xmlBuilderAndUploader = new Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader(
+                $product,
+                $xmlMerge,
+                $uploader
+            );
+
+            $xmlBuilderAndUploader->process();
         }
 
         $uploader->writePartialString($xmlMerge->finish());
-    }
-
-    private function triggerCatalogUpdateApi()
-    {
-        $apiUrl = Mage::getStoreConfig('brera/magentoconnector/api_url');
-        $remoteFileLocation = Mage::getStoreConfig('brera/magentoconnector/remote_catalog_xml_location');
-        $api = new \Brera\MagentoConnector\Api\Api($apiUrl);
-        $api->triggerProductImport($remoteFileLocation);
-    }
-
-    /**
-     * @param callable $collectorCollection
-     */
-    private function exportProductsWith(callable $collectorCollection)
-    {
-        $this->createAndUploadCatalogXml($collectorCollection);
 
         try {
             $this->triggerCatalogUpdateApi();
@@ -92,33 +55,11 @@ class Brera_MagentoConnector_Model_Export_Exporter
         }
     }
 
-    /**
-     * @param callable                                 $collectorCollection
-     * @param Mage_Core_Model_Store                    $store
-     * @param ProductMerge                             $xmlMerge
-     * @param Brera_MagentoConnector_Model_XmlUploader $uploader
-     */
-    private function exportProductsFromStore(callable $collectorCollection, $store, $xmlMerge, $uploader)
+    private function triggerCatalogUpdateApi()
     {
-        /** @var Mage_Catalog_Model_Resource_Product_Collection $productCollection */
-        $productCollection = $collectorCollection($store);
-        $productCollection->setPageSize(self::PAGE_SIZE);
-        $pages = $productCollection->getLastPageNumber();
-        $currentPage = 1;
-
-        do {
-            $productCollection->setCurPage($currentPage);
-            $this->productCollector->addAdditionalData($productCollection, $store);
-
-            $xmlBuilderAndUploader = new Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader(
-                $productCollection, $store, $xmlMerge, $uploader
-            );
-
-            $xmlBuilderAndUploader->process();
-
-            $currentPage++;
-            //clear collection and free memory
-            $productCollection->clear();
-        } while ($currentPage <= $pages);
+        $apiUrl = Mage::getStoreConfig('brera/magentoconnector/api_url');
+        $remoteFileLocation = Mage::getStoreConfig('brera/magentoconnector/remote_catalog_xml_location');
+        $api = new \Brera\MagentoConnector\Api\Api($apiUrl);
+        $api->triggerProductImport($remoteFileLocation);
     }
 }

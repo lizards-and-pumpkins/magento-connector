@@ -7,7 +7,7 @@ class Brera_MagentoConnector_Helper_Export
 
     const MYSQL_DUPLICATE_ENTRY_ERROR_NUMBER = 23000;
 
-    const MAX_MESSAGES = 10;
+    const MAX_MESSAGES = 100;
     const TIMEOUT = 30;
 
     /**
@@ -99,6 +99,16 @@ class Brera_MagentoConnector_Helper_Export
     public function getStockUpdatesToExport()
     {
         $queue = $this->getQueue(self::QUEUE_STOCK_UPDATES);
+        return $queue->receive(self::MAX_MESSAGES, self::TIMEOUT);
+    }
+
+    /**
+     * @return Zend_Queue_Message_Iterator
+     * @throws Zend_Queue_Exception
+     */
+    public function getProductUpdatesToExport()
+    {
+        $queue = $this->getQueue(self::QUEUE_PRODUCT_UPDATES);
         return $queue->receive(self::MAX_MESSAGES, self::TIMEOUT);
     }
 
