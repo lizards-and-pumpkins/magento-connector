@@ -4,30 +4,36 @@ class Brera_MagentoConnector_CartController extends Mage_Core_Controller_Front_A
 {
     public function addAction()
     {
-        $sku = $this->getRequest()->getParam('sku');
-        $qty = $this->getRequest()->getParam('qty');
+        try {
+            $sku = $this->getRequest()->getParam('sku');
+            $qty = $this->getRequest()->getParam('qty');
 
-        if (!is_numeric($qty)) {
-            $qty = 1;
+            if (!is_numeric($qty)) {
+                $qty = 1;
+            }
+
+            $product = Mage::getModel('catalog/product');
+            $product->load($product->getIdBySku($sku));
+
+            $quote = Mage::getSingleton('checkout/session')->getQuote();
+
+            if (!$product->isVisibleInSiteVisibility()) {
+                $this->addConfigurableProductForSimpleProduct($product, $qty);
+            } else {
+                $quote->addProduct($product, $qty);
+            }
+
+            $this->_getCart()->save();
+            $this->_getSession()->setCartWasUpdated(true);
+
+            Mage::dispatchEvent('checkout_cart_add_product_complete',
+                array('product' => $product, 'request' => $this->getRequest(), 'response' => $this->getResponse())
+            );
+        } catch (Mage_Core_Exception $e) {
+            $message = $e->getMessage();
+            $this->_getSession()->addError($message);
         }
 
-        $product = Mage::getModel('catalog/product');
-        $product->load($product->getIdBySku($sku));
-
-        $quote = Mage::getSingleton('checkout/session')->getQuote();
-
-        if (!$product->isVisibleInSiteVisibility()) {
-            $this->addConfigurableProductForSimpleProduct($product, $qty);
-        } else {
-            $quote->addProduct($product, $qty);
-        }
-
-        $this->_getCart()->save();
-        $this->_getSession()->setCartWasUpdated(true);
-
-        Mage::dispatchEvent('checkout_cart_add_product_complete',
-            array('product' => $product, 'request' => $this->getRequest(), 'response' => $this->getResponse())
-        );
 
         $this->redirect($product);
     }
@@ -37,7 +43,8 @@ class Brera_MagentoConnector_CartController extends Mage_Core_Controller_Front_A
         $cart = $this->_getCart();
         if (!$this->_getSession()->getNoCartRedirect(true)) {
             if (!$cart->getQuote()->getHasError()) {
-                $message = $this->__('%s was added to your shopping cart.', Mage::helper('core')->escapeHtml($product->getName()));
+                $message = $this->__('%s was added to your shopping cart.',
+                    Mage::helper('core')->escapeHtml($product->getName()));
                 $this->_getSession()->addSuccess($message);
             }
             $this->_goBack();
@@ -86,7 +93,7 @@ class Brera_MagentoConnector_CartController extends Mage_Core_Controller_Front_A
 
     /**
      * @param Mage_Catalog_Model_Product $product
-     * @param int $qty
+     * @param int                        $qty
      */
     private function addConfigurableProductForSimpleProduct(Mage_Catalog_Model_Product $product, $qty)
     {
@@ -117,9 +124,9 @@ class Brera_MagentoConnector_CartController extends Mage_Core_Controller_Front_A
         $stockItem = Mage::getModel('cataloginventory/stock_item')->loadByProduct($configProduct);
         $configProduct->setStockItem($stockItem);
         $params = array(
-            'product' => $configProduct->getId(),
+            'product'         => $configProduct->getId(),
             'super_attribute' => $superAttributes,
-            'qty' => $qty,
+            'qty'             => $qty,
         );
 
         $this->_getCart()->addProduct($configProduct, $params);

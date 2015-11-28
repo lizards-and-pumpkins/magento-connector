@@ -24,12 +24,14 @@ class Brera_MagentoConnector_Model_Export_Exporter
 
     public function exportAllProducts()
     {
+        Mage::app()->setCurrentStore(Mage::app()->getStore(Mage_Core_Model_App::ADMIN_STORE_ID));
         $collectorCollection = array($this->productCollector, 'getAllProductsCollection');
         $this->exportProductsWith($collectorCollection);
     }
 
     public function exportProductsInQueue()
     {
+        Mage::app()->setCurrentStore(Mage::app()->getStore(Mage_Core_Model_App::ADMIN_STORE_ID));
         $collectorCollection = array($this->productCollector, 'getAllQueuedProductUpdates');
         $this->exportProductsWith($collectorCollection);
         $updates = $this->productCollector->getQueuedProductUpdates();
@@ -41,9 +43,9 @@ class Brera_MagentoConnector_Model_Export_Exporter
     }
 
     /**
-     * @param int[] $ids
+     * @param int[]    $ids
      * @param string[] $skus
-     * @param string $action
+     * @param string   $action
      */
     private function cleanupQueue(array $ids, array $skus, $action)
     {
@@ -91,9 +93,9 @@ class Brera_MagentoConnector_Model_Export_Exporter
     }
 
     /**
-     * @param callable $collectorCollection
-     * @param Mage_Core_Model_Store $store
-     * @param ProductMerge $xmlMerge
+     * @param callable                                 $collectorCollection
+     * @param Mage_Core_Model_Store                    $store
+     * @param ProductMerge                             $xmlMerge
      * @param Brera_MagentoConnector_Model_XmlUploader $uploader
      */
     private function exportProductsFromStore(callable $collectorCollection, $store, $xmlMerge, $uploader)

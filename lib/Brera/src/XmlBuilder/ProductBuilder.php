@@ -6,9 +6,22 @@ require_once('InvalidImageDefinitionException.php');
 
 class ProductBuilder
 {
-    const ATTRIBUTE_TYPES = [
-        'type_id',
-        'sku',
+    const IGNORED_PRODUCT_ATTRIBUTES = [
+        'images',
+        'variations',
+        'associated_products',
+    ];
+
+    const PRODUCT_ATTRIBUTES_MAGENTO_TO_LAP_MAP = [
+        'type_id'      => 'type',
+        'sku'          => 'sku',
+        'tax_class_id' => 'tax_class',
+    ];
+
+    const ASSOCIATED_PRODUCT_ATTRIBUTES_MAGENTO_TO_LAP_MAP = [
+        'type_id'      => 'type',
+        'sku'          => 'sku',
+        'tax_class_id' => 'tax_class',
     ];
 
     /**
@@ -50,44 +63,38 @@ class ProductBuilder
 
     private function parseProduct()
     {
-        $this->createProductNode();
+        $this->xml->startElement('product');
+        $this->createProductAttributesAsAttributes();
+
+        $this->createImagesNodes();
+        $this->createAssociatedProductsNode();
+        $this->createVariationsNode();
+
+        $this->xml->startElement('attributes');
         foreach ($this->productData as $attributeName => $value) {
             $this->checkAttributeName($attributeName);
-            if ($this->isAttributeProductAttribute($attributeName)) {
+            if (!$this->isANodeRequiredForAttribute($attributeName)) {
                 continue;
             }
-            if ($attributeName == 'images') {
-                $this->createImageNodes($value);
-            } elseif ($attributeName == 'categories') {
-                $this->createCategoryNodes($value);
-            } elseif ($attributeName == 'associated_products') {
-                $this->createAssociatedProductNodes($value);
-            } elseif ($attributeName == 'variations') {
-                $this->createVariations($value);
+
+            if ($attributeName == 'categories') {
+                $this->createNode('category', $value);
             } else {
                 $this->createNode($attributeName, $value);
             }
         }
-        $this->xml->endElement();
+        $this->xml->endElement(); // attributes
+        $this->xml->endElement(); // product
     }
 
-    private function createVariations($attributes)
+    private function createVariations()
     {
+        $attributes = $this->productData['variations'];
         $this->xml->startElement('variations');
         foreach ($attributes as $attribute) {
             $this->xml->writeElement('attribute', $attribute);
         }
         $this->xml->endElement(); // variations
-    }
-
-    /**
-     * @param string[] $categories
-     */
-    private function createCategoryNodes(array $categories)
-    {
-        foreach ($categories as $category) {
-            $this->createNode('category', $category);
-        }
     }
 
     /**
@@ -107,9 +114,10 @@ class ProductBuilder
      *
      * @return bool
      */
-    private function isAttributeProductAttribute($attribute)
+    private function isANodeRequiredForAttribute($attribute)
     {
-        return in_array($attribute, self::ATTRIBUTE_TYPES);
+        return !in_array($attribute, self::IGNORED_PRODUCT_ATTRIBUTES)
+        && !in_array($attribute, array_keys(self::PRODUCT_ATTRIBUTES_MAGENTO_TO_LAP_MAP));
     }
 
     /**
@@ -157,13 +165,42 @@ class ProductBuilder
      */
     private function createNode($attributeName, $value)
     {
-        if (!$this->isCastableToString($value)) {
+        if (!is_array($value) && !$this->isCastabletoString($value)) {
             return;
         }
-        $this->xml->startElement($attributeName);
-        $this->addContextAttributes();
-        $this->xml->text($value);
-        $this->xml->endElement();
+        $values = $value;
+        if ($this->isCastableToString($value)) {
+            $values = array($value);
+        }
+
+        foreach ($values as $value) {
+            $this->xml->startElement($attributeName);
+            $this->addContextAttributes();
+            if ($this->isCdataNeeded($value)) {
+                $value = str_replace(']]>', ']]]]><![CDATA[', $value);
+                $this->xml->writeCdata($value);
+            } else {
+                $this->xml->text($value);
+            }
+            $this->xml->endElement();
+        }
+    }
+
+    /**
+     * @param string $value
+     *
+     * @return bool
+     */
+    private function isCdataNeeded($value)
+    {
+        $forbidden = ['&', '<'];
+
+        foreach ($forbidden as $string) {
+            if (strpos($value, $string) !== false) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -184,13 +221,13 @@ class ProductBuilder
         return (is_object($value) && method_exists($value, '__toString'));
     }
 
-    /**
-     * @param string[][] $images
-     */
-    private function createImageNodes($images)
+    private function createImagesNodes()
     {
+        if (!isset($this->productData['images'])) {
+            return;
+        }
         $this->xml->startElement('images');
-        foreach ($images as $image) {
+        foreach ($this->productData['images'] as $image) {
             $this->createImageNode($image);
         }
         $this->xml->endElement();
@@ -205,23 +242,24 @@ class ProductBuilder
         }
     }
 
-    /**
-     * @param string[][][] $products
-     */
-    private function createAssociatedProductNodes(array $products)
+    private function createAssociatedProductNodes()
     {
+        /** @var $products string[] */
+        $products = $this->productData['associated_products'];
         $this->validateAssociatedProducts($products);
         $xml = $this->xml;
         $xml->startElement('associated_products');
         foreach ($products as $product) {
             $xml->startElement('product');
-            $xml->writeAttribute('sku', $product['sku']);
-            $xml->writeAttribute('visible', $product['visible'] ? 'true' : 'false');
-            $xml->writeAttribute('tax_class_id', $product['tax_class_id']);
+            foreach (self::ASSOCIATED_PRODUCT_ATTRIBUTES_MAGENTO_TO_LAP_MAP as $magentoName => $lpName) {
+                if (isset($product[$magentoName])) {
+                    $xml->writeAttribute($lpName, $product[$magentoName]);
+                }
+            }
             $xml->startElement('attributes');
             $xml->writeElement('stock_qty', $product['stock_qty']);
             foreach ($product['attributes'] as $attributeName => $value) {
-                $locale = isset($this->context['language']) ? $this->context['language'] : '';
+                $locale = isset($this->context['locale']) ? $this->context['locale'] : '';
                 $xml->startElement($attributeName);
                 $xml->writeAttribute('locale', $locale);
                 $xml->text($value);
@@ -246,17 +284,29 @@ class ProductBuilder
      */
     private function validateContext(array $context)
     {
-        // TODO make sure language exists
+        // TODO make sure locale exists
     }
 
-    private function createProductNode()
+    private function createProductAttributesAsAttributes()
     {
-        $this->xml->startElement('product');
-        if (isset($this->productData['sku'])) {
-            $this->xml->writeAttribute('sku', $this->productData['sku']);
+        foreach (self::PRODUCT_ATTRIBUTES_MAGENTO_TO_LAP_MAP as $magentoAttribute => $lpAttribute) {
+            if (isset($this->productData[$magentoAttribute])) {
+                $this->xml->writeAttribute($lpAttribute, $this->productData[$magentoAttribute]);
+            }
         }
-        if (isset($this->productData['type_id'])) {
-            $this->xml->writeAttribute('type', $this->productData['type_id']);
+    }
+
+    private function createAssociatedProductsNode()
+    {
+        if (isset($this->productData['associated_products'])) {
+            $this->createAssociatedProductNodes();
+        }
+    }
+
+    private function createVariationsNode()
+    {
+        if (isset($this->productData['variations'])) {
+            $this->createVariations();
         }
     }
 }

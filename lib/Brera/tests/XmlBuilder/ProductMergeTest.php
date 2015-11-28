@@ -18,9 +18,9 @@ class ProductMergeTest extends \PHPUnit_Framework_TestCase
         $xml = $this->merge->finish();
 
         $namespaces = [
-            'xmlns="http://brera\.io"',
+            'xmlns="http://lizardsandpumpkins\.com"',
             'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"',
-            'xsi:schemaLocation="http://brera.io ../../schema/catalog.xsd"',
+            'xsi:schemaLocation="http://lizardsandpumpkins\.com \.\./\.\./schema/catalog\.xsd"',
         ];
         foreach ($namespaces as $ns) {
             $this->assertRegExp("#<catalog .*$ns.*>#Us", $xml);
