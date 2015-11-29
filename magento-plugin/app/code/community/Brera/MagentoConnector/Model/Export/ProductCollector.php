@@ -72,7 +72,7 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
             return $this->productIterator->current();
         }
 
-        $this->cleanupAndPrepareForNextBunchOfProducts();
+        $this->prepareNextBunchOfProducts();
 
         $this->store = array_pop($this->storesToExport);
         if (empty($this->queuedProductIds)) {
@@ -121,19 +121,6 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
         return $collection;
     }
 
-    private function cleanupQueueForLastLoop()
-    {
-        // TODO find better solution
-        // if this part of the code is called again, we already returned all products and
-        // we expect no error, so we can delete these
-        if ($this->messageIterator) {
-            /** @var $message Zend_Queue_Message */
-            foreach ($this->messageIterator as $message) {
-                $message->getQueue()->deleteMessage($message);
-            }
-        }
-    }
-
     /**
      * @return int[]
      */
@@ -144,15 +131,15 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
         foreach ($this->messageIterator as $item) {
             /** @var $item Zend_Queue_Message */
             $productIds[] = $item->body;
+            $item->getQueue()->deleteMessage($item);
         }
         return $productIds;
     }
 
-    private function cleanupAndPrepareForNextBunchOfProducts()
+    private function prepareNextBunchOfProducts()
     {
         if (empty($this->storesToExport)) {
             $this->storesToExport = $this->getStoresToExport();
-            $this->cleanupQueueForLastLoop();
             $this->queuedProductIds = $this->getQueuedProductIds();
         }
     }
