@@ -79,7 +79,6 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
     {
         $productData = [];
         foreach ($product->getData() as $key => $value) {
-            $attribute = $product->getResource()->getAttribute($key);
             if ($key == 'media_gallery') {
                 if (isset($value['images']) && is_array($value['images'])) {
                     foreach ($value['images'] as $image) {
@@ -90,11 +89,6 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
                         ];
                     }
                 }
-            } elseif ($attribute && $attribute->getSource() && $product->getAttributeText($key)) {
-                // TODO macht description kaputt
-                $productData[$key] = $product->getAttributeText($key);
-            } elseif ($this->isCastableToString($value)) {
-                $productData[$key] = $value;
             } elseif ($key == 'simple_products') {
                 if (is_array($value)) {
                     /** @var Mage_Catalog_Model_Product $simpleProduct */
@@ -117,21 +111,12 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
                 if (is_array($value)) {
                     $productData['variations'] = $value;
                 }
+            } elseif ($product->getResource()->getAttribute($key)) {
+                $productData[$key] = $product->getResource()->getAttribute($key)->getFrontend()->getValue($product);
+            } else {
+                $productData[$key] = $product->getDataUsingMethod($key);
             }
         }
         return $productData;
-    }
-
-    private function isCastableToString($value)
-    {
-        if (is_array($value)) {
-            return false;
-        }
-
-        if (!is_object($value) && settype($value, 'string') !== false) {
-            return true;
-        }
-
-        return (is_object($value) && method_exists($value, '__toString'));
     }
 }
