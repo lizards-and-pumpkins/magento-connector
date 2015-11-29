@@ -9,3 +9,4 @@ magento-plugin/skin/frontend/base/default/js/brera_magentoconnector             
 lib/*                                                                               lib/
 
 magento-plugin/shell/*                                                              shell/
+pollExportQueue.php                                                                 pollExportQueue.php
