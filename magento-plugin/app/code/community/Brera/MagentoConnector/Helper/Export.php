@@ -175,9 +175,7 @@ SQL;
         try {
             $queue->send($id);
         } catch (Zend_Queue_Exception $e) {
-            if ($e->getCode() == self::MYSQL_DUPLICATE_ENTRY_ERROR_NUMBER) {
-                // do nothing
-            } else {
+            if ($e->getCode() != self::MYSQL_DUPLICATE_ENTRY_ERROR_NUMBER) {
                 throw $e;
             }
         }

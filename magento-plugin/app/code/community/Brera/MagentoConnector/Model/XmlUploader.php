@@ -35,7 +35,7 @@ abstract class Brera_MagentoConnector_Model_XmlUploader
      * @param string $partialString
      * @return int
      */
-    public function writePartialString($partialString)
+    public function writePartialXmlString($partialString)
     {
         return fwrite($this->getUploadStream(), $partialString);
     }

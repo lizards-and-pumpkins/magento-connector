@@ -77,7 +77,7 @@ class Brera_MagentoConnector_Model_Export_Exporter
         /** @var Brera_MagentoConnector_Model_ProductXmlUploader $uploader */
         $uploader = Mage::getModel('brera_magentoconnector/productXmlUploader');
 
-        $productsExported = 0;
+        $numberOfProductsExported = 0;
         while ($product = $collector->getProduct()) {
             $xmlBuilderAndUploader = new Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader(
                 $product,
@@ -86,17 +86,17 @@ class Brera_MagentoConnector_Model_Export_Exporter
             );
 
             $xmlBuilderAndUploader->process();
-            $productsExported++;
+            $numberOfProductsExported++;
         }
 
 
-        if (!$productsExported) {
-            return $productsExported;
+        if (0 === $numberOfProductsExported) {
+            return 0;
         }
 
-        $uploader->writePartialString($xmlMerge->finish());
+        $uploader->writePartialXmlString($xmlMerge->finish());
         $filename = $uploader->getFilename();
         $this->triggerCatalogUpdateApi($filename);
-        return $productsExported;
+        return $numberOfProductsExported;
     }
 }
