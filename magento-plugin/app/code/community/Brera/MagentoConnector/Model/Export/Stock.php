@@ -64,7 +64,7 @@ class Brera_MagentoConnector_Model_Export_Stock
     }
 
     /**
-     * @param int[] $ids
+     * @param int[]        $ids
      * @param StockBuilder $stockBuilder
      * @return string
      */

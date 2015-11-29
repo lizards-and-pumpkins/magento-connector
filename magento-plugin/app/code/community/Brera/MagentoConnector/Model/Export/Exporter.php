@@ -1,5 +1,6 @@
 <?php
 
+use Brera\MagentoConnector\Api\Api;
 use Brera\MagentoConnector\XmlBuilder\ProductMerge;
 
 class Brera_MagentoConnector_Model_Export_Exporter
@@ -29,7 +30,6 @@ class Brera_MagentoConnector_Model_Export_Exporter
 
     /**
      * @param Mage_Core_Model_Store $store
-     *
      * @return int
      */
     public function exportOneStore(Mage_Core_Model_Store $store)
@@ -43,7 +43,6 @@ class Brera_MagentoConnector_Model_Export_Exporter
 
     /**
      * @param Mage_Core_Model_Website $website
-     *
      * @return int
      */
     public function exportOneWebsite(Mage_Core_Model_Website $website)
@@ -64,13 +63,12 @@ class Brera_MagentoConnector_Model_Export_Exporter
     private function triggerCatalogUpdateApi($filename)
     {
         $apiUrl = Mage::getStoreConfig('brera/magentoconnector/api_url');
-        $api = new \Brera\MagentoConnector\Api\Api($apiUrl);
+        $api = new Api($apiUrl);
         $api->triggerProductImport($filename);
     }
 
     /**
      * @param Brera_MagentoConnector_Model_Export_ProductCollector $collector
-     *
      * @return int
      */
     private function export(Brera_MagentoConnector_Model_Export_ProductCollector $collector)

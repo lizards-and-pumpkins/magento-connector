@@ -72,7 +72,6 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
 
     /**
      * @param $product
-     *
      * @return string[]
      */
     private function transformData(Mage_Catalog_Model_Product $product)

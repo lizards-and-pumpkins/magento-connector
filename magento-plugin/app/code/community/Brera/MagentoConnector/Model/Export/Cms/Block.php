@@ -92,7 +92,6 @@ class Brera_MagentoConnector_Model_Export_Cms_Block
     /**
      * @param $store
      * @return Mage_Core_Model_Layout
-     * @throws Mage_Core_Exception
      */
     private function emulateStore($store)
     {

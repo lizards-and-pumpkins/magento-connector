@@ -53,8 +53,8 @@ class ProductMerge
         $this->xml->startElement('catalog');
 
         $attributes = [
-            'xmlns' => 'http://lizardsandpumpkins.com',
-            'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
+            'xmlns'              => 'http://lizardsandpumpkins.com',
+            'xmlns:xsi'          => 'http://www.w3.org/2001/XMLSchema-instance',
             'xsi:schemaLocation' => 'http://lizardsandpumpkins.com ../../schema/catalog.xsd'
         ];
 

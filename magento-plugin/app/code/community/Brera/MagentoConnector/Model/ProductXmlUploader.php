@@ -18,7 +18,6 @@ class Brera_MagentoConnector_Model_ProductXmlUploader extends Brera_MagentoConne
 
     /**
      * @param string $xmlPath
-     *
      * @return string
      */
     private function suffixPathWithDirectorySeperatorIfNeeded($xmlPath)

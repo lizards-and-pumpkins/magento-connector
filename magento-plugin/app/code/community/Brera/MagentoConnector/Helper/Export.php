@@ -7,7 +7,8 @@ class Brera_MagentoConnector_Helper_Export
 
     const MYSQL_DUPLICATE_ENTRY_ERROR_NUMBER = 23000;
 
-    const MAX_MESSAGES = 500;
+    const QUEUE_MESSAGES_FETCHED_PER_REQUEST = 500;
+
     const TIMEOUT = 30;
 
     /**
@@ -23,7 +24,7 @@ class Brera_MagentoConnector_Helper_Export
     /**
      * @var Zend_Queue[]
      */
-    protected $_queues = [];
+    private $_queues = [];
 
     public function __construct()
     {
@@ -31,16 +32,14 @@ class Brera_MagentoConnector_Helper_Export
         $this->connection = $this->resource->getConnection('core_write');
     }
 
-
     public function addAllProductIdsToProductUpdateQueue()
     {
         $queueId = $this->getQueueIdByName(self::QUEUE_PRODUCT_UPDATES);
-        $time = time();
 
         $query = <<<SQL
 INSERT IGNORE INTO `message`
   (queue_id, created, body, md5)
-  (SELECT $queueId, $time, entity_id, MD5(entity_id) FROM `catalog_product_entity`)
+  (SELECT $queueId, {time()}, entity_id, MD5(entity_id) FROM `catalog_product_entity`)
 SQL;
 
         $this->connection->query($query)->execute();
@@ -52,7 +51,6 @@ SQL;
     public function addAllProductIdsFromWebsiteToProductUpdateQueue(Mage_Core_Model_Website $website)
     {
         $queueId = $this->getQueueIdByName(self::QUEUE_PRODUCT_UPDATES);
-        $time = time();
 
         $productToWebsiteTable = $this->resource->getTableName('catalog/product_website');
         $productTable = $this->resource->getTableName('catalog/product');
@@ -61,7 +59,7 @@ SQL;
 INSERT IGNORE INTO `message`
   (queue_id, created, body, md5)
   (
-    SELECT $queueId, $time, entity_id, MD5(entity_id) FROM $productTable p
+    SELECT $queueId, {time()}, entity_id, MD5(entity_id) FROM $productTable p
     INNER JOIN  $productToWebsiteTable p2w ON p.entity_id = p2w.product_id
     WHERE p2w.website_id = {$website->getId()}
   )
@@ -72,9 +70,7 @@ SQL;
 
     /**
      * @param string $queueName
-     *
      * @return Zend_Queue
-     * @throws Zend_Queue_Exception
      */
     private function getQueue($queueName)
     {
@@ -97,20 +93,14 @@ SQL;
 
     /**
      * @param int[] $ids
-     *
-     * @throws Zend_Queue_Exception
      */
     public function addStockUpdatesToQueue(array $ids)
     {
-        foreach ($ids as $id) {
-            $this->addStockUpdateToQueue($id);
-        }
+        array_map($ids, [$this, 'addStockUpdateToQueue']);
     }
 
     /**
      * @param int $id
-     *
-     * @throws Zend_Queue_Exception
      */
     private function addStockUpdateToQueue($id)
     {
@@ -122,15 +112,11 @@ SQL;
      */
     public function addProductUpdatesToQueue(array $ids)
     {
-        foreach ($ids as $id) {
-            $this->addProductUpdateToQueue($id);
-        }
+        array_map($ids, [$this, 'addProductUpdateToQueue']);
     }
 
     /**
      * @param int $id
-     *
-     * @throws Zend_Queue_Exception
      */
     private function addProductUpdateToQueue($id)
     {
@@ -141,29 +127,25 @@ SQL;
     {
         /** @var int[] $ids */
         $ids = Mage::getResourceModel('catalog/product_collection')->getAllIds();
-        foreach ($ids as $id) {
-            $this->addStockUpdateToQueue($id);
-        }
+        array_map([$this, 'addStockUpdateToQueue'], $ids);
     }
 
     /**
      * @return Zend_Queue_Message_Iterator
-     * @throws Zend_Queue_Exception
      */
     public function getStockUpdatesToExport()
     {
         $queue = $this->getQueue(self::QUEUE_STOCK_UPDATES);
-        return $queue->receive(self::MAX_MESSAGES, self::TIMEOUT);
+        return $queue->receive(self::QUEUE_MESSAGES_FETCHED_PER_REQUEST, self::TIMEOUT);
     }
 
     /**
      * @return Zend_Queue_Message_Iterator
-     * @throws Zend_Queue_Exception
      */
     public function getProductUpdatesToExport()
     {
         $queue = $this->getQueue(self::QUEUE_PRODUCT_UPDATES);
-        return $queue->receive(self::MAX_MESSAGES, self::TIMEOUT);
+        return $queue->receive(self::QUEUE_MESSAGES_FETCHED_PER_REQUEST, self::TIMEOUT);
     }
 
     /**
@@ -180,17 +162,12 @@ SQL;
      */
     private function deleteMessages(array $messages, $queueName)
     {
-        $queue = $this->getQueue($queueName);
-        foreach ($messages as $message) {
-            $queue->deleteMessage($message);
-        }
+        array_map([$this->getQueue($queueName), 'deleteMessage'], $messages)
     }
 
     /**
      * @param int    $id
      * @param string $queue
-     *
-     * @throws Zend_Queue_Exception
      */
     private function addToQueue($id, $queue)
     {
@@ -208,7 +185,6 @@ SQL;
 
     /**
      * @param string $queueName
-     *
      * @return string
      */
     private function getQueueIdByName($queueName)

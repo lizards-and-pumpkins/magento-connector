@@ -54,7 +54,6 @@ abstract class Brera_MagentoConnector_Model_XmlUploader
 
     /**
      * @param string $target
-     * @throws Mage_Core_Exception
      */
     private function checkTarget($target)
     {

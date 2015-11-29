@@ -99,7 +99,6 @@ class ProductBuilder
 
     /**
      * @param string $attributeName
-     *
      * @return bool
      */
     private function checkAttributeName($attributeName)
@@ -111,7 +110,6 @@ class ProductBuilder
 
     /**
      * @param string $attribute
-     *
      * @return bool
      */
     private function isANodeRequiredForAttribute($attribute)
@@ -188,14 +186,13 @@ class ProductBuilder
 
     /**
      * @param string $value
-     *
      * @return bool
      */
     private function isCdataNeeded($value)
     {
-        $forbidden = ['&', '<', '"', "'", '>'];
+        $xmlUnsafeCharacters = ['&', '<', '"', "'", '>'];
 
-        foreach ($forbidden as $string) {
+        foreach ($xmlUnsafeCharacters as $string) {
             if (strpos($value, $string) !== false) {
                 return true;
             }
@@ -205,7 +202,6 @@ class ProductBuilder
 
     /**
      * @param mixed $value
-     *
      * @return bool
      */
     private function isCastabletoString($value)

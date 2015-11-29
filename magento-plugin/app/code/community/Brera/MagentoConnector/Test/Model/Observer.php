@@ -186,7 +186,7 @@ class Brera_MagentoConnector_Test_Model_Observer extends EcomDev_PHPUnit_Test_Ca
 
     /**
      * @param string $action
-     * @param int[] $productId
+     * @param int[]  $productId
      * @return Varien_Event_Observer
      */
     private function setupEventWith($action, $productId = [12])
@@ -212,7 +212,7 @@ class Brera_MagentoConnector_Test_Model_Observer extends EcomDev_PHPUnit_Test_Ca
     }
 
     /**
-     * @param int[] $productIds
+     * @param int[]  $productIds
      * @param string $action
      * @return EcomDev_PHPUnit_Mock_Proxy
      */
@@ -222,7 +222,7 @@ class Brera_MagentoConnector_Test_Model_Observer extends EcomDev_PHPUnit_Test_Ca
     }
 
     /**
-     * @param int[] $skus
+     * @param int[]  $skus
      * @param string $action
      * @return EcomDev_PHPUnit_Mock_Proxy
      */
@@ -279,7 +279,7 @@ class Brera_MagentoConnector_Test_Model_Observer extends EcomDev_PHPUnit_Test_Ca
     }
 
     /**
-     * @param int[] $identifier
+     * @param int[]  $identifier
      * @param string $action
      * @return EcomDev_PHPUnit_Mock_Proxy
      */

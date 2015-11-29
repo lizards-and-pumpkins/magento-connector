@@ -105,7 +105,6 @@ class Api
      * @param string   $url
      * @param string[] $headers
      * @param string   $body
-     *
      * @return Request
      */
     private function createHttpRequest($method, $url, $headers, $body)

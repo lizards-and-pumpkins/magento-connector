@@ -102,7 +102,6 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
 
     /**
      * @param Mage_Core_Model_Store $store
-     *
      * @return Mage_Catalog_Model_Resource_Product_Collection
      */
     private function createCollection($store)
@@ -403,7 +402,6 @@ SQL;
      * reference I dropped it into the helper here.
      *
      * @param int[] $productIds
-     *
      * @return string[]
      */
     private function getConfigurableAttributesForProductsFromResource(array $productIds)
