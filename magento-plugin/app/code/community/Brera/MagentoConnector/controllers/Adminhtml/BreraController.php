@@ -4,10 +4,14 @@ class Brera_MagentoConnector_Adminhtml_BreraController extends Mage_Adminhtml_Co
 {
     public function exportAllProductsAction()
     {
-        /** @var Brera_MagentoConnector_Model_Export_Exporter $exporter */
-        $exporter = Mage::getModel('brera_magentoconnector/export_exporter');
-        $exporter->exportAllProducts();
-        Mage::getSingleton('core/session')->addSuccess('All products exported');
+        try {
+            /** @var Brera_MagentoConnector_Model_Export_Exporter $exporter */
+            $exporter = Mage::getModel('brera_magentoconnector/export_exporter');
+            $productsExported = $exporter->exportAllProducts();
+            Mage::getSingleton('core/session')->addSuccess(sprintf('All (%s) products exported.', $productsExported));
+        } catch (Mage_Core_Exception $e) {
+            Mage::getSingleton('core/session')->addError($e->getMessage());
+        }
         $this->_redirect('/');
     }
 
@@ -16,10 +20,12 @@ class Brera_MagentoConnector_Adminhtml_BreraController extends Mage_Adminhtml_Co
         try {
             /** @var Brera_MagentoConnector_Model_Export_Exporter $exporter */
             $exporter = Mage::getModel('brera_magentoconnector/export_exporter');
-            $exporter->exportProductsInQueue();
-            Mage::getSingleton('core/session')->addSuccess('All products in queue exported');
+            $productsExported = $exporter->exportProductsInQueue();
+            Mage::getSingleton('core/session')->addSuccess(
+                sprintf('%s products from queue exported.', $productsExported)
+            );
         } catch (Mage_Core_Exception $e) {
-            Mage::getSingleton('core/session')->addNotice($e->getMessage());
+            Mage::getSingleton('core/session')->addError($e->getMessage());
         }
         $this->_redirect('/');
     }
@@ -31,7 +37,7 @@ class Brera_MagentoConnector_Adminhtml_BreraController extends Mage_Adminhtml_Co
             Mage::getModel('brera_magentoconnector/export_stock')->export();
             Mage::getSingleton('core/session')->addSuccess('All stocks exported');
         } catch (Mage_Core_Exception $e) {
-            Mage::getSingleton('core/session')->addNotice($e->getMessage());
+            Mage::getSingleton('core/session')->addError($e->getMessage());
         }
         $this->_redirect('/');
     }
@@ -43,7 +49,7 @@ class Brera_MagentoConnector_Adminhtml_BreraController extends Mage_Adminhtml_Co
             $exporter->export();
             Mage::getSingleton('core/session')->addSuccess('All cms blocks exported');
         } catch (Mage_Core_Exception $e) {
-            Mage::getSingleton('core/session')->addNotice($e->getMessage());
+            Mage::getSingleton('core/session')->addError($e->getMessage());
         }
         $this->_redirect('/');
 
