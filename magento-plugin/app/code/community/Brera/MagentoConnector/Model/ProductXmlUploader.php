@@ -10,9 +10,7 @@ class Brera_MagentoConnector_Model_ProductXmlUploader extends Brera_MagentoConne
     public function __construct()
     {
         $xmlPath = Mage::getStoreConfig('brera/magentoconnector/local_path_for_product_export');
-        $xmlFilename = strftime(
-            Mage::getStoreConfig('brera/magentoconnector/local_filename_template_for_product_export')
-        );
+        $xmlFilename = strftime(Mage::getStoreConfig('brera/magentoconnector/local_filename_template'));
         $this->filename = $xmlFilename;
         $xmlPath = $this->suffixPathWithDirectorySeperatorIfNeeded($xmlPath);
         parent::__construct($xmlPath . $xmlFilename);
