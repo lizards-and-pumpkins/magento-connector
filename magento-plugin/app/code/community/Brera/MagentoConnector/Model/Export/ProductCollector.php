@@ -241,14 +241,15 @@ SQL;
         /** @var $categoryCollection Mage_Catalog_Model_Resource_Category_Collection */
         $categoryCollection = Mage::getResourceModel('catalog/category_collection')
             ->setStore($this->store)
-            ->addAttributeToSelect('url_key');
+            ->addAttributeToSelect('url_path');
         $categoryCollection->addIdFilter($categoryIds);
 
         foreach ($this->collection as $product) {
             $categories = [];
             foreach ($product->getCategoryIds() as $categoryId) {
-                $categories[] = $categoryCollection->getItemById($categoryId)
-                    ->getUrlKey();
+                /** @var $category Mage_Catalog_Model_Category */
+                $category = $categoryCollection->getItemById($categoryId);
+                $categories[] = $category->getUrlPath();
             }
             $product->setCategories($categories);
         }
