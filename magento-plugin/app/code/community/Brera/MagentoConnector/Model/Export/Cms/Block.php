@@ -25,14 +25,14 @@ class Brera_MagentoConnector_Model_Export_Cms_Block
     private function getAllCmsBlocksWithStoreId()
     {
         $cmsBlocks = Mage::getResourceModel('cms/block_collection')
-            ->join(array('block_store' => 'cms/block_store'), 'main_table.block_id=block_store.block_id', 'store_id')
+            ->join(['block_store' => 'cms/block_store'], 'main_table.block_id=block_store.block_id', 'store_id')
             ->addExpressionFieldToSelect(
                 'block_id',
                 "CONCAT({{block_id}}, {{store_id}})",
-                array(
+                [
                     'block_id' => 'main_table.block_id',
                     'store_id' => 'store_id',
-                )
+                ]
             );
         return $cmsBlocks;
     }
@@ -53,9 +53,9 @@ class Brera_MagentoConnector_Model_Export_Cms_Block
     {
         foreach ($cmsBlocks as $block) {
             /* @var Mage_Cms_Model_Block $block */
-            $context = array(
+            $context = [
                 'locale' => Mage::getStoreConfig('general/locale/code', $block->getStoreId())
-            );
+            ];
             $this->api->triggerCmsBlockUpdate($block->getIdentifier(), $block->getContent(), $context);
         }
         $this->exportSpecialBlocks();
@@ -81,9 +81,9 @@ class Brera_MagentoConnector_Model_Export_Cms_Block
                 }
 
                 $content = $block->toHtml();
-                $context = array(
+                $context = [
                     'locale' => Mage::getStoreConfig('general/locale/code', $store->getId())
-                );
+                ];
                 $this->api->triggerCmsBlockUpdate($block->getNameInLayout(), $content, $context);
             }
         }
@@ -92,7 +92,6 @@ class Brera_MagentoConnector_Model_Export_Cms_Block
     /**
      * @param $store
      * @return Mage_Core_Model_Layout
-     * @throws Mage_Core_Exception
      */
     private function emulateStore($store)
     {

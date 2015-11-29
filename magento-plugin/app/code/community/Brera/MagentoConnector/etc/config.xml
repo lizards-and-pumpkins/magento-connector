@@ -173,8 +173,7 @@
             <adminhtml>
                 <args>
                     <modules>
-                        <brera_magentoconnector
-                                after="Mage_Adminhtml">Brera_MagentoConnector_Adminhtml</brera_magentoconnector>
+                        <magentoconnector after="Mage_Adminhtml">Brera_MagentoConnector_Adminhtml</magentoconnector>
                     </modules>
                 </args>
             </adminhtml>
@@ -183,9 +182,9 @@
     <default>
         <brera>
             <magentoconnector>
-                <product_xml_target><![CDATA[file:///vagrant/magento.xml]]></product_xml_target>
+                <local_path_for_product_export><![CDATA[file:///vagrant/]]></local_path_for_product_export>
+                <local_filename_template><![CDATA[magento-%s.xml]]></local_filename_template>
                 <stock_xml_target><![CDATA[file:///vagrant/stock.xml]]></stock_xml_target>
-                <remote_catalog_xml_location><![CDATA[file:///vagrant/magento-remote.xml]]></remote_catalog_xml_location>
                 <api_url><![CDATA[http://brera-magento-connector.dev/brera/api/]]></api_url>
                 <cms_special_blocks>
                     <top.menu/>

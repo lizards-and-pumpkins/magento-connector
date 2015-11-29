@@ -35,7 +35,7 @@ abstract class Brera_MagentoConnector_Model_XmlUploader
      * @param string $partialString
      * @return int
      */
-    public function writePartialString($partialString)
+    public function writePartialXmlString($partialString)
     {
         return fwrite($this->getUploadStream(), $partialString);
     }
@@ -54,7 +54,6 @@ abstract class Brera_MagentoConnector_Model_XmlUploader
 
     /**
      * @param string $target
-     * @throws Mage_Core_Exception
      */
     private function checkTarget($target)
     {
@@ -71,10 +70,10 @@ abstract class Brera_MagentoConnector_Model_XmlUploader
      */
     private function getAllowedProtocols()
     {
-        return array(
+        return [
             'ssh2.scp://',
             'ssh2.sftp://',
             'file://',
-        );
+        ];
     }
 }

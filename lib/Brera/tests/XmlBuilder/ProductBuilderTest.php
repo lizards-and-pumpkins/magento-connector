@@ -116,7 +116,6 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
     /**
      * @param string[] $productData
      * @param string   $exceptionMessage
-     *
      * @dataProvider getInvalidImageData
      */
     public function testInvalidImageArgument($productData, $exceptionMessage)
@@ -290,7 +289,6 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
     /**
      * @param string[] $productData
      * @param string[] $context
-     *
      * @return string
      */
     private function getProductBuilderXml($productData, $context = [])

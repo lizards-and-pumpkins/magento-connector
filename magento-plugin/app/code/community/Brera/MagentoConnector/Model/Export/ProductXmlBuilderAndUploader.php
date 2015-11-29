@@ -11,12 +11,7 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
     /**
      * @var Mage_Catalog_Model_Resource_Product_Collection
      */
-    private $collection;
-
-    /**
-     * @var Mage_Core_Model_Store
-     */
-    private $store;
+    private $product;
 
     /**
      * @var ProductMerge
@@ -30,50 +25,40 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
 
 
     /**
-     * @param Mage_Catalog_Model_Resource_Product_Collection $collection
-     * @param Mage_Core_Model_Store                          $store
-     * @param ProductMerge                                   $merge
-     * @param Brera_MagentoConnector_Model_XmlUploader       $uploader
+     * @param Mage_Catalog_Model_Product               $product
+     * @param ProductMerge                             $merge
+     * @param Brera_MagentoConnector_Model_XmlUploader $uploader
      */
     public function __construct(
-        Mage_Catalog_Model_Resource_Product_Collection $collection,
-        Mage_Core_Model_Store $store,
+        Mage_Catalog_Model_Product $product,
         ProductMerge $merge,
         Brera_MagentoConnector_Model_XmlUploader $uploader
     ) {
-        $this->collection = $collection;
-        $this->store = $store;
+        $this->product = $product;
         $this->merge = $merge;
         $this->uploader = $uploader;
     }
 
 
-    public function getXml()
-    {
-        $this->process();
-    }
-
     private function getContext()
     {
-        return array(
-            'website' => $this->store->getWebsite()->getCode(),
-            'locale'  => Mage::getStoreConfig('general/locale/code', $this->store),
-        );
+        return [
+            'website' => $this->product->getStore()->getWebsite()->getCode(),
+            'locale'  => Mage::getStoreConfig('general/locale/code', $this->product->getStore()),
+        ];
     }
 
     public function process()
     {
         /** @var $product Mage_Catalog_Model_Product */
-        foreach ($this->collection as $product) {
-            $productBuilder = new ProductBuilder(
-                $this->transformData($product),
-                $this->getContext()
-            );
-            $productContainer = $productBuilder->getProductContainer();
-            $this->merge->addProduct($productContainer);
-            $partialXmlString = $this->merge->getPartialXmlString() . "\n";
-            $this->getUploader()->writePartialString($partialXmlString);
-        }
+        $productBuilder = new ProductBuilder(
+            $this->transformData($this->product),
+            $this->getContext()
+        );
+        $productContainer = $productBuilder->getProductContainer();
+        $this->merge->addProduct($productContainer);
+        $partialXmlString = $this->merge->getPartialXmlString() . "\n";
+        $this->getUploader()->writePartialXmlString($partialXmlString);
     }
 
     /**
@@ -86,39 +71,33 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
 
     /**
      * @param $product
-     *
      * @return string[]
      */
     private function transformData(Mage_Catalog_Model_Product $product)
     {
-        $productData = array();
+        $productData = [];
         foreach ($product->getData() as $key => $value) {
-            $attribute = $product->getResource()->getAttribute($key);
             if ($key == 'media_gallery') {
                 if (isset($value['images']) && is_array($value['images'])) {
                     foreach ($value['images'] as $image) {
-                        $productData['images'][] = array(
+                        $productData['images'][] = [
                             'main'  => $image['file'] == $product->getImage(),
                             'label' => $image['label'],
                             'file'  => $image['file'],
-                        );
+                        ];
                     }
                 }
-            } elseif ($attribute && $attribute->getSource() && $product->getAttributeText($key)) {
-                $productData[$key] = $product->getAttributeText($key);
-            } elseif ($this->isCastableToString($value)) {
-                $productData[$key] = $value;
             } elseif ($key == 'simple_products') {
                 if (is_array($value)) {
                     /** @var Mage_Catalog_Model_Product $simpleProduct */
                     foreach ($value as $simpleProduct) {
-                        $associatedProduct = array(
+                        $associatedProduct = [
                             'sku'          => $simpleProduct->getSku(),
                             'type_id'      => $simpleProduct->getTypeId(),
                             'visibility'   => $simpleProduct->getAttributeText('visibility'),
                             'tax_class_id' => $simpleProduct->getAttributeText('tax_class_id'),
                             'stock_qty'    => $simpleProduct->getStockQty(),
-                        );
+                        ];
 
                         foreach ($product->getConfigurableAttributes() as $attribute) {
                             $associatedProduct['attributes'][$attribute] = $simpleProduct->getAttributeText($attribute);
@@ -130,21 +109,12 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
                 if (is_array($value)) {
                     $productData['variations'] = $value;
                 }
+            } elseif ($product->getResource()->getAttribute($key)) {
+                $productData[$key] = $product->getResource()->getAttribute($key)->getFrontend()->getValue($product);
+            } else {
+                $productData[$key] = $product->getDataUsingMethod($key);
             }
         }
         return $productData;
-    }
-
-    private function isCastableToString($value)
-    {
-        if (is_array($value)) {
-            return false;
-        }
-
-        if (!is_object($value) && settype($value, 'string') !== false) {
-            return true;
-        }
-
-        return (is_object($value) && method_exists($value, '__toString'));
     }
 }

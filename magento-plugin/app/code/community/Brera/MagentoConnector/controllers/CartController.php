@@ -27,7 +27,7 @@ class Brera_MagentoConnector_CartController extends Mage_Core_Controller_Front_A
             $this->_getSession()->setCartWasUpdated(true);
 
             Mage::dispatchEvent('checkout_cart_add_product_complete',
-                array('product' => $product, 'request' => $this->getRequest(), 'response' => $this->getResponse())
+                ['product' => $product, 'request' => $this->getRequest(), 'response' => $this->getResponse()]
             );
         } catch (Mage_Core_Exception $e) {
             $message = $e->getMessage();
@@ -115,7 +115,7 @@ class Brera_MagentoConnector_CartController extends Mage_Core_Controller_Front_A
         $typeConfig = $configProduct->getTypeInstance(true);
         $attributes = $typeConfig->getConfigurableAttributes($configProduct);
 
-        $superAttributes = array();
+        $superAttributes = [];
         foreach ($attributes as $attributeId => $attribute) {
             $productAttribute = $attribute->getProductAttribute();
             $simpleProductAttributeValue = $product->getDataUsingMethod($productAttribute->getAttributeCode());
@@ -123,11 +123,11 @@ class Brera_MagentoConnector_CartController extends Mage_Core_Controller_Front_A
         }
         $stockItem = Mage::getModel('cataloginventory/stock_item')->loadByProduct($configProduct);
         $configProduct->setStockItem($stockItem);
-        $params = array(
+        $params = [
             'product'         => $configProduct->getId(),
             'super_attribute' => $superAttributes,
             'qty'             => $qty,
-        );
+        ];
 
         $this->_getCart()->addProduct($configProduct, $params);
     }

@@ -14,7 +14,7 @@ $table = $this->getConnection()
             'identity' => true,
             'unsigned' => true,
             'nullable' => false,
-            'primary' => true,
+            'primary'  => true,
         ],
         'Order of inserted product ids'
     )->addColumn(
