@@ -28,6 +28,18 @@ class Brera_MagentoConnector_Model_Export_Exporter
     }
 
     /**
+     * @param Mage_Core_Model_Store $store
+     */
+    public function exportOneStore(Mage_Core_Model_Store $store)
+    {
+        Mage::helper('brera_magentoconnector/export')
+            ->addAllProductIdsFromWebsiteToProductUpdateQueue($store->getWebsite());
+        $collector = Mage::getModel('brera_magentoconnector/export_productCollector');
+        $collector->setStoresToExport([$store]);
+        $this->export($collector);
+    }
+
+    /**
      * @param Mage_Core_Model_Website $website
      */
     public function exportOneWebsite(Mage_Core_Model_Website $website)
