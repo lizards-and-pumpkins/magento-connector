@@ -9,7 +9,16 @@ class Brera_MagentoConnector_Helper_Export
 
     const MAX_MESSAGES = 500;
     const TIMEOUT = 30;
+
+    /**
+     * @var Varien_Db_Adapter_Interface
+     */
     private $connection;
+
+    /**
+     * @var Mage_Core_Model_Resource
+     */
+    private $resource;
 
     /**
      * @var Zend_Queue[]
@@ -18,8 +27,8 @@ class Brera_MagentoConnector_Helper_Export
 
     public function __construct()
     {
-        $resource = Mage::getSingleton('core/resource');
-        $this->connection = $resource->getConnection('core_write');
+        $this->resource = Mage::getSingleton('core/resource');
+        $this->connection = $this->resource->getConnection('core_write');
     }
 
 
@@ -45,8 +54,8 @@ SQL;
         $queueId = $this->getQueueIdByName(self::QUEUE_PRODUCT_UPDATES);
         $time = time();
 
-        $productToWebsiteTable = $this->connection->getTableName('catalog/product_website');
-        $productTable = $this->connection->getTableName('catalog/product');
+        $productToWebsiteTable = $this->resource->getTableName('catalog/product_website');
+        $productTable = $this->resource->getTableName('catalog/product');
 
         $query = <<<SQL
 INSERT IGNORE INTO `message`
@@ -54,7 +63,7 @@ INSERT IGNORE INTO `message`
   (
     SELECT $queueId, $time, entity_id, MD5(entity_id) FROM $productTable p
     INNER JOIN  $productToWebsiteTable p2w ON p.entity_id = p2w.product_id
-    WHERE p2w = {$website->getId()}
+    WHERE p2w.website_id = {$website->getId()}
   )
 SQL;
 
