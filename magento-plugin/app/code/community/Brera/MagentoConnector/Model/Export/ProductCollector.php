@@ -33,6 +33,11 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
     private $storesToExport;
 
     /**
+     * @var Mage_Core_Model_Store[]
+     */
+    private $storesToExportTemplate;
+
+    /**
      * @var Mage_Catalog_Model_Product[]
      */
     private $simpleProducts;
@@ -146,7 +151,7 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
     private function cleanupAndPrepareForNextBunchOfProducts()
     {
         if (empty($this->storesToExport)) {
-            $this->storesToExport = Mage::app()->getStores();
+            $this->storesToExport = $this->getStoresToExport();
             $this->cleanupQueueForLastLoop();
             $this->queuedProductIds = $this->getQueuedProductIds();
         }
@@ -430,5 +435,24 @@ SQL;
         $attributes = $adapter->fetchPairs($select);
 
         return $attributes;
+    }
+
+    /**
+     * @return array
+     */
+    private function getStoresToExport()
+    {
+        if (!$this->storesToExportTemplate) {
+            return Mage::app()->getStores();
+        }
+        return $this->storesToExportTemplate;
+    }
+
+    /**
+     * @param Mage_Core_Model_Store[] $stores
+     */
+    public function setStoresToExport(array $stores)
+    {
+        $this->storesToExportTemplate = $stores;
     }
 }

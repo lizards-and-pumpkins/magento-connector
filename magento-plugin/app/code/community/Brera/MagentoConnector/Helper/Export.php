@@ -37,6 +37,28 @@ SQL;
         $this->connection->query($query)->execute();
     }
 
+    /**
+     * @param Mage_Core_Model_Website $website
+     */
+    public function addAllProductIdsFromWebsiteToProductUpdateQueue(Mage_Core_Model_Website $website)
+    {
+        $queueId = $this->getQueueIdByName(self::QUEUE_PRODUCT_UPDATES);
+        $time = time();
+
+        $productToWebsiteTable = $this->connection->getTableName('catalog/product_website');
+        $productTable = $this->connection->getTableName('catalog/product');
+
+        $query = <<<SQL
+INSERT IGNORE INTO `message`
+  (queue_id, created, body, md5)
+  (
+    SELECT $queueId, $time, entity_id, MD5(entity_id) FROM $productTable p
+    INNER JOIN  $productToWebsiteTable p2w ON p.entity_id = p2w.product_id
+    WHERE p2w = {$website->getId()}
+  )
+SQL;
+
+        $this->connection->query($query)->execute();
     }
 
     /**
