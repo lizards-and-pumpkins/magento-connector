@@ -162,7 +162,7 @@ SQL;
      */
     private function deleteMessages(array $messages, $queueName)
     {
-        array_map([$this->getQueue($queueName), 'deleteMessage'], $messages)
+        array_map([$this->getQueue($queueName), 'deleteMessage'], $messages);
     }
 
     /**
