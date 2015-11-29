@@ -30,6 +30,14 @@ class Brera_MagentoConnector_Model_Export_Exporter
     public function exportProductsInQueue()
     {
         $collector = Mage::getModel('brera_magentoconnector/export_productCollector');
+
+    private function triggerCatalogUpdateApi($filename)
+    {
+        $apiUrl = Mage::getStoreConfig('brera/magentoconnector/api_url');
+        $api = new \Brera\MagentoConnector\Api\Api($apiUrl);
+        $api->triggerProductImport($filename);
+    }
+
         $xmlMerge = new ProductMerge();
         /** @var Brera_MagentoConnector_Model_XmlUploader $uploader */
         $uploader = Mage::getModel('brera_magentoconnector/productXmlUploader');
@@ -47,18 +55,10 @@ class Brera_MagentoConnector_Model_Export_Exporter
         $uploader->writePartialString($xmlMerge->finish());
 
         try {
-            $this->triggerCatalogUpdateApi();
+            $this->triggerCatalogUpdateApi($uploader->getFilename());
             $this->coreSession->addSuccess('Export was successfull.');
         } catch (Exception $e) {
             $this->coreSession->addError('Export failed: ' . $e->getMessage());
         }
-    }
-
-    private function triggerCatalogUpdateApi()
-    {
-        $apiUrl = Mage::getStoreConfig('brera/magentoconnector/api_url');
-        $remoteFileLocation = Mage::getStoreConfig('brera/magentoconnector/remote_catalog_xml_location');
-        $api = new \Brera\MagentoConnector\Api\Api($apiUrl);
-        $api->triggerProductImport($remoteFileLocation);
     }
 }

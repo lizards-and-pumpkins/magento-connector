@@ -27,17 +27,28 @@
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
                         </api_url>
-                        <product_xml_target translate="label comment">
-                            <label>Target for product XML</label>
+                        <local_path_for_product_export>
+                            <label>Path for product XML</label>
                             <comment>
-                                <![CDATA[Insert a filename, name is parsed by <a href="http://php.net/manual/en/function.strftime.php">strftime()</a>]]>
+                                <![CDATA[Path from magentos viewpoint. Here is the product XML generated/uploaded to.]]>
                             </comment>
                             <frontend_type>text</frontend_type>
                             <sort_order>20</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
-                        </product_xml_target>
+                        </local_path_for_product_export>
+                        <local_filename_template_for_product_export>
+                            <label>Filename Template</label>
+                            <comment>
+                                <![CDATA[Filename template for product XML. The name is parsed by <a href="http://php.net/manual/en/function.strftime.php">strftime()</a>]]>
+                            </comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </local_filename_template_for_product_export>
                         <stock_xml_target translate="label comment">
                             <label>Target for stock XML</label>
                             <comment>
@@ -48,16 +59,6 @@
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
                         </stock_xml_target>
-                        <remote_catalog_xml_location translate="label comment">
-                            <label>Location of the file after upload</label>
-                            <comment>
-                                <![CDATA[Insert a complete path, like: <pre>file://var/www/magento/var/product.xml</pre>]]></comment>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>30</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>0</show_in_website>
-                            <show_in_store>0</show_in_store>
-                        </remote_catalog_xml_location>
                     </fields>
                 </magentoconnector>
             </groups>
