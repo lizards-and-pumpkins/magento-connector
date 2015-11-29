@@ -15,7 +15,7 @@ class Brera_MagentoConnector_Test_Block_Session_Info extends EcomDev_PHPUnit_Tes
     {
         $this->getCustomerWith($customerId);
         $block = new Brera_MagentoConnector_Block_Session_Info();
-        $this->assertEquals((bool)$customerId, $block->isCustomerLoggedIn());
+        $this->assertEquals((bool) $customerId, $block->isCustomerLoggedIn());
     }
 
     public function getCustomerId()

@@ -85,18 +85,15 @@ class Brera_MagentoConnector_Model_Observer
 
     /**
      * @param Varien_Event_Observer $observer
-     * @param string                $itemHolder
+     * @param string                $itemHolderName
      * @return int[]
      */
-    private function getProductIdsFrom(Varien_Event_Observer $observer, $itemHolder)
+    private function getProductIdsFrom(Varien_Event_Observer $observer, $itemHolderName)
     {
-        $itemHolder = $observer->getDataUsingMethod($itemHolder);
-        $productIds = [];
-        foreach ($itemHolder->getAllItems() as $item) {
-            $productIds[] = $item->getProductId();
-        }
-
-        return $productIds;
+        $itemHolder = $observer->getDataUsingMethod($itemHolderName);
+        return array_map(function (Varien_Object $itemHolder) {
+            return $itemHolder->getData('product_id');
+        }, $itemHolder->getAllItems());
     }
 
     /**

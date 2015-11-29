@@ -125,14 +125,23 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
      */
     private function getQueuedProductIds()
     {
+
         $this->messageIterator = Mage::helper('brera_magentoconnector/export')->getProductUpdatesToExport();
-        $productIds = [];
-        foreach ($this->messageIterator as $item) {
-            /** @var $item Zend_Queue_Message */
-            $productIds[] = $item->body;
-            $item->getQueue()->deleteMessage($item);
-        }
-        return $productIds;
+        $this->deleteMessages();
+        return array_map(function (Zend_Queue_Message $item) {
+            return $item->body;
+        }, $this->messageIterator->toArray());
+    }
+
+    private function deleteMessages()
+    {
+        $ids = array_map(function (Zend_Queue_Message $item) {
+            return (int) $item->message_id;
+        }, $this->messageIterator->toArray());
+
+        $ids = implode(',', $ids);
+        $resouce = Mage::getSingleton('core/resource');
+        $resouce->getConnection('core_write')->delete('message', "message_id IN ($ids)");
     }
 
     private function prepareNextBunchOfProducts()
@@ -159,10 +168,7 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
 
     private function addStore()
     {
-        /** @var $product Mage_Catalog_Model_Product */
-        foreach ($this->collection as $product) {
-            $product->setStoreId($this->store->getId());
-        }
+        $this->collection->setDataToAll('store_id', $this->store->getId());
     }
 
     /**

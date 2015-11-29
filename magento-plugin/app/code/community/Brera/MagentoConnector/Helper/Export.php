@@ -75,7 +75,7 @@ SQL;
     private function getQueue($queueName)
     {
         if (!isset($this->_queues[$queueName])) {
-            $config = (array)Mage::getConfig()->getResourceConnectionConfig("default_setup");
+            $config = (array) Mage::getConfig()->getResourceConnectionConfig("default_setup");
 
             $queueOptions = [
                 Zend_Queue::NAME => $queueName,
