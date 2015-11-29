@@ -30,6 +30,8 @@ class Brera_MagentoConnector_Model_Export_Exporter
     public function exportProductsInQueue()
     {
         $collector = Mage::getModel('brera_magentoconnector/export_productCollector');
+        $this->export($collector);
+    }
 
     private function triggerCatalogUpdateApi($filename)
     {
@@ -38,8 +40,13 @@ class Brera_MagentoConnector_Model_Export_Exporter
         $api->triggerProductImport($filename);
     }
 
+    /**
+     * @param $collector
+     */
+    private function export($collector)
+    {
         $xmlMerge = new ProductMerge();
-        /** @var Brera_MagentoConnector_Model_XmlUploader $uploader */
+        /** @var Brera_MagentoConnector_Model_ProductXmlUploader $uploader */
         $uploader = Mage::getModel('brera_magentoconnector/productXmlUploader');
 
         while ($product = $collector->getProduct()) {
