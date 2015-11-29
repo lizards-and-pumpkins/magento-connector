@@ -7,23 +7,25 @@ class Brera_MagentoConnector_Helper_Export
 
     const MYSQL_DUPLICATE_ENTRY_ERROR_NUMBER = 23000;
 
-    const MAX_MESSAGES = 100;
+    const MAX_MESSAGES = 500;
     const TIMEOUT = 30;
+    private $connection;
 
     /**
      * @var Zend_Queue[]
      */
     protected $_queues = [];
 
-    public function addAllProductIdsToProductUpdateQueue()
+    public function __construct()
     {
         $resource = Mage::getSingleton('core/resource');
-        $writeConnection = $resource->getConnection('core_write');
+        $this->connection = $resource->getConnection('core_write');
+    }
 
-        $query = "SELECT queue_id FROM queue WHERE queue_name = :queueName";
 
-        $result = $writeConnection->query($query, [':queueName' => self::QUEUE_PRODUCT_UPDATES]);
-        $queueId = $result->fetchColumn();
+    public function addAllProductIdsToProductUpdateQueue()
+    {
+        $queueId = $this->getQueueIdByName(self::QUEUE_PRODUCT_UPDATES);
         $time = time();
 
         $query = <<<SQL
@@ -32,7 +34,8 @@ INSERT IGNORE INTO `message`
   (SELECT $queueId, $time, entity_id, MD5(entity_id) FROM `catalog_product_entity`)
 SQL;
 
-        $writeConnection->query($query)->execute();
+        $this->connection->query($query)->execute();
+    }
 
     }
 
@@ -170,5 +173,22 @@ SQL;
                 throw $e;
             }
         }
+    }
+
+    /**
+     * @param string $queueName
+     *
+     * @return string
+     */
+    private function getQueueIdByName($queueName)
+    {
+        $query = "SELECT queue_id FROM queue WHERE queue_name = :queueName";
+
+        $result = $this->connection->query($query, [':queueName' => $queueName]);
+        $queueId = $result->fetchColumn();
+        if (!$queueId) {
+            Mage::throwException('Queue not found.');
+        }
+        return $queueId;
     }
 }
