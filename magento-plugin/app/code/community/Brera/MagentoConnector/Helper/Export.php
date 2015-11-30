@@ -4,6 +4,7 @@ class Brera_MagentoConnector_Helper_Export
 {
     const QUEUE_STOCK_UPDATES = "stockUpdates";
     const QUEUE_PRODUCT_UPDATES = "productUpdates";
+    const QUEUE_CATEGORY_UPDATES = 'categoryUpdates';
 
     const MYSQL_DUPLICATE_ENTRY_ERROR_NUMBER = 23000;
 
@@ -121,6 +122,11 @@ SQL;
     private function addProductUpdateToQueue($id)
     {
         $this->addToQueue($id, self::QUEUE_PRODUCT_UPDATES);
+    }
+
+    public function addCategoryToQueue($id)
+    {
+        $this->addToQueue($id, self::QUEUE_CATEGORY_UPDATES);
     }
 
     public function addAllProductIdsToStockExport()

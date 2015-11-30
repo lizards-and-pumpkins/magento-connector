@@ -2,6 +2,21 @@
 
 class Brera_MagentoConnector_Model_Observer
 {
+    public function catalogCategorySaveAfter(Varien_Event_Observer $observer)
+    {
+        Mage::helper('brera_magentoconnector/export')->addCategoryToQueue($observer->getCategory()->getId());
+    }
+
+    public function catalogCategoryDeleteAfter(Varien_Event_Observer $observer)
+    {
+        Mage::helper('brera_magentoconnector/export')->addCategoryToQueue($observer->getCategory()->getId());
+    }
+
+    public function catalogCategoryTreeMoveAfter(Varien_Event_Observer $observer)
+    {
+        Mage::helper('brera_magentoconnector/export')->addCategoryToQueue($observer->getCategory()->getId());
+    }
+
     public function catalogProductSaveAfter(Varien_Event_Observer $observer)
     {
         $productId = $observer->getProduct()->getId();

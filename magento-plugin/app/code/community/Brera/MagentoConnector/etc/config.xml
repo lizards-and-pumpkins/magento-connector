@@ -34,6 +34,33 @@
             </brera_magentoconnector_setup>
         </resources>
         <events>
+            <catalog_category_save_after>
+                <observers>
+                    <brera_magentoconnector>
+                        <type>singleton</type>
+                        <class>brera_magentoconnector/observer</class>
+                        <method>catalogCategorySaveAfter</method>
+                    </brera_magentoconnector>
+                </observers>
+            </catalog_category_save_after>
+            <catalog_category_delete_after>
+                <observers>
+                    <brera_magentoconnector>
+                        <type>singleton</type>
+                        <class>brera_magentoconnector/observer</class>
+                        <method>catalogCategoryDeleteAfter</method>
+                    </brera_magentoconnector>
+                </observers>
+            </catalog_category_delete_after>
+            <catalog_category_tree_move_after>
+                <observers>
+                    <brera_magentoconnector>
+                        <type>singleton</type>
+                        <class>brera_magentoconnector/observer</class>
+                        <method>catalogCategoryTreeMoveAfter</method>
+                    </brera_magentoconnector>
+                </observers>
+            </catalog_category_tree_move_after>
             <catalog_product_save_after>
                 <observers>
                     <brera_magentoconnector>
