@@ -127,17 +127,24 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
     {
 
         $this->messageIterator = Mage::helper('brera_magentoconnector/export')->getProductUpdatesToExport();
-        $this->deleteMessages();
-        return array_map(function (Zend_Queue_Message $item) {
-            return $item->body;
-        }, $this->messageIterator->toArray());
+        $productIds = [];
+        foreach ($this->messageIterator as $item) {
+            /** @var $item Zend_Queue_Message */
+            $productIds[] = $item->body;
+        }
+        if ($productIds) {
+            $this->deleteMessages();
+        }
+
+        return $productIds;
     }
 
     private function deleteMessages()
     {
-        $ids = array_map(function (Zend_Queue_Message $item) {
-            return (int) $item->message_id;
-        }, $this->messageIterator->toArray());
+        $ids = array();
+        foreach ($this->messageIterator as $message) {
+            $ids[] = (int) $message->message_id;
+        }
 
         $ids = implode(',', $ids);
         $resouce = Mage::getSingleton('core/resource');
