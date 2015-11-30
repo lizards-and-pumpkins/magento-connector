@@ -43,7 +43,7 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
     public function testXmlWithNodes()
     {
         $productData = [
-            'url_key' => ''
+            'url_key' => '',
         ];
         $xml = $this->getProductBuilderXml($productData);
 
@@ -55,7 +55,7 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
     {
         $this->setExpectedException(\DOMException::class, 'Invalid Character Error');
         $productData = [
-            'url_key'
+            'url_key',
         ];
         $xml = $this->getProductBuilderXml($productData);
     }
@@ -68,8 +68,8 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
                     'main'  => true,
                     'file'  => 'some/file/somewhere.png',
                     'label' => 'This is the label',
-                ]
-            ]
+                ],
+            ],
         ];
         $xml = $this->getProductBuilderXml($productData);
 
@@ -88,8 +88,8 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
                 [
                     'file'  => 'some/file/somewhereElse.png',
                     'label' => 'Label',
-                ]
-            ]
+                ],
+            ],
         ];
         $xml = $this->getProductBuilderXml($productData);
 
@@ -104,8 +104,8 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
                 [
                     'file'  => 'some/file/somewhereElse.png',
                     'label' => null,
-                ]
-            ]
+                ],
+            ],
         ];
         $xml = $this->getProductBuilderXml($productData);
 
@@ -127,7 +127,7 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
     public function testEntityInNodeValue()
     {
         $productData = [
-            'accessories_type' => 'Bags & Luggage'
+            'accessories_type' => 'Bags & Luggage',
         ];
         $xml = $this->getProductBuilderXml($productData);
 
@@ -137,7 +137,7 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
     public function testCdataInNodeValue()
     {
         $productData = [
-            'accessories_type' => '<![CDATA[Bags & Luggage]]>'
+            'accessories_type' => '<![CDATA[Bags & Luggage]]>',
         ];
         $xml = $this->getProductBuilderXml($productData);
 
@@ -150,7 +150,7 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
     public function testCategoryForProduct()
     {
         $productData = [
-            'categories' => ['shirts']
+            'categories' => ['shirts'],
         ];
         $xml = $this->getProductBuilderXml($productData);
 
@@ -160,7 +160,7 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
     public function testMultipleCategories()
     {
         $productData = [
-            'categories' => ['shirts', 'clothing']
+            'categories' => ['shirts', 'clothing'],
         ];
         $xml = $this->getProductBuilderXml($productData);
 
@@ -171,7 +171,7 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
     public function testNoAssociatedProducts()
     {
         $productData = [
-            'associated_products' => []
+            'associated_products' => [],
         ];
         $xml = $this->getProductBuilderXml($productData);
 
@@ -197,9 +197,9 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
                     'tax_class_id' => 4,
                     'attributes'   => [
                         'color' => 'green',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ];
         $xml = $this->getProductBuilderXml($productData, ['locale' => 'de_DE']);
 
@@ -217,7 +217,7 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
             'variations' => [
                 'size',
                 'color',
-            ]
+            ],
         ];
         $xml = $this->getProductBuilderXml($productData, ['locale' => 'de_DE']);
         $this->assertContains('<variations>', $xml);
@@ -235,8 +235,8 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
                             'main'  => 2,
                             'file'  => 'some/file/somewhere.png',
                             'label' => 'This is the label',
-                        ]
-                    ]
+                        ],
+                    ],
                 ],
                 '"main" must be either "true" or "false".',
             ],
@@ -247,10 +247,10 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
                             'main'  => true,
                             'file'  => 8,
                             'label' => 'This is the label',
-                        ]
-                    ]
+                        ],
+                    ],
                 ],
-                '"file" must be a string.'
+                '"file" must be a string.',
             ],
             [
                 [
@@ -259,10 +259,10 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
                             'main'  => true,
                             'file'  => 'some/file/somewhere.png',
                             'label' => 20,
-                        ]
-                    ]
+                        ],
+                    ],
                 ],
-                '"label" must be a string.'
+                '"label" must be a string.',
             ],
             [
                 [
@@ -271,11 +271,11 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
                             'main'  => true,
                             'file'  => 'some/file/somewhere.png',
                             'label' => 20,
-                        ]
+                        ],
 
                 ],
                 'images must be an array of image definitions.',
-            ]
+            ],
         ];
     }
 

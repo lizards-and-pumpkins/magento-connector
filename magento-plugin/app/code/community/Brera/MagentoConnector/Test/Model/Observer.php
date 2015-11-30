@@ -37,7 +37,7 @@ class Brera_MagentoConnector_Test_Model_Observer extends EcomDev_PHPUnit_Test_Ca
         $eventObserver = new Varien_Event_Observer();
         $eventObserver->setData(
             [
-                'product_ids' => $productIds
+                'product_ids' => $productIds,
             ]
         );
 

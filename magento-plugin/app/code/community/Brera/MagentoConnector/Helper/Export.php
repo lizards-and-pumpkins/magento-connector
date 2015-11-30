@@ -81,8 +81,8 @@ SQL;
                 Zend_Queue::NAME => $queueName,
                 'driverOptions'  => $config + [
                         Zend_Queue::TIMEOUT            => 1,
-                        Zend_Queue::VISIBILITY_TIMEOUT => 1
-                    ]
+                        Zend_Queue::VISIBILITY_TIMEOUT => 1,
+                    ],
             ];
 
             $this->_queues[$queueName] = new Zend_Queue('Db', $queueOptions);

@@ -63,7 +63,7 @@ class Brera_MagentoConnector_Test_Config_Config extends EcomDev_PHPUnit_Test_Cas
             'catalog_product_attribute_update_after' => 'catalogProductAttributeUpdateAfter',
             'catalog_product_delete_after'           => 'catalogProductDeleteAfter',
             'catalog_controller_product_delete'      => 'catalogControllerProductDelete',
-            'magmi_products_were_updated'            => 'magmiProductsWereUpdated'
+            'magmi_products_were_updated'            => 'magmiProductsWereUpdated',
         ];
         foreach ($events as $eventname => $observerMethod) {
             $this->assertEventObserverDefined(
@@ -83,7 +83,7 @@ class Brera_MagentoConnector_Test_Config_Config extends EcomDev_PHPUnit_Test_Cas
             'sales_model_service_quote_submit_failure'      => 'salesModelServiceQuoteSubmitFailure',
             'sales_order_item_cancel'                       => 'salesOrderItemCancel',
             'sales_order_creditmemo_save_after'             => 'salesOrderCreditmemoSaveAfter',
-            'magmi_stock_was_updated'                       => 'magmiStockWasUpdated'
+            'magmi_stock_was_updated'                       => 'magmiStockWasUpdated',
         ];
         foreach ($events as $eventname => $observerMethod) {
             $this->assertEventObserverDefined(

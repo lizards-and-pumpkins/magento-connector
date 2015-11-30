@@ -141,7 +141,7 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
 
     private function deleteMessages()
     {
-        $ids = array();
+        $ids = [];
         foreach ($this->messageIterator as $message) {
             $ids[] = (int) $message->message_id;
         }
