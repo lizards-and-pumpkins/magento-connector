@@ -96,7 +96,7 @@ SQL;
      */
     public function addStockUpdatesToQueue(array $ids)
     {
-        array_map($ids, [$this, 'addStockUpdateToQueue']);
+        array_map([$this, 'addStockUpdateToQueue'], $ids);
     }
 
     /**
@@ -112,7 +112,7 @@ SQL;
      */
     public function addProductUpdatesToQueue(array $ids)
     {
-        array_map($ids, [$this, 'addProductUpdateToQueue']);
+        array_map([$this, 'addProductUpdateToQueue'], $ids);
     }
 
     /**
