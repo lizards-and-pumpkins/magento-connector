@@ -40,7 +40,7 @@ class Brera_MagentoConnector_Helper_Export
         $query = <<<SQL
 INSERT IGNORE INTO `message`
   (queue_id, created, body, md5)
-  (SELECT $queueId, {time()}, entity_id, MD5(entity_id) FROM `catalog_product_entity`)
+  (SELECT $queueId, UNIX_TIMESTAMP(), entity_id, MD5(entity_id) FROM `catalog_product_entity`)
 SQL;
 
         $this->connection->query($query)->execute();
@@ -60,7 +60,7 @@ SQL;
 INSERT IGNORE INTO `message`
   (queue_id, created, body, md5)
   (
-    SELECT $queueId, {time()}, entity_id, MD5(entity_id) FROM $productTable p
+    SELECT $queueId, UNIX_TIMESTAMP(), entity_id, MD5(entity_id) FROM $productTable p
     INNER JOIN  $productToWebsiteTable p2w ON p.entity_id = p2w.product_id
     WHERE p2w.website_id = {$website->getId()}
   )
