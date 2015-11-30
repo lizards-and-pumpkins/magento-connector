@@ -69,6 +69,25 @@ SQL;
         $this->connection->query($query)->execute();
     }
 
+    public function addAllCategoryIdsToQueue()
+    {
+        $queueId = $this->getQueueIdByName(self::QUEUE_CATEGORY_UPDATES);
+
+        $categoryTable = $this->resource->getTableName('catalog/category');
+
+        $time = time();
+
+        $query = <<<SQL
+INSERT IGNORE INTO `message`
+  (queue_id, created, body, md5)
+  (
+    SELECT $queueId, UNIX_TIMESTAMP(), entity_id, MD5(entity_id) FROM $categoryTable p
+  )
+SQL;
+
+        $this->connection->query($query)->execute();
+    }
+
     /**
      * @param string $queueName
      * @return Zend_Queue
