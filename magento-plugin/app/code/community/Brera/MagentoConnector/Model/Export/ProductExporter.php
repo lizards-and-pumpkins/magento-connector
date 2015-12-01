@@ -1,7 +1,7 @@
 <?php
 
 use Brera\MagentoConnector\Api\Api;
-use Brera\MagentoConnector\XmlBuilder\ProductMerge;
+use Brera\MagentoConnector\XmlBuilder\CatalogMerge;
 
 class Brera_MagentoConnector_Model_Export_ProductExporter
 {
@@ -73,7 +73,7 @@ class Brera_MagentoConnector_Model_Export_ProductExporter
      */
     private function export(Brera_MagentoConnector_Model_Export_ProductCollector $collector)
     {
-        $xmlMerge = new ProductMerge();
+        $xmlMerge = new CatalogMerge();
         /** @var Brera_MagentoConnector_Model_ProductXmlUploader $uploader */
         $uploader = Mage::getModel('brera_magentoconnector/productXmlUploader');
 

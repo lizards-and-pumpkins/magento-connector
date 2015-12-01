@@ -3,9 +3,9 @@
 namespace Brera\MagentoConnector\XmlBuilder;
 
 /**
- * @covers \Brera\MagentoConnector\XmlBuilder\ProductMerge
+ * @covers \Brera\MagentoConnector\XmlBuilder\CatalogMerge
  */
-class ProductMergeTest extends \PHPUnit_Framework_TestCase
+class CatalogMergeTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
@@ -52,6 +52,6 @@ class ProductMergeTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->merge = new ProductMerge();
+        $this->merge = new CatalogMerge();
     }
 }

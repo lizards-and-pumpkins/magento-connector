@@ -4,7 +4,7 @@ namespace Brera\MagentoConnector\XmlBuilder;
 
 require_once('ProductContainer.php');
 
-class ProductMerge
+class CatalogMerge
 {
     /**
      * @var \XmlWriter
