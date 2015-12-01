@@ -5,8 +5,8 @@ class Brera_MagentoConnector_Adminhtml_BreraController extends Mage_Adminhtml_Co
     public function exportAllProductsAction()
     {
         try {
-            /** @var Brera_MagentoConnector_Model_Export_Exporter $exporter */
-            $exporter = Mage::getModel('brera_magentoconnector/export_exporter');
+            /** @var Brera_MagentoConnector_Model_Export_ProductExporter $exporter */
+            $exporter = Mage::getModel('brera_magentoconnector/export_productExporter');
             $productsExported = $exporter->exportAllProducts();
             Mage::getSingleton('core/session')->addSuccess(sprintf('All (%s) products exported.', $productsExported));
         } catch (Mage_Core_Exception $e) {
@@ -18,8 +18,8 @@ class Brera_MagentoConnector_Adminhtml_BreraController extends Mage_Adminhtml_Co
     public function exportQueuedProductUpdatesAction()
     {
         try {
-            /** @var Brera_MagentoConnector_Model_Export_Exporter $exporter */
-            $exporter = Mage::getModel('brera_magentoconnector/export_exporter');
+            /** @var Brera_MagentoConnector_Model_Export_ProductExporter $exporter */
+            $exporter = Mage::getModel('brera_magentoconnector/export_productExporter');
             $productsExported = $exporter->exportProductsInQueue();
             Mage::getSingleton('core/session')->addSuccess(
                 sprintf('%s products from queue exported.', $productsExported)

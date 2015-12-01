@@ -3,7 +3,7 @@
 use Brera\MagentoConnector\Api\Api;
 use Brera\MagentoConnector\XmlBuilder\ProductMerge;
 
-class Brera_MagentoConnector_Model_Export_Exporter
+class Brera_MagentoConnector_Model_Export_ProductExporter
 {
 
     /**

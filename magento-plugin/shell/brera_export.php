@@ -17,8 +17,8 @@ class Brera_Export extends Mage_Shell_Abstract
     public function run()
     {
         if ($this->getArg('all-products')) {
-            /** @var Brera_MagentoConnector_Model_Export_Exporter $exporter */
-            $exporter = Mage::getModel('brera_magentoconnector/export_exporter');
+            /** @var Brera_MagentoConnector_Model_Export_ProductExporter $exporter */
+            $exporter = Mage::getModel('brera_magentoconnector/export_productExporter');
             $exporter->exportAllProducts();
         } else {
             echo $this->usageHelp();

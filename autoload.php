@@ -21,7 +21,7 @@ spl_autoload_register(
                 'brera_magentoconnector_adminhtml_breracontroller' => '/magento-plugin/app/code/community/Brera/MagentoConnector/controllers/Adminhtml/BreraController.php',
                 'brera_magentoconnector_block_session_info' => '/magento-plugin/app/code/community/Brera/MagentoConnector/Block/Session/Info.php',
                 'brera_magentoconnector_helper_data' => '/magento-plugin/app/code/community/Brera/MagentoConnector/Helper/Data.php',
-                'brera_magentoconnector_model_export_exporter' => '/magento-plugin/app/code/community/Brera/MagentoConnector/Model/Export/Exporter.php',
+                'brera_magentoconnector_model_export_exporter' => '/magento-plugin/app/code/community/Brera/MagentoConnector/Model/Export/ProductExporter.php',
                 'brera_magentoconnector_model_export_productcollector' => '/magento-plugin/app/code/community/Brera/MagentoConnector/Model/Export/ProductCollector.php',
                 'brera_magentoconnector_model_export_productxmlbuilderanduploader' => '/magento-plugin/app/code/community/Brera/MagentoConnector/Model/Export/ProductXmlBuilderAndUploader.php',
                 'brera_magentoconnector_model_observer' => '/magento-plugin/app/code/community/Brera/MagentoConnector/Model/Observer.php',
