@@ -55,8 +55,8 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
             $this->transformData($this->product),
             $this->getContext()
         );
-        $productContainer = $productBuilder->getProductContainer();
-        $this->merge->addProduct($productContainer);
+        $xmlString = $productBuilder->getXmlString();
+        $this->merge->addProduct($xmlString);
         $partialXmlString = $this->merge->getPartialXmlString() . "\n";
         $this->getUploader()->writePartialXmlString($partialXmlString);
     }

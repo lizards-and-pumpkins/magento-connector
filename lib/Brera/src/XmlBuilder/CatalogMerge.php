@@ -2,7 +2,7 @@
 
 namespace Brera\MagentoConnector\XmlBuilder;
 
-require_once('ProductContainer.php');
+require_once('XmlString.php');
 
 class CatalogMerge
 {
@@ -21,7 +21,7 @@ class CatalogMerge
         $this->startXml();
     }
 
-    public function addProduct(ProductContainer $product)
+    public function addProduct(XmlString $product)
     {
         $this->xml->writeRaw($product->getXml());
     }

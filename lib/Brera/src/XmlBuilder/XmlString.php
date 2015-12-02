@@ -1,7 +1,7 @@
 <?php
 namespace Brera\MagentoConnector\XmlBuilder;
 
-class ProductContainer
+class XmlString
 {
     /**
      * @var \SimpleXMLElement
