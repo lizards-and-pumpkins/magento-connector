@@ -16,6 +16,7 @@ spl_autoload_register(
                 'brera\\magentoconnector\\xmlbuilder\\catalogmergetest' => '/tests/XmlBuilder/CatalogMergeTest.php',
                 'brera\\magentoconnector\\xmlbuilder\\invalidimagedefinitionexception' => '/src/XmlBuilder/InvalidImageDefinitionException.php',
                 'brera\\magentoconnector\\xmlbuilder\\listingbuilder' => '/src/XmlBuilder/ListingBuilder.php',
+                'brera\\magentoconnector\\xmlbuilder\\listingbuildertest' => '/tests/XmlBuilder/ListingBuilderTest.php',
                 'brera\\magentoconnector\\xmlbuilder\\productbuilder' => '/src/XmlBuilder/ProductBuilder.php',
                 'brera\\magentoconnector\\xmlbuilder\\productbuildertest' => '/tests/XmlBuilder/ProductBuilderTest.php',
                 'brera\\magentoconnector\\xmlbuilder\\stockbuilder' => '/src/XmlBuilder/StockBuilder.php',
