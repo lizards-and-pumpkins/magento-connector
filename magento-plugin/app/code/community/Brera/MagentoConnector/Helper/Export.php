@@ -5,6 +5,11 @@ class Brera_MagentoConnector_Helper_Export
     const QUEUE_STOCK_UPDATES = "stockUpdates";
     const QUEUE_PRODUCT_UPDATES = "productUpdates";
 
+    const ALL_QUEUES = [
+        self::QUEUE_PRODUCT_UPDATES,
+        self::QUEUE_STOCK_UPDATES,
+    ];
+
     const MYSQL_DUPLICATE_ENTRY_ERROR_NUMBER = 23000;
 
     const QUEUE_MESSAGES_FETCHED_PER_REQUEST = 500;
@@ -30,16 +35,19 @@ class Brera_MagentoConnector_Helper_Export
     {
         $this->resource = Mage::getSingleton('core/resource');
         $this->connection = $this->resource->getConnection('core_write');
+        foreach (self::ALL_QUEUES as $queueName) {
+            $this->getQueue($queueName);
+        }
     }
 
     public function addAllProductIdsToProductUpdateQueue()
     {
         $queueId = $this->getQueueIdByName(self::QUEUE_PRODUCT_UPDATES);
-
+        $time = time();
         $query = <<<SQL
 INSERT IGNORE INTO `message`
   (queue_id, created, body, md5)
-  (SELECT $queueId, {time()}, entity_id, MD5(entity_id) FROM `catalog_product_entity`)
+  (SELECT $queueId, '$time', entity_id, MD5(entity_id) FROM `catalog_product_entity`)
 SQL;
 
         $this->connection->query($query)->execute();
@@ -51,7 +59,7 @@ SQL;
     public function addAllProductIdsFromWebsiteToProductUpdateQueue(Mage_Core_Model_Website $website)
     {
         $queueId = $this->getQueueIdByName(self::QUEUE_PRODUCT_UPDATES);
-
+        $time = time();
         $productToWebsiteTable = $this->resource->getTableName('catalog/product_website');
         $productTable = $this->resource->getTableName('catalog/product');
 
@@ -59,7 +67,7 @@ SQL;
 INSERT IGNORE INTO `message`
   (queue_id, created, body, md5)
   (
-    SELECT $queueId, {time()}, entity_id, MD5(entity_id) FROM $productTable p
+    SELECT $queueId, '$time', entity_id, MD5(entity_id) FROM $productTable p
     INNER JOIN  $productToWebsiteTable p2w ON p.entity_id = p2w.product_id
     WHERE p2w.website_id = {$website->getId()}
   )
@@ -81,8 +89,8 @@ SQL;
                 Zend_Queue::NAME => $queueName,
                 'driverOptions'  => $config + [
                         Zend_Queue::TIMEOUT            => 1,
-                        Zend_Queue::VISIBILITY_TIMEOUT => 1
-                    ]
+                        Zend_Queue::VISIBILITY_TIMEOUT => 1,
+                    ],
             ];
 
             $this->_queues[$queueName] = new Zend_Queue('Db', $queueOptions);
