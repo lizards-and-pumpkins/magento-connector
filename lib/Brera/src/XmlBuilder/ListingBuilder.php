@@ -3,10 +3,25 @@ namespace Brera\MagentoConnector\XmlBuilder;
 
 class ListingBuilder
 {
+    const CONDITION_AND = 'and';
+    const CONDITION_OR = 'or';
     /**
      * @var string[]
      */
-    private static $allowedConditions = ['and', 'or'];
+    private static $allowedConditions = [self::CONDITION_AND, self::CONDITION_OR];
+
+    /**
+     * @var string[]
+     */
+    private $allowedOperations = [
+        'Equal',
+        'GreaterOrEqualThan',
+        'GreaterThan',
+        'LessOrEqualThan',
+        'LessThan',
+        'Like',
+        'NotEqual',
+    ];
 
     /**
      * @var string
@@ -27,6 +42,11 @@ class ListingBuilder
      * @var string
      */
     private $urlKey;
+
+    /**
+     * @var string[][]
+     */
+    private $filter = [];
 
     /**
      * @param string $urlKey
@@ -83,23 +103,90 @@ class ListingBuilder
      */
     public function setWebsite($website)
     {
+        if (!is_string($website)) {
+            throw new \InvalidArgumentException('Website must be string.');
+        }
         $this->website = $website;
     }
 
+    /**
+     * @param string $attribute
+     * @param string $operation
+     * @param string $value
+     */
+    public function addFilterCriterion($attribute, $operation, $value)
+    {
+        $this->checkFilterParameter($attribute, $operation, $value);
+        $this->filter[] = [
+            'attribute' => $attribute,
+            'operation' => $operation,
+            'value'     => $value,
+        ];
+    }
+
+    /**
+     * @return XmlString
+     */
     public function buildXml()
     {
         $xml = new \XMLWriter();
         $xml->openMemory();
         $xml->startDocument('1.0', 'UTF-8');
         $xml->startElement('listing');
+
+        $this->writeAttributesToListingNode($xml);
+
+        foreach ($this->filter as $filter) {
+            $xml->startElement($filter['attribute']);
+            $xml->writeAttribute('operation', $filter['operation']);
+            $xml->text($filter['value']);
+            $xml->endElement();
+        }
+
+        $xml->endElement(); // listing
+        return new XmlString($xml->flush());
+
+    }
+
+    /**
+     * @param string $attribute
+     * @param string $operation
+     * @param string $value
+     */
+    private function checkFilterParameter($attribute, $operation, $value)
+    {
+        if (!is_string($attribute)) {
+            throw new \InvalidArgumentException('Attribute must be a string');
+        }
+        if (!is_string($operation)) {
+            throw new \InvalidArgumentException('Operation must be a string');
+        }
+        if (!is_string($value)) {
+            throw new \InvalidArgumentException('Value must be a string');
+        }
+        if (!in_array($operation, $this->allowedOperations)) {
+            throw new \InvalidArgumentException(
+                sprintf(
+                    'Operation is invalid, must be one of %s. "%s" given.',
+                    implode(', ', $this->allowedOperations),
+                    $operation
+                )
+            );
+        }
+    }
+
+    /**
+     * @param \XMLWriter $xml
+     */
+    private function writeAttributesToListingNode($xml)
+    {
         $xml->writeAttribute('url_key', $this->urlKey);
         if ($this->locale) {
             $xml->writeAttribute('locale', $this->locale);
         }
-
+        if ($this->website) {
+            $xml->writeAttribute('website', $this->website);
+        }
         $xml->writeAttribute('condition', $this->condition);
-        $xml->endElement(); // listing
-        return new XmlString($xml->flush());
-
     }
 }

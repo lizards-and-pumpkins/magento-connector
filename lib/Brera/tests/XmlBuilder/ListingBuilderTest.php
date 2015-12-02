@@ -163,6 +163,8 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @depends testValidLocale
+     * @depends testUrlInListingXml
+     * @depends testConditionInXml
      */
     public function testLocaleInXml()
     {
@@ -176,6 +178,136 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
             $xml,
             'Locale as attribute is missing on listing node'
         );
+    }
+
+    /**
+     * @depends testUrlInListingXml
+     * @depends testConditionInXml
+     */
+    public function testWebsiteInXml()
+    {
+        $listingBuilder = $this->createBuilder('urlkey', 'and');
+        $listingBuilder->setWebsite('ru_de');
+        $xmlString = $listingBuilder->buildXml();
+        $this->assertInstanceOf(XmlString::class, $xmlString);
+        $xml = $xmlString->getXml();
+        $this->assertRegExp(
+            '#<listing .*website="ru_de".*?>#',
+            $xml,
+            'Website as attribute is missing on listing node'
+        );
+    }
+
+    /**
+     * @depends testUrlInListingXml
+     * @depends testConditionInXml
+     * @depends testLocaleInXml
+     * @depends testWebsiteInXml
+     */
+    public function testXmlComplete()
+    {
+        $listingBuilder = $this->createBuilder('urlkey', 'and');
+        $listingBuilder->setWebsite('ru_de');
+        $listingBuilder->setLocale('cs_CZ');
+        $xmlString = $listingBuilder->buildXml();
+        $this->assertInstanceOf(XmlString::class, $xmlString);
+        $xml = $xmlString->getXml();
+        $this->assertRegExp(
+            '#<listing .*website="ru_de".*?>#',
+            $xml,
+            'Website as attribute is missing on listing node'
+        );
+        $this->assertRegExp(
+            '#<listing .*locale="cs_CZ".*?>#',
+            $xml,
+            'Locale as attribute is missing on listing node'
+        );
+        $this->assertRegExp(
+            '#<listing .*condition="and".*?>#',
+            $xml,
+            'Condition as attribute is missing on listing node'
+        );
+        $this->assertRegExp(
+            '#<listing .*url_key="urlkey".*?>#',
+            $xml,
+            'UrlKey as attribute is missing on listing node'
+        );
+    }
+
+    /**
+     * @param string $maybeInvalidAttribute
+     * @param string $maybeInvalidOperation
+     * @param string $maybeInvalidValue
+     * @dataProvider provideInvalidFilter
+     */
+    public function testInvalidFilter($maybeInvalidAttribute, $maybeInvalidOperation, $maybeInvalidValue)
+    {
+        $this->setExpectedException(\InvalidArgumentException::class);
+        $listingBuilder = $this->createBuilder('urlkey', 'and');
+        $listingBuilder->addFilterCriterion($maybeInvalidAttribute, $maybeInvalidOperation, $maybeInvalidValue);
+    }
+
+    public function provideInvalidFilter()
+    {
+        return [
+            [
+                'attribute' => 'category',
+                'operation' => new \stdClass(),
+                'value'     => 'sale',
+            ],
+            [
+                'attribute' => new \stdClass(),
+                'operation' => 'Equals',
+                'value'     => 'sale',
+            ],
+            [
+                'attribute' => 'category',
+                'operation' => 'Equals',
+                'value'     => new \stdClass(),
+            ],
+            [
+                'attribute' => 'category',
+                'operation' => 'InvalidOperation',
+                'value'     => new \stdClass(),
+            ],
+        ];
+    }
+
+    /**
+     * @param string $validAttribute
+     * @param string $validOperation
+     * @param string $validValue
+     * @dataProvider provideValidFilter
+     */
+    public function testOneFilterForListing($validAttribute, $validOperation, $validValue)
+    {
+        $listingBuilder = $this->createBuilder('urlkey', 'and');
+        $listingBuilder->addFilterCriterion($validAttribute, $validOperation, $validValue);
+        $xml = $listingBuilder->buildXml()->getXml();
+        $this->assertContains("<$validAttribute operation=\"$validOperation\">$validValue</$validAttribute>", $xml);
+    }
+
+    public function provideValidFilter()
+    {
+        $validOperations = [
+            'Equal',
+            'GreaterOrEqualThan',
+            'GreaterThan',
+            'LessOrEqualThan',
+            'LessThan',
+            'Like',
+            'NotEqual',
+        ];
+
+        $filter = [];
+        foreach ($validOperations as $operation) {
+            $filter[] = [
+                'attribute' => 'category',
+                'operation' => $operation,
+                'value'     => 'sale',
+            ];
+        }
+        return $filter;
     }
 
     private function createBuilder($urlKey = 'valid-url-key', $condition = 'and')
