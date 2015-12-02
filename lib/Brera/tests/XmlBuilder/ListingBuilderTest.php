@@ -54,6 +54,9 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
+    /**
+     * @depends testValidUrlKey
+     */
     public function testValidCondition()
     {
         $builderOr = ListingBuilder::create('valid-url-key', 'or');
@@ -83,7 +86,7 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
     public function testInvalidLocale($locale)
     {
         $this->setExpectedException(\InvalidArgumentException::class);
-        $builder = $this->getBuilder();
+        $builder = $this->createBuilder();
         $builder->setLocale($locale);
     }
 
@@ -101,19 +104,83 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @depends testValidUrlKey
-     * @depends testValidCondition
+     * @param string $validLocale
+     * @dataProvider provideValidLocale
+     * @depends      testValidUrlKey
+     * @depends      testValidCondition
      */
-    public function testValidLocale()
-    {
-        $builder = ListingBuilder::create('valid-url-key', 'and');
 
+    public function testValidLocale($validLocale)
+    {
+        $builder = $this->createBuilder();
+        $builder->setLocale($validLocale);
         $this->assertInstanceOf(ListingBuilder::class, $builder);
     }
 
-    private function getBuilder()
+    public function provideValidLocale()
     {
-        return ListingBuilder::create('valid-url-key', 'and');
+        return [
+            ['de_DE'],
+            ['cs_CZ'],
+            ['en_US'],
+            ['de_CH'],
+            ['en_GB'],
+        ];
+    }
+
+    /**
+     * @depends testValidUrlKey
+     * @depends testValidCondition
+     */
+    public function testUrlInListingXml()
+    {
+        $listingBuilder = $this->createBuilder('urlkey');
+        $xmlString = $listingBuilder->buildXml();
+        $this->assertInstanceOf(XmlString::class, $xmlString);
+        $xml = $xmlString->getXml();
+        $this->assertRegExp(
+            '#<listing .*url_key="urlkey".*?>#',
+            $xml,
+            'UrlKey as attribute is missing on listing node'
+        );
+    }
+
+    /**
+     * @depends testUrlInListingXml
+     */
+    public function testConditionInXml()
+    {
+        $listingBuilder = $this->createBuilder('urlkey', 'and');
+        $xmlString = $listingBuilder->buildXml();
+        $this->assertInstanceOf(XmlString::class, $xmlString);
+        $xml = $xmlString->getXml();
+        $this->assertRegExp(
+            '#<listing .*condition="and".*?>#',
+            $xml,
+            'Condition as attribute is missing on listing node'
+        );
+    }
+
+    /**
+     * @depends testValidLocale
+     */
+    public function testLocaleInXml()
+    {
+        $listingBuilder = $this->createBuilder('urlkey', 'and');
+        $listingBuilder->setLocale('cs_CZ');
+        $xmlString = $listingBuilder->buildXml();
+        $this->assertInstanceOf(XmlString::class, $xmlString);
+        $xml = $xmlString->getXml();
+        $this->assertRegExp(
+            '#<listing .*locale="cs_CZ".*?>#',
+            $xml,
+            'Locale as attribute is missing on listing node'
+        );
+    }
+
+    private function createBuilder($urlKey = 'valid-url-key', $condition = 'and')
+    {
+        return ListingBuilder::create($urlKey, $condition);
     }
 
 }

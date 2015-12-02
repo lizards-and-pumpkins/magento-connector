@@ -72,7 +72,7 @@ class ListingBuilder
             throw new \InvalidArgumentException(sprintf('Locale must be of form "de_DE", "%s" given.', $locale));
         }
         list($language, $country) = $parts;
-        if (ctype_lower($language) || ctype_upper($country) || strlen($language) !== 2 || strlen($country) !== 2) {
+        if (!ctype_lower($language) || !ctype_upper($country) || strlen($language) !== 2 || strlen($country) !== 2) {
             throw new \InvalidArgumentException(sprintf('Locale must be of form "de_DE", "%s" given.', $locale));
         }
         $this->locale = $locale;
@@ -93,7 +93,11 @@ class ListingBuilder
         $xml->startDocument('1.0', 'UTF-8');
         $xml->startElement('listing');
         $xml->writeAttribute('url_key', $this->urlKey);
+        if ($this->locale) {
+            $xml->writeAttribute('locale', $this->locale);
+        }
 
+        $xml->writeAttribute('condition', $this->condition);
         $xml->endElement(); // listing
         return new XmlString($xml->flush());
 
