@@ -109,8 +109,12 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
                 if (is_array($value)) {
                     $productData['variations'] = $value;
                 }
-            } elseif ($product->getResource()->getAttribute($key)) {
-                $productData[$key] = $product->getResource()->getAttribute($key)->getFrontend()->getValue($product);
+            } elseif ($attribute = $product->getResource()->getAttribute($key)) {
+                if ($attribute->getFrontendInput() == 'multiselect') {
+                    $productData[$key] = array_map('trim', explode(',', $attribute->getFrontend()->getValue($product)));
+                } else {
+                    $productData[$key] = $attribute->getFrontend()->getValue($product);
+                }
             } else {
                 $productData[$key] = $product->getDataUsingMethod($key);
             }
