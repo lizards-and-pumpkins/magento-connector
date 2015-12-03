@@ -83,7 +83,7 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
                         $productData['images'][] = [
                             'main'  => $image['file'] == $product->getImage(),
                             'label' => $image['label'],
-                            'file'  => $image['file'],
+                            'file'  => basename($image['file']),
                         ];
                     }
                 }
