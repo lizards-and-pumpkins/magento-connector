@@ -21,6 +21,9 @@ class CatalogMerge
         $this->startXml();
     }
 
+    /**
+     * @param XmlString $product
+     */
     public function addProduct(XmlString $product)
     {
         $this->xml->writeRaw($product->getXml());
