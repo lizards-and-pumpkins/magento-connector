@@ -135,7 +135,7 @@ class Api
         $client = new Client();
         $response = $client->send($request);
         if (json_decode($response->getBody()) != 'OK') {
-            throw new RequestFailedException();
+            throw new RequestFailedException($response->getBody());
         }
     }
 
