@@ -36,7 +36,7 @@ class Api
      */
     public function triggerProductImport($filename)
     {
-        $headers = ['Accept' => 'application/vnd.brera.catalog_import.v1+json'];
+        $headers = ['Accept' => 'application/vnd.lizards-and-pumpkins.catalog_import.v1+json'];
 
         $url = $this->url . self::API_ENDPOINT_CATALOG_IMPORT;
         $this->sendApiRequestWithFilename($filename, $url, $headers);
@@ -47,7 +47,7 @@ class Api
      */
     public function triggerProductStockImport($filename)
     {
-        $headers = ['Accept' => 'application/vnd.brera.multiple_product_stock_quantity.v1+json'];
+        $headers = ['Accept' => 'application/vnd.lizards-and-pumpkins.multiple_product_stock_quantity.v1+json'];
 
         $url = $this->url . self::API_ENDPOINT_STOCK_UPDATE;
         $this->sendApiRequestWithFilename($filename, $url, $headers);
@@ -63,7 +63,7 @@ class Api
         if (!is_string($id)) {
             throw new InvalidUrlException();
         }
-        $headers = ['Accept' => 'application/vnd.brera.content_blocks.v1+json'];
+        $headers = ['Accept' => 'application/vnd.lizards-and-pumpkins.content_blocks.v1+json'];
         $url = $this->url . self::API_ENDPOINT_CONTENT_BLOCK_UPDATE . $id;
 
         $body = json_encode(
