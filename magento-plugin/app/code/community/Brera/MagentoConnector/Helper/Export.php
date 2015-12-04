@@ -46,6 +46,19 @@ SQL;
         $this->connection->query($query)->execute();
     }
 
+    public function addAllCategoryIdsToCategoryQueue()
+    {
+        $queueId = $this->getQueueIdByName(self::QUEUE_CATEGORY_UPDATES);
+
+        $query = <<<SQL
+INSERT IGNORE INTO `message`
+  (queue_id, created, body, md5)
+  (SELECT $queueId, UNIX_TIMESTAMP(), entity_id, MD5(entity_id) FROM `catalog_category_entity`)
+SQL;
+
+        $this->connection->query($query)->execute();
+    }
+
     /**
      * @param Mage_Core_Model_Website $website
      */
@@ -63,25 +76,6 @@ INSERT IGNORE INTO `message`
     SELECT $queueId, UNIX_TIMESTAMP(), entity_id, MD5(entity_id) FROM $productTable p
     INNER JOIN  $productToWebsiteTable p2w ON p.entity_id = p2w.product_id
     WHERE p2w.website_id = {$website->getId()}
-  )
-SQL;
-
-        $this->connection->query($query)->execute();
-    }
-
-    public function addAllCategoryIdsToQueue()
-    {
-        $queueId = $this->getQueueIdByName(self::QUEUE_CATEGORY_UPDATES);
-
-        $categoryTable = $this->resource->getTableName('catalog/category');
-
-        $time = time();
-
-        $query = <<<SQL
-INSERT IGNORE INTO `message`
-  (queue_id, created, body, md5)
-  (
-    SELECT $queueId, UNIX_TIMESTAMP(), entity_id, MD5(entity_id) FROM $categoryTable p
   )
 SQL;
 
