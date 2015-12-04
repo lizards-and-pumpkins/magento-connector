@@ -3,7 +3,7 @@
 use Brera\MagentoConnector\Api\Api;
 use Brera\MagentoConnector\XmlBuilder\CatalogMerge;
 
-class Brera_MagentoConnector_Model_Export_ProductExporter
+class Brera_MagentoConnector_Model_Export_CatalogExporter
 {
 
     /**
@@ -89,6 +89,13 @@ class Brera_MagentoConnector_Model_Export_ProductExporter
             $numberOfProductsExported++;
         }
 
+        $categoryCollector = new Brera_MagentoConnector_Model_Export_CategoryCollector();
+
+        while ($category = $categoryCollector->getCategory()) {
+            $transformer = new Brera_MagentoConnector_Model_Export_CategoryToLapTransformer($category);
+            $categoryXml = $transformer->getCategoryXml();
+            $xmlMerge->addCategory($categoryXml);
+        }
 
         if (0 === $numberOfProductsExported) {
             return 0;
