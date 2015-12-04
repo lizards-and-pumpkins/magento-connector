@@ -1,10 +1,16 @@
 <?php
 
-class LizardsAndPumpkins_MagentoConnector_Test_Model_Export_CategoryToLapTransformerTest extends PHPUnit_Framework_TestCase
+/**
+ * @covers LizardsAndPumpkins_MagentoConnector_Test_Model_Export_CategoryToLapTransformer
+ * @covers \LizardsAndPumpkins\MagentoConnector\XmlBuilder\ListingBuilder
+ */
+class LizardsAndPumpkins_MagentoConnector_Test_Model_Export_CategoryToLapTransformerTest
+    extends PHPUnit_Framework_TestCase
 {
 
     public function testGetXmlWithoutFilter()
     {
+
         $categoryPath = 'my-category-path';
 
         $categoryStub = $this->getCategoryStub($categoryPath);
@@ -121,7 +127,8 @@ class LizardsAndPumpkins_MagentoConnector_Test_Model_Export_CategoryToLapTransfo
     {
         $configStub = $this->getMock(LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig::class);
         $configStub->method('getLocaleFrom')->willReturn($locale);
-        $transformer = new LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryToLapTransformer($category, $configStub);
+        $transformer =
+            new LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryToLapTransformer($category, $configStub);
 
         return $transformer;
     }
