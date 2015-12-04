@@ -26,7 +26,9 @@ class Brera_MagentoConnector_Model_Export_CatalogExporter
 
     public function exportAllProducts()
     {
-        Mage::helper('brera_magentoconnector/export')->addAllProductIdsToProductUpdateQueue();
+        $helper = Mage::helper('brera_magentoconnector/export');
+        $helper->addAllProductIdsToProductUpdateQueue();
+        $helper->addAllCategoryIdsToCategoryQueue();
         return $this->exportProductsInQueue();
     }
 
