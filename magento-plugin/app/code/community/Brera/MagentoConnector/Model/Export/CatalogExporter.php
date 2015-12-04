@@ -5,6 +5,8 @@ use Brera\MagentoConnector\XmlBuilder\CatalogMerge;
 
 class Brera_MagentoConnector_Model_Export_CatalogExporter
 {
+    private $numberOfProductsExported = 0;
+    private $numberOfCategoriesExported = 0;
 
     /**
      * @var Mage_Core_Model_Session
@@ -77,7 +79,6 @@ class Brera_MagentoConnector_Model_Export_CatalogExporter
         /** @var Brera_MagentoConnector_Model_ProductXmlUploader $uploader */
         $uploader = Mage::getModel('brera_magentoconnector/productXmlUploader');
 
-        $numberOfProductsExported = 0;
         while ($product = $collector->getProduct()) {
             $xmlBuilderAndUploader = new Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader(
                 $product,
@@ -86,7 +87,7 @@ class Brera_MagentoConnector_Model_Export_CatalogExporter
             );
 
             $xmlBuilderAndUploader->process();
-            $numberOfProductsExported++;
+            $this->numberOfProductsExported++;
         }
 
         $categoryCollector = new Brera_MagentoConnector_Model_Export_CategoryCollector();
@@ -95,15 +96,30 @@ class Brera_MagentoConnector_Model_Export_CatalogExporter
             $transformer = new Brera_MagentoConnector_Model_Export_CategoryToLapTransformer($category);
             $categoryXml = $transformer->getCategoryXml();
             $xmlMerge->addCategory($categoryXml);
+            $this->numberOfCategoriesExported++;
         }
-
-        if (0 === $numberOfProductsExported) {
-            return 0;
+        if (0 === ($this->numberOfProductsExported + $this->numberOfCategoriesExported)) {
+            return;
         }
 
         $uploader->writePartialXmlString($xmlMerge->finish());
         $filename = $uploader->getFilename();
         $this->triggerCatalogUpdateApi($filename);
-        return $numberOfProductsExported;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNumberOfCategoriesExported()
+    {
+        return $this->numberOfCategoriesExported;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNumberOfProductsExported()
+    {
+        return $this->numberOfProductsExported;
     }
 }

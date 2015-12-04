@@ -5,10 +5,14 @@ class Brera_MagentoConnector_Adminhtml_BreraController extends Mage_Adminhtml_Co
     public function exportAllProductsAction()
     {
         try {
-            /** @var Brera_MagentoConnector_Model_Export_ProductExporter $exporter */
-            $exporter = Mage::getModel('brera_magentoconnector/export_productExporter');
-            $productsExported = $exporter->exportAllProducts();
-            Mage::getSingleton('core/session')->addSuccess(sprintf('All (%s) products exported.', $productsExported));
+            /** @var Brera_MagentoConnector_Model_Export_CatalogExporter $exporter */
+            $exporter = Mage::getModel('brera_magentoconnector/export_catalogExporter');
+            $exporter->exportAllProducts();
+            $productsExported = $exporter->getNumberOfProductsExported();
+            $categoriesExporterd = $exporter->getNumberOfCategoriesExported();
+            Mage::getSingleton('core/session')->addSuccess(
+                sprintf('All (%s) products and %s categories exported.', $productsExported, $categoriesExporterd)
+            );
         } catch (Mage_Core_Exception $e) {
             Mage::getSingleton('core/session')->addError($e->getMessage());
         }
@@ -18,11 +22,13 @@ class Brera_MagentoConnector_Adminhtml_BreraController extends Mage_Adminhtml_Co
     public function exportQueuedProductUpdatesAction()
     {
         try {
-            /** @var Brera_MagentoConnector_Model_Export_ProductExporter $exporter */
-            $exporter = Mage::getModel('brera_magentoconnector/export_productExporter');
-            $productsExported = $exporter->exportProductsInQueue();
+            /** @var Brera_MagentoConnector_Model_Export_CatalogExporter $exporter */
+            $exporter = Mage::getModel('brera_magentoconnector/export_catalogExporter');
+            $exporter->exportProductsInQueue();
+            $productsExported = $exporter->getNumberOfProductsExported();
+            $categoriesExporterd = $exporter->getNumberOfCategoriesExported();
             Mage::getSingleton('core/session')->addSuccess(
-                sprintf('%s products from queue exported.', $productsExported)
+                sprintf('%s products and %s categories from queue exported.', $productsExported, $categoriesExporterd)
             );
         } catch (Mage_Core_Exception $e) {
             Mage::getSingleton('core/session')->addError($e->getMessage());

@@ -124,7 +124,7 @@ class ListingBuilder
         if (!is_string($value) || !is_string($operation) || !is_string($value)) {
             throw new \InvalidArgumentException('Attribute, operation and value must be string');
         }
-        
+
         $value = ltrim($value, '/');
         $this->checkFilterParameter($attribute, $operation, $value);
         $this->filter[] = [
