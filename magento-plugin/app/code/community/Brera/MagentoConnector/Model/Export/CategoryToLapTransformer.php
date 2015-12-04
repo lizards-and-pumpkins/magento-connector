@@ -10,11 +10,24 @@ class Brera_MagentoConnector_Model_Export_CategoryToLapTransformer
     private $category;
 
     /**
-     * @param Mage_Catalog_Model_Category $category
+     * @var Brera_MagentoConnector_Model_Export_MagentoConfig
      */
-    public function __construct(Mage_Catalog_Model_Category $category)
-    {
+    private $config;
+
+    /**
+     * @param Mage_Catalog_Model_Category                       $category
+     * @param Brera_MagentoConnector_Model_Export_MagentoConfig $config
+     */
+    public function __construct(
+        Mage_Catalog_Model_Category $category,
+        Brera_MagentoConnector_Model_Export_MagentoConfig $config = null
+    ) {
         $this->category = $category;
+        if ($config instanceof Brera_MagentoConnector_Model_Export_MagentoConfig) {
+            $this->config = $config;
+        } else {
+            $this->config = new Brera_MagentoConnector_Model_Export_MagentoConfig();
+        }
     }
 
     /**
@@ -39,8 +52,8 @@ class Brera_MagentoConnector_Model_Export_CategoryToLapTransformer
      * @param Mage_Core_Model_Store $store
      * @return string
      */
-    protected function getLocale($store)
+    private function getLocale($store)
     {
-        return Mage::getStoreConfig('general/locale/code', $store);
+        return $this->config->getLocaleFrom($store);
     }
 }

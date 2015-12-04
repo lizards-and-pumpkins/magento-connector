@@ -119,34 +119,10 @@ class Brera_MagentoConnector_Test_Model_Export_CategoryToLapTransformerTest exte
      */
     private function getTransformer($category, $locale = 'ar_QA')
     {
-        $transformer = new Brera_MagentoConnector_Model_Export_CategoryToLapTransformerStub($category);
-        $transformer->setLocale($locale);
+        $configStub = $this->getMock(Brera_MagentoConnector_Model_Export_MagentoConfig::class);
+        $configStub->method('getLocaleFrom')->willReturn($locale);
+        $transformer = new Brera_MagentoConnector_Model_Export_CategoryToLapTransformer($category, $configStub);
 
         return $transformer;
-    }
-}
-
-class Brera_MagentoConnector_Model_Export_CategoryToLapTransformerStub
-    extends Brera_MagentoConnector_Model_Export_CategoryToLapTransformer
-{
-    private $locale;
-
-    /**
-     * @param mixed $locale
-     */
-    public function setLocale($locale)
-    {
-        $this->locale = $locale;
-    }
-
-    /**
-     * Method can not be tested due to magento, so we override it.
-     *
-     * @param Mage_Core_Model_Store $store
-     * @return string
-     */
-    protected function getLocale($store)
-    {
-        return $this->locale;
     }
 }
