@@ -110,6 +110,8 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
             ['ISO-8859-1'],
             ['us'],
             [''],
+            [new \stdClass()],
+            [['asd']],
         ];
     }
 

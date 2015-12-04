@@ -62,17 +62,15 @@ class ListingBuilder
 
     public static function create($urlKey, $condition)
     {
-        if (!is_string($urlKey) || !is_string($condition)) {
-            throw new \InvalidArgumentException('UrlKey and condition must be string.');
-        }
+        self::validateUrlKeyAndCondition($urlKey, $condition);
 
         $urlKey = ltrim($urlKey, '/');
         $allowedInUrl = '#^[a-zA-Z0-9"\$\-_\.\+\!\*\'\(\)/]+$#';
-        if (!is_string($urlKey) || !preg_match($allowedInUrl, $urlKey)) {
+        if (!preg_match($allowedInUrl, $urlKey)) {
             throw new \InvalidArgumentException(
                 sprintf(
                     'Only a-z A-Z 0-9 and "$-_.+!*\'(),/" are allowed for a url, "%s" contains forbidden characters.',
-                    is_string($urlKey) ? $urlKey : 'no string'
+                    $urlKey
                 )
             );
         }
@@ -81,7 +79,7 @@ class ListingBuilder
             throw new \InvalidArgumentException(
                 sprintf(
                     'Condition must be either "and" or "or". %s given.',
-                    is_string($condition) ? "\"$condition\"" : 'No string'
+                    $condition
                 )
             );
         }
@@ -90,10 +88,27 @@ class ListingBuilder
     }
 
     /**
+     * @param $urlKey
+     * @param $condition
+     */
+    private static function validateUrlKeyAndCondition($urlKey, $condition)
+    {
+        if (!is_string($urlKey)) {
+            throw new \InvalidArgumentException('UrlKey must be string.');
+        }
+        if (!is_string($condition)) {
+            throw new \InvalidArgumentException('Condition must be string.');
+        }
+    }
+
+    /**
      * @param string $locale
      */
     public function setLocale($locale)
     {
+        if (!is_string($locale)) {
+            throw new \InvalidArgumentException('Locale msut be string');
+        }
         $parts = explode('_', $locale);
         if (count($parts) !== 2) {
             throw new \InvalidArgumentException(sprintf('Locale must be of form "de_DE", "%s" given.', $locale));
