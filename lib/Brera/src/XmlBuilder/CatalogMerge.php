@@ -13,6 +13,8 @@ class CatalogMerge
 
     private $started = false;
 
+    private $mode = 'product';
+
     public function __construct()
     {
         $this->xml = new \XMLWriter();
@@ -26,7 +28,20 @@ class CatalogMerge
      */
     public function addProduct(XmlString $product)
     {
-        $this->xml->writeRaw($product->getXml());
+        if (!$this->isProductMode()) {
+            throw new \RuntimeException(
+                'Products can only be added during product mode, this means BEFORE any category is added.'
+            );
+        }
+        $this->addXml($product);
+    }
+
+    public function addCategory(XmlString $category)
+    {
+        if (!$this->isCategoryMode()) {
+            $this->setCategoryMode();
+        }
+        $this->addXml($category);
     }
 
     /**
@@ -45,6 +60,23 @@ class CatalogMerge
     public function getPartialXmlString()
     {
         return $this->xml->flush();
+    }
+
+    private function setCategoryMode()
+    {
+        $this->mode = 'category';
+        $this->xml->endElement(); // end products
+        $this->xml->startElement('listings');
+    }
+
+    public function isCategoryMode()
+    {
+        return $this->mode === 'category';
+    }
+
+    public function isProductMode()
+    {
+        return $this->mode === 'product';
     }
 
     private function startXml()
@@ -73,4 +105,13 @@ class CatalogMerge
         $this->xml->endElement();
         $this->xml->endElement();
     }
+
+    /**
+     * @param XmlString $category
+     */
+    private function addXml(XmlString $category)
+    {
+        $this->xml->writeRaw($category->getXml());
+    }
+
 }
