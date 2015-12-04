@@ -35,7 +35,8 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
         $urlKey = 'sneaker';
         $urlKeyWithLeadingSlash = '/' . $urlKey;
 
-        $xml = ListingBuilder::create($urlKeyWithLeadingSlash, 'and')->buildXml()->getXml();
+        $listingBuilder = ListingBuilder::create($urlKeyWithLeadingSlash, 'and');
+        $xml = $listingBuilder->buildXml()->getXml();
 
         $this->assertNotContains($urlKeyWithLeadingSlash, $xml);
         $this->assertContains($urlKey, $xml);
@@ -317,6 +318,17 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
             ];
         }
         return $filter;
+    }
+
+    public function testFilterWithLeadingSlash()
+    {
+        $listingBuilder = $this->createBuilder('urlkey', 'and');
+        $urlKey = 'sneaker';
+        $urlKeyWithLeadingSlash = '/' . $urlKey;
+        $listingBuilder->addFilterCriterion('category', 'Equal', $urlKeyWithLeadingSlash);
+        $xml = $listingBuilder->buildXml()->getXml();
+        $this->assertNotContains($urlKeyWithLeadingSlash, $xml);
+        $this->assertContains("<category operation=\"Equal\">$urlKey</category>", $xml);
     }
 
     private function createBuilder($urlKey = 'valid-url-key', $condition = 'and')
