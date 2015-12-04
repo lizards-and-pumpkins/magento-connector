@@ -176,7 +176,7 @@ SQL;
 
     public function getCategoryUpdatesToExport()
     {
-        $queue = $this->getQueue(self::QUEUE_PRODUCT_UPDATES);
+        $queue = $this->getQueue(self::QUEUE_CATEGORY_UPDATES);
         return $queue->receive(self::QUEUE_MESSAGES_FETCHED_PER_REQUEST, self::TIMEOUT);
     }
 
