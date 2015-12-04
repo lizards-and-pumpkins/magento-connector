@@ -12,7 +12,7 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
     {
         $this->setExpectedExceptionRegExp(
             \InvalidArgumentException::class,
-            '#Only a-z A-Z 0-9 and "\$-_\.\+!\*\'\(\)," are allowed for a url.*#'
+            '#Only a-z A-Z 0-9 and "\$-_\.\+!\*\'\(\),/" are allowed for a url.*#'
         );
         ListingBuilder::create($urlKey, 'and');
     }
@@ -51,6 +51,7 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
         return [
             ['valid-url-key'],
             ['this"$()-lala-*!'],
+            ['/sneakershop'],
         ];
     }
 

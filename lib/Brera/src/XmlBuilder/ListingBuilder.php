@@ -60,11 +60,11 @@ class ListingBuilder
 
     public static function create($urlKey, $condition)
     {
-        $allowedInUrl = '#^[a-zA-Z0-9"\$\-_\.\+\!\*\'\(\)]*$#';
+        $allowedInUrl = '#^[a-zA-Z0-9"\$\-_\.\+\!\*\'\(\)/]*$#';
         if (!is_string($urlKey) || !preg_match($allowedInUrl, $urlKey) || $urlKey === '') {
             throw new \InvalidArgumentException(
                 sprintf(
-                    'Only a-z A-Z 0-9 and "$-_.+!*\'()," are allowed for a url, "%s" contains forbidden characters.',
+                    'Only a-z A-Z 0-9 and "$-_.+!*\'(),/" are allowed for a url, "%s" contains forbidden characters.',
                     is_string($urlKey) ? $urlKey : 'no string'
                 )
             );
