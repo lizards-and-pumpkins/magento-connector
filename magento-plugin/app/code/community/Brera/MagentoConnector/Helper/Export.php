@@ -9,6 +9,7 @@ class Brera_MagentoConnector_Helper_Export
     const ALL_QUEUES = [
         self::QUEUE_PRODUCT_UPDATES,
         self::QUEUE_STOCK_UPDATES,
+        self::QUEUE_CATEGORY_UPDATES,
     ];
 
     const MYSQL_DUPLICATE_ENTRY_ERROR_NUMBER = 23000;
