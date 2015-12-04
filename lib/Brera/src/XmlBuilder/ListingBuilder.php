@@ -1,10 +1,12 @@
 <?php
+
 namespace Brera\MagentoConnector\XmlBuilder;
 
 class ListingBuilder
 {
     const CONDITION_AND = 'and';
     const CONDITION_OR = 'or';
+
     /**
      * @var string[]
      */
@@ -44,7 +46,7 @@ class ListingBuilder
     private $urlKey;
 
     /**
-     * @var string[][]
+     * @var string[]
      */
     private $filter = [];
 
