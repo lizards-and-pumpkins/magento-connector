@@ -3,6 +3,7 @@
 class LizardsAndPumpkins_MagentoConnector_Test_Model_Export_CategoryToLapTransformerTest
     extends PHPUnit_Framework_TestCase
 {
+
     /**
      * @param string $categoryPath
      * @param string $websiteCode
@@ -30,13 +31,16 @@ class LizardsAndPumpkins_MagentoConnector_Test_Model_Export_CategoryToLapTransfo
     /**
      * @param Mage_Catalog_Model_Category $category
      * @param string                      $locale
-     * @return Brera_MagentoConnector_Model_Export_CategoryTransformer
+     * @return LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryToLapTransformer
      */
     private function getTransformer($category, $locale)
     {
-        $configStub = $this->getMock(Brera_MagentoConnector_Model_Export_MagentoConfig::class);
+        $configStub = $this->getMock(LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig::class);
         $configStub->method('getLocaleFrom')->willReturn($locale);
-        return Brera_MagentoConnector_Model_Export_CategoryTransformer::createForTesting($category, $configStub);
+        return LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryToLapTransformer::createForTesting(
+            $category,
+            $configStub
+        );
     }
 
     public function testGetXmlWithoutFilter()
@@ -79,7 +83,7 @@ class LizardsAndPumpkins_MagentoConnector_Test_Model_Export_CategoryToLapTransfo
         $categoryStub->method('getStore')->willReturn(null);
         $categoryStub->method('getUrlPath')->willReturn($categoryPath);
 
-        $transformer = $this->getTransformer($categoryStub, 'ar_QA');
+        $transformer = $this->getTransformer($categoryStub, 'de_CH');
         $xml = $transformer->getCategoryXml()->getXml();
 
         $this->assertContains("<category operation=\"Equal\">$categoryPath</category>", $xml);
@@ -90,7 +94,7 @@ class LizardsAndPumpkins_MagentoConnector_Test_Model_Export_CategoryToLapTransfo
         $categoryPath = 'my-category-path';
         $website = 'ru';
         $categoryStub = $this->getCategoryStub($categoryPath, $website);
-        $transformer = $this->getTransformer($categoryStub, 'ar_QA');
+        $transformer = $this->getTransformer($categoryStub, 'de_DE');
         $xml = $transformer->getCategoryXml()->getXml();
 
         $this->assertRegExp("<listing.*?website=\"$website\".*?>", $xml);

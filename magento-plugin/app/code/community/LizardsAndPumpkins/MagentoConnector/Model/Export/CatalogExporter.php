@@ -38,8 +38,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
      */
     public function exportOneStore(Mage_Core_Model_Store $store)
     {
-        Mage::helper('lizardsAndPumpkins_magentoconnector/export')
-            ->addAllProductIdsFromWebsiteToProductUpdateQueue($store->getWebsite());
+        /** @var LizardsAndPumpkins_MagentoConnector_Helper_Export $helper */
+        $helper = Mage::helper('lizardsAndPumpkins_magentoconnector/export');
+        $helper->addAllProductIdsFromWebsiteToProductUpdateQueue($store->getWebsite());
         $collector = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_productCollector');
         $collector->setStoresToExport([$store]);
         $this->export($collector);
