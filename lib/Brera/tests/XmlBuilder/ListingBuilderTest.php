@@ -10,10 +10,7 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvalidUrlKey($urlKey)
     {
-        $this->setExpectedExceptionRegExp(
-            \InvalidArgumentException::class,
-            '#Only a-z A-Z 0-9 and "\$-_\.\+!\*\'\(\),/" are allowed for a url.*#'
-        );
+        $this->setExpectedExceptionRegExp(\InvalidArgumentException::class);
         ListingBuilder::create($urlKey, 'and');
     }
 
@@ -31,6 +28,17 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
             [new \stdClass()],
             [12],
         ];
+    }
+
+    public function testUrlKeyHasLeadingSlash()
+    {
+        $urlKey = 'sneaker';
+        $urlKeyWithLeadingSlash = '/' . $urlKey;
+
+        $xml = ListingBuilder::create($urlKeyWithLeadingSlash, 'and')->buildXml()->getXml();
+
+        $this->assertNotContains($urlKeyWithLeadingSlash, $xml);
+        $this->assertContains($urlKey, $xml);
     }
 
     /**
@@ -51,7 +59,7 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
         return [
             ['valid-url-key'],
             ['this"$()-lala-*!'],
-            ['/sneakershop'],
+            ['sneakershop/lala'],
         ];
     }
 
