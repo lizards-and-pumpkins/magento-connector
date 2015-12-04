@@ -6,6 +6,11 @@ class Brera_MagentoConnector_Helper_Export
     const QUEUE_PRODUCT_UPDATES = "productUpdates";
     const QUEUE_CATEGORY_UPDATES = 'categoryUpdates';
 
+    const ALL_QUEUES = [
+        self::QUEUE_PRODUCT_UPDATES,
+        self::QUEUE_STOCK_UPDATES,
+    ];
+
     const MYSQL_DUPLICATE_ENTRY_ERROR_NUMBER = 23000;
 
     const QUEUE_MESSAGES_FETCHED_PER_REQUEST = 500;
@@ -31,12 +36,14 @@ class Brera_MagentoConnector_Helper_Export
     {
         $this->resource = Mage::getSingleton('core/resource');
         $this->connection = $this->resource->getConnection('core_write');
+        foreach (self::ALL_QUEUES as $queueName) {
+            $this->getQueue($queueName);
+        }
     }
 
     public function addAllProductIdsToProductUpdateQueue()
     {
         $queueId = $this->getQueueIdByName(self::QUEUE_PRODUCT_UPDATES);
-
         $query = <<<SQL
 INSERT IGNORE INTO `message`
   (queue_id, created, body, md5)
@@ -65,7 +72,6 @@ SQL;
     public function addAllProductIdsFromWebsiteToProductUpdateQueue(Mage_Core_Model_Website $website)
     {
         $queueId = $this->getQueueIdByName(self::QUEUE_PRODUCT_UPDATES);
-
         $productToWebsiteTable = $this->resource->getTableName('catalog/product_website');
         $productTable = $this->resource->getTableName('catalog/product');
 

@@ -116,8 +116,9 @@ class Brera_MagentoConnector_Model_Observer
      */
     private function logStockUpdateForProductIds(array $ids)
     {
-        $helper = Mage::helper('brera_magentoconnector/export');
-        $helper->addStockUpdatesToQueue($ids);
+        $this->logProductUpdateForProductIds($ids);
+//        $helper = Mage::helper('brera_magentoconnector/export');
+//        $helper->addStockUpdatesToQueue($ids);
     }
 
     /**
@@ -125,9 +126,10 @@ class Brera_MagentoConnector_Model_Observer
      */
     private function logStockUpdatesForProductSkus(array $skus)
     {
-        $collection = Mage::getResourceModel('catalog/product_collection')
-            ->addAttributeToFilter('sku', ['in' => $skus]);
-        $this->logStockUpdateForProductIds($collection->getLoadedIds());
+        $this->logProductUpdatesForProductSkus($skus);
+//        $collection = Mage::getResourceModel('catalog/product_collection')
+//            ->addAttributeToFilter('sku', ['in' => $skus]);
+//        $this->logStockUpdateForProductIds($collection->getLoadedIds());
     }
 
     /**

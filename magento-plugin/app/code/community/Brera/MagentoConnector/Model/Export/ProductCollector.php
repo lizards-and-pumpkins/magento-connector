@@ -272,7 +272,7 @@ SQL;
         Mage::getSingleton('cataloginventory/stock')
             ->addItemsToProducts($collection);
 
-        foreach ($this->collection as $product) {
+        foreach ($collection as $product) {
             $stockItem = $product->getStockItem();
             $product->setStockQty($stockItem->getQty());
             $product->setBackorders($stockItem->getBackorders() ? 'true' : 'false');

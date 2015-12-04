@@ -12,6 +12,7 @@ spl_autoload_register(
                 'brera\\magentoconnector\\api\\invalidhostexception' => '/src/Api/InvalidHostException.php',
                 'brera\\magentoconnector\\api\\invalidurlexception' => '/src/Api/InvalidUrlException.php',
                 'brera\\magentoconnector\\api\\requestfailedexception' => '/src/Api/RequestFailedException.php',
+<<<<<<< HEAD
                 'brera\\magentoconnector\\xmlbuilder\\catalogmerge' => '/src/XmlBuilder/CatalogMerge.php',
                 'brera\\magentoconnector\\xmlbuilder\\catalogmergetest' => '/tests/XmlBuilder/CatalogMergeTest.php',
                 'brera\\magentoconnector\\xmlbuilder\\invalidimagedefinitionexception' => '/src/XmlBuilder/InvalidImageDefinitionException.php',
@@ -23,6 +24,17 @@ spl_autoload_register(
                 'brera\\magentoconnector\\xmlbuilder\\stockbuildertest' => '/tests/XmlBuilder/StockBuilderTest.php',
                 'brera\\magentoconnector\\xmlbuilder\\xmlstring' => '/src/XmlBuilder/XmlString.php',
                 'brera\\magentoconnector\\xmlbuilder\\xmlstringtest' => '/tests/XmlBuilder/XmlStringTest.php'
+=======
+                'brera\\magentoconnector\\xmlbuilder\\invalidimagedefinitionexception' => '/src/XmlBuilder/InvalidImageDefinitionException.php',
+                'brera\\magentoconnector\\xmlbuilder\\productbuilder' => '/src/XmlBuilder/ProductBuilder.php',
+                'brera\\magentoconnector\\xmlbuilder\\productbuildertest' => '/tests/XmlBuilder/ProductBuilderTest.php',
+                'brera\\magentoconnector\\xmlbuilder\\productcontainer' => '/src/XmlBuilder/ProductContainer.php',
+                'brera\\magentoconnector\\xmlbuilder\\productcontainertest' => '/tests/XmlBuilder/ProductContainerTest.php',
+                'brera\\magentoconnector\\xmlbuilder\\productmerge' => '/src/XmlBuilder/ProductMerge.php',
+                'brera\\magentoconnector\\xmlbuilder\\productmergetest' => '/tests/XmlBuilder/ProductMergeTest.php',
+                'brera\\magentoconnector\\xmlbuilder\\stockbuilder' => '/src/XmlBuilder/StockBuilder.php',
+                'brera\\magentoconnector\\xmlbuilder\\stockbuildertest' => '/tests/XmlBuilder/StockBuilderTest.php'
+>>>>>>> master
             );
         }
         $cn = strtolower($class);
