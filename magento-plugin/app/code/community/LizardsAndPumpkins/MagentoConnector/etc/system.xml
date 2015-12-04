@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <sections>
+        <lizardsAndPumpkins translate="label" module="lizardsAndPumpkins_magentoconnector">
+            <label>LizardsAndPumpkins Catalog Replacement</label>
+            <tab>catalog</tab>
+            <sort_order>1000</sort_order>
+            <show_in_default>1</show_in_default>
+            <show_in_website>0</show_in_website>
+            <show_in_store>0</show_in_store>
+
+            <groups>
+                <magentoconnector translate="label">
+                    <label>MagentoConnector</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>1000</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>0</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <expanded>1</expanded>
+                    <fields>
+                        <api_url translate="label">
+                            <label>API Url</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </api_url>
+                        <local_path_for_product_export>
+                            <label>Path for product XML</label>
+                            <comment>
+                                <![CDATA[Path from magentos viewpoint. Here is the product XML generated/uploaded to.]]>
+                            </comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </local_path_for_product_export>
+                        <local_filename_template>
+                            <label>Filename Template</label>
+                            <comment>
+                                <![CDATA[Filename template for product XML. The name is parsed by <a href="http://php.net/manual/en/function.strftime.php">strftime()</a>]]>
+                            </comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </local_filename_template>
+                        <stock_xml_target translate="label comment">
+                            <label>Target for stock XML</label>
+                            <comment>
+                                <![CDATA[Insert a complete path, like: <pre>file://var/www/magento/var/stock.xml</pre> or <pre>ssh2.scp://username:password/stock.xml</pre>]]></comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </stock_xml_target>
+                    </fields>
+                </magentoconnector>
+            </groups>
+        </lizardsAndPumpkins>
+    </sections>
+</config>

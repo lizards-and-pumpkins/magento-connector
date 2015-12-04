@@ -1,5 +1,5 @@
 <?php
-require 'lib/Brera/autoload.php';
+require 'lib/LizardsAndPumpkins/autoload.php';
 
 spl_autoload_register(function ($classname) {
     $classnameReplaced = str_replace('_', '/', $classname);

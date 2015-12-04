@@ -1,10 +1,10 @@
-magento-plugin/app/code/community/Brera/MagentoConnector                            app/code/community/Brera/MagentoConnector
-magento-plugin/app/etc/modules/Brera_MagentoConnector.xml                           app/etc/modules/Brera_MagentoConnector.xml
+magento-plugin/app/code/community/LizardsAndPumpkins/MagentoConnector                            app/code/community/LizardsAndPumpkins/MagentoConnector
+magento-plugin/app/etc/modules/LizardsAndPumpkins_MagentoConnector.xml                           app/etc/modules/LizardsAndPumpkins_MagentoConnector.xml
 
-magento-plugin/app/design/frontend/base/default/layout/brera_magentoconnector.xml       app/design/frontend/base/default/layout/brera_magentoconnector.xml
-magento-plugin/app/design/frontend/base/default/template/brera_magentoconnector     app/design/frontend/base/default/template/brera_magentoconnector
+magento-plugin/app/design/frontend/base/default/layout/lizardsAndPumpkins_magentoconnector.xml       app/design/frontend/base/default/layout/lizardsAndPumpkins_magentoconnector.xml
+magento-plugin/app/design/frontend/base/default/template/lizardsAndPumpkins_magentoconnector     app/design/frontend/base/default/template/lizardsAndPumpkins_magentoconnector
 
-magento-plugin/skin/frontend/base/default/js/brera_magentoconnector                 skin/frontend/base/default/js/brera_magentoconnector
+magento-plugin/skin/frontend/base/default/js/lizardsAndPumpkins_magentoconnector                 skin/frontend/base/default/js/lizardsAndPumpkins_magentoconnector
 
 lib/*                                                                               lib/
 

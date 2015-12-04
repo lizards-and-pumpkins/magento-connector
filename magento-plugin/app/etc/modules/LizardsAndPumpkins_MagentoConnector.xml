@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<config>
+    <modules>
+        <LizardsAndPumpkins_MagentoConnector>
+            <active>true</active>
+            <codePool>community</codePool>
+        </LizardsAndPumpkins_MagentoConnector>
+    </modules>
+</config>

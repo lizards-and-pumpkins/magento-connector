@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<layout>
+    <default>
+        <reference name="head">
+            <action method="addItem">
+                <type>skin_js</type>
+                <file>js/lizardsAndPumpkins/session/info.js</file>
+            </action>
+        </reference>
+        <reference name="root">
+            <block type="lizardsAndPumpkins_magentoconnector/session_info" name="lizardsAndPumpkins.session.info"
+                   template="lizardsAndPumpkins_magentoconnector/session/info.phtml" output="toHtml"/>
+        </reference>
+    </default>
+</layout>
