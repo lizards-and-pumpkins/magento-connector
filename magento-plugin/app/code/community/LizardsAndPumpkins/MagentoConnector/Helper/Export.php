@@ -144,6 +144,9 @@ SQL;
         $this->addToQueue($id, self::QUEUE_PRODUCT_UPDATES);
     }
 
+    /**
+     * @param int $id
+     */
     public function addCategoryToQueue($id)
     {
         $this->addToQueue($id, self::QUEUE_CATEGORY_UPDATES);
@@ -174,6 +177,9 @@ SQL;
         return $queue->receive(self::QUEUE_MESSAGES_FETCHED_PER_REQUEST, self::TIMEOUT);
     }
 
+    /**
+     * @return Zend_Queue_Message_Iterator
+     */
     public function getCategoryUpdatesToExport()
     {
         $queue = $this->getQueue(self::QUEUE_CATEGORY_UPDATES);
