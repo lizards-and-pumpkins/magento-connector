@@ -1,21 +1,26 @@
 <?php
+
 namespace Brera\MagentoConnector\XmlBuilder;
 
 class ListingBuilderTest extends \PHPUnit_Framework_TestCase
 {
+    private function createBuilder($urlKey, $condition)
+    {
+        return ListingBuilder::create($urlKey, $condition);
+    }
 
     /**
      * @param string $urlKey
      * @dataProvider provideInvalidUrlKey
      */
-    public function testInvalidUrlKey($urlKey)
+    public function testExceptionForInvalidUrlKey($urlKey)
     {
         $this->setExpectedExceptionRegExp(\InvalidArgumentException::class);
         ListingBuilder::create($urlKey, 'and');
     }
 
     /**
-     * @return string[][]
+     * @return array[]
      */
     public function provideInvalidUrlKey()
     {
@@ -30,7 +35,7 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
-    public function testUrlKeyHasLeadingSlash()
+    public function testUrlKeyHasNoLeadingSlash()
     {
         $urlKey = 'sneaker';
         $urlKeyWithLeadingSlash = '/' . $urlKey;
@@ -40,16 +45,6 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
 
         $this->assertNotContains($urlKeyWithLeadingSlash, $xml);
         $this->assertContains($urlKey, $xml);
-    }
-
-    /**
-     * @param string $validUrlKey
-     * @dataProvider provideValidUrlKey
-     */
-    public function testValidUrlKey($validUrlKey)
-    {
-        $builder = ListingBuilder::create($validUrlKey, 'and');
-        $this->assertInstanceOf(ListingBuilder::class, $builder);
     }
 
     /**
@@ -64,26 +59,12 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
-    /**
-     * @depends testValidUrlKey
-     */
-    public function testValidCondition()
-    {
-        $builderOr = ListingBuilder::create('valid-url-key', 'or');
-        $this->assertInstanceOf(ListingBuilder::class, $builderOr);
-        $builderAnd = ListingBuilder::create('valid-url-key', 'and');
-        $this->assertInstanceOf(ListingBuilder::class, $builderAnd);
-    }
-
-    /**
-     * @depends testValidUrlKey
-     */
-    public function testInvalidCondition()
+    public function testExceptionForInvalidCondition()
     {
         $condition = 'asdfasdfg';
         $this->setExpectedException(
             \InvalidArgumentException::class,
-            sprintf('Condition must be either "and" or "or"', $condition)
+            'Condition must be either "and" or "or"'
         );
 
         ListingBuilder::create('valid-url-key', $condition);
@@ -93,15 +74,15 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
      * @param string $locale
      * @dataProvider provideInvalidLocale
      */
-    public function testInvalidLocale($locale)
+    public function testExceptionForInvalidLocale($locale)
     {
         $this->setExpectedException(\InvalidArgumentException::class);
-        $builder = $this->createBuilder();
+        $builder = $this->createBuilder('valid-url-key', 'and');
         $builder->setLocale($locale);
     }
 
     /**
-     * @return string[][]
+     * @return array[]
      */
     public function provideInvalidLocale()
     {
@@ -115,38 +96,9 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
-    /**
-     * @param string $validLocale
-     * @dataProvider provideValidLocale
-     * @depends      testValidUrlKey
-     * @depends      testValidCondition
-     */
-
-    public function testValidLocale($validLocale)
-    {
-        $builder = $this->createBuilder();
-        $builder->setLocale($validLocale);
-        $this->assertInstanceOf(ListingBuilder::class, $builder);
-    }
-
-    public function provideValidLocale()
-    {
-        return [
-            ['de_DE'],
-            ['cs_CZ'],
-            ['en_US'],
-            ['de_CH'],
-            ['en_GB'],
-        ];
-    }
-
-    /**
-     * @depends testValidUrlKey
-     * @depends testValidCondition
-     */
     public function testUrlInListingXml()
     {
-        $listingBuilder = $this->createBuilder('urlkey');
+        $listingBuilder = $this->createBuilder('urlkey', 'and');
         $xmlString = $listingBuilder->buildXml();
         $this->assertInstanceOf(XmlString::class, $xmlString);
         $xml = $xmlString->getXml();
@@ -174,7 +126,6 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @depends testValidLocale
      * @depends testUrlInListingXml
      * @depends testConditionInXml
      */
@@ -210,79 +161,25 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    /**
-     * @depends testUrlInListingXml
-     * @depends testConditionInXml
-     * @depends testLocaleInXml
-     * @depends testWebsiteInXml
-     */
-    public function testXmlComplete()
-    {
-        $listingBuilder = $this->createBuilder('urlkey', 'and');
-        $listingBuilder->setWebsite('ru_de');
-        $listingBuilder->setLocale('cs_CZ');
-        $xmlString = $listingBuilder->buildXml();
-        $this->assertInstanceOf(XmlString::class, $xmlString);
-        $xml = $xmlString->getXml();
-        $this->assertRegExp(
-            '#<listing .*website="ru_de".*?>#',
-            $xml,
-            'Website as attribute is missing on listing node'
-        );
-        $this->assertRegExp(
-            '#<listing .*locale="cs_CZ".*?>#',
-            $xml,
-            'Locale as attribute is missing on listing node'
-        );
-        $this->assertRegExp(
-            '#<listing .*condition="and".*?>#',
-            $xml,
-            'Condition as attribute is missing on listing node'
-        );
-        $this->assertRegExp(
-            '#<listing .*url_key="urlkey".*?>#',
-            $xml,
-            'UrlKey as attribute is missing on listing node'
-        );
-    }
-
-    /**
-     * @param string $maybeInvalidAttribute
-     * @param string $maybeInvalidOperation
-     * @param string $maybeInvalidValue
-     * @dataProvider provideInvalidFilter
-     */
-    public function testInvalidFilter($maybeInvalidAttribute, $maybeInvalidOperation, $maybeInvalidValue)
+    public function testForExceptionOnInvalidAttribute()
     {
         $this->setExpectedException(\InvalidArgumentException::class);
         $listingBuilder = $this->createBuilder('urlkey', 'and');
-        $listingBuilder->addFilterCriterion($maybeInvalidAttribute, $maybeInvalidOperation, $maybeInvalidValue);
+        $listingBuilder->addFilterCriterion(new \stdClass(), 'Equal', 'sale');
     }
 
-    public function provideInvalidFilter()
+    public function testExceptionForInvalidOperationOnFilter()
     {
-        return [
-            [
-                'attribute' => 'category',
-                'operation' => new \stdClass(),
-                'value'     => 'sale',
-            ],
-            [
-                'attribute' => new \stdClass(),
-                'operation' => 'Equals',
-                'value'     => 'sale',
-            ],
-            [
-                'attribute' => 'category',
-                'operation' => 'Equals',
-                'value'     => new \stdClass(),
-            ],
-            [
-                'attribute' => 'category',
-                'operation' => 'InvalidOperation',
-                'value'     => new \stdClass(),
-            ],
-        ];
+        $this->setExpectedException(\InvalidArgumentException::class);
+        $listingBuilder = $this->createBuilder('urlkey', 'and');
+        $listingBuilder->addFilterCriterion('category', new \stdClass(), 'sale');
+    }
+
+    public function testExceptionForInvalidAttributeOnFilter()
+    {
+        $this->setExpectedException(\InvalidArgumentException::class);
+        $listingBuilder = $this->createBuilder('urlkey', 'and');
+        $listingBuilder->addFilterCriterion(new \stdClass(), 'Equal', 'sale');
     }
 
     /**
@@ -332,10 +229,4 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertNotContains($urlKeyWithLeadingSlash, $xml);
         $this->assertContains("<category operation=\"Equal\">$urlKey</category>", $xml);
     }
-
-    private function createBuilder($urlKey = 'valid-url-key', $condition = 'and')
-    {
-        return ListingBuilder::create($urlKey, $condition);
-    }
-
 }
