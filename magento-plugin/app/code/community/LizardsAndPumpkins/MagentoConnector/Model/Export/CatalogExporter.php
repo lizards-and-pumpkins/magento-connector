@@ -29,7 +29,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
         $helper = Mage::helper('lizardsAndPumpkins_magentoconnector/export');
         $helper->addAllProductIdsToProductUpdateQueue();
         $helper->addAllCategoryIdsToCategoryQueue();
-        return $this->exportProductsInQueue();
+        $this->exportProductsInQueue();
     }
 
     /**
@@ -42,7 +42,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
             ->addAllProductIdsFromWebsiteToProductUpdateQueue($store->getWebsite());
         $collector = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_productCollector');
         $collector->setStoresToExport([$store]);
-        return $this->export($collector);
+        $this->export($collector);
     }
 
     /**
@@ -55,7 +55,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
             ->addAllProductIdsFromWebsiteToProductUpdateQueue($website);
         $collector = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_productCollector');
         $collector->setStoresToExport($website->getStores());
-        return $this->export($collector);
+        $this->export($collector);
     }
 
     public function exportProductsInQueue()
@@ -73,7 +73,6 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
 
     /**
      * @param LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector $collector
-     * @return int
      */
     private function export(LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector $collector)
     {
