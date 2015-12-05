@@ -29,7 +29,7 @@ class Brera_MagentoConnector_Model_Export_CatalogExporter
         $helper = Mage::helper('brera_magentoconnector/export');
         $helper->addAllProductIdsToProductUpdateQueue();
         $helper->addAllCategoryIdsToCategoryQueue();
-        return $this->exportProductsInQueue();
+        $this->exportProductsInQueue();
     }
 
     /**
@@ -42,7 +42,7 @@ class Brera_MagentoConnector_Model_Export_CatalogExporter
             ->addAllProductIdsFromWebsiteToProductUpdateQueue($store->getWebsite());
         $collector = Mage::getModel('brera_magentoconnector/export_productCollector');
         $collector->setStoresToExport([$store]);
-        return $this->export($collector);
+        $this->export($collector);
     }
 
     /**
@@ -55,13 +55,13 @@ class Brera_MagentoConnector_Model_Export_CatalogExporter
             ->addAllProductIdsFromWebsiteToProductUpdateQueue($website);
         $collector = Mage::getModel('brera_magentoconnector/export_productCollector');
         $collector->setStoresToExport($website->getStores());
-        return $this->export($collector);
+        $this->export($collector);
     }
 
     public function exportProductsInQueue()
     {
         $collector = Mage::getModel('brera_magentoconnector/export_productCollector');
-        return $this->export($collector);
+        $this->export($collector);
     }
 
     private function triggerCatalogUpdateApi($filename)
@@ -73,7 +73,6 @@ class Brera_MagentoConnector_Model_Export_CatalogExporter
 
     /**
      * @param Brera_MagentoConnector_Model_Export_ProductCollector $collector
-     * @return int
      */
     private function export(Brera_MagentoConnector_Model_Export_ProductCollector $collector)
     {
