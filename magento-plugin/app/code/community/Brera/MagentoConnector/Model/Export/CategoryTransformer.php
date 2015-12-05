@@ -2,7 +2,7 @@
 
 use Brera\MagentoConnector\XmlBuilder\ListingBuilder;
 
-class Brera_MagentoConnector_Model_Export_CategoryToLapTransformer
+class Brera_MagentoConnector_Model_Export_CategoryTransformer
 {
     /**
      * @var Mage_Catalog_Model_Category

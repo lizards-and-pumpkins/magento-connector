@@ -95,7 +95,7 @@ class Brera_MagentoConnector_Model_Export_CatalogExporter
         $categoryCollector = new Brera_MagentoConnector_Model_Export_CategoryCollector();
 
         while ($category = $categoryCollector->getCategory()) {
-            $transformer = new Brera_MagentoConnector_Model_Export_CategoryToLapTransformer($category);
+            $transformer = new Brera_MagentoConnector_Model_Export_CategoryTransformer($category);
             $categoryXml = $transformer->getCategoryXml();
             $xmlMerge->addCategory($categoryXml);
             $this->numberOfCategoriesExported++;

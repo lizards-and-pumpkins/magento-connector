@@ -1,6 +1,6 @@
 <?php
 
-class Brera_MagentoConnector_Test_Model_Export_CategoryToLapTransformerTest extends PHPUnit_Framework_TestCase
+class Brera_MagentoConnector_Test_Model_Export_CategoryTransformerTest extends PHPUnit_Framework_TestCase
 {
 
     public function testGetXmlWithoutFilter()
@@ -115,13 +115,13 @@ class Brera_MagentoConnector_Test_Model_Export_CategoryToLapTransformerTest exte
     /**
      * @param Mage_Catalog_Model_Category $category
      * @param string                      $locale
-     * @return Brera_MagentoConnector_Model_Export_CategoryToLapTransformer
+     * @return Brera_MagentoConnector_Model_Export_CategoryTransformer
      */
     private function getTransformer($category, $locale = 'ar_QA')
     {
         $configStub = $this->getMock(Brera_MagentoConnector_Model_Export_MagentoConfig::class);
         $configStub->method('getLocaleFrom')->willReturn($locale);
-        $transformer = new Brera_MagentoConnector_Model_Export_CategoryToLapTransformer($category, $configStub);
+        $transformer = new Brera_MagentoConnector_Model_Export_CategoryTransformer($category, $configStub);
 
         return $transformer;
     }
