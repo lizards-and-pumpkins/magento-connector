@@ -138,10 +138,6 @@ class ListingBuilder
      */
     public function addFilterCriterion($attribute, $operation, $value)
     {
-        if (!is_string($value) || !is_string($operation) || !is_string($value)) {
-            throw new \InvalidArgumentException('Attribute, operation and value must be string');
-        }
-
         $value = ltrim($value, '/');
         $this->checkFilterParameter($attribute, $operation, $value);
         $this->filter[] = [
@@ -184,6 +180,9 @@ class ListingBuilder
     {
         if (!is_string($attribute)) {
             throw new \InvalidArgumentException('Attribute must be a string');
+        }
+        if ($attribute === '') {
+            throw new \InvalidArgumentException('Attribute is not allwed to be empty string.');
         }
         if (!is_string($operation)) {
             throw new \InvalidArgumentException('Operation must be a string');
