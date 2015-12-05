@@ -15,7 +15,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryToLapTransformer
     private $config;
 
     /**
-     * @param Mage_Catalog_Model_Category                       $category
+     * @param Mage_Catalog_Model_Category                                    $category
      * @param LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig $config
      */
     public function __construct(
