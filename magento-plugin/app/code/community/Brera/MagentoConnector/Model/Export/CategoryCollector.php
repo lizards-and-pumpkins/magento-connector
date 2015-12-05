@@ -37,6 +37,9 @@ class Brera_MagentoConnector_Model_Export_CategoryCollector
      */
     private $messageIterator;
 
+    /**
+     * @return Mage_Catalog_Model_Category
+     */
     public function getCategory()
     {
         if ($this->existsNextCategory()) {
@@ -60,7 +63,9 @@ class Brera_MagentoConnector_Model_Export_CategoryCollector
         return $this->categoryIterator->current();
     }
 
-
+    /**
+     * @return bool
+     */
     private function existsNextCategory()
     {
         if ($this->categoryIterator) {

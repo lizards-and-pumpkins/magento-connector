@@ -3,7 +3,7 @@
 class Brera_MagentoConnector_Model_Export_MagentoConfig
 {
     /**
-     * @param string|Mage_Core_Model_Store|int $store
+     * @param string $store
      * @return string
      */
     public function getLocaleFrom($store)
