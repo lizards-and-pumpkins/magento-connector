@@ -9,7 +9,7 @@ class Brera_MagentoConnector_Test_Model_Export_CategoryTransformerTest extends P
 
         $categoryStub = $this->getCategoryStub($categoryPath);
 
-        $transformer = $this->getTransformer($categoryStub);
+        $transformer = $this->getTransformer($categoryStub, 'ar_QA');
         $xml = $transformer->getCategoryXml()->getXml();
 
         $this->assertRegExp("<listing.*?url_key=\"$categoryPath\".*?>", $xml);
@@ -22,7 +22,7 @@ class Brera_MagentoConnector_Test_Model_Export_CategoryTransformerTest extends P
 
         $categoryStub = $this->getCategoryStub($categoryPath);
 
-        $transformer = $this->getTransformer($categoryStub);
+        $transformer = $this->getTransformer($categoryStub, 'ar_QA');
         $xml = $transformer->getCategoryXml()->getXml();
 
         $this->assertContains("<category operation=\"Equal\">$categoryPath</category>", $xml);
@@ -43,7 +43,7 @@ class Brera_MagentoConnector_Test_Model_Export_CategoryTransformerTest extends P
         $categoryStub->method('getStore')->willReturn(null);
         $categoryStub->method('getUrlPath')->willReturn($categoryPath);
 
-        $transformer = $this->getTransformer($categoryStub);
+        $transformer = $this->getTransformer($categoryStub, 'ar_QA');
         $xml = $transformer->getCategoryXml()->getXml();
 
         $this->assertContains("<category operation=\"Equal\">$categoryPath</category>", $xml);
@@ -54,7 +54,7 @@ class Brera_MagentoConnector_Test_Model_Export_CategoryTransformerTest extends P
         $categoryPath = 'my-category-path';
         $website = 'ru';
         $categoryStub = $this->getCategoryStub($categoryPath, $website);
-        $transformer = $this->getTransformer($categoryStub);
+        $transformer = $this->getTransformer($categoryStub, 'ar_QA');
         $xml = $transformer->getCategoryXml()->getXml();
 
         $this->assertRegExp("<listing.*?website=\"$website\".*?>", $xml);
@@ -117,12 +117,10 @@ class Brera_MagentoConnector_Test_Model_Export_CategoryTransformerTest extends P
      * @param string                      $locale
      * @return Brera_MagentoConnector_Model_Export_CategoryTransformer
      */
-    private function getTransformer($category, $locale = 'ar_QA')
+    private function getTransformer($category, $locale)
     {
         $configStub = $this->getMock(Brera_MagentoConnector_Model_Export_MagentoConfig::class);
         $configStub->method('getLocaleFrom')->willReturn($locale);
-        $transformer = new Brera_MagentoConnector_Model_Export_CategoryTransformer($category, $configStub);
-
-        return $transformer;
+        return Brera_MagentoConnector_Model_Export_CategoryTransformer::createForTesting($category, $configStub);
     }
 }
