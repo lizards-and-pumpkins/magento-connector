@@ -2,12 +2,47 @@
 
 class Brera_MagentoConnector_Test_Model_Export_CategoryTransformerTest extends PHPUnit_Framework_TestCase
 {
+    /**
+     * @param string $categoryPath
+     * @param string $websiteCode
+     * @return Mage_Catalog_Model_Category|PHPUnit_Framework_MockObject_MockObject
+     */
+    private function getCategoryStub($categoryPath, $websiteCode)
+    {
+        $websiteStub = $this->getMock(Mage_Core_Model_Website::class, ['getCode']);
+        $websiteStub->method('getCode')->willReturn($websiteCode);
+
+        $storeStub = $this->getMock(Mage_Core_Model_Store::class, ['getWebsite']);
+        $storeStub->method('getWebsite')->willReturn($websiteStub);
+
+        $categoryStub = $this->getMockBuilder(Mage_Catalog_Model_Category::class)
+            ->setMethods(['getUrlPath', 'getStore'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $categoryStub->method('getStore')->willReturn($storeStub);
+
+        $categoryStub->method('getUrlPath')->willReturn($categoryPath);
+        return $categoryStub;
+    }
+
+    /**
+     * @param Mage_Catalog_Model_Category $category
+     * @param string                      $locale
+     * @return Brera_MagentoConnector_Model_Export_CategoryTransformer
+     */
+    private function getTransformer($category, $locale)
+    {
+        $configStub = $this->getMock(Brera_MagentoConnector_Model_Export_MagentoConfig::class);
+        $configStub->method('getLocaleFrom')->willReturn($locale);
+        return Brera_MagentoConnector_Model_Export_CategoryTransformer::createForTesting($category, $configStub);
+    }
 
     public function testGetXmlWithoutFilter()
     {
         $categoryPath = 'my-category-path';
 
-        $categoryStub = $this->getCategoryStub($categoryPath);
+        $categoryStub = $this->getCategoryStub($categoryPath, 'ru');
 
         $transformer = $this->getTransformer($categoryStub, 'ar_QA');
         $xml = $transformer->getCategoryXml()->getXml();
@@ -20,7 +55,7 @@ class Brera_MagentoConnector_Test_Model_Export_CategoryTransformerTest extends P
     {
         $categoryPath = 'my-category-path';
 
-        $categoryStub = $this->getCategoryStub($categoryPath);
+        $categoryStub = $this->getCategoryStub($categoryPath, 'ru');
 
         $transformer = $this->getTransformer($categoryStub, 'ar_QA');
         $xml = $transformer->getCategoryXml()->getXml();
@@ -64,7 +99,7 @@ class Brera_MagentoConnector_Test_Model_Export_CategoryTransformerTest extends P
     {
         $categoryPath = 'my-category-path';
         $locale = 'ro_RO';
-        $categoryStub = $this->getCategoryStub($categoryPath);
+        $categoryStub = $this->getCategoryStub($categoryPath, 'ru');
         $transformer = $this->getTransformer($categoryStub, $locale);
         $xml = $transformer->getCategoryXml()->getXml();
 
@@ -85,42 +120,5 @@ class Brera_MagentoConnector_Test_Model_Export_CategoryTransformerTest extends P
         $this->assertRegExp("<listing.*?url_key=\"$categoryPath\".*?>", $xml);
         $this->assertRegExp("<listing.*?condition=\"and\".*?>", $xml);
         $this->assertContains("<category operation=\"Equal\">$categoryPath</category>", $xml);
-    }
-
-
-    /**
-     * @param string $categoryPath
-     * @param string $websiteCode
-     * @return Mage_Catalog_Model_Category|PHPUnit_Framework_MockObject_MockObject
-     */
-    private function getCategoryStub($categoryPath, $websiteCode = 'ru')
-    {
-        $websiteStub = $this->getMock(Mage_Core_Model_Website::class, ['getCode']);
-        $websiteStub->method('getCode')->willReturn($websiteCode);
-
-        $storeStub = $this->getMock(Mage_Core_Model_Store::class, ['getWebsite']);
-        $storeStub->method('getWebsite')->willReturn($websiteStub);
-
-        $categoryStub = $this->getMockBuilder(Mage_Catalog_Model_Category::class)
-            ->setMethods(['getUrlPath', 'getStore'])
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $categoryStub->method('getStore')->willReturn($storeStub);
-
-        $categoryStub->method('getUrlPath')->willReturn($categoryPath);
-        return $categoryStub;
-    }
-
-    /**
-     * @param Mage_Catalog_Model_Category $category
-     * @param string                      $locale
-     * @return Brera_MagentoConnector_Model_Export_CategoryTransformer
-     */
-    private function getTransformer($category, $locale)
-    {
-        $configStub = $this->getMock(Brera_MagentoConnector_Model_Export_MagentoConfig::class);
-        $configStub->method('getLocaleFrom')->willReturn($locale);
-        return Brera_MagentoConnector_Model_Export_CategoryTransformer::createForTesting($category, $configStub);
     }
 }
