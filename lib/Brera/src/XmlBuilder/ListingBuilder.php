@@ -60,12 +60,31 @@ class ListingBuilder
         $this->urlKey = $urlKey;
     }
 
+    /**
+     * @param string $urlKey
+     * @param string $condition
+     * @return ListingBuilder
+     */
     public static function create($urlKey, $condition)
     {
-        self::validateUrlKeyAndCondition($urlKey, $condition);
-
+        self::validateCondition($condition);
+        self::validateUrlKey($urlKey);
         $urlKey = ltrim($urlKey, '/');
+
+        return new self($urlKey, $condition);
+    }
+
+    /**
+     * @param string $urlKey
+     */
+    private static function validateUrlKey($urlKey)
+    {
         $allowedInUrl = '#^[a-zA-Z0-9"\$\-_\.\+\!\*\'\(\)/]+$#';
+
+        if (!is_string($urlKey)) {
+            throw new \InvalidArgumentException('UrlKey must be string.');
+        }
+
         if (!preg_match($allowedInUrl, $urlKey)) {
             throw new \InvalidArgumentException(
                 sprintf(
@@ -73,6 +92,16 @@ class ListingBuilder
                     $urlKey
                 )
             );
+        }
+    }
+
+    /**
+     * @param string $condition
+     */
+    private static function validateCondition($condition)
+    {
+        if (!is_string($condition)) {
+            throw new \InvalidArgumentException('Condition must be string.');
         }
 
         if (!in_array($condition, self::$allowedConditions)) {
@@ -82,22 +111,6 @@ class ListingBuilder
                     $condition
                 )
             );
-        }
-
-        return new self($urlKey, $condition);
-    }
-
-    /**
-     * @param $urlKey
-     * @param $condition
-     */
-    private static function validateUrlKeyAndCondition($urlKey, $condition)
-    {
-        if (!is_string($urlKey)) {
-            throw new \InvalidArgumentException('UrlKey must be string.');
-        }
-        if (!is_string($condition)) {
-            throw new \InvalidArgumentException('Condition must be string.');
         }
     }
 
@@ -139,7 +152,7 @@ class ListingBuilder
     public function addFilterCriterion($attribute, $operation, $value)
     {
         $value = ltrim($value, '/');
-        $this->checkFilterParameter($attribute, $operation, $value);
+        $this->validateFilterParameters($attribute, $operation, $value);
         $this->filter[] = [
             'attribute' => $attribute,
             'operation' => $operation,
@@ -176,7 +189,7 @@ class ListingBuilder
      * @param string $operation
      * @param string $value
      */
-    private function checkFilterParameter($attribute, $operation, $value)
+    private function validateFilterParameters($attribute, $operation, $value)
     {
         if (!is_string($attribute)) {
             throw new \InvalidArgumentException('Attribute must be a string');
