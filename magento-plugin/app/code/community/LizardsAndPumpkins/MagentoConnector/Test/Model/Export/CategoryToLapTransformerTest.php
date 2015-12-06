@@ -9,7 +9,7 @@ class LizardsAndPumpkins_MagentoConnector_Test_Model_Export_CategoryToLapTransfo
 
         $categoryStub = $this->getCategoryStub($categoryPath);
 
-        $transformer = $this->getTransformer($categoryStub);
+        $transformer = $this->getTransformer($categoryStub, 'ar_QA');
         $xml = $transformer->getCategoryXml()->getXml();
 
         $this->assertRegExp("<listing.*?url_key=\"$categoryPath\".*?>", $xml);
@@ -22,7 +22,7 @@ class LizardsAndPumpkins_MagentoConnector_Test_Model_Export_CategoryToLapTransfo
 
         $categoryStub = $this->getCategoryStub($categoryPath);
 
-        $transformer = $this->getTransformer($categoryStub);
+        $transformer = $this->getTransformer($categoryStub, 'ar_QA');
         $xml = $transformer->getCategoryXml()->getXml();
 
         $this->assertContains("<category operation=\"Equal\">$categoryPath</category>", $xml);
@@ -43,7 +43,7 @@ class LizardsAndPumpkins_MagentoConnector_Test_Model_Export_CategoryToLapTransfo
         $categoryStub->method('getStore')->willReturn(null);
         $categoryStub->method('getUrlPath')->willReturn($categoryPath);
 
-        $transformer = $this->getTransformer($categoryStub);
+        $transformer = $this->getTransformer($categoryStub, 'ar_QA');
         $xml = $transformer->getCategoryXml()->getXml();
 
         $this->assertContains("<category operation=\"Equal\">$categoryPath</category>", $xml);
@@ -54,7 +54,7 @@ class LizardsAndPumpkins_MagentoConnector_Test_Model_Export_CategoryToLapTransfo
         $categoryPath = 'my-category-path';
         $website = 'ru';
         $categoryStub = $this->getCategoryStub($categoryPath, $website);
-        $transformer = $this->getTransformer($categoryStub);
+        $transformer = $this->getTransformer($categoryStub, 'ar_QA');
         $xml = $transformer->getCategoryXml()->getXml();
 
         $this->assertRegExp("<listing.*?website=\"$website\".*?>", $xml);
@@ -117,10 +117,11 @@ class LizardsAndPumpkins_MagentoConnector_Test_Model_Export_CategoryToLapTransfo
      * @param string                      $locale
      * @return LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryToLapTransformer
      */
-    private function getTransformer($category, $locale = 'ar_QA')
+    private function getTransformer($category, $locale)
     {
         $configStub = $this->getMock(LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig::class);
         $configStub->method('getLocaleFrom')->willReturn($locale);
+
         $transformer = new LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryToLapTransformer($category, $configStub);
 
         return $transformer;

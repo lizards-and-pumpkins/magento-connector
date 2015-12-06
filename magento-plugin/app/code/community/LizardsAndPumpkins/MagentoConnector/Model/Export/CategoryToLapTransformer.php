@@ -18,16 +18,34 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryToLapTransformer
      * @param Mage_Catalog_Model_Category                                    $category
      * @param LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig $config
      */
-    public function __construct(
+    private function __construct(
         Mage_Catalog_Model_Category $category,
         LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig $config = null
     ) {
         $this->category = $category;
-        if ($config instanceof LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig) {
-            $this->config = $config;
-        } else {
-            $this->config = new LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig();
-        }
+        $this->config = $config;
+    }
+
+    /**
+     * @param Mage_Catalog_Model_Category                            $category
+     * @param Brera_MagentoConnector_Model_Export_MagentoConfig|null $config
+     * @return Brera_MagentoConnector_Model_Export_CategoryTransformer
+     */
+    public static function createForTesting(
+        Mage_Catalog_Model_Category $category,
+        Brera_MagentoConnector_Model_Export_MagentoConfig $config
+    ) {
+        return new self($category, $config);
+    }
+
+    /**
+     * @param Mage_Catalog_Model_Category $category
+     * @return Brera_MagentoConnector_Model_Export_CategoryTransformer
+     */
+    public static function createFrom(Mage_Catalog_Model_Category $category)
+    {
+        $config = new Brera_MagentoConnector_Model_Export_MagentoConfig();
+        return new self($category, $config);
     }
 
     /**
