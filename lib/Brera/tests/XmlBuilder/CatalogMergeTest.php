@@ -3,9 +3,9 @@
 namespace Brera\MagentoConnector\XmlBuilder;
 
 /**
- * @covers \Brera\MagentoConnector\XmlBuilder\ProductMerge
+ * @covers \Brera\MagentoConnector\XmlBuilder\CatalogMerge
  */
-class ProductMergeTest extends \PHPUnit_Framework_TestCase
+class CatalogMergeTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
@@ -30,7 +30,7 @@ class ProductMergeTest extends \PHPUnit_Framework_TestCase
     public function testProductIsAdded()
     {
         $expectedXml = '<product>my product</product>';
-        $this->merge->addProduct(new ProductContainer('<?xml version="1.0"?>' . $expectedXml));
+        $this->merge->addProduct(new XmlString('<?xml version="1.0"?>' . $expectedXml));
         $xml = $this->merge->finish();
         $this->assertContains($expectedXml, $xml);
         $this->assertRegExp('#<products>#', $xml);
@@ -39,7 +39,7 @@ class ProductMergeTest extends \PHPUnit_Framework_TestCase
     public function testPartialString()
     {
         $expectedXml = '<product>my product</product>';
-        $this->merge->addProduct(new ProductContainer('<?xml version="1.0"?>' . $expectedXml));
+        $this->merge->addProduct(new XmlString('<?xml version="1.0"?>' . $expectedXml));
         $xml = $this->merge->getPartialXmlString();
         $this->assertContains($expectedXml, $xml);
         $this->assertRegExp('#<products>#', $xml);
@@ -52,6 +52,6 @@ class ProductMergeTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->merge = new ProductMerge();
+        $this->merge = new CatalogMerge();
     }
 }

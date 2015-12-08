@@ -1,10 +1,10 @@
 <?php
 
 require_once 'Brera/src/XmlBuilder/ProductBuilder.php';
-require_once 'Brera/src/XmlBuilder/ProductMerge.php';
+require_once 'Brera/src/XmlBuilder/CatalogMerge.php';
 
+use Brera\MagentoConnector\XmlBuilder\CatalogMerge;
 use Brera\MagentoConnector\XmlBuilder\ProductBuilder;
-use Brera\MagentoConnector\XmlBuilder\ProductMerge;
 
 class Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
 {
@@ -26,12 +26,12 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
 
     /**
      * @param Mage_Catalog_Model_Product               $product
-     * @param ProductMerge                             $merge
+     * @param CatalogMerge                             $merge
      * @param Brera_MagentoConnector_Model_XmlUploader $uploader
      */
     public function __construct(
         Mage_Catalog_Model_Product $product,
-        ProductMerge $merge,
+        CatalogMerge $merge,
         Brera_MagentoConnector_Model_XmlUploader $uploader
     ) {
         $this->product = $product;
@@ -39,7 +39,9 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
         $this->uploader = $uploader;
     }
 
-
+    /**
+     * @return string[]
+     */
     private function getContext()
     {
         return [
@@ -55,8 +57,8 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
             $this->transformData($this->product),
             $this->getContext()
         );
-        $productContainer = $productBuilder->getProductContainer();
-        $this->merge->addProduct($productContainer);
+        $xmlString = $productBuilder->getXmlString();
+        $this->merge->addProduct($xmlString);
         $partialXmlString = $this->merge->getPartialXmlString() . "\n";
         $this->getUploader()->writePartialXmlString($partialXmlString);
     }

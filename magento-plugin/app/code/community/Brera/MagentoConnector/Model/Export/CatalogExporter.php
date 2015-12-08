@@ -1,10 +1,12 @@
 <?php
 
 use Brera\MagentoConnector\Api\Api;
-use Brera\MagentoConnector\XmlBuilder\ProductMerge;
+use Brera\MagentoConnector\XmlBuilder\CatalogMerge;
 
-class Brera_MagentoConnector_Model_Export_Exporter
+class Brera_MagentoConnector_Model_Export_CatalogExporter
 {
+    private $numberOfProductsExported = 0;
+    private $numberOfCategoriesExported = 0;
 
     /**
      * @var Mage_Core_Model_Session
@@ -24,8 +26,10 @@ class Brera_MagentoConnector_Model_Export_Exporter
 
     public function exportAllProducts()
     {
-        Mage::helper('brera_magentoconnector/export')->addAllProductIdsToProductUpdateQueue();
-        return $this->exportProductsInQueue();
+        $helper = Mage::helper('brera_magentoconnector/export');
+        $helper->addAllProductIdsToProductUpdateQueue();
+        $helper->addAllCategoryIdsToCategoryQueue();
+        $this->exportProductsInQueue();
     }
 
     /**
@@ -34,11 +38,13 @@ class Brera_MagentoConnector_Model_Export_Exporter
      */
     public function exportOneStore(Mage_Core_Model_Store $store)
     {
-        Mage::helper('brera_magentoconnector/export')
-            ->addAllProductIdsFromWebsiteToProductUpdateQueue($store->getWebsite());
+        /** @var Brera_MagentoConnector_Helper_Export $helper */
+        $helper = Mage::helper('brera_magentoconnector/export');
+        $helper->addAllProductIdsFromWebsiteToProductUpdateQueue($store->getWebsite());
+        /** @var Brera_MagentoConnector_Model_Export_ProductCollector $collector */
         $collector = Mage::getModel('brera_magentoconnector/export_productCollector');
         $collector->setStoresToExport([$store]);
-        return $this->export($collector);
+        $this->export($collector);
     }
 
     /**
@@ -47,19 +53,25 @@ class Brera_MagentoConnector_Model_Export_Exporter
      */
     public function exportOneWebsite(Mage_Core_Model_Website $website)
     {
-        Mage::helper('brera_magentoconnector/export')
-            ->addAllProductIdsFromWebsiteToProductUpdateQueue($website);
+        /** @var Brera_MagentoConnector_Helper_Export $helper */
+        $helper = Mage::helper('brera_magentoconnector/export');
+        $helper->addAllProductIdsFromWebsiteToProductUpdateQueue($website);
+        /** @var Brera_MagentoConnector_Model_Export_ProductCollector $collector */
         $collector = Mage::getModel('brera_magentoconnector/export_productCollector');
         $collector->setStoresToExport($website->getStores());
-        return $this->export($collector);
+        $this->export($collector);
     }
 
     public function exportProductsInQueue()
     {
+        /** @var Brera_MagentoConnector_Model_Export_ProductCollector $collector */
         $collector = Mage::getModel('brera_magentoconnector/export_productCollector');
-        return $this->export($collector);
+        $this->export($collector);
     }
 
+    /**
+     * @param string $filename
+     */
     private function triggerCatalogUpdateApi($filename)
     {
         $apiUrl = Mage::getStoreConfig('brera/magentoconnector/api_url');
@@ -69,15 +81,13 @@ class Brera_MagentoConnector_Model_Export_Exporter
 
     /**
      * @param Brera_MagentoConnector_Model_Export_ProductCollector $collector
-     * @return int
      */
     private function export(Brera_MagentoConnector_Model_Export_ProductCollector $collector)
     {
-        $xmlMerge = new ProductMerge();
+        $xmlMerge = new CatalogMerge();
         /** @var Brera_MagentoConnector_Model_ProductXmlUploader $uploader */
         $uploader = Mage::getModel('brera_magentoconnector/productXmlUploader');
 
-        $numberOfProductsExported = 0;
         while ($product = $collector->getProduct()) {
             $xmlBuilderAndUploader = new Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader(
                 $product,
@@ -86,17 +96,39 @@ class Brera_MagentoConnector_Model_Export_Exporter
             );
 
             $xmlBuilderAndUploader->process();
-            $numberOfProductsExported++;
+            $this->numberOfProductsExported++;
         }
 
+        $categoryCollector = new Brera_MagentoConnector_Model_Export_CategoryCollector();
 
-        if (0 === $numberOfProductsExported) {
-            return 0;
+        while ($category = $categoryCollector->getCategory()) {
+            $transformer = Brera_MagentoConnector_Model_Export_CategoryTransformer::createFrom($category);
+            $categoryXml = $transformer->getCategoryXml();
+            $xmlMerge->addCategory($categoryXml);
+            $this->numberOfCategoriesExported++;
+        }
+        if (0 === ($this->numberOfProductsExported + $this->numberOfCategoriesExported)) {
+            return;
         }
 
         $uploader->writePartialXmlString($xmlMerge->finish());
         $filename = $uploader->getFilename();
         $this->triggerCatalogUpdateApi($filename);
-        return $numberOfProductsExported;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNumberOfCategoriesExported()
+    {
+        return $this->numberOfCategoriesExported;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNumberOfProductsExported()
+    {
+        return $this->numberOfProductsExported;
     }
 }

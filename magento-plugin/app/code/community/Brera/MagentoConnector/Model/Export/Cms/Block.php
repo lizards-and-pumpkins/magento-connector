@@ -54,7 +54,7 @@ class Brera_MagentoConnector_Model_Export_Cms_Block
         foreach ($cmsBlocks as $block) {
             /* @var Mage_Cms_Model_Block $block */
             $context = [
-                'locale' => Mage::getStoreConfig('general/locale/code', $block->getStoreId())
+                'locale' => Mage::getStoreConfig('general/locale/code', $block->getStoreId()),
             ];
             $this->api->triggerCmsBlockUpdate($block->getIdentifier(), $block->getContent(), $context);
         }
@@ -82,7 +82,7 @@ class Brera_MagentoConnector_Model_Export_Cms_Block
 
                 $content = $block->toHtml();
                 $context = [
-                    'locale' => Mage::getStoreConfig('general/locale/code', $store->getId())
+                    'locale' => Mage::getStoreConfig('general/locale/code', $store->getId()),
                 ];
                 $this->api->triggerCmsBlockUpdate($block->getNameInLayout(), $content, $context);
             }

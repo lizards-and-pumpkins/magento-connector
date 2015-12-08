@@ -4,10 +4,12 @@ class Brera_MagentoConnector_Helper_Export
 {
     const QUEUE_STOCK_UPDATES = "stockUpdates";
     const QUEUE_PRODUCT_UPDATES = "productUpdates";
+    const QUEUE_CATEGORY_UPDATES = 'categoryUpdates';
 
     const ALL_QUEUES = [
         self::QUEUE_PRODUCT_UPDATES,
         self::QUEUE_STOCK_UPDATES,
+        self::QUEUE_CATEGORY_UPDATES,
     ];
 
     const MYSQL_DUPLICATE_ENTRY_ERROR_NUMBER = 23000;
@@ -43,11 +45,23 @@ class Brera_MagentoConnector_Helper_Export
     public function addAllProductIdsToProductUpdateQueue()
     {
         $queueId = $this->getQueueIdByName(self::QUEUE_PRODUCT_UPDATES);
-        $time = time();
         $query = <<<SQL
 INSERT IGNORE INTO `message`
   (queue_id, created, body, md5)
-  (SELECT $queueId, '$time', entity_id, MD5(entity_id) FROM `catalog_product_entity`)
+  (SELECT $queueId, UNIX_TIMESTAMP(), entity_id, MD5(entity_id) FROM `catalog_product_entity`)
+SQL;
+
+        $this->connection->query($query)->execute();
+    }
+
+    public function addAllCategoryIdsToCategoryQueue()
+    {
+        $queueId = $this->getQueueIdByName(self::QUEUE_CATEGORY_UPDATES);
+
+        $query = <<<SQL
+INSERT IGNORE INTO `message`
+  (queue_id, created, body, md5)
+  (SELECT $queueId, UNIX_TIMESTAMP(), entity_id, MD5(entity_id) FROM `catalog_category_entity`)
 SQL;
 
         $this->connection->query($query)->execute();
@@ -59,7 +73,6 @@ SQL;
     public function addAllProductIdsFromWebsiteToProductUpdateQueue(Mage_Core_Model_Website $website)
     {
         $queueId = $this->getQueueIdByName(self::QUEUE_PRODUCT_UPDATES);
-        $time = time();
         $productToWebsiteTable = $this->resource->getTableName('catalog/product_website');
         $productTable = $this->resource->getTableName('catalog/product');
 
@@ -67,7 +80,7 @@ SQL;
 INSERT IGNORE INTO `message`
   (queue_id, created, body, md5)
   (
-    SELECT $queueId, '$time', entity_id, MD5(entity_id) FROM $productTable p
+    SELECT $queueId, UNIX_TIMESTAMP(), entity_id, MD5(entity_id) FROM $productTable p
     INNER JOIN  $productToWebsiteTable p2w ON p.entity_id = p2w.product_id
     WHERE p2w.website_id = {$website->getId()}
   )
@@ -131,6 +144,14 @@ SQL;
         $this->addToQueue($id, self::QUEUE_PRODUCT_UPDATES);
     }
 
+    /**
+     * @param int $id
+     */
+    public function addCategoryToQueue($id)
+    {
+        $this->addToQueue($id, self::QUEUE_CATEGORY_UPDATES);
+    }
+
     public function addAllProductIdsToStockExport()
     {
         /** @var int[] $ids */
@@ -153,6 +174,15 @@ SQL;
     public function getProductUpdatesToExport()
     {
         $queue = $this->getQueue(self::QUEUE_PRODUCT_UPDATES);
+        return $queue->receive(self::QUEUE_MESSAGES_FETCHED_PER_REQUEST, self::TIMEOUT);
+    }
+
+    /**
+     * @return Zend_Queue_Message_Iterator
+     */
+    public function getCategoryUpdatesToExport()
+    {
+        $queue = $this->getQueue(self::QUEUE_CATEGORY_UPDATES);
         return $queue->receive(self::QUEUE_MESSAGES_FETCHED_PER_REQUEST, self::TIMEOUT);
     }
 

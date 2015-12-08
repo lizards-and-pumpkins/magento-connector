@@ -28,10 +28,13 @@
     </php>
     <testsuites>
         <testsuite name="XmlBuilder">
-            <directory>tests/XmlBuilder</directory>
+            <directory>lib/Brera/tests/XmlBuilder</directory>
         </testsuite>
         <testsuite name="Api">
-            <directory>tests/Api</directory>
+            <directory>lib/Brera/tests/Api</directory>
+        </testsuite>
+        <testsuite name="MagentoModule">
+            <directory>magento-plugin/app/code/community/Brera/MagentoConnector/Test</directory>
         </testsuite>
     </testsuites>
 </phpunit>

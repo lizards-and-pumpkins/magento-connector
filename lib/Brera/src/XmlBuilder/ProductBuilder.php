@@ -1,7 +1,7 @@
 <?php
 namespace Brera\MagentoConnector\XmlBuilder;
 
-require_once('ProductContainer.php');
+require_once('XmlString.php');
 require_once('InvalidImageDefinitionException.php');
 
 class ProductBuilder
@@ -54,11 +54,11 @@ class ProductBuilder
     }
 
     /**
-     * @return ProductContainer
+     * @return XmlString
      */
-    public function getProductContainer()
+    public function getXmlString()
     {
-        return new ProductContainer($this->xml->flush());
+        return new XmlString($this->xml->flush());
     }
 
     private function parseProduct()

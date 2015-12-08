@@ -11,13 +11,13 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
 
     public function testProductBuildsEmptyXml()
     {
-        $xml = $this->getProductBuilderXml([]);
+        $xml = $this->getProductBuilderXml([], []);
         $this->assertStringStartsWith(self::XML_START, $xml);
     }
 
     public function testXmlWithProductNode()
     {
-        $xml = $this->getProductBuilderXml([]);
+        $xml = $this->getProductBuilderXml([], []);
 
         // TODO implement XPath Constraint and use this here
         $this->assertContains('<product><attributes/></product>', $xml);
@@ -31,7 +31,7 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
             'visibility'   => 3,
             'tax_class_id' => 7,
         ];
-        $xml = $this->getProductBuilderXml($productData);
+        $xml = $this->getProductBuilderXml($productData, []);
 
         // TODO exchange with XPath constraint
         $this->assertContains('type="simple"', $xml);
@@ -43,9 +43,9 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
     public function testXmlWithNodes()
     {
         $productData = [
-            'url_key' => ''
+            'url_key' => '',
         ];
-        $xml = $this->getProductBuilderXml($productData);
+        $xml = $this->getProductBuilderXml($productData, []);
 
         // TODO exchange with XPath constraint
         $this->assertContains('<url_key></url_key>', $xml);
@@ -55,9 +55,9 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
     {
         $this->setExpectedException(\DOMException::class, 'Invalid Character Error');
         $productData = [
-            'url_key'
+            'url_key',
         ];
-        $xml = $this->getProductBuilderXml($productData);
+        $xml = $this->getProductBuilderXml($productData, []);
     }
 
     public function testImageNode()
@@ -68,10 +68,10 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
                     'main'  => true,
                     'file'  => 'some/file/somewhere.png',
                     'label' => 'This is the label',
-                ]
-            ]
+                ],
+            ],
         ];
-        $xml = $this->getProductBuilderXml($productData);
+        $xml = $this->getProductBuilderXml($productData, []);
 
         // TODO exchange with XPath constraint
         $this->assertContains('<images>', $xml);
@@ -88,10 +88,10 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
                 [
                     'file'  => 'some/file/somewhereElse.png',
                     'label' => 'Label',
-                ]
-            ]
+                ],
+            ],
         ];
-        $xml = $this->getProductBuilderXml($productData);
+        $xml = $this->getProductBuilderXml($productData, []);
 
         // TODO exchange with XPath constraint
         $this->assertContains('<main>false</main>', $xml);
@@ -104,10 +104,10 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
                 [
                     'file'  => 'some/file/somewhereElse.png',
                     'label' => null,
-                ]
-            ]
+                ],
+            ],
         ];
-        $xml = $this->getProductBuilderXml($productData);
+        $xml = $this->getProductBuilderXml($productData, []);
 
         // TODO exchange with XPath constraint
         $this->assertContains('<label/>', $xml);
@@ -121,15 +121,15 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
     public function testInvalidImageArgument($productData, $exceptionMessage)
     {
         $this->setExpectedException(InvalidImageDefinitionException::class, $exceptionMessage);
-        $this->getProductBuilderXml($productData);
+        $this->getProductBuilderXml($productData, []);
     }
 
     public function testEntityInNodeValue()
     {
         $productData = [
-            'accessories_type' => 'Bags & Luggage'
+            'accessories_type' => 'Bags & Luggage',
         ];
-        $xml = $this->getProductBuilderXml($productData);
+        $xml = $this->getProductBuilderXml($productData, []);
 
         $this->assertContains('<accessories_type><![CDATA[Bags & Luggage]]></accessories_type>', $xml);
     }
@@ -137,9 +137,9 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
     public function testCdataInNodeValue()
     {
         $productData = [
-            'accessories_type' => '<![CDATA[Bags & Luggage]]>'
+            'accessories_type' => '<![CDATA[Bags & Luggage]]>',
         ];
-        $xml = $this->getProductBuilderXml($productData);
+        $xml = $this->getProductBuilderXml($productData, []);
 
         $this->assertContains(
             '<accessories_type><![CDATA[<![CDATA[Bags & Luggage]]]]><![CDATA[]]></accessories_type>',
@@ -150,9 +150,9 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
     public function testCategoryForProduct()
     {
         $productData = [
-            'categories' => ['shirts']
+            'categories' => ['shirts'],
         ];
-        $xml = $this->getProductBuilderXml($productData);
+        $xml = $this->getProductBuilderXml($productData, []);
 
         $this->assertContains('<category>shirts</category>', $xml);
     }
@@ -160,9 +160,9 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
     public function testMultipleCategories()
     {
         $productData = [
-            'categories' => ['shirts', 'clothing']
+            'categories' => ['shirts', 'clothing'],
         ];
-        $xml = $this->getProductBuilderXml($productData);
+        $xml = $this->getProductBuilderXml($productData, []);
 
         $this->assertContains('<category>shirts</category>', $xml);
         $this->assertContains('<category>clothing</category>', $xml);
@@ -171,9 +171,9 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
     public function testNoAssociatedProducts()
     {
         $productData = [
-            'associated_products' => []
+            'associated_products' => [],
         ];
-        $xml = $this->getProductBuilderXml($productData);
+        $xml = $this->getProductBuilderXml($productData, []);
 
         $this->assertContains('<associated_products/>', $xml);
     }
@@ -181,7 +181,7 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
     public function testUndefinedAssociatedProducts()
     {
         $productData = [];
-        $xml = $this->getProductBuilderXml($productData);
+        $xml = $this->getProductBuilderXml($productData, []);
 
         $this->assertNotContains('<associated_products', $xml);
     }
@@ -197,9 +197,9 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
                     'tax_class_id' => 4,
                     'attributes'   => [
                         'color' => 'green',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ];
         $xml = $this->getProductBuilderXml($productData, ['locale' => 'de_DE']);
 
@@ -217,7 +217,7 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
             'variations' => [
                 'size',
                 'color',
-            ]
+            ],
         ];
         $xml = $this->getProductBuilderXml($productData, ['locale' => 'de_DE']);
         $this->assertContains('<variations>', $xml);
@@ -225,6 +225,9 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertContains('<attribute>size</attribute>', $xml);
     }
 
+    /**
+     * @return array[]
+     */
     public function getInvalidImageData()
     {
         return [
@@ -235,8 +238,8 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
                             'main'  => 2,
                             'file'  => 'some/file/somewhere.png',
                             'label' => 'This is the label',
-                        ]
-                    ]
+                        ],
+                    ],
                 ],
                 '"main" must be either "true" or "false".',
             ],
@@ -247,10 +250,10 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
                             'main'  => true,
                             'file'  => 8,
                             'label' => 'This is the label',
-                        ]
-                    ]
+                        ],
+                    ],
                 ],
-                '"file" must be a string.'
+                '"file" must be a string.',
             ],
             [
                 [
@@ -259,10 +262,10 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
                             'main'  => true,
                             'file'  => 'some/file/somewhere.png',
                             'label' => 20,
-                        ]
-                    ]
+                        ],
+                    ],
                 ],
-                '"label" must be a string.'
+                '"label" must be a string.',
             ],
             [
                 [
@@ -271,19 +274,19 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
                             'main'  => true,
                             'file'  => 'some/file/somewhere.png',
                             'label' => 20,
-                        ]
+                        ],
 
                 ],
                 'images must be an array of image definitions.',
-            ]
+            ],
         ];
     }
 
-    public function testProductContainerIsOne()
+    public function testXmlStringIsOne()
     {
         $xmlBuilder = new ProductBuilder([], []);
-        $productContainer = $xmlBuilder->getProductContainer();
-        $this->assertInstanceOf(ProductContainer::class, $productContainer);
+        $xmlString = $xmlBuilder->getXmlString();
+        $this->assertInstanceOf(XmlString::class, $xmlString);
     }
 
     /**
@@ -291,7 +294,7 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
      * @param string[] $context
      * @return string
      */
-    private function getProductBuilderXml($productData, $context = [])
+    private function getProductBuilderXml($productData, $context)
     {
         $xmlBuilder = new ProductBuilder($productData, $context);
         $reflectionProperty = new \ReflectionProperty($xmlBuilder, 'xml');

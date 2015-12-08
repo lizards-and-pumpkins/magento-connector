@@ -12,6 +12,7 @@ class Brera_MagentoConnector_CartController extends Mage_Core_Controller_Front_A
                 $qty = 1;
             }
 
+            /** @var Mage_Catalog_Model_Product $product */
             $product = Mage::getModel('catalog/product');
             $product->load($product->getIdBySku($sku));
 
@@ -38,6 +39,9 @@ class Brera_MagentoConnector_CartController extends Mage_Core_Controller_Front_A
         $this->redirect($product);
     }
 
+    /**
+     * @param Mage_Catalog_Model_Product $product
+     */
     private function redirect(Mage_Catalog_Model_Product $product)
     {
         $cart = $this->_getCart();
