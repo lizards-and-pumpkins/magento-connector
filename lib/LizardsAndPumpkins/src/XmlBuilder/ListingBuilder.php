@@ -69,7 +69,6 @@ class ListingBuilder
     {
         self::validateCondition($condition);
         self::validateUrlKey($urlKey);
-        $urlKey = ltrim($urlKey, '/');
 
         return new self($urlKey, $condition);
     }
@@ -151,7 +150,6 @@ class ListingBuilder
      */
     public function addFilterCriterion($attribute, $operation, $value)
     {
-        $value = ltrim($value, '/');
         $this->validateFilterParameters($attribute, $operation, $value);
         $this->filter[] = [
             'attribute' => $attribute,

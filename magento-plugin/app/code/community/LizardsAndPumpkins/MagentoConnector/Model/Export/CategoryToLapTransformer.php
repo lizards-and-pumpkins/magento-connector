@@ -57,7 +57,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryToLapTransformer
             throw new RuntimeException('Store must be set on category.');
         }
 
-        $urlPath = $this->category->getUrlPath();
+        $urlPath = ltrim($this->category->getUrlPath(), '/');
         $listingBuilder = ListingBuilder::create($urlPath, 'and');
         $listingBuilder->addFilterCriterion('category', 'Equal', $urlPath);
         $listingBuilder->setLocale($this->getLocale($this->category->getStore()));

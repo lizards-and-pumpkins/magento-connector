@@ -43,8 +43,7 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
         $listingBuilder = ListingBuilder::create($urlKeyWithLeadingSlash, 'and');
         $xml = $listingBuilder->buildXml()->getXml();
 
-        $this->assertNotContains($urlKeyWithLeadingSlash, $xml);
-        $this->assertContains($urlKey, $xml);
+        $this->assertContains($urlKeyWithLeadingSlash, $xml);
     }
 
     /**
@@ -196,6 +195,9 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertContains("<$validAttribute operation=\"$validOperation\">$validValue</$validAttribute>", $xml);
     }
 
+    /**
+     * @return string[]
+     */
     public function provideValidFilter()
     {
         $validOperations = [
@@ -226,7 +228,6 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
         $urlKeyWithLeadingSlash = '/' . $urlKey;
         $listingBuilder->addFilterCriterion('category', 'Equal', $urlKeyWithLeadingSlash);
         $xml = $listingBuilder->buildXml()->getXml();
-        $this->assertNotContains($urlKeyWithLeadingSlash, $xml);
-        $this->assertContains("<category operation=\"Equal\">$urlKey</category>", $xml);
+        $this->assertContains("<category operation=\"Equal\">$urlKeyWithLeadingSlash</category>", $xml);
     }
 }
