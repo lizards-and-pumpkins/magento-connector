@@ -29,6 +29,9 @@ class Brera_MagentoConnector_Model_ProductXmlUploader extends Brera_MagentoConne
         return $xmlPath;
     }
 
+    /**
+     * @return string
+     */
     public function getFilename()
     {
         return $this->filename;

@@ -91,6 +91,9 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
         return $this->productIterator->current();
     }
 
+    /**
+     * @return bool
+     */
     private function existsNextProduct()
     {
         if ($this->productIterator) {
@@ -125,8 +128,9 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
      */
     private function getQueuedProductIds()
     {
-
-        $this->messageIterator = Mage::helper('brera_magentoconnector/export')->getProductUpdatesToExport();
+        /** @var Brera_MagentoConnector_Helper_Export $helper */
+        $helper = Mage::helper('brera_magentoconnector/export');
+        $this->messageIterator = $helper->getProductUpdatesToExport();
         $productIds = [];
         foreach ($this->messageIterator as $item) {
             /** @var $item Zend_Queue_Message */
@@ -147,6 +151,7 @@ class Brera_MagentoConnector_Model_Export_ProductCollector
         }
 
         $ids = implode(',', $ids);
+        /** @var Mage_Core_Model_Resource $resouce */
         $resouce = Mage::getSingleton('core/resource');
         $resouce->getConnection('core_write')->delete('message', "message_id IN ($ids)");
     }
@@ -267,6 +272,9 @@ SQL;
         }
     }
 
+    /**
+     * @param Mage_Catalog_Model_Resource_Product_Collection $collection
+     */
     private function addStockInformation($collection)
     {
         Mage::getSingleton('cataloginventory/stock')
@@ -313,7 +321,7 @@ SQL;
     private function getSimpleProducts()
     {
         if (!$this->simpleProducts) {
-            $parentIds = $this->getConfigurableProductIds($this->collection);
+            $parentIds = $this->getConfigurableProductIds();
             /** @var Mage_Catalog_Model_Resource_Product_Type_Configurable_Product_Collection $simpleProductCollection */
             $simpleProductCollection = Mage::getResourceModel('catalog/product_type_configurable_product_collection');
             $simpleProductCollection->addAttributeToSelect(['parent_id', 'tax_class_id']);
@@ -347,12 +355,18 @@ SQL;
         return $this->simpleProducts;
     }
 
+    /**
+     * @return array[]
+     */
     private function getAssociatedSimpleProducts()
     {
         $this->getSimpleProducts();
         return $this->associatedSimpleProducts;
     }
 
+    /**
+     * @return int[]
+     */
     private function getConfigurableProductIds()
     {
         if (!$this->configurableProductIds) {

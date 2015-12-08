@@ -38,8 +38,10 @@ class Brera_MagentoConnector_Model_Export_CatalogExporter
      */
     public function exportOneStore(Mage_Core_Model_Store $store)
     {
-        Mage::helper('brera_magentoconnector/export')
-            ->addAllProductIdsFromWebsiteToProductUpdateQueue($store->getWebsite());
+        /** @var Brera_MagentoConnector_Helper_Export $helper */
+        $helper = Mage::helper('brera_magentoconnector/export');
+        $helper->addAllProductIdsFromWebsiteToProductUpdateQueue($store->getWebsite());
+        /** @var Brera_MagentoConnector_Model_Export_ProductCollector $collector */
         $collector = Mage::getModel('brera_magentoconnector/export_productCollector');
         $collector->setStoresToExport([$store]);
         $this->export($collector);
@@ -51,8 +53,10 @@ class Brera_MagentoConnector_Model_Export_CatalogExporter
      */
     public function exportOneWebsite(Mage_Core_Model_Website $website)
     {
-        Mage::helper('brera_magentoconnector/export')
-            ->addAllProductIdsFromWebsiteToProductUpdateQueue($website);
+        /** @var Brera_MagentoConnector_Helper_Export $helper */
+        $helper = Mage::helper('brera_magentoconnector/export');
+        $helper->addAllProductIdsFromWebsiteToProductUpdateQueue($website);
+        /** @var Brera_MagentoConnector_Model_Export_ProductCollector $collector */
         $collector = Mage::getModel('brera_magentoconnector/export_productCollector');
         $collector->setStoresToExport($website->getStores());
         $this->export($collector);
@@ -60,10 +64,14 @@ class Brera_MagentoConnector_Model_Export_CatalogExporter
 
     public function exportProductsInQueue()
     {
+        /** @var Brera_MagentoConnector_Model_Export_ProductCollector $collector */
         $collector = Mage::getModel('brera_magentoconnector/export_productCollector');
         $this->export($collector);
     }
 
+    /**
+     * @param string $filename
+     */
     private function triggerCatalogUpdateApi($filename)
     {
         $apiUrl = Mage::getStoreConfig('brera/magentoconnector/api_url');

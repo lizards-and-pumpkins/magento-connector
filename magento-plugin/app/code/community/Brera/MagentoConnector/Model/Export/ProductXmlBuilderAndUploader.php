@@ -3,8 +3,8 @@
 require_once 'Brera/src/XmlBuilder/ProductBuilder.php';
 require_once 'Brera/src/XmlBuilder/CatalogMerge.php';
 
-use Brera\MagentoConnector\XmlBuilder\ProductBuilder;
 use Brera\MagentoConnector\XmlBuilder\CatalogMerge;
+use Brera\MagentoConnector\XmlBuilder\ProductBuilder;
 
 class Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
 {
@@ -26,7 +26,7 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
 
     /**
      * @param Mage_Catalog_Model_Product               $product
-     * @param ProductMerge                             $merge
+     * @param CatalogMerge                             $merge
      * @param Brera_MagentoConnector_Model_XmlUploader $uploader
      */
     public function __construct(
@@ -39,7 +39,9 @@ class Brera_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
         $this->uploader = $uploader;
     }
 
-
+    /**
+     * @return string[]
+     */
     private function getContext()
     {
         return [
