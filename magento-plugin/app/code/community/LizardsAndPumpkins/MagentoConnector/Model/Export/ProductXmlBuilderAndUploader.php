@@ -25,8 +25,8 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploa
 
 
     /**
-     * @param Mage_Catalog_Model_Product               $product
-     * @param ProductMerge                             $merge
+     * @param Mage_Catalog_Model_Product                            $product
+     * @param CatalogMerge                                          $merge
      * @param LizardsAndPumpkins_MagentoConnector_Model_XmlUploader $uploader
      */
     public function __construct(
@@ -39,7 +39,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploa
         $this->uploader = $uploader;
     }
 
-
+    /**
+     * @return string[]
+     */
     private function getContext()
     {
         return [

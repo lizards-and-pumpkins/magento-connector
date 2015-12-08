@@ -61,9 +61,12 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
     public function exportProductsInQueue()
     {
         $collector = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_productCollector');
-        return $this->export($collector);
+        $this->export($collector);
     }
 
+    /**
+     * @param string $filename
+     */
     private function triggerCatalogUpdateApi($filename)
     {
         $apiUrl = Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/api_url');
