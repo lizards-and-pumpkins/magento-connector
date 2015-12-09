@@ -272,7 +272,19 @@ class ProductBuilder
      */
     private function validateAssociatedProducts(array $products)
     {
-        // TODO implement, make sure $products[]['attributes'] is an array
+        foreach ($products as $product) {
+            if (isset($product['attributes']) && !is_array($product['attributes'])) {
+                throw new \InvalidArgumentException('Attributes need to be an array');
+            }
+            if (!isset($product['sku'])) {
+                throw new \InvalidArgumentException('SKU is missing on associated product.');
+            }
+            if (!isset($product['stock_qty'])) {
+                throw new \InvalidArgumentException(
+                    sprintf('Stock qty is missing on product %s', $product['sku'])
+                );
+            }
+        }
     }
 
     /**

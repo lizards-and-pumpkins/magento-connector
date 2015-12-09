@@ -316,7 +316,7 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
      * @return array
      * @dataProvider provideInvalidContext
      */
-    public function testInvalidContext($invalidContext)
+    public function testExceptionOnInvalidContext($invalidContext)
     {
         $this->setExpectedException(\InvalidArgumentException::class);
         new ProductBuilder([], $invalidContext);
@@ -331,6 +331,66 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
             'locale_empty'   => [[]],
             'invalid_format' => [['locale' => 'de_de']],
             'invalid_type'   => [['locale' => new \stdClass()]],
+        ];
+    }
+
+    /**
+     * @return array[]
+     * @dataProvider provideInvalidAssociatedProducts
+     */
+    public function testExceptionOnInvalidAssociatedProducts($invalidAssociatedProducts)
+    {
+        $this->setExpectedException(\InvalidArgumentException::class);
+        new ProductBuilder($invalidAssociatedProducts, $this->getValidContext());
+    }
+
+    /**
+     * @return array[]
+     */
+    public function provideInvalidAssociatedProducts()
+    {
+        return [
+            'missing_stock_qty'   => [
+                [
+                    'associated_products' => [
+                        [
+                            'sku'          => 'associated-product-1',
+                            'visible'      => true,
+                            'tax_class_id' => 4,
+                            'attributes'   => [
+                                'color' => 'green',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            'sku_missing'         => [
+                [
+                    'associated_products' => [
+                        [
+                            'stock_qty'    => 7,
+                            'visible'      => true,
+                            'tax_class_id' => 4,
+                            'attributes'   => [
+                                'color' => 'green',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            'attributes_no_array' => [
+                [
+                    'associated_products' => [
+                        [
+                            'stock_qty'    => 7,
+                            'sku'          => 'associated-product-1',
+                            'visible'      => true,
+                            'tax_class_id' => 4,
+                            'attributes'   => 'no_array',
+                        ],
+                    ],
+                ],
+            ],
         ];
     }
 }
