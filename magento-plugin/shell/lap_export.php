@@ -25,6 +25,9 @@ class LizardsAndPumpkins_Export extends Mage_Shell_Abstract
         }
     }
 
+    /**
+     * @return string
+     */
     public function usageHelp()
     {
         $filename = basename(__FILE__);

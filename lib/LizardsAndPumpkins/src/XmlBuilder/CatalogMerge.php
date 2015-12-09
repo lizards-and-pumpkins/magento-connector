@@ -36,6 +36,9 @@ class CatalogMerge
         $this->addXml($product);
     }
 
+    /**
+     * @param XmlString $category
+     */
     public function addCategory(XmlString $category)
     {
         if (!$this->isCategoryMode()) {
@@ -69,11 +72,17 @@ class CatalogMerge
         $this->xml->startElement('listings');
     }
 
+    /**
+     * @return bool
+     */
     public function isCategoryMode()
     {
         return $this->mode === 'category';
     }
 
+    /**
+     * @return bool
+     */
     public function isProductMode()
     {
         return $this->mode === 'product';

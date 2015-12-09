@@ -40,6 +40,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_ProductXmlUploader
         return $xmlPath;
     }
 
+    /**
+     * @return string
+     */
     public function getFilename()
     {
         return $this->filename;

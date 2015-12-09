@@ -29,7 +29,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
         $helper = Mage::helper('lizardsAndPumpkins_magentoconnector/export');
         $helper->addAllProductIdsToProductUpdateQueue();
         $helper->addAllCategoryIdsToCategoryQueue();
-        return $this->exportProductsInQueue();
+        $this->exportProductsInQueue();
     }
 
     /**
@@ -38,11 +38,19 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
      */
     public function exportOneStore(Mage_Core_Model_Store $store)
     {
+<<<<<<< HEAD:magento-plugin/app/code/community/LizardsAndPumpkins/MagentoConnector/Model/Export/CatalogExporter.php
         Mage::helper('lizardsAndPumpkins_magentoconnector/export')
             ->addAllProductIdsFromWebsiteToProductUpdateQueue($store->getWebsite());
         $collector = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_productCollector');
+=======
+        /** @var Brera_MagentoConnector_Helper_Export $helper */
+        $helper = Mage::helper('brera_magentoconnector/export');
+        $helper->addAllProductIdsFromWebsiteToProductUpdateQueue($store->getWebsite());
+        /** @var Brera_MagentoConnector_Model_Export_ProductCollector $collector */
+        $collector = Mage::getModel('brera_magentoconnector/export_productCollector');
+>>>>>>> master:magento-plugin/app/code/community/Brera/MagentoConnector/Model/Export/CatalogExporter.php
         $collector->setStoresToExport([$store]);
-        return $this->export($collector);
+        $this->export($collector);
     }
 
     /**
@@ -51,19 +59,36 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
      */
     public function exportOneWebsite(Mage_Core_Model_Website $website)
     {
+<<<<<<< HEAD:magento-plugin/app/code/community/LizardsAndPumpkins/MagentoConnector/Model/Export/CatalogExporter.php
         Mage::helper('lizardsAndPumpkins_magentoconnector/export')
             ->addAllProductIdsFromWebsiteToProductUpdateQueue($website);
         $collector = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_productCollector');
+=======
+        /** @var Brera_MagentoConnector_Helper_Export $helper */
+        $helper = Mage::helper('brera_magentoconnector/export');
+        $helper->addAllProductIdsFromWebsiteToProductUpdateQueue($website);
+        /** @var Brera_MagentoConnector_Model_Export_ProductCollector $collector */
+        $collector = Mage::getModel('brera_magentoconnector/export_productCollector');
+>>>>>>> master:magento-plugin/app/code/community/Brera/MagentoConnector/Model/Export/CatalogExporter.php
         $collector->setStoresToExport($website->getStores());
-        return $this->export($collector);
+        $this->export($collector);
     }
 
     public function exportProductsInQueue()
     {
+<<<<<<< HEAD:magento-plugin/app/code/community/LizardsAndPumpkins/MagentoConnector/Model/Export/CatalogExporter.php
         $collector = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_productCollector');
         return $this->export($collector);
+=======
+        /** @var Brera_MagentoConnector_Model_Export_ProductCollector $collector */
+        $collector = Mage::getModel('brera_magentoconnector/export_productCollector');
+        $this->export($collector);
+>>>>>>> master:magento-plugin/app/code/community/Brera/MagentoConnector/Model/Export/CatalogExporter.php
     }
 
+    /**
+     * @param string $filename
+     */
     private function triggerCatalogUpdateApi($filename)
     {
         $apiUrl = Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/api_url');
@@ -72,8 +97,12 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
     }
 
     /**
+<<<<<<< HEAD:magento-plugin/app/code/community/LizardsAndPumpkins/MagentoConnector/Model/Export/CatalogExporter.php
      * @param LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector $collector
      * @return int
+=======
+     * @param Brera_MagentoConnector_Model_Export_ProductCollector $collector
+>>>>>>> master:magento-plugin/app/code/community/Brera/MagentoConnector/Model/Export/CatalogExporter.php
      */
     private function export(LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector $collector)
     {
@@ -95,7 +124,11 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
         $categoryCollector = new LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryCollector();
 
         while ($category = $categoryCollector->getCategory()) {
+<<<<<<< HEAD:magento-plugin/app/code/community/LizardsAndPumpkins/MagentoConnector/Model/Export/CatalogExporter.php
             $transformer = new LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryToLapTransformer($category);
+=======
+            $transformer = Brera_MagentoConnector_Model_Export_CategoryTransformer::createFrom($category);
+>>>>>>> master:magento-plugin/app/code/community/Brera/MagentoConnector/Model/Export/CatalogExporter.php
             $categoryXml = $transformer->getCategoryXml();
             $xmlMerge->addCategory($categoryXml);
             $this->numberOfCategoriesExported++;

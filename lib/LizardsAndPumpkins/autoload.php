@@ -7,6 +7,7 @@ spl_autoload_register(
         static $classes = null;
         if ($classes === null) {
             $classes = array(
+                'brera\\magentoconnector\\xmlbuilder\\listingbuildertest' => '/tests/XmlBuilder/ListingBuilderTest.php',
                 'lizardsandpumpkins\\magentoconnector\\api\\api' => '/src/Api/Api.php',
                 'lizardsandpumpkins\\magentoconnector\\api\\apitest' => '/tests/Api/ApiTest.php',
                 'lizardsandpumpkins\\magentoconnector\\api\\invalidhostexception' => '/src/Api/InvalidHostException.php',
@@ -16,7 +17,6 @@ spl_autoload_register(
                 'lizardsandpumpkins\\magentoconnector\\xmlbuilder\\catalogmergetest' => '/tests/XmlBuilder/CatalogMergeTest.php',
                 'lizardsandpumpkins\\magentoconnector\\xmlbuilder\\invalidimagedefinitionexception' => '/src/XmlBuilder/InvalidImageDefinitionException.php',
                 'lizardsandpumpkins\\magentoconnector\\xmlbuilder\\listingbuilder' => '/src/XmlBuilder/ListingBuilder.php',
-                'lizardsandpumpkins\\magentoconnector\\xmlbuilder\\listingbuildertest' => '/tests/XmlBuilder/ListingBuilderTest.php',
                 'lizardsandpumpkins\\magentoconnector\\xmlbuilder\\productbuilder' => '/src/XmlBuilder/ProductBuilder.php',
                 'lizardsandpumpkins\\magentoconnector\\xmlbuilder\\productbuildertest' => '/tests/XmlBuilder/ProductBuilderTest.php',
                 'lizardsandpumpkins\\magentoconnector\\xmlbuilder\\stockbuilder' => '/src/XmlBuilder/StockBuilder.php',

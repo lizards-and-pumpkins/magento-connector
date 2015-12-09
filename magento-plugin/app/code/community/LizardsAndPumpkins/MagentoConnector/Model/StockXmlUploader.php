@@ -7,6 +7,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_StockXmlUploader extends Lizards
         parent::__construct(Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/stock_xml_target'));
     }
 
+    /**
+     * @return string
+     */
     public function getFileName()
     {
         return basename(Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/stock_xml_target'));

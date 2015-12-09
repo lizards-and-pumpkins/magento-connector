@@ -20,7 +20,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryCollector
     /**
      * @var Mage_Core_Model_Store[]
      */
-    private $storesToExport;
+    private $storesToExportInCurrentLoop;
 
     /**
      * @var Mage_Core_Model_Store
@@ -37,6 +37,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryCollector
      */
     private $messageIterator;
 
+    /**
+     * @return Mage_Catalog_Model_Category
+     */
     public function getCategory()
     {
         if ($this->existsNextCategory()) {
@@ -45,13 +48,12 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryCollector
 
         $this->prepareNextBunchOfCategories();
 
-        $this->store = array_pop($this->storesToExport);
-        if (empty($this->queuedCategoryIds)) {
+        $this->setNextStoreToExport();
+        if (!$this->isCategoryLeftForExport()) {
             return null;
         }
 
-        $this->collection = $this->createCollection($this->store);
-        $this->collection->addIdFilter($this->queuedCategoryIds);
+        $this->createCollectionWithIdFilter();
 
         $this->categoryIterator = $this->collection->getIterator();
         if ($this->categoryIterator->current() === null) {
@@ -60,7 +62,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryCollector
         return $this->categoryIterator->current();
     }
 
-
+    /**
+     * @return bool
+     */
     private function existsNextCategory()
     {
         if ($this->categoryIterator) {
@@ -72,14 +76,14 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryCollector
 
     private function prepareNextBunchOfCategories()
     {
-        if (empty($this->storesToExport)) {
-            $this->storesToExport = $this->getStoresToExport();
+        if (empty($this->storesToExportInCurrentLoop)) {
+            $this->storesToExportInCurrentLoop = $this->getStoresToExport();
             $this->queuedCategoryIds = $this->getQueuedCategoryIds();
         }
     }
 
     /**
-     * @return array
+     * @return Mage_Core_Model_Store[]
      */
     private function getStoresToExport()
     {
@@ -101,16 +105,13 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryCollector
      * @param Mage_Core_Model_Store $store
      * @return Mage_Catalog_Model_Resource_Category_Collection
      */
-    private function createCollection($store)
+    private function createCollection(Mage_Core_Model_Store $store)
     {
         /** @var $collection Mage_Catalog_Model_Resource_Category_Collection */
         $collection = Mage::getResourceModel('catalog/category_collection');
         $collection->setStore($store);
         $collection->addAttributeToSelect('*');
-        $collection->addAttributeToFilter(
-            'is_active',
-            1
-        );
+        $collection->addAttributeToFilter('is_active', 1);
         return $collection;
     }
 
@@ -119,8 +120,12 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryCollector
      */
     private function getQueuedCategoryIds()
     {
+<<<<<<< HEAD:magento-plugin/app/code/community/LizardsAndPumpkins/MagentoConnector/Model/Export/CategoryCollector.php
 
         $this->messageIterator = Mage::helper('lizardsAndPumpkins_magentoconnector/export')->getCategoryUpdatesToExport();
+=======
+        $this->messageIterator = Mage::helper('brera_magentoconnector/export')->getCategoryUpdatesToExport();
+>>>>>>> master:magento-plugin/app/code/community/Brera/MagentoConnector/Model/Export/CategoryCollector.php
         $categoryIds = [];
         foreach ($this->messageIterator as $item) {
             /** @var $item Zend_Queue_Message */
@@ -143,5 +148,24 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryCollector
         $ids = implode(',', $ids);
         $resouce = Mage::getSingleton('core/resource');
         $resouce->getConnection('core_write')->delete('message', "message_id IN ($ids)");
+    }
+
+    private function setNextStoreToExport()
+    {
+        $this->store = array_pop($this->storesToExportInCurrentLoop);
+    }
+
+    /**
+     * @return bool
+     */
+    private function isCategoryLeftForExport()
+    {
+        return !empty($this->queuedCategoryIds);
+    }
+
+    private function createCollectionWithIdFilter()
+    {
+        $this->collection = $this->createCollection($this->store);
+        $this->collection->addIdFilter($this->queuedCategoryIds);
     }
 }

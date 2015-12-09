@@ -1,10 +1,12 @@
 <?php
+
 namespace LizardsAndPumpkins\MagentoConnector\XmlBuilder;
 
 class ListingBuilder
 {
     const CONDITION_AND = 'and';
     const CONDITION_OR = 'or';
+
     /**
      * @var string[]
      */
@@ -44,7 +46,7 @@ class ListingBuilder
     private $urlKey;
 
     /**
-     * @var string[][]
+     * @var string[]
      */
     private $filter = [];
 
@@ -58,33 +60,57 @@ class ListingBuilder
         $this->urlKey = $urlKey;
     }
 
+    /**
+     * @param string $urlKey
+     * @param string $condition
+     * @return ListingBuilder
+     */
     public static function create($urlKey, $condition)
     {
-        if (!is_string($urlKey) || !is_string($condition)) {
-            throw new \InvalidArgumentException('UrlKey and condition must be string.');
+        self::validateCondition($condition);
+        self::validateUrlKey($urlKey);
+
+        return new self($urlKey, $condition);
+    }
+
+    /**
+     * @param string $urlKey
+     */
+    private static function validateUrlKey($urlKey)
+    {
+        $allowedInUrl = '#^[a-zA-Z0-9"\$\-_\.\+\!\*\'\(\)/]+$#';
+
+        if (!is_string($urlKey)) {
+            throw new \InvalidArgumentException('UrlKey must be string.');
         }
 
-        $urlKey = ltrim($urlKey, '/');
-        $allowedInUrl = '#^[a-zA-Z0-9"\$\-_\.\+\!\*\'\(\)/]+$#';
-        if (!is_string($urlKey) || !preg_match($allowedInUrl, $urlKey)) {
+        if (!preg_match($allowedInUrl, $urlKey)) {
             throw new \InvalidArgumentException(
                 sprintf(
                     'Only a-z A-Z 0-9 and "$-_.+!*\'(),/" are allowed for a url, "%s" contains forbidden characters.',
-                    is_string($urlKey) ? $urlKey : 'no string'
+                    $urlKey
                 )
             );
+        }
+    }
+
+    /**
+     * @param string $condition
+     */
+    private static function validateCondition($condition)
+    {
+        if (!is_string($condition)) {
+            throw new \InvalidArgumentException('Condition must be string.');
         }
 
         if (!in_array($condition, self::$allowedConditions)) {
             throw new \InvalidArgumentException(
                 sprintf(
                     'Condition must be either "and" or "or". %s given.',
-                    is_string($condition) ? "\"$condition\"" : 'No string'
+                    $condition
                 )
             );
         }
-
-        return new self($urlKey, $condition);
     }
 
     /**
@@ -92,6 +118,9 @@ class ListingBuilder
      */
     public function setLocale($locale)
     {
+        if (!is_string($locale)) {
+            throw new \InvalidArgumentException('Locale msut be string');
+        }
         $parts = explode('_', $locale);
         if (count($parts) !== 2) {
             throw new \InvalidArgumentException(sprintf('Locale must be of form "de_DE", "%s" given.', $locale));
@@ -121,12 +150,7 @@ class ListingBuilder
      */
     public function addFilterCriterion($attribute, $operation, $value)
     {
-        if (!is_string($value) || !is_string($operation) || !is_string($value)) {
-            throw new \InvalidArgumentException('Attribute, operation and value must be string');
-        }
-
-        $value = ltrim($value, '/');
-        $this->checkFilterParameter($attribute, $operation, $value);
+        $this->validateFilterParameters($attribute, $operation, $value);
         $this->filter[] = [
             'attribute' => $attribute,
             'operation' => $operation,
@@ -155,7 +179,6 @@ class ListingBuilder
 
         $xml->endElement(); // listing
         return new XmlString($xml->flush());
-
     }
 
     /**
@@ -163,10 +186,13 @@ class ListingBuilder
      * @param string $operation
      * @param string $value
      */
-    private function checkFilterParameter($attribute, $operation, $value)
+    private function validateFilterParameters($attribute, $operation, $value)
     {
         if (!is_string($attribute)) {
             throw new \InvalidArgumentException('Attribute must be a string');
+        }
+        if ($attribute === '') {
+            throw new \InvalidArgumentException('Attribute is not allwed to be empty string.');
         }
         if (!is_string($operation)) {
             throw new \InvalidArgumentException('Operation must be a string');
