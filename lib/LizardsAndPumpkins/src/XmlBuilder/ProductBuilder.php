@@ -280,7 +280,19 @@ class ProductBuilder
      */
     private function validateContext(array $context)
     {
-        // TODO make sure locale exists
+        if (!isset($context['locale'])) {
+            throw new \InvalidArgumentException('Locale is missing on context.');
+        }
+        if (!is_string($context['locale'])) {
+            throw new \InvalidArgumentException(
+                sprintf('Locale on context must be string, %s passed.', gettype($context['locale']))
+            );
+        }
+        if (!preg_match('#[a-z]{2}_[A-Z]{2}#', $context['locale'])) {
+            throw new \InvalidArgumentException(
+                sprintf('Locale must be of format de_DE, "%s" passed.', $context['locale'])
+            );
+        }
     }
 
     private function createProductAttributesAsAttributes()
