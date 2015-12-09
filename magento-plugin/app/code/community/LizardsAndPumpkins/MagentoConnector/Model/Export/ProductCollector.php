@@ -43,7 +43,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector
     private $simpleProducts;
 
     /**
-     * @var Mage_Catalog_Model_Product[][]
+     * @var array[]
      */
     private $associatedSimpleProducts;
 

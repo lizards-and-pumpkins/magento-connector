@@ -30,7 +30,7 @@ class ProductBuilder
     private $xml;
 
     /**
-     * @var string[][][]
+     * @var array[]
      */
     private $productData;
     /**
@@ -268,7 +268,7 @@ class ProductBuilder
     }
 
     /**
-     * @param string[][] $products
+     * @param array[] $products
      */
     private function validateAssociatedProducts(array $products)
     {

@@ -35,7 +35,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_ProductXmlUploaderTest extends P
     }
 
     /**
-     * @return string[][]
+     * @return array[]
      */
     public function getAllowedProtocols()
     {
@@ -47,7 +47,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_ProductXmlUploaderTest extends P
     }
 
     /**
-     * @return string[][]
+     * @return array[]
      */
     public function getDisallowedProtocols()
     {

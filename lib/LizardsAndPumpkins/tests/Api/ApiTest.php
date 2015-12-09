@@ -18,7 +18,7 @@ class ApiTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return mixed[][]
+     * @return array[]
      */
     public function getInvalidHosts()
     {
