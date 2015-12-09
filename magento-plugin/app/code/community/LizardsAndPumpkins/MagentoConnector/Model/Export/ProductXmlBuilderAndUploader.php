@@ -14,7 +14,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploa
     private $product;
 
     /**
-     * @var ProductMerge
+     * @var CatalogMerge
      */
     private $merge;
 
