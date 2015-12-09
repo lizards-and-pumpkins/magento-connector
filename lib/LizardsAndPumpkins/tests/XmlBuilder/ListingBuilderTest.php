@@ -1,10 +1,5 @@
 <?php
-<<<<<<< HEAD:lib/LizardsAndPumpkins/tests/XmlBuilder/ListingBuilderTest.php
 namespace LizardsAndPumpkins\MagentoConnector\XmlBuilder;
-=======
-
-namespace Brera\MagentoConnector\XmlBuilder;
->>>>>>> master:lib/Brera/tests/XmlBuilder/ListingBuilderTest.php
 
 class ListingBuilderTest extends \PHPUnit_Framework_TestCase
 {

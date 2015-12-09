@@ -7,7 +7,6 @@ spl_autoload_register(
         static $classes = null;
         if ($classes === null) {
             $classes = array(
-                'brera\\magentoconnector\\xmlbuilder\\listingbuildertest' => '/LizardsAndPumpkins/tests/XmlBuilder/ListingBuilderTest.php',
                 'guzzlehttp\\client' => '/guzzlehttp/guzzle/src/Client.php',
                 'guzzlehttp\\clientinterface' => '/guzzlehttp/guzzle/src/ClientInterface.php',
                 'guzzlehttp\\cookie\\cookiejar' => '/guzzlehttp/guzzle/src/Cookie/CookieJar.php',
@@ -111,6 +110,7 @@ spl_autoload_register(
                 'lizardsandpumpkins\\magentoconnector\\xmlbuilder\\catalogmergetest' => '/LizardsAndPumpkins/tests/XmlBuilder/CatalogMergeTest.php',
                 'lizardsandpumpkins\\magentoconnector\\xmlbuilder\\invalidimagedefinitionexception' => '/LizardsAndPumpkins/src/XmlBuilder/InvalidImageDefinitionException.php',
                 'lizardsandpumpkins\\magentoconnector\\xmlbuilder\\listingbuilder' => '/LizardsAndPumpkins/src/XmlBuilder/ListingBuilder.php',
+                'lizardsandpumpkins\\magentoconnector\\xmlbuilder\\listingbuildertest' => '/LizardsAndPumpkins/tests/XmlBuilder/ListingBuilderTest.php',
                 'lizardsandpumpkins\\magentoconnector\\xmlbuilder\\productbuilder' => '/LizardsAndPumpkins/src/XmlBuilder/ProductBuilder.php',
                 'lizardsandpumpkins\\magentoconnector\\xmlbuilder\\productbuildertest' => '/LizardsAndPumpkins/tests/XmlBuilder/ProductBuilderTest.php',
                 'lizardsandpumpkins\\magentoconnector\\xmlbuilder\\stockbuilder' => '/LizardsAndPumpkins/src/XmlBuilder/StockBuilder.php',

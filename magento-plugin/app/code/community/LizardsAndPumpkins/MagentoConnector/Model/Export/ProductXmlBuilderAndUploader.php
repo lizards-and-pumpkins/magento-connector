@@ -3,13 +3,8 @@
 require_once 'LizardsAndPumpkins/src/XmlBuilder/ProductBuilder.php';
 require_once 'LizardsAndPumpkins/src/XmlBuilder/CatalogMerge.php';
 
-<<<<<<< HEAD:magento-plugin/app/code/community/LizardsAndPumpkins/MagentoConnector/Model/Export/ProductXmlBuilderAndUploader.php
-use LizardsAndPumpkins\MagentoConnector\XmlBuilder\ProductBuilder;
 use LizardsAndPumpkins\MagentoConnector\XmlBuilder\CatalogMerge;
-=======
-use Brera\MagentoConnector\XmlBuilder\CatalogMerge;
-use Brera\MagentoConnector\XmlBuilder\ProductBuilder;
->>>>>>> master:magento-plugin/app/code/community/Brera/MagentoConnector/Model/Export/ProductXmlBuilderAndUploader.php
+use LizardsAndPumpkins\MagentoConnector\XmlBuilder\ProductBuilder;
 
 class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
 {
@@ -30,14 +25,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploa
 
 
     /**
-     * @param Mage_Catalog_Model_Product               $product
-<<<<<<< HEAD:magento-plugin/app/code/community/LizardsAndPumpkins/MagentoConnector/Model/Export/ProductXmlBuilderAndUploader.php
-     * @param ProductMerge                             $merge
+     * @param Mage_Catalog_Model_Product                            $product
+     * @param CatalogMerge                                          $merge
      * @param LizardsAndPumpkins_MagentoConnector_Model_XmlUploader $uploader
-=======
-     * @param CatalogMerge                             $merge
-     * @param Brera_MagentoConnector_Model_XmlUploader $uploader
->>>>>>> master:magento-plugin/app/code/community/Brera/MagentoConnector/Model/Export/ProductXmlBuilderAndUploader.php
      */
     public function __construct(
         Mage_Catalog_Model_Product $product,

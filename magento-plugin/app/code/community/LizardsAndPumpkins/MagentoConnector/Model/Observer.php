@@ -196,12 +196,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Observer
      */
     private function logProductUpdateForProductIds(array $ids)
     {
-<<<<<<< HEAD:magento-plugin/app/code/community/LizardsAndPumpkins/MagentoConnector/Model/Observer.php
         $helper = Mage::helper('lizardsAndPumpkins_magentoconnector/export');
-=======
-        /** @var Brera_MagentoConnector_Helper_Export $helper */
-        $helper = Mage::helper('brera_magentoconnector/export');
->>>>>>> master:magento-plugin/app/code/community/Brera/MagentoConnector/Model/Observer.php
         $helper->addProductUpdatesToQueue($ids);
     }
 }

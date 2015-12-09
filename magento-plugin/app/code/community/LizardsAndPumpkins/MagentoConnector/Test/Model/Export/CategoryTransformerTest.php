@@ -4,7 +4,7 @@
  * @covers LizardsAndPumpkins_MagentoConnector_Test_Model_Export_CategoryToLapTransformer
  * @covers \LizardsAndPumpkins\MagentoConnector\XmlBuilder\ListingBuilder
  */
-class LizardsAndPumpkins_MagentoConnector_Test_Model_Export_CategoryToLapTransformerTest
+class LizardsAndPumpkins_MagentoConnector_Test_Model_Export_CategoryTransformerTest
     extends PHPUnit_Framework_TestCase
 {
 
@@ -121,14 +121,17 @@ class LizardsAndPumpkins_MagentoConnector_Test_Model_Export_CategoryToLapTransfo
     /**
      * @param Mage_Catalog_Model_Category $category
      * @param string                      $locale
-     * @return LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryToLapTransformer
+     * @return LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryTransformer
      */
     private function getTransformer($category, $locale = 'ar_QA')
     {
         $configStub = $this->getMock(LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig::class);
         $configStub->method('getLocaleFrom')->willReturn($locale);
         $transformer =
-            new LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryToLapTransformer($category, $configStub);
+            LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryTransformer::createForTesting(
+                $category,
+                $configStub
+            );
 
         return $transformer;
     }

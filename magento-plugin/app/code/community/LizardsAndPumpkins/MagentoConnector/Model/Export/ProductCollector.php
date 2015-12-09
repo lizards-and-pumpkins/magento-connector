@@ -128,14 +128,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector
      */
     private function getQueuedProductIds()
     {
-<<<<<<< HEAD:magento-plugin/app/code/community/LizardsAndPumpkins/MagentoConnector/Model/Export/ProductCollector.php
-
         $this->messageIterator = Mage::helper('lizardsAndPumpkins_magentoconnector/export')->getProductUpdatesToExport();
-=======
-        /** @var Brera_MagentoConnector_Helper_Export $helper */
-        $helper = Mage::helper('brera_magentoconnector/export');
-        $this->messageIterator = $helper->getProductUpdatesToExport();
->>>>>>> master:magento-plugin/app/code/community/Brera/MagentoConnector/Model/Export/ProductCollector.php
         $productIds = [];
         foreach ($this->messageIterator as $item) {
             /** @var $item Zend_Queue_Message */
