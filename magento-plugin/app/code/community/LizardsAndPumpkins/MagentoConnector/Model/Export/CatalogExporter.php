@@ -41,6 +41,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
         /** @var LizardsAndPumpkins_MagentoConnector_Helper_Export $helper */
         $helper = Mage::helper('lizardsAndPumpkins_magentoconnector/export');
         $helper->addAllProductIdsFromWebsiteToProductUpdateQueue($store->getWebsite());
+        /** @var LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector $collector */
         $collector = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_productCollector');
         $collector->setStoresToExport([$store]);
         $this->export($collector);
