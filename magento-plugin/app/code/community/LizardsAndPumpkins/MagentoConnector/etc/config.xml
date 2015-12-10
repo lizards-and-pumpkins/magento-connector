@@ -209,10 +209,7 @@
     <default>
         <lizardsAndPumpkins>
             <magentoconnector>
-                <local_path_for_product_export><![CDATA[file:///vagrant/]]></local_path_for_product_export>
                 <local_filename_template><![CDATA[magento-%s.xml]]></local_filename_template>
-                <stock_xml_target><![CDATA[file:///vagrant/stock.xml]]></stock_xml_target>
-                <api_url><![CDATA[http://lizardsAndPumpkins-magento-connector.dev/lizardsAndPumpkins/api/]]></api_url>
                 <cms_special_blocks>
                     <top.menu/>
                 </cms_special_blocks>
