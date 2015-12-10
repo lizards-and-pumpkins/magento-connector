@@ -114,7 +114,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploa
                     $productData['variations'] = $value;
                 }
             } elseif ($key == 'is_salable') {
-                $productData['is_salable'] = $this->getIsSalableOnlyFromConfig($product);
+                $productData['is_salable'] = $this->getIsSalableFromData($product);
             } elseif ($attribute = $product->getResource()->getAttribute($key)) {
                 if ($attribute->getFrontendInput() == 'multiselect') {
                     $productData[$key] = array_map('trim', explode(',', $attribute->getFrontend()->getValue($product)));
@@ -133,7 +133,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploa
      * @param Mage_Catalog_Model_Product $product
      * @return bool
      */
-    private function getIsSalableOnlyFromConfig(Mage_Catalog_Model_Product $product)
+    private function getIsSalableFromData(Mage_Catalog_Model_Product $product)
     {
         $salable = $product->getStatus() == Mage_Catalog_Model_Product_Status::STATUS_ENABLED;
 
