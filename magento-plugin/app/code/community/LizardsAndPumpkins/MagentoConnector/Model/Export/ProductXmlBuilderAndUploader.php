@@ -136,11 +136,11 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploa
     private function getIsSalableOnlyFromConfig(Mage_Catalog_Model_Product $product)
     {
         $salable = $product->getStatus() == Mage_Catalog_Model_Product_Status::STATUS_ENABLED;
+
         if ($salable && $product->hasData('is_salable')) {
-            return (bool) $product->getData('is_salable');
-        } elseif ($salable && $product->isComposite()) {
-            return false;
+            return $product->getData('is_salable');
         }
-        return (bool) $salable;
+
+        return $salable && !$product->isComposite();
     }
 }
