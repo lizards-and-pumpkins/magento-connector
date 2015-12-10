@@ -1,16 +1,27 @@
 <?php
 
-class LizardsAndPumpkins_MagentoConnector_Model_ProductXmlUploader extends LizardsAndPumpkins_MagentoConnector_Model_XmlUploader
+class LizardsAndPumpkins_MagentoConnector_Model_ProductXmlUploader
+    extends LizardsAndPumpkins_MagentoConnector_Model_XmlUploader
 {
     /**
      * @var string
      */
     private $filename;
 
-    public function __construct()
+    /**
+     * @var LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig
+     */
+    private $config;
+
+    public function __construct(LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig $config = null)
     {
-        $xmlPath = Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/local_path_for_product_export');
-        $xmlFilename = strftime(Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/local_filename_template'));
+        if ($config instanceof LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig) {
+            $this->config = $config;
+        } else {
+            $this->config = new LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig();
+        }
+        $xmlPath = $this->config->getLocalPathForProductExport();
+        $xmlFilename = $this->config->getLocalFilenameTemplate();
         $this->filename = $xmlFilename;
         $xmlPath = $this->suffixPathWithDirectorySeperatorIfNeeded($xmlPath);
         parent::__construct($xmlPath . $xmlFilename);

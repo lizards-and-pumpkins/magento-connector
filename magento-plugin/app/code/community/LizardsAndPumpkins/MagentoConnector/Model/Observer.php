@@ -199,7 +199,10 @@ class LizardsAndPumpkins_MagentoConnector_Model_Observer
      */
     private function logProductUpdateForProductIds(array $ids)
     {
+<<<<<<< HEAD
         /** @var LizardsAndPumpkins_MagentoConnector_Helper_Export $helper */
+=======
+>>>>>>> e7bf127d663dcaa686f2aeda0ff2024bb348f3e7
         $helper = Mage::helper('lizardsAndPumpkins_magentoconnector/export');
         $helper->addProductUpdatesToQueue($ids);
     }

@@ -1,5 +1,8 @@
 <?php
+<<<<<<< HEAD
 
+=======
+>>>>>>> e7bf127d663dcaa686f2aeda0ff2024bb348f3e7
 namespace LizardsAndPumpkins\MagentoConnector\XmlBuilder;
 
 class ListingBuilderTest extends \PHPUnit_Framework_TestCase
@@ -47,7 +50,7 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return string[][]
+     * @return array[]
      */
     public function provideValidUrlKey()
     {

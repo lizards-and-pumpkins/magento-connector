@@ -179,7 +179,6 @@ class ListingBuilder
 
         $xml->endElement(); // listing
         return new XmlString($xml->flush());
-
     }
 
     /**

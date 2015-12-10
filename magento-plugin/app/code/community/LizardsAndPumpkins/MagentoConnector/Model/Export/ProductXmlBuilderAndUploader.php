@@ -3,8 +3,13 @@
 require_once 'LizardsAndPumpkins/src/XmlBuilder/ProductBuilder.php';
 require_once 'LizardsAndPumpkins/src/XmlBuilder/CatalogMerge.php';
 
+<<<<<<< HEAD
 use LizardsAndPumpkins\MagentoConnector\XmlBuilder\ProductBuilder;
 use LizardsAndPumpkins\MagentoConnector\XmlBuilder\CatalogMerge;
+=======
+use LizardsAndPumpkins\MagentoConnector\XmlBuilder\CatalogMerge;
+use LizardsAndPumpkins\MagentoConnector\XmlBuilder\ProductBuilder;
+>>>>>>> e7bf127d663dcaa686f2aeda0ff2024bb348f3e7
 
 class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
 {
@@ -14,7 +19,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploa
     private $product;
 
     /**
-     * @var ProductMerge
+     * @var CatalogMerge
      */
     private $merge;
 
