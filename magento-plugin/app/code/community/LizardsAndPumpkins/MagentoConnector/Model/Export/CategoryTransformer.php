@@ -33,7 +33,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryTransformer
      */
     public static function createForTesting(
         Mage_Catalog_Model_Category $category,
-        LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig $config = null
+        LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig $config
     ) {
         return new self($category, $config);
     }
