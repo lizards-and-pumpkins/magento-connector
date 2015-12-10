@@ -1,6 +1,6 @@
 # Magento Connector for Lizards & Pumpkins
 
-This connector is to update products and availability for Lizards & Pumpkins catalog replacement
+This connector is to update products and availability for Lizards & Pumpkins
 
 ## Installation
 
