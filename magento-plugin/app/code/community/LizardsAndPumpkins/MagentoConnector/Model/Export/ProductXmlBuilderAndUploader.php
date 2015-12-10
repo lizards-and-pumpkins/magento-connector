@@ -25,8 +25,8 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploa
 
 
     /**
-     * @param Mage_Catalog_Model_Product                            $product
-     * @param CatalogMerge                                          $merge
+     * @param Mage_Catalog_Model_Product $product
+     * @param CatalogMerge $merge
      * @param LizardsAndPumpkins_MagentoConnector_Model_XmlUploader $uploader
      */
     public function __construct(
@@ -78,6 +78,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploa
     private function transformData(Mage_Catalog_Model_Product $product)
     {
         $productData = [];
+        $anySimpleProductIsAvailable = false;
         foreach ($product->getData() as $key => $value) {
             if ($key == 'media_gallery') {
                 if (isset($value['images']) && is_array($value['images'])) {
@@ -93,6 +94,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploa
                 if (is_array($value)) {
                     /** @var Mage_Catalog_Model_Product $simpleProduct */
                     foreach ($value as $simpleProduct) {
+                        $anySimpleProductIsAvailable = $anySimpleProductIsAvailable || $simpleProduct->isSalable();
                         $associatedProduct = [
                             'sku'          => $simpleProduct->getSku(),
                             'type_id'      => $simpleProduct->getTypeId(),
@@ -111,6 +113,8 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploa
                 if (is_array($value)) {
                     $productData['variations'] = $value;
                 }
+            } elseif ($key == 'is_salable') {
+                $productData['is_salable'] = $this->getIsSalableFromData($product);
             } elseif ($attribute = $product->getResource()->getAttribute($key)) {
                 if ($attribute->getFrontendInput() == 'multiselect') {
                     $productData[$key] = array_map('trim', explode(',', $attribute->getFrontend()->getValue($product)));
@@ -121,6 +125,22 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploa
                 $productData[$key] = $product->getDataUsingMethod($key);
             }
         }
+        $productData['is_salable'] = $anySimpleProductIsAvailable && $productData['is_salable'];
         return $productData;
+    }
+
+    /**
+     * @param Mage_Catalog_Model_Product $product
+     * @return bool
+     */
+    private function getIsSalableFromData(Mage_Catalog_Model_Product $product)
+    {
+        $salable = $product->getStatus() == Mage_Catalog_Model_Product_Status::STATUS_ENABLED;
+
+        if ($salable && $product->hasData('is_salable')) {
+            return (bool) $product->getData('is_salable');
+        }
+
+        return $salable && !$product->isComposite();
     }
 }
