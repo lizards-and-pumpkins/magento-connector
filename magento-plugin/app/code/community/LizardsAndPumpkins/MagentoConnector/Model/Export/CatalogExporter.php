@@ -6,6 +6,7 @@ use LizardsAndPumpkins\MagentoConnector\XmlBuilder\CatalogMerge;
 class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
 {
     private $numberOfProductsExported = 0;
+
     private $numberOfCategoriesExported = 0;
 
     /**
@@ -18,6 +19,11 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
      */
     private $productCollector;
 
+    /**
+     * @var LizardsAndPumpkins_MagentoConnector_Helper_Export
+     */
+    private $memoizedExportHelper;
+
     public function __construct()
     {
         $this->productCollector = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_productCollector');
@@ -26,9 +32,10 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
 
     public function exportAllProducts()
     {
-        $helper = Mage::helper('lizardsAndPumpkins_magentoconnector/export');
+        $helper = $this->getExportHelper();
         $helper->addAllProductIdsToProductUpdateQueue();
         $helper->addAllCategoryIdsToCategoryQueue();
+
         $this->exportProductsInQueue();
     }
 
@@ -38,10 +45,12 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
      */
     public function exportOneStore(Mage_Core_Model_Store $store)
     {
-        Mage::helper('lizardsAndPumpkins_magentoconnector/export')
-            ->addAllProductIdsFromWebsiteToProductUpdateQueue($store->getWebsite());
-        $collector = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_productCollector');
+        $helper = $this->getExportHelper();
+        $helper->addAllProductIdsFromWebsiteToProductUpdateQueue($store->getWebsite());
+
+        $collector = $this->createProductCollector();
         $collector->setStoresToExport([$store]);
+
         $this->export($collector);
     }
 
@@ -51,16 +60,18 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
      */
     public function exportOneWebsite(Mage_Core_Model_Website $website)
     {
-        Mage::helper('lizardsAndPumpkins_magentoconnector/export')
-            ->addAllProductIdsFromWebsiteToProductUpdateQueue($website);
-        $collector = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_productCollector');
+        $helper = $this->getExportHelper();
+        $helper->addAllProductIdsFromWebsiteToProductUpdateQueue($website);
+
+        $collector = $this->createProductCollector();
         $collector->setStoresToExport($website->getStores());
+
         $this->export($collector);
     }
 
     public function exportProductsInQueue()
     {
-        $collector = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_productCollector');
+        $collector = $this->createProductCollector();
         return $this->export($collector);
     }
 
@@ -98,11 +109,12 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
         $categoryCollector = new LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryCollector();
 
         while ($category = $categoryCollector->getCategory()) {
-            $transformer = new LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryTransformer($category);
+            $transformer = LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryTransformer::createFrom($category);
             $categoryXml = $transformer->getCategoryXml();
             $xmlMerge->addCategory($categoryXml);
             $this->numberOfCategoriesExported++;
         }
+
         if (0 === ($this->numberOfProductsExported + $this->numberOfCategoriesExported)) {
             return;
         }
@@ -126,5 +138,25 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
     public function getNumberOfProductsExported()
     {
         return $this->numberOfProductsExported;
+    }
+
+    /**
+     * @return LizardsAndPumpkins_MagentoConnector_Helper_Export
+     */
+    private function getExportHelper()
+    {
+        if (null === $this->memoizedExportHelper) {
+            $this->memoizedExportHelper = Mage::helper('lizardsAndPumpkins_magentoconnector/export');
+        }
+
+        return $this->memoizedExportHelper;
+    }
+
+    /**
+     * @return LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector
+     */
+    private function createProductCollector()
+    {
+        return Mage::getModel('lizardsAndPumpkins_magentoconnector/export_productCollector');
     }
 }
