@@ -1,0 +1,81 @@
+<?xml version="1.0" ?>
+<config>
+    <menu>
+        <system>
+            <children>
+                <convert translate="title">
+                    <children>
+                        <lizardsAndPumpkins translate="title">
+                            <title>Lizards &amp; Pumpkins</title>
+                            <sort_order>1</sort_order>
+                            <children>
+                                <export_all_products translate="title">
+                                    <title>Export All Products</title>
+                                    <action>adminhtml/lizardsAndPumpkins/exportAllProducts</action>
+                                    <sort_order>0</sort_order>
+                                </export_all_products>
+                                <export_product_updates translate="title">
+                                    <title>Export Product Updates</title>
+                                    <action>adminhtml/lizardsAndPumpkins/exportQueuedProductUpdates</action>
+                                    <sort_order>0</sort_order>
+                                </export_product_updates>
+                                <export_all_product_stocks translate="title">
+                                    <title>Export All Product Stock Updates</title>
+                                    <action>adminhtml/lizardsAndPumpkins/exportAllStocks</action>
+                                    <sort_order>0</sort_order>
+                                </export_all_product_stocks>
+                                <export_all_cms_blocks translate="title">
+                                    <title>Export All CMS Blocks</title>
+                                    <action>adminhtml/lizardsAndPumpkins/exportAllCmsBlocks</action>
+                                    <sort_order>0</sort_order>
+                                </export_all_cms_blocks>
+                            </children>
+                        </lizardsAndPumpkins>
+                    </children>
+                </convert>
+            </children>
+        </system>
+    </menu>
+    <acl>
+        <resources>
+            <admin>
+                <children>
+                    <system>
+                        <children>
+                            <convert module="importexport">
+                                <children>
+                                    <lizardsAndPumpkins translate="title" module="lizardsAndPumpkins_magentoconnector">
+                                        <title>Lizards &amp; Pumpkins</title>
+                                        <sort_order>1</sort_order>
+                                        <children>
+                                            <lizardsAndPumpkins_export_all translate="title">
+                                                <title>LizardsAndPumpkins Export All</title>
+                                                <sort_order>0</sort_order>
+                                            </lizardsAndPumpkins_export_all>
+                                            <lizardsAndPumpkins_export_product_updates translate="title">
+                                                <title>LizardsAndPumpkins Export Product Updates</title>
+                                            </lizardsAndPumpkins_export_product_updates>
+                                            <lizardsAndPumpkins_export_all_product_stocks translate="title">
+                                                <title>LizardsAndPumpkins Export All Product Stock Updates</title>
+                                            </lizardsAndPumpkins_export_all_product_stocks>
+                                            <lizardsAndPumpkins_export_all_cms_blocks translate="title">
+                                                <title>LizardsAndPumpkins Export All CMS Blocks</title>
+                                            </lizardsAndPumpkins_export_all_cms_blocks>
+                                        </children>
+                                    </lizardsAndPumpkins>
+                                </children>
+                            </convert>
+                            <config>
+                                <children>
+                                    <lizardsAndPumpkins>
+                                        <title>LizardsAndPumpkins</title>
+                                    </lizardsAndPumpkins>
+                                </children>
+                            </config>
+                        </children>
+                    </system>
+                </children>
+            </admin>
+        </resources>
+    </acl>
+</config>
