@@ -25,8 +25,8 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploa
 
 
     /**
-     * @param Mage_Catalog_Model_Product                            $product
-     * @param CatalogMerge                                          $merge
+     * @param Mage_Catalog_Model_Product $product
+     * @param CatalogMerge $merge
      * @param LizardsAndPumpkins_MagentoConnector_Model_XmlUploader $uploader
      */
     public function __construct(
@@ -138,7 +138,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploa
         $salable = $product->getStatus() == Mage_Catalog_Model_Product_Status::STATUS_ENABLED;
 
         if ($salable && $product->hasData('is_salable')) {
-            return $product->getData('is_salable');
+            return (bool) $product->getData('is_salable');
         }
 
         return $salable && !$product->isComposite();
