@@ -1,8 +1,7 @@
 <?php
 
 /**
- * @covers LizardsAndPumpkins_MagentoConnector_Test_Model_Export_CategoryToLapTransformer
- * @covers \LizardsAndPumpkins\MagentoConnector\XmlBuilder\ListingBuilder
+ * @covers LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryTransformer
  */
 class LizardsAndPumpkins_MagentoConnector_Test_Model_Export_CategoryTransformerTest
     extends PHPUnit_Framework_TestCase

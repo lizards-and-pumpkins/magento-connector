@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @covers LizardsAndPumpkins_MagentoConnector_Test_Model_XmlUploader
+ * @covers LizardsAndPumpkins_MagentoConnector_Model_XmlUploader
  */
 class LizardsAndPumpkins_MagentoConnector_Model_ProductXmlUploaderTest extends PHPUnit_Framework_TestCase
 {
