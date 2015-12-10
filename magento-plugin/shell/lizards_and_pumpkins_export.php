@@ -1,6 +1,6 @@
 <?php
 require_once 'abstract.php';
-require '../lib/autoload_lizardsAndPumpkins.php';
+require '../lib/autoload_lizards_and_pumpkins.php';
 
 class LizardsAndPumpkins_Export extends Mage_Shell_Abstract
 {
@@ -17,8 +17,8 @@ class LizardsAndPumpkins_Export extends Mage_Shell_Abstract
     public function run()
     {
         if ($this->getArg('all-products')) {
-            /** @var LizardsAndPumpkins_MagentoConnector_Model_Export_ProductExporter $exporter */
-            $exporter = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_productExporter');
+            /** @var LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter $exporter */
+            $exporter = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_catalogExporter');
             $exporter->exportAllProducts();
         } else {
             echo $this->usageHelp();
@@ -47,4 +47,3 @@ USAGE;
 
 $exporter = new LizardsAndPumpkins_Export();
 $exporter->run();
-
