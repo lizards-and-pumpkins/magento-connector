@@ -115,7 +115,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
             $this->numberOfCategoriesExported++;
         }
 
-        if (0 === ($this->numberOfProductsExported + $this->numberOfCategoriesExported)) {
+        if ($this->numberOfProductsExported + $this->numberOfCategoriesExported === 0) {
             return;
         }
 
