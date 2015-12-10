@@ -1,6 +1,7 @@
 <?php
 
 use LizardsAndPumpkins\MagentoConnector\XmlBuilder\ListingBuilder;
+use LizardsAndPumpkins\MagentoConnector\XmlBuilder\XmlString;
 
 class LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryTransformer
 {
@@ -20,7 +21,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryTransformer
      */
     private function __construct(
         Mage_Catalog_Model_Category $category,
-        LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig $config = null
+        LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig $config
     ) {
         $this->category = $category;
         $this->config = $config;
@@ -28,7 +29,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryTransformer
 
     /**
      * @param Mage_Catalog_Model_Category                                         $category
-     * @param LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig|null $config
+     * @param LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig $config
      * @return LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryTransformer
      */
     public static function createForTesting(
@@ -49,7 +50,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryTransformer
     }
 
     /**
-     * @return \LizardsAndPumpkins\MagentoConnector\XmlBuilder\XmlString
+     * @return XmlString
      */
     public function getCategoryXml()
     {
