@@ -32,7 +32,7 @@ class LizardsAndPumpkins_MagentoConnector_Test_Model_Export_CategoryTransformerT
 
     /**
      * @param Mage_Catalog_Model_Category $category
-     * @param string                      $locale
+     * @param string $locale
      * @return LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryTransformer
      */
     private function getTransformer($category, $locale)

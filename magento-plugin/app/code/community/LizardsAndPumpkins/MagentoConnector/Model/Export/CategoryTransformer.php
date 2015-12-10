@@ -15,10 +15,6 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryTransformer
      */
     private $config;
 
-    /**
-     * @param Mage_Catalog_Model_Category                                    $category
-     * @param LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig $config
-     */
     private function __construct(
         Mage_Catalog_Model_Category $category,
         LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig $config
@@ -28,7 +24,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryTransformer
     }
 
     /**
-     * @param Mage_Catalog_Model_Category                                         $category
+     * @param Mage_Catalog_Model_Category $category
      * @param LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig $config
      * @return LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryTransformer
      */

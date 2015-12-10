@@ -1,6 +1,7 @@
 <?php
 
-class LizardsAndPumpkins_MagentoConnector_Adminhtml_LizardsAndPumpkinsController extends Mage_Adminhtml_Controller_Action
+class LizardsAndPumpkins_MagentoConnector_Adminhtml_LizardsAndPumpkinsController
+    extends Mage_Adminhtml_Controller_Action
 {
     public function exportAllProductsAction()
     {

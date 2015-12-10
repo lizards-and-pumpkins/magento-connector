@@ -151,7 +151,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Observer
 
     /**
      * @param Varien_Event_Observer $observer
-     * @param string                $itemHolderName
+     * @param string $itemHolderName
      * @return int[]
      */
     private function getProductIdsFrom(Varien_Event_Observer $observer, $itemHolderName)

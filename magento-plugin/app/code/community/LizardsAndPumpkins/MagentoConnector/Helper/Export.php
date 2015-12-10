@@ -196,7 +196,7 @@ SQL;
 
     /**
      * @param Zend_Queue_Message[] $messages
-     * @param string               $queueName
+     * @param string $queueName
      */
     private function deleteMessages(array $messages, $queueName)
     {
@@ -204,7 +204,7 @@ SQL;
     }
 
     /**
-     * @param int    $id
+     * @param int $id
      * @param string $queue
      */
     private function addToQueue($id, $queue)

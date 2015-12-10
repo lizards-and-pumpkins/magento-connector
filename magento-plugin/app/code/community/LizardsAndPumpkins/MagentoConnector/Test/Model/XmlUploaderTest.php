@@ -116,7 +116,7 @@ if (!class_exists(Mage_Core_Exception::class)) {
          * Set or append a message to existing one
          *
          * @param string $message
-         * @param bool   $append
+         * @param bool $append
          * @return Mage_Core_Exception
          */
         public function setMessage($message, $append = false)
