@@ -12,27 +12,25 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
     }
 
     /**
-     * @return $this
+     * @return LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collection
      */
     protected function _afterLoad()
     {
         if ($this->_addUrlRewrite) {
-            $this->_addUrlRewrite($this->_urlRewriteCategory);
+            $this->_addUrlRewrite();
         }
 
         if (count($this) > 0) {
             Mage::dispatchEvent('catalog_product_collection_load_after', ['collection' => $this]);
         }
 
-        foreach ($this as $product) {
-            /** @var $product Mage_Catalog_Model_Product */
-            if ($product->isRecurring() && $profile = $product->getRecurringProfile()) {
-                $product->setRecurringProfile(unserialize($profile));
+        array_map(function (Mage_Catalog_Model_Product $product) {
+            if ($product->isRecurring() && $profile = $product->getData('recurring_profile')) {
+                $product->setData('recurring_profile', unserialize($profile));
             }
-            $product->setStore($this->getStoreId());
-        }
+            $product->setData('store', $this->getStoreId());
+        }, $this->getItems());
 
         return $this;
     }
-
 }
