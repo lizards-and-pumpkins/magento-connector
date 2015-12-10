@@ -129,16 +129,18 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploa
         return $productData;
     }
 
+    /**
+     * @param Mage_Catalog_Model_Product $product
+     * @return bool
+     */
     private function getIsSalableOnlyFromConfig(Mage_Catalog_Model_Product $product)
     {
         $salable = $product->getStatus() == Mage_Catalog_Model_Product_Status::STATUS_ENABLED;
         if ($salable && $product->hasData('is_salable')) {
-            $salable = $product->getData('is_salable');
+            return (bool) $product->getData('is_salable');
         } elseif ($salable && $product->isComposite()) {
-            $salable = null;
+            return false;
         }
-
-        return (boolean) (int) $salable;
+        return (bool) $salable;
     }
-
 }
