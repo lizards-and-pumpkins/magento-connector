@@ -25,8 +25,8 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploa
 
 
     /**
-     * @param Mage_Catalog_Model_Product                            $product
-     * @param CatalogMerge                                          $merge
+     * @param Mage_Catalog_Model_Product $product
+     * @param CatalogMerge $merge
      * @param LizardsAndPumpkins_MagentoConnector_Model_XmlUploader $uploader
      */
     public function __construct(
@@ -111,7 +111,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploa
                 if (is_array($value)) {
                     $productData['variations'] = $value;
                 }
-            } elseif ($attribute = $product->getResource()->getAttribute($key)) {
+            } elseif ($product->getData($key) && $attribute = $product->getResource()->getAttribute($key)) {
                 if ($attribute->getFrontendInput() == 'multiselect') {
                     $productData[$key] = array_map('trim', explode(',', $attribute->getFrontend()->getValue($product)));
                 } else {
