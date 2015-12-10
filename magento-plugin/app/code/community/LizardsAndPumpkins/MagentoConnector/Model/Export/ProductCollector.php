@@ -67,7 +67,6 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector
      */
     public function getProduct()
     {
-
         if ($this->existsNextProduct()) {
             return $this->productIterator->current();
         }
@@ -109,9 +108,8 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector
      */
     private function createCollection($store)
     {
-        $this->setAdminStoreToAvoidFlatTables();
         /** @var $collection Mage_Catalog_Model_Resource_Product_Collection */
-        $collection = Mage::getResourceModel('catalog/product_collection');
+        $collection = Mage::getResourceModel('lizardsAndPumpkins_magentoconnector/catalog_product_collection');
         $collection->setStore($store);
         $collection->addAttributeToSelect('*');
         $collection->addAttributeToFilter(
@@ -164,23 +162,12 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector
         }
     }
 
-    private function setAdminStoreToAvoidFlatTables()
-    {
-        Mage::app()->setCurrentStore(Mage::app()->getStore(Mage_Core_Model_App::ADMIN_STORE_ID));
-    }
-
     public function addAdditionalData()
     {
-        $this->addStore();
         $this->addCategories();
         $this->addStockInformation($this->collection);
         $this->addMediaGalleryAttributeToCollection();
         $this->addAssociatedProductsToConfigurables();
-    }
-
-    private function addStore()
-    {
-        $this->collection->setDataToAll('store_id', $this->store->getId());
     }
 
     /**

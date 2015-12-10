@@ -93,8 +93,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
     private function export(LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector $collector)
     {
         $xmlMerge = new CatalogMerge();
-        /** @var LizardsAndPumpkins_MagentoConnector_Model_ProductXmlUploader $uploader */
-        $uploader = Mage::getModel('lizardsAndPumpkins_magentoconnector/productXmlUploader');
+        $uploader = new LizardsAndPumpkins_MagentoConnector_Model_ProductXmlUploader();
 
         while ($product = $collector->getProduct()) {
             $xmlBuilderAndUploader = new LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader(
