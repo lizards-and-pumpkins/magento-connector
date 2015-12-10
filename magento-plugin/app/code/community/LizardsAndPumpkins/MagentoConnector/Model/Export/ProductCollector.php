@@ -129,7 +129,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector
     private function getQueuedProductIds()
     {
         /** @var LizardsAndPumpkins_MagentoConnector_Helper_Export $helper */
-        $helper = Mage::helper('lizardsAndPumpkins_magentoconnector/export')->getProductUpdatesToExport();
+        $helper = Mage::helper('lizardsAndPumpkins_magentoconnector/export');
         $this->messageIterator = $helper->getProductUpdatesToExport();
         $productIds = [];
         foreach ($this->messageIterator as $item) {
