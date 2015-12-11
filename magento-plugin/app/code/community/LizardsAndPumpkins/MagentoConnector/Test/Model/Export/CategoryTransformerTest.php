@@ -35,7 +35,7 @@ class LizardsAndPumpkins_MagentoConnector_Test_Model_Export_CategoryTransformerT
      * @param string $locale
      * @return LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryTransformer
      */
-    private function getTransformer($category, $locale)
+    private function getTransformer(Mage_Catalog_Model_Category $category, $locale)
     {
         $configStub = $this->getMock(LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig::class);
         $configStub->method('getLocaleFrom')->willReturn($locale);
