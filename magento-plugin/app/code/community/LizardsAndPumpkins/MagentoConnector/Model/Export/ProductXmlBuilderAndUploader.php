@@ -115,7 +115,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploa
                 }
             } elseif ($key == 'is_salable') {
                 $productData['is_salable'] = $this->getIsSalableFromData($product);
-            } elseif ($attribute = $product->getResource()->getAttribute($key)) {
+            } elseif ($product->getData($key) && $attribute = $product->getResource()->getAttribute($key)) {
                 if ($attribute->getFrontendInput() == 'multiselect') {
                     $productData[$key] = array_map('trim', explode(',', $attribute->getFrontend()->getValue($product)));
                 } else {

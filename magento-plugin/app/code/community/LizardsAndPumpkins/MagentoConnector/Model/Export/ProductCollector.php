@@ -67,7 +67,6 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector
      */
     public function getProduct()
     {
-
         if ($this->existsNextProduct()) {
             return $this->productIterator->current();
         }
@@ -127,8 +126,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector
      */
     private function getQueuedProductIds()
     {
-        $this->messageIterator = Mage::helper('lizardsAndPumpkins_magentoconnector/export')
-            ->getProductUpdatesToExport();
+        /** @var LizardsAndPumpkins_MagentoConnector_Helper_Export $helper */
+        $helper = Mage::helper('lizardsAndPumpkins_magentoconnector/export');
+        $this->messageIterator = $helper->getProductUpdatesToExport();
         $productIds = [];
         foreach ($this->messageIterator as $item) {
             /** @var $item Zend_Queue_Message */

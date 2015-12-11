@@ -120,7 +120,8 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryCollector
      */
     private function getQueuedCategoryIds()
     {
-        $this->messageIterator = Mage::helper('lizardsAndPumpkins_magentoconnector/export')->getCategoryUpdatesToExport();
+        $this->messageIterator = Mage::helper('lizardsAndPumpkins_magentoconnector/export')
+            ->getCategoryUpdatesToExport();
         $categoryIds = [];
         foreach ($this->messageIterator as $item) {
             /** @var $item Zend_Queue_Message */

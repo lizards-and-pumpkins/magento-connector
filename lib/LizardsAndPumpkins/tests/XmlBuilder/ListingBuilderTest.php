@@ -1,4 +1,5 @@
 <?php
+
 namespace LizardsAndPumpkins\MagentoConnector\XmlBuilder;
 
 class ListingBuilderTest extends \PHPUnit_Framework_TestCase

@@ -7,7 +7,8 @@ class LizardsAndPumpkins_MagentoConnector_Model_Observer
      */
     public function catalogCategorySaveAfter(Varien_Event_Observer $observer)
     {
-        Mage::helper('lizardsAndPumpkins_magentoconnector/export')->addCategoryToQueue($observer->getCategory()->getId());
+        Mage::helper('lizardsAndPumpkins_magentoconnector/export')->addCategoryToQueue($observer->getCategory()
+            ->getId());
     }
 
     /**
@@ -15,7 +16,8 @@ class LizardsAndPumpkins_MagentoConnector_Model_Observer
      */
     public function catalogCategoryDeleteAfter(Varien_Event_Observer $observer)
     {
-        Mage::helper('lizardsAndPumpkins_magentoconnector/export')->addCategoryToQueue($observer->getCategory()->getId());
+        Mage::helper('lizardsAndPumpkins_magentoconnector/export')->addCategoryToQueue($observer->getCategory()
+            ->getId());
     }
 
     /**
@@ -23,7 +25,8 @@ class LizardsAndPumpkins_MagentoConnector_Model_Observer
      */
     public function catalogCategoryTreeMoveAfter(Varien_Event_Observer $observer)
     {
-        Mage::helper('lizardsAndPumpkins_magentoconnector/export')->addCategoryToQueue($observer->getCategory()->getId());
+        Mage::helper('lizardsAndPumpkins_magentoconnector/export')->addCategoryToQueue($observer->getCategory()
+            ->getId());
     }
 
     /**
@@ -148,7 +151,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Observer
 
     /**
      * @param Varien_Event_Observer $observer
-     * @param string                $itemHolderName
+     * @param string $itemHolderName
      * @return int[]
      */
     private function getProductIdsFrom(Varien_Event_Observer $observer, $itemHolderName)
@@ -196,6 +199,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Observer
      */
     private function logProductUpdateForProductIds(array $ids)
     {
+        /** @var LizardsAndPumpkins_MagentoConnector_Helper_Export $helper */
         $helper = Mage::helper('lizardsAndPumpkins_magentoconnector/export');
         $helper->addProductUpdatesToQueue($ids);
     }

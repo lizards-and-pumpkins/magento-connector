@@ -97,7 +97,7 @@ class LizardsAndPumpkins_MagentoConnector_CartController extends Mage_Core_Contr
 
     /**
      * @param Mage_Catalog_Model_Product $product
-     * @param int                        $qty
+     * @param int $qty
      */
     private function addConfigurableProductForSimpleProduct(Mage_Catalog_Model_Product $product, $qty)
     {
