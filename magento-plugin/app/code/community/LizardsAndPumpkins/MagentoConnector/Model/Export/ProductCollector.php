@@ -244,8 +244,8 @@ SQL;
 
         /** @var $categoryCollection Mage_Catalog_Model_Resource_Category_Collection */
         $categoryCollection = Mage::getResourceModel('catalog/category_collection')
-            ->setStore($this->store)
-            ->addAttributeToSelect('url_path');
+            ->setStore($this->store);
+        $categoryCollection->addUrlRewriteToResult();
         $categoryCollection->addIdFilter($categoryIds);
 
         foreach ($this->collection as $product) {
@@ -253,7 +253,7 @@ SQL;
             foreach ($product->getCategoryIds() as $categoryId) {
                 /** @var $category Mage_Catalog_Model_Category */
                 $category = $categoryCollection->getItemById($categoryId);
-                $categories[] = $category->getUrlPath();
+                $categories[] = $category->getRequestPath();
             }
             $product->setCategories($categories);
         }
