@@ -80,7 +80,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploa
         $productData = [];
         $anySimpleProductIsAvailable = false;
         foreach ($product->getData() as $key => $value) {
-            if ($key == 'media_gallery') {
+            if (!$product->getData($key)) {
+                $productData[$key] = $product->getData($key);
+            } elseif ($key == 'media_gallery') {
                 if (isset($value['images']) && is_array($value['images'])) {
                     foreach ($value['images'] as $image) {
                         $productData['images'][] = [
