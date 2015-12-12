@@ -264,7 +264,7 @@ SQL;
     /**
      * @param Mage_Catalog_Model_Resource_Product_Collection $collection
      */
-    private function addStockInformation($collection)
+    private function addStockInformation(Mage_Catalog_Model_Resource_Product_Collection $collection)
     {
         Mage::getSingleton('cataloginventory/stock')
             ->addItemsToProducts($collection);
