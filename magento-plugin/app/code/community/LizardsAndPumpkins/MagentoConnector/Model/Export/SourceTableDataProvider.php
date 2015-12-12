@@ -39,24 +39,29 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_SourceTableDataProvider
      */
     public function getValue($attributeId, $optionId, $store)
     {
-        return $this->attributeValues[$store][$attributeId][$optionId];
+        if (isset($this->attributeValues[$store][$attributeId][$optionId])) {
+            return $this->attributeValues[$store][$attributeId][$optionId];
+        }
+        return null;
     }
 
     private function setupDefaultValues()
     {
         $attributeOption = $this->resource->getTableName('eav/attribute_option');
         $attributeOptionValue = $this->resource->getTableName('eav/attribute_option_value');
+        $attribute = $this->resource->getTableName('eav/attribute');
 
-        $query = "SELECT * FROM $attributeOption o
-                    INNER JOIN $attributeOptionValue v
-                      ON o.option_id = v.option_id
+        $query = "SELECT attribute_code, o.option_id, value, store_id
+                    FROM $attributeOption o
+                    INNER JOIN $attributeOptionValue v ON o.option_id = v.option_id
+                    INNER JOIN $attribute a ON o.attribute_id = a.attribute_id
                     WHERE store_id = 0";
 
         $result = $this->resource->getConnection('core_write')->query($query);
         foreach ($result->fetchAll() as $row) {
-            $this->attributeValues[0][$row['attribute_id']][$row['option_id']] = $row['value'];
+            $this->attributeValues[0][$row['attribute_code']][$row['option_id']] = $row['value'];
             foreach ($this->config->getStoresWithIdKeys() as $store) {
-                $this->attributeValues[$store->getId()][$row['attribute_id']][$row['option_id']] = $row['value'];
+                $this->attributeValues[$store->getId()][$row['attribute_code']][$row['option_id']] = $row['value'];
             }
         }
     }
@@ -65,15 +70,17 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_SourceTableDataProvider
     {
         $attributeOption = $this->resource->getTableName('eav/attribute_option');
         $attributeOptionValue = $this->resource->getTableName('eav/attribute_option_value');
+        $attribute = $this->resource->getTableName('eav/attribute');
 
-        $query = "SELECT * FROM $attributeOption o
-                    INNER JOIN $attributeOptionValue v
-                      ON o.option_id = v.option_id
+        $query = "SELECT attribute_code, o.option_id, value, store_id
+                    FROM $attributeOption o
+                    INNER JOIN $attributeOptionValue v ON o.option_id = v.option_id
+                    INNER JOIN $attribute a ON o.attribute_id = a.attribute_id
                     WHERE store_id <> 0";
 
         $result = $this->resource->getConnection('core_write')->query($query);
         foreach ($result->fetchAll() as $row) {
-            $this->attributeValues[$row['store_id']][$row['attribute_id']][$row['option_id']] = $row['value'];
+            $this->attributeValues[$row['store_id']][$row['attribute_code']][$row['option_id']] = $row['value'];
         }
     }
 }

@@ -2,16 +2,27 @@
 
 class LizardsAndPumpkins_MagentoConnector_Test_Model_SourceTableDataProviderTest extends PHPUnit_Framework_TestCase
 {
+    public function testUndefinedValue()
+    {
+        $defaultValues = [];
+        $storeSpecificValues = [];
+
+        $sourceTableData = $this->setupMagentoDependencies($defaultValues, $storeSpecificValues);
+
+        $this->assertNull($sourceTableData->getValue("series", 2791, 0));
+    }
+
     public function testOnlyDefaultValues()
     {
         $defaultValues = [
             [
-                "option_id"    => 2791,
-                "attribute_id" => 157,
-                "sort_order"   => 0,
-                "value_id"     => 14578,
-                "store_id"     => 0,
-                "value"        => "Cap",
+                "attribute_code" => "series",
+                "option_id"      => 2791,
+                "attribute_id"   => 157,
+                "sort_order"     => 0,
+                "value_id"       => 14578,
+                "store_id"       => 0,
+                "value"          => "Cap",
             ],
         ];
 
@@ -21,7 +32,7 @@ class LizardsAndPumpkins_MagentoConnector_Test_Model_SourceTableDataProviderTest
 
         $this->assertEquals(
             'Cap',
-            $sourceTableData->getValue(157, 2791, 0)
+            $sourceTableData->getValue("series", 2791, 0)
         );
     }
 
@@ -31,12 +42,13 @@ class LizardsAndPumpkins_MagentoConnector_Test_Model_SourceTableDataProviderTest
 
         $storeSpecificValues = [
             [
-                "option_id"    => 2791,
-                "attribute_id" => 157,
-                "sort_order"   => 0,
-                "value_id"     => 14578,
-                "store_id"     => 1,
-                "value"        => "Cap",
+                "attribute_code" => "series",
+                "option_id"      => 2791,
+                "attribute_id"   => 157,
+                "sort_order"     => 0,
+                "value_id"       => 14578,
+                "store_id"       => 1,
+                "value"          => "Cap",
             ],
         ];
 
@@ -44,7 +56,7 @@ class LizardsAndPumpkins_MagentoConnector_Test_Model_SourceTableDataProviderTest
 
         $this->assertEquals(
             'Cap',
-            $sourceTableData->getValue(157, 2791, 1)
+            $sourceTableData->getValue("series", 2791, 1)
         );
     }
 
@@ -52,23 +64,25 @@ class LizardsAndPumpkins_MagentoConnector_Test_Model_SourceTableDataProviderTest
     {
         $defaultValues = [
             [
-                "option_id"    => 2791,
-                "attribute_id" => 157,
-                "sort_order"   => 0,
-                "value_id"     => 14578,
-                "store_id"     => 0,
-                "value"        => "Cap",
+                "attribute_code" => "series",
+                "option_id"      => 2791,
+                "attribute_id"   => 157,
+                "sort_order"     => 0,
+                "value_id"       => 14578,
+                "store_id"       => 0,
+                "value"          => "Cap",
             ],
         ];
 
         $storeSpecificValues = [
             [
-                "option_id"    => 2791,
-                "attribute_id" => 157,
-                "sort_order"   => 0,
-                "value_id"     => 14578,
-                "store_id"     => 1,
-                "value"        => "CapStore1",
+                "attribute_code" => "series",
+                "option_id"      => 2791,
+                "attribute_id"   => 157,
+                "sort_order"     => 0,
+                "value_id"       => 14578,
+                "store_id"       => 1,
+                "value"          => "CapStore1",
             ],
         ];
 
@@ -76,15 +90,15 @@ class LizardsAndPumpkins_MagentoConnector_Test_Model_SourceTableDataProviderTest
 
         $this->assertEquals(
             'CapStore1',
-            $sourceTableData->getValue(157, 2791, 1)
+            $sourceTableData->getValue("series", 2791, 1)
         );
         $this->assertEquals(
             'Cap',
-            $sourceTableData->getValue(157, 2791, 2)
+            $sourceTableData->getValue("series", 2791, 2)
         );
         $this->assertEquals(
             'Cap',
-            $sourceTableData->getValue(157, 2791, 0)
+            $sourceTableData->getValue("series", 2791, 0)
         );
     }
 
