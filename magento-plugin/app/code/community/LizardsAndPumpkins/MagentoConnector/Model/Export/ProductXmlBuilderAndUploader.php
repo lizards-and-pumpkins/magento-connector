@@ -27,13 +27,6 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploa
      */
     private $sourceTableDataProvider;
 
-
-    /**
-     * @param Mage_Catalog_Model_Product $product
-     * @param CatalogMerge $merge
-     * @param LizardsAndPumpkins_MagentoConnector_Model_XmlUploader $uploader
-     * @param LizardsAndPumpkins_MagentoConnector_Model_Export_SourceTableDataProvider $sourceTableDataProvider
-     */
     public function __construct(
         Mage_Catalog_Model_Product $product,
         CatalogMerge $merge,
@@ -79,7 +72,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploa
     }
 
     /**
-     * @param $product
+     * @param Mage_Catalog_Model_Product $product
      * @return string[]
      */
     private function transformData(Mage_Catalog_Model_Product $product)
@@ -147,6 +140,10 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploa
         return $productData;
     }
 
+    /**
+     * @param Mage_Catalog_Model_Resource_Eav_Attribute $attribute
+     * @return bool
+     */
     private function isAttributeSelectOrMultiselect(Mage_Catalog_Model_Resource_Eav_Attribute $attribute)
     {
         return in_array($attribute->getFrontendInput(), ['multiselect', 'select']);
