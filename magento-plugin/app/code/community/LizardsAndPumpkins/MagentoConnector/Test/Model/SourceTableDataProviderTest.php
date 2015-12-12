@@ -9,7 +9,7 @@ class LizardsAndPumpkins_MagentoConnector_Test_Model_SourceTableDataProviderTest
 
         $sourceTableData = $this->setupMagentoDependencies($defaultValues, $storeSpecificValues);
 
-        $this->assertNull($sourceTableData->getValue("series", 2791, 0));
+        $this->assertNull($sourceTableData->getValue(0, "series", 2791));
     }
 
     public function testOnlyDefaultValues()
@@ -32,7 +32,7 @@ class LizardsAndPumpkins_MagentoConnector_Test_Model_SourceTableDataProviderTest
 
         $this->assertEquals(
             'Cap',
-            $sourceTableData->getValue("series", 2791, 0)
+            $sourceTableData->getValue(0, "series", 2791)
         );
     }
 
@@ -56,7 +56,7 @@ class LizardsAndPumpkins_MagentoConnector_Test_Model_SourceTableDataProviderTest
 
         $this->assertEquals(
             'Cap',
-            $sourceTableData->getValue("series", 2791, 1)
+            $sourceTableData->getValue(1, "series", 2791)
         );
     }
 
@@ -90,15 +90,15 @@ class LizardsAndPumpkins_MagentoConnector_Test_Model_SourceTableDataProviderTest
 
         $this->assertEquals(
             'CapStore1',
-            $sourceTableData->getValue("series", 2791, 1)
+            $sourceTableData->getValue(1, "series", 2791)
         );
         $this->assertEquals(
             'Cap',
-            $sourceTableData->getValue("series", 2791, 2)
+            $sourceTableData->getValue(2, "series", 2791)
         );
         $this->assertEquals(
             'Cap',
-            $sourceTableData->getValue("series", 2791, 0)
+            $sourceTableData->getValue(0, "series", 2791)
         );
     }
 
