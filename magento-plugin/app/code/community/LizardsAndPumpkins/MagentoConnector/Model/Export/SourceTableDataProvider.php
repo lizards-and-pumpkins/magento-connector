@@ -32,15 +32,15 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_SourceTableDataProvider
     }
 
     /**
-     * @param int $attributeId
+     * @param int $attributeCode
      * @param int $optionId
      * @param int $store
      * @return string
      */
-    public function getValue($attributeId, $optionId, $store)
+    public function getValue($store, $attributeCode, $optionId)
     {
-        if (isset($this->attributeValues[$store][$attributeId][$optionId])) {
-            return $this->attributeValues[$store][$attributeId][$optionId];
+        if (isset($this->attributeValues[$store][$attributeCode][$optionId])) {
+            return $this->attributeValues[$store][$attributeCode][$optionId];
         }
         return null;
     }

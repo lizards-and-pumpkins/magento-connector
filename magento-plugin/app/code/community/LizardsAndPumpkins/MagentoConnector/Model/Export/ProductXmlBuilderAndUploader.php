@@ -22,21 +22,28 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploa
      * @var LizardsAndPumpkins_MagentoConnector_Model_XmlUploader
      */
     private $uploader;
+    /**
+     * @var LizardsAndPumpkins_MagentoConnector_Model_Export_SourceTableDataProvider
+     */
+    private $sourceTableDataProvider;
 
 
     /**
      * @param Mage_Catalog_Model_Product $product
      * @param CatalogMerge $merge
      * @param LizardsAndPumpkins_MagentoConnector_Model_XmlUploader $uploader
+     * @param LizardsAndPumpkins_MagentoConnector_Model_Export_SourceTableDataProvider $sourceTableDataProvider
      */
     public function __construct(
         Mage_Catalog_Model_Product $product,
         CatalogMerge $merge,
-        LizardsAndPumpkins_MagentoConnector_Model_XmlUploader $uploader
+        LizardsAndPumpkins_MagentoConnector_Model_XmlUploader $uploader,
+        LizardsAndPumpkins_MagentoConnector_Model_Export_SourceTableDataProvider $sourceTableDataProvider
     ) {
         $this->product = $product;
         $this->merge = $merge;
         $this->uploader = $uploader;
+        $this->sourceTableDataProvider = $sourceTableDataProvider;
     }
 
     /**
@@ -117,11 +124,16 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploa
                 }
             } elseif ($key == 'is_salable') {
                 $productData['is_salable'] = $this->getIsSalableFromData($product);
-            } elseif ($product->getData($key) && $attribute = $product->getResource()->getAttribute($key)) {
-                if ($attribute->getFrontendInput() == 'multiselect') {
-                    $productData[$key] = array_map('trim', explode(',', $attribute->getFrontend()->getValue($product)));
+            } elseif (($attribute = $product->getResource()->getAttribute($key))
+                && $this->isAttributeSelectOrMultiselect($attribute)
+            ) {
+                if ($attribute->getSourceModel() == 'eav/entity_attribute_source_table') {
+                    $productData[$key] = array_map(
+                        function ($valueId) use ($product, $key) {
+                            return $this->sourceTableDataProvider->getValue($product->getStoreId(), $key, $valueId);
+                        }, explode(',', $product->getData($key)));
                 } else {
-                    $productData[$key] = $attribute->getFrontend()->getValue($product);
+                    $productData[$key] = array_map('trim', explode(',', $attribute->getFrontend()->getValue($product)));
                 }
             } else {
                 $productData[$key] = $product->getDataUsingMethod($key);
@@ -129,6 +141,11 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploa
         }
         $productData['is_salable'] = $anySimpleProductIsAvailable && $productData['is_salable'];
         return $productData;
+    }
+
+    private function isAttributeSelectOrMultiselect(Mage_Catalog_Model_Resource_Eav_Attribute $attribute)
+    {
+        return in_array($attribute->getFrontendInput(), ['multiselect', 'select']);
     }
 
     /**
