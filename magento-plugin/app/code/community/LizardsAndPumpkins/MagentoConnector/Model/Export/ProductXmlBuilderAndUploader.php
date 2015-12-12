@@ -138,6 +138,10 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploa
             } else {
                 $productData[$key] = $product->getDataUsingMethod($key);
             }
+
+            if (isset($productData[$key]) && is_array($productData[$key]) && count($productData[$key]) == 1) {
+                $productData[$key] = reset($productData[$key]);
+            }
         }
         $productData['is_salable'] = $anySimpleProductIsAvailable && $productData['is_salable'];
         return $productData;
