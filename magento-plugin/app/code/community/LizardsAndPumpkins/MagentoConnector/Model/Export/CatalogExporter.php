@@ -5,6 +5,8 @@ use LizardsAndPumpkins\MagentoConnector\XmlBuilder\CatalogMerge;
 
 class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
 {
+    const GARBAGE_COLLECT_ALL_N_PRODUCTS = 10000;
+
     private $numberOfProductsExported = 0;
 
     private $numberOfCategoriesExported = 0;
@@ -103,6 +105,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
             );
 
             $xmlBuilderAndUploader->process();
+            if ($this->numberOfProductsExported % self::GARBAGE_COLLECT_ALL_N_PRODUCTS === 0) {
+                gc_collect_cycles();
+            }
             $this->numberOfProductsExported++;
         }
 
