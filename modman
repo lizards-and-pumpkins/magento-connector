@@ -10,3 +10,4 @@ lib/*                                                                           
 
 magento-plugin/shell/*                                                                          shell/
 pollExportQueue.php                                                                             pollExportQueue.php
+composer.json                                                                                   composer.json
