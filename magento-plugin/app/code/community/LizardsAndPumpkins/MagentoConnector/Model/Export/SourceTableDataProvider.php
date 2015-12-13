@@ -11,6 +11,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_SourceTableDataProvider
      * @var array[]
      */
     private $attributeValues;
+
     /**
      * @var LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig
      */
