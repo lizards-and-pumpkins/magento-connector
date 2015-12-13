@@ -108,9 +108,11 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
     {
         $xmlMerge = new CatalogMerge();
         $uploader = new LizardsAndPumpkins_MagentoConnector_Model_ProductXmlUploader();
+        $resource = Mage::getSingleton('core/resource');
+        $config = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_magentoConfig');
         $sourceTableAttributeData = new LizardsAndPumpkins_MagentoConnector_Model_Export_SourceTableDataProvider(
-            Mage::getSingleton('core/resource'),
-            Mage::getModel('lizardsAndPumpkins_magentoconnector/export_magentoConfig')
+            $resource,
+            $config
         );
         while ($product = $collector->getProduct()) {
             $xmlBuilderAndUploader = new LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader(
