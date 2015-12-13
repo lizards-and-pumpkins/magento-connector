@@ -17,15 +17,18 @@ class LizardsAndPumpkins_MagentoConnector_Test_Model_SourceTableDataProviderTest
 
     public function testValueForAdminAndOtherStoresWhenOnlyAdminStoreValuesAreGiven()
     {
+        $value = "Cap";
+        $store = 0;
+        $store1 = 1;
+        $store2 = 2;
+        $attributeCode = "series";
+        $optionId = 2791;
         $defaultValues = [
             [
-                "attribute_code" => "series",
-                "option_id"      => 2791,
-                "attribute_id"   => 157,
-                "sort_order"     => 0,
-                "value_id"       => 14578,
-                "store_id"       => 0,
-                "value"          => "Cap",
+                "attribute_code" => $attributeCode,
+                "option_id"      => $optionId,
+                "store_id"       => $store,
+                "value"          => $value,
             ],
         ];
 
@@ -33,21 +36,16 @@ class LizardsAndPumpkins_MagentoConnector_Test_Model_SourceTableDataProviderTest
 
         $sourceTableData = $this->setupMagentoDependencies($defaultValues, $storeSpecificValues);
 
-        $store = 0;
-        $store1 = 1;
-        $store2 = 2;
-        $attributeCode = "series";
-        $optionId = 2791;
         $this->assertEquals(
-            'Cap',
+            $value,
             $sourceTableData->getValue($store, $attributeCode, $optionId)
         );
         $this->assertEquals(
-            'Cap',
+            $value,
             $sourceTableData->getValue($store1, $attributeCode, $optionId)
         );
         $this->assertEquals(
-            'Cap',
+            $value,
             $sourceTableData->getValue($store2, $attributeCode, $optionId)
         );
     }
@@ -56,23 +54,21 @@ class LizardsAndPumpkins_MagentoConnector_Test_Model_SourceTableDataProviderTest
     {
         $defaultValues = [];
 
+        $value = "Cap";
+        $optionId = 2791;
+        $attributeCode = "series";
+        $store = 1;
         $storeSpecificValues = [
             [
-                "attribute_code" => "series",
-                "option_id"      => 2791,
-                "attribute_id"   => 157,
-                "sort_order"     => 0,
-                "value_id"       => 14578,
-                "store_id"       => 1,
-                "value"          => "Cap",
+                "attribute_code" => $attributeCode,
+                "option_id"      => $optionId,
+                "store_id"       => $store,
+                "value"          => $value,
             ],
         ];
 
         $sourceTableData = $this->setupMagentoDependencies($defaultValues, $storeSpecificValues);
 
-        $optionId = 2791;
-        $attributeCode = "series";
-        $store = 1;
         $this->assertEquals(
             'Cap',
             $sourceTableData->getValue($store, $attributeCode, $optionId)
@@ -81,47 +77,47 @@ class LizardsAndPumpkins_MagentoConnector_Test_Model_SourceTableDataProviderTest
 
     public function testValuesForAdminAndSpecificStoresWhenBothIsGiven()
     {
+        $attributeCode = "series";
+        $optionId = 2791;
+        $storeId0 = 0;
+        $storeId1 = 1;
+        $storeId2 = 2;
+        $value = "Cap";
+        $valueStore1 = "CapStore1";
+
         $defaultValues = [
             [
-                "attribute_code" => "series",
-                "option_id"      => 2791,
-                "attribute_id"   => 157,
-                "sort_order"     => 0,
-                "value_id"       => 14578,
-                "store_id"       => 0,
-                "value"          => "Cap",
+                "attribute_code" => $attributeCode,
+                "option_id"      => $optionId,
+                "store_id"       => $storeId0,
+                "value"          => $value,
             ],
         ];
 
         $storeSpecificValues = [
             [
-                "attribute_code" => "series",
-                "option_id"      => 2791,
-                "attribute_id"   => 157,
-                "sort_order"     => 0,
-                "value_id"       => 14578,
-                "store_id"       => 1,
-                "value"          => "CapStore1",
+                "attribute_code" => $attributeCode,
+                "option_id"      => $optionId,
+                "store_id"       => $storeId1,
+                "value"          => $valueStore1,
             ],
         ];
 
         $sourceTableData = $this->setupMagentoDependencies($defaultValues, $storeSpecificValues);
 
-        $storeId1 = 1;
-        $attributeCode = "series";
-        $optionId = 2791;
+
         $this->assertEquals(
-            'CapStore1',
+            $valueStore1,
             $sourceTableData->getValue($storeId1, $attributeCode, $optionId)
         );
-        $storeId2 = 2;
+
         $this->assertEquals(
-            'Cap',
+            $value,
             $sourceTableData->getValue($storeId2, $attributeCode, $optionId)
         );
-        $storeId0 = 0;
+
         $this->assertEquals(
-            'Cap',
+            $value,
             $sourceTableData->getValue($storeId0, $attributeCode, $optionId)
         );
     }
