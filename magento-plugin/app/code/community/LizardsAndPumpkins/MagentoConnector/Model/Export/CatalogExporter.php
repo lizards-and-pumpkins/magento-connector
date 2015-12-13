@@ -143,15 +143,6 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
             $this->numberOfProductsExported++;
         }
 
-        $categoryCollector = new LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryCollector();
-
-        while ($category = $categoryCollector->getCategory()) {
-            $transformer = LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryTransformer::createFrom($category);
-            $categoryXml = $transformer->getCategoryXml();
-            $xmlMerge->addCategory($categoryXml);
-            $this->numberOfCategoriesExported++;
-        }
-
         if ($this->numberOfProductsExported + $this->numberOfCategoriesExported === 0) {
             return;
         }
