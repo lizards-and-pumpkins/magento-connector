@@ -219,7 +219,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryCollector
 
     private function createCollectionWithIdFilter()
     {
-            $this->collection = $this->createCollection();
+        $this->collection = $this->createCollection();
         $this->collection->addIdFilter($this->queuedCategoryIds);
     }
 }
