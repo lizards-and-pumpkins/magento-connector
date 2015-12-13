@@ -22,6 +22,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploa
      * @var LizardsAndPumpkins_MagentoConnector_Model_XmlUploader
      */
     private $uploader;
+
     /**
      * @var LizardsAndPumpkins_MagentoConnector_Model_Export_SourceTableDataProvider
      */
@@ -86,7 +87,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploa
                 if (isset($value['images']) && is_array($value['images'])) {
                     foreach ($value['images'] as $image) {
                         $productData['images'][] = [
-                            'main'  => $image['file'] == $product->getImage(),
+                            'main'  => $image['file'] == $product->getData('image'),
                             'label' => $image['label'],
                             'file'  => basename($image['file']),
                         ];
@@ -102,10 +103,10 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploa
                             'type_id'      => $simpleProduct->getTypeId(),
                             'visibility'   => $simpleProduct->getAttributeText('visibility'),
                             'tax_class_id' => $simpleProduct->getAttributeText('tax_class_id'),
-                            'stock_qty'    => $simpleProduct->getStockQty(),
+                            'stock_qty'    => $simpleProduct->getData('stock_qty'),
                         ];
 
-                        foreach ($product->getConfigurableAttributes() as $attribute) {
+                        foreach ($product->getData('configurable_attributes') as $attribute) {
                             $associatedProduct['attributes'][$attribute] = $simpleProduct->getAttributeText($attribute);
                         }
                         $productData['associated_products'][] = $associatedProduct;
@@ -120,7 +121,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploa
             } elseif (($attribute = $product->getResource()->getAttribute($key))
                 && $this->isAttributeSelectOrMultiselect($attribute)
             ) {
-                if ($attribute->getSourceModel() == 'eav/entity_attribute_source_table') {
+                if ($attribute->getData('source_model') == 'eav/entity_attribute_source_table') {
                     $productData[$key] = array_map(
                         function ($valueId) use ($product, $key) {
                             return $this->sourceTableDataProvider->getValue($product->getStoreId(), $key, $valueId);
@@ -146,7 +147,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploa
      */
     private function isAttributeSelectOrMultiselect(Mage_Catalog_Model_Resource_Eav_Attribute $attribute)
     {
-        return in_array($attribute->getFrontendInput(), ['multiselect', 'select']);
+        return in_array($attribute->getData('frontend_input'), ['multiselect', 'select']);
     }
 
     /**
