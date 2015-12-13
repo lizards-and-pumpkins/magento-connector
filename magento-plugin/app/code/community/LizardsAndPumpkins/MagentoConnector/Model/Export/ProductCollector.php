@@ -253,7 +253,9 @@ SQL;
             foreach ($product->getCategoryIds() as $categoryId) {
                 /** @var $category Mage_Catalog_Model_Category */
                 $category = $categoryCollection->getItemById($categoryId);
-                $categories[] = $category->getUrlPath();
+                if ($category->getUrlPath() !== '/') {
+                    $categories[] = $category->getUrlPath();
+                }
             }
             $product->setCategories($categories);
         }
@@ -262,7 +264,7 @@ SQL;
     /**
      * @param Mage_Catalog_Model_Resource_Product_Collection $collection
      */
-    private function addStockInformation($collection)
+    private function addStockInformation(Mage_Catalog_Model_Resource_Product_Collection $collection)
     {
         Mage::getSingleton('cataloginventory/stock')
             ->addItemsToProducts($collection);

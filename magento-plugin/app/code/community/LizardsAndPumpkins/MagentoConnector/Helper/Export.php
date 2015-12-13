@@ -223,7 +223,7 @@ SQL;
      * @param string $queueName
      * @return string
      */
-    private function getQueueIdByName($queueName)
+    public function getQueueIdByName($queueName)
     {
         $query = "SELECT queue_id FROM queue WHERE queue_name = :queueName";
 

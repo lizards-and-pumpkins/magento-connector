@@ -23,20 +23,21 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploa
      */
     private $uploader;
 
-
     /**
-     * @param Mage_Catalog_Model_Product $product
-     * @param CatalogMerge $merge
-     * @param LizardsAndPumpkins_MagentoConnector_Model_XmlUploader $uploader
+     * @var LizardsAndPumpkins_MagentoConnector_Model_Export_SourceTableDataProvider
      */
+    private $sourceTableDataProvider;
+
     public function __construct(
         Mage_Catalog_Model_Product $product,
         CatalogMerge $merge,
-        LizardsAndPumpkins_MagentoConnector_Model_XmlUploader $uploader
+        LizardsAndPumpkins_MagentoConnector_Model_XmlUploader $uploader,
+        LizardsAndPumpkins_MagentoConnector_Model_Export_SourceTableDataProvider $sourceTableDataProvider
     ) {
         $this->product = $product;
         $this->merge = $merge;
         $this->uploader = $uploader;
+        $this->sourceTableDataProvider = $sourceTableDataProvider;
     }
 
     /**
@@ -72,7 +73,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploa
     }
 
     /**
-     * @param $product
+     * @param Mage_Catalog_Model_Product $product
      * @return string[]
      */
     private function transformData(Mage_Catalog_Model_Product $product)
@@ -80,11 +81,13 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploa
         $productData = [];
         $anySimpleProductIsAvailable = false;
         foreach ($product->getData() as $key => $value) {
-            if ($key == 'media_gallery') {
+            if (!$product->getData($key)) {
+                $productData[$key] = $product->getData($key);
+            } elseif ($key == 'media_gallery') {
                 if (isset($value['images']) && is_array($value['images'])) {
                     foreach ($value['images'] as $image) {
                         $productData['images'][] = [
-                            'main'  => $image['file'] == $product->getImage(),
+                            'main'  => $image['file'] == $product->getData('image'),
                             'label' => $image['label'],
                             'file'  => basename($image['file']),
                         ];
@@ -100,10 +103,10 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploa
                             'type_id'      => $simpleProduct->getTypeId(),
                             'visibility'   => $simpleProduct->getAttributeText('visibility'),
                             'tax_class_id' => $simpleProduct->getAttributeText('tax_class_id'),
-                            'stock_qty'    => $simpleProduct->getStockQty(),
+                            'stock_qty'    => $simpleProduct->getData('stock_qty'),
                         ];
 
-                        foreach ($product->getConfigurableAttributes() as $attribute) {
+                        foreach ($product->getData('configurable_attributes') as $attribute) {
                             $associatedProduct['attributes'][$attribute] = $simpleProduct->getAttributeText($attribute);
                         }
                         $productData['associated_products'][] = $associatedProduct;
@@ -115,18 +118,36 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploa
                 }
             } elseif ($key == 'is_salable') {
                 $productData['is_salable'] = $this->getIsSalableFromData($product);
-            } elseif ($product->getData($key) && $attribute = $product->getResource()->getAttribute($key)) {
-                if ($attribute->getFrontendInput() == 'multiselect') {
-                    $productData[$key] = array_map('trim', explode(',', $attribute->getFrontend()->getValue($product)));
+            } elseif (($attribute = $product->getResource()->getAttribute($key))
+                && $this->isAttributeSelectOrMultiselect($attribute)
+            ) {
+                if ($attribute->getData('source_model') == 'eav/entity_attribute_source_table') {
+                    $productData[$key] = array_map(
+                        function ($valueId) use ($product, $key) {
+                            return $this->sourceTableDataProvider->getValue($product->getStoreId(), $key, $valueId);
+                        }, explode(',', $product->getData($key)));
                 } else {
-                    $productData[$key] = $attribute->getFrontend()->getValue($product);
+                    $productData[$key] = array_map('trim', explode(',', $attribute->getFrontend()->getValue($product)));
                 }
             } else {
                 $productData[$key] = $product->getDataUsingMethod($key);
             }
+
+            if (isset($productData[$key]) && is_array($productData[$key]) && count($productData[$key]) == 1) {
+                $productData[$key] = reset($productData[$key]);
+            }
         }
         $productData['is_salable'] = $anySimpleProductIsAvailable && $productData['is_salable'];
         return $productData;
+    }
+
+    /**
+     * @param Mage_Catalog_Model_Resource_Eav_Attribute $attribute
+     * @return bool
+     */
+    private function isAttributeSelectOrMultiselect(Mage_Catalog_Model_Resource_Eav_Attribute $attribute)
+    {
+        return in_array($attribute->getData('frontend_input'), ['multiselect', 'select']);
     }
 
     /**
