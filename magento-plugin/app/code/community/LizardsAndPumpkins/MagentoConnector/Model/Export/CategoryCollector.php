@@ -54,12 +54,19 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryCollector
         }
 
         $this->createCollectionWithIdFilter();
-
+        $this->addStoreToCollection();
         $this->categoryIterator = $this->collection->getIterator();
         if ($this->categoryIterator->current() === null) {
             return $this->getCategory();
         }
         return $this->categoryIterator->current();
+    }
+
+    private function addStoreToCollection()
+    {
+        foreach ($this->collection as $category) {
+            $category->setData('store_id', $this->store->getId());
+        }
     }
 
     /**
@@ -109,6 +116,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryCollector
     {
         /** @var $collection Mage_Catalog_Model_Resource_Category_Collection */
         $collection = Mage::getResourceModel('catalog/category_collection');
+        $collection->setStoreId($store);
         $collection->setStore($store);
         $collection->addAttributeToSelect('*');
         $collection->addAttributeToFilter('is_active', 1);
