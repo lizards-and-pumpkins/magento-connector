@@ -42,7 +42,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_SourceTableDataProvider
         if (isset($this->attributeValues[$store][$attributeCode][$optionId])) {
             return $this->attributeValues[$store][$attributeCode][$optionId];
         }
-        return null;
+        return '';
     }
 
     private function setupDefaultValues()
