@@ -12,19 +12,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
     private $numberOfCategoriesExported = 0;
 
     /**
-     * @var Mage_Core_Model_Session
-     */
-    private $coreSession;
-
-    /**
      * @var LizardsAndPumpkins_MagentoConnector_Helper_Export
      */
     private $memoizedExportHelper;
-
-    public function __construct()
-    {
-        $this->coreSession = Mage::getSingleton('core/session');
-    }
 
     public function exportAllCategories()
     {
