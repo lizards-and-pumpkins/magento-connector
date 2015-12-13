@@ -83,7 +83,8 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
     public function exportCategoriesInQueue()
     {
         $xmlMerge = new CatalogMerge();
-        $categoryCollector = new LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryCollector();
+        $config = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_magentoConfig');
+        $categoryCollector = new LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryCollector($config);
         $uploader = new LizardsAndPumpkins_MagentoConnector_Model_ProductXmlUploader();
         while ($category = $categoryCollector->getCategory()) {
             $transformer = LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryTransformer::createFrom($category);
