@@ -32,11 +32,18 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
         $this->coreSession = Mage::getSingleton('core/session');
     }
 
+    public function exportAllCategories()
+    {
+        $helper = $this->getExportHelper();
+        $helper->addAllCategoryIdsToCategoryQueue();
+
+        $this->exportCategoriesInQueue();
+    }
+
     public function exportAllProducts()
     {
         $helper = $this->getExportHelper();
         $helper->addAllProductIdsToProductUpdateQueue();
-        $helper->addAllCategoryIdsToCategoryQueue();
 
         $this->exportProductsInQueue();
     }
@@ -87,6 +94,27 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
         $apiUrl = Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/api_url');
         $api = new Api($apiUrl);
         $api->triggerProductImport($filename);
+    }
+
+    public function exportCategoriesInQueue()
+    {
+        $xmlMerge = new CatalogMerge();
+        $categoryCollector = new LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryCollector();
+        $uploader = new LizardsAndPumpkins_MagentoConnector_Model_ProductXmlUploader();
+        while ($category = $categoryCollector->getCategory()) {
+            $transformer = LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryTransformer::createFrom($category);
+            $categoryXml = $transformer->getCategoryXml();
+            $xmlMerge->addCategory($categoryXml);
+            $this->numberOfCategoriesExported++;
+        }
+
+        if ($this->numberOfProductsExported + $this->numberOfCategoriesExported === 0) {
+            return;
+        }
+
+        $uploader->writePartialXmlString($xmlMerge->finish());
+        $filename = $uploader->getFilename();
+        $this->triggerCatalogUpdateApi($filename);
     }
 
     /**

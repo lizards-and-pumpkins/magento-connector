@@ -16,10 +16,18 @@ class LizardsAndPumpkins_Export extends Mage_Shell_Abstract
 
     public function run()
     {
+        /** @var LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter $exporter */
+        $exporter = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_catalogExporter');
         if ($this->getArg('all-products')) {
-            /** @var LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter $exporter */
-            $exporter = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_catalogExporter');
             $exporter->exportAllProducts();
+        } elseif ($this->getArg('queued-products')) {
+            $exporter->exportProductsInQueue();
+        } elseif ($this->getArg('queued-categories')) {
+            $exporter->exportCategoriesInQueue();
+        } elseif ($this->getArg('all-categories')) {
+            $exporter->exportAllCategories();
+        } elseif ($this->getArg('stats')) {
+            $this->outputStatistics();
         } else {
             echo $this->usageHelp();
         }
@@ -33,15 +41,22 @@ class LizardsAndPumpkins_Export extends Mage_Shell_Abstract
         $filename = basename(__FILE__);
 
         return <<<USAGE
-Usage:  php -f $filename -- [options]
+Usage:  php $filename -- [options]
 
   --all-products                Export all products
-  --stock                       Export stock updates
-  --products                    Export product updates
-  --cms                         Export CMS pages
+  --queued-products             Export queued products
+  --all-categories              Export all categories
+  --queued-categories           Export queued categories
+  --stats                       Show stats about queues
   help                          This help
-
 USAGE;
+    }
+
+    private function outputStatistics()
+    {
+        $stats = new LizardsAndPumpkins_MagentoConnector_Model_Statistics(Mage::getSingleton('core/resource'));
+        echo sprintf('%s queued products.' . "\n", $stats->getQueuedProductCount());
+        echo sprintf('%s queued categories.' . "\n", $stats->getQueuedCategoriesCount());
     }
 }
 
