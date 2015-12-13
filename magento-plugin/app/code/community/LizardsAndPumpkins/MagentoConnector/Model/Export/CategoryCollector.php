@@ -167,6 +167,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryCollector
         $collection->setStoreId($this->store);
         $collection->setStore($this->store);
         $collection->addAttributeToSelect('*');
+        $collection->addFieldToFilter('path', ['like' => "1/{$this->store->getRootCategoryId()}/%"]);
         $collection->addAttributeToFilter('is_active', 1);
         $collection->addAttributeToFilter('level', ['gt' => 1]);
         return $collection;
