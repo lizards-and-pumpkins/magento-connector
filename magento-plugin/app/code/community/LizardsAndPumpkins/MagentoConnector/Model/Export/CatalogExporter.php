@@ -17,18 +17,12 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
     private $coreSession;
 
     /**
-     * @var LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector
-     */
-    private $productCollector;
-
-    /**
      * @var LizardsAndPumpkins_MagentoConnector_Helper_Export
      */
     private $memoizedExportHelper;
 
     public function __construct()
     {
-        $this->productCollector = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_productCollector');
         $this->coreSession = Mage::getSingleton('core/session');
     }
 
