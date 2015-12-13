@@ -253,7 +253,7 @@ SQL;
             foreach ($product->getCategoryIds() as $categoryId) {
                 /** @var $category Mage_Catalog_Model_Category */
                 $category = $categoryCollection->getItemById($categoryId);
-                if ($category->getUrlPath() != '/') {
+                if ($category->getUrlPath() !== '/') {
                     $categories[] = $category->getUrlPath();
                 }
             }
