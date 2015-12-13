@@ -15,7 +15,7 @@ class LizardsAndPumpkins_MagentoConnector_Test_Model_SourceTableDataProviderTest
         $this->assertEquals('', $sourceTableData->getValue($storeId, $attributeCode, $optionId));
     }
 
-    public function testOnlyDefaultValues()
+    public function testValueForAdminAndOtherStoresWhenOnlyAdminStoreValuesAreGiven()
     {
         $defaultValues = [
             [
@@ -34,15 +34,25 @@ class LizardsAndPumpkins_MagentoConnector_Test_Model_SourceTableDataProviderTest
         $sourceTableData = $this->setupMagentoDependencies($defaultValues, $storeSpecificValues);
 
         $store = 0;
+        $store1 = 1;
+        $store2 = 2;
         $attributeCode = "series";
         $optionId = 2791;
         $this->assertEquals(
             'Cap',
             $sourceTableData->getValue($store, $attributeCode, $optionId)
         );
+        $this->assertEquals(
+            'Cap',
+            $sourceTableData->getValue($store1, $attributeCode, $optionId)
+        );
+        $this->assertEquals(
+            'Cap',
+            $sourceTableData->getValue($store2, $attributeCode, $optionId)
+        );
     }
 
-    public function testStoreSpecificValues()
+    public function testValueWhenOnlyStoreSpecificStoreValuesAreGiven()
     {
         $defaultValues = [];
 
@@ -69,7 +79,7 @@ class LizardsAndPumpkins_MagentoConnector_Test_Model_SourceTableDataProviderTest
         );
     }
 
-    public function testMixedValues()
+    public function testValuesForAdminAndSpecificStoresWhenBothIsGiven()
     {
         $defaultValues = [
             [
