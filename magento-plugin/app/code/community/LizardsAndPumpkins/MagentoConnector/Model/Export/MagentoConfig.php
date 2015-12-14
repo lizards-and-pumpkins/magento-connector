@@ -34,4 +34,12 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig
     {
         return Mage::app()->getStores();
     }
+
+    /**
+     * @return string
+     */
+    public function getCategoryUrlSuffix()
+    {
+        return Mage::getStoreConfig(Mage_Catalog_Helper_Category::XML_PATH_CATEGORY_URL_SUFFIX);
+    }
 }

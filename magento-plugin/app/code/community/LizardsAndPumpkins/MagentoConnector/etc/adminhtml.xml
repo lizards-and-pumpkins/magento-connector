@@ -9,25 +9,30 @@
                             <title>Lizards &amp; Pumpkins</title>
                             <sort_order>1</sort_order>
                             <children>
+                                <export_all_categories translate="title">
+                                    <title>Export All Categories</title>
+                                    <action>adminhtml/lizardsAndPumpkins/exportAllCategories</action>
+                                    <sort_order>1200</sort_order>
+                                </export_all_categories>
                                 <export_all_products translate="title">
                                     <title>Export All Products</title>
                                     <action>adminhtml/lizardsAndPumpkins/exportAllProducts</action>
-                                    <sort_order>0</sort_order>
+                                    <sort_order>1000</sort_order>
                                 </export_all_products>
                                 <export_product_updates translate="title">
                                     <title>Export Product Updates</title>
                                     <action>adminhtml/lizardsAndPumpkins/exportQueuedProductUpdates</action>
-                                    <sort_order>0</sort_order>
+                                    <sort_order>800</sort_order>
                                 </export_product_updates>
                                 <export_all_product_stocks translate="title">
                                     <title>Export All Product Stock Updates</title>
                                     <action>adminhtml/lizardsAndPumpkins/exportAllStocks</action>
-                                    <sort_order>0</sort_order>
+                                    <sort_order>600</sort_order>
                                 </export_all_product_stocks>
                                 <export_all_cms_blocks translate="title">
                                     <title>Export All CMS Blocks</title>
                                     <action>adminhtml/lizardsAndPumpkins/exportAllCmsBlocks</action>
-                                    <sort_order>0</sort_order>
+                                    <sort_order>400</sort_order>
                                 </export_all_cms_blocks>
                             </children>
                         </lizardsAndPumpkins>
@@ -48,6 +53,10 @@
                                         <title>Lizards &amp; Pumpkins</title>
                                         <sort_order>1</sort_order>
                                         <children>
+                                            <export_all_categories translate="title">
+                                                <title>Export All Categories</title>
+                                                <sort_order>1200</sort_order>
+                                            </export_all_categories>
                                             <lizardsAndPumpkins_export_all translate="title">
                                                 <title>LizardsAndPumpkins Export All</title>
                                                 <sort_order>0</sort_order>

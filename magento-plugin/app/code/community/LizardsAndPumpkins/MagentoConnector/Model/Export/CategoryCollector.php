@@ -38,6 +38,21 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryCollector
     private $messageIterator;
 
     /**
+     * @var LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig
+     */
+    private $config;
+
+    /**
+     * array[]
+     */
+    private $rootCategories;
+
+    public function __construct(LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig $config)
+    {
+        $this->config = $config;
+    }
+
+    /**
      * @return Mage_Catalog_Model_Category
      */
     public function getCategory()
@@ -54,12 +69,53 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryCollector
         }
 
         $this->createCollectionWithIdFilter();
-
+        $this->addAdditionalData();
         $this->categoryIterator = $this->collection->getIterator();
         if ($this->categoryIterator->current() === null) {
             return $this->getCategory();
         }
         return $this->categoryIterator->current();
+    }
+
+    private function addAdditionalData()
+    {
+        $this->addStoreToCollection();
+        $this->addUrlPath();
+    }
+
+    private function addUrlPath()
+    {
+        /** @var $category Mage_Catalog_Model_Category */
+        foreach ($this->collection as $category) {
+            try {
+                $ancestorIds = explode('/', $category->getData('path'));
+                unset($ancestorIds[0], $ancestorIds[1]);
+                $categoryIdsReplacedWithUrlKeys = array_map(function ($categoryId) {
+                    $category = $this->collection->getItemById($categoryId);
+                    if (!$category) {
+                        throw new RuntimeException('Category or parent is disabled. Removing from collection.', 404);
+                    }
+                    return $category->getData('url_key');
+                }, $ancestorIds);
+
+                $urlPath = array_filter($categoryIdsReplacedWithUrlKeys);
+                $category->setData('url_path', implode('/', $urlPath) . '.' . $this->config->getCategoryUrlSuffix());
+            } catch (RuntimeException $e) {
+                if ($e->getCode() === 404) {
+                    unset($category);
+                    continue;
+                }
+                throw $e;
+            }
+        }
+    }
+
+    private function addStoreToCollection()
+    {
+        /** @var $category Mage_Catalog_Model_Category */
+        foreach ($this->collection as $category) {
+            $category->setData('store_id', $this->store->getId());
+        }
     }
 
     /**
@@ -102,16 +158,18 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryCollector
     }
 
     /**
-     * @param Mage_Core_Model_Store $store
      * @return Mage_Catalog_Model_Resource_Category_Collection
      */
-    private function createCollection(Mage_Core_Model_Store $store)
+    private function createCollection()
     {
         /** @var $collection Mage_Catalog_Model_Resource_Category_Collection */
         $collection = Mage::getResourceModel('catalog/category_collection');
-        $collection->setStore($store);
+        $collection->setStoreId($this->store);
+        $collection->setStore($this->store);
         $collection->addAttributeToSelect('*');
+        $collection->addFieldToFilter('path', ['like' => "1/{$this->store->getRootCategoryId()}/%"]);
         $collection->addAttributeToFilter('is_active', 1);
+        $collection->addAttributeToFilter('level', ['gt' => 1]);
         return $collection;
     }
 
@@ -161,7 +219,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryCollector
 
     private function createCollectionWithIdFilter()
     {
-        $this->collection = $this->createCollection($this->store);
+        $this->collection = $this->createCollection();
         $this->collection->addIdFilter($this->queuedCategoryIds);
     }
 }
