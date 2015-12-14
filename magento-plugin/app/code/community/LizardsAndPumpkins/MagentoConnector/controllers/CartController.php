@@ -35,7 +35,10 @@ class LizardsAndPumpkins_MagentoConnector_CartController extends Mage_Core_Contr
             $this->_getSession()->addError($message);
         }
 
-
+        if (!isset($product)) {
+            $this->_redirect('/');
+            return;
+        }
         $this->redirect($product);
     }
 
