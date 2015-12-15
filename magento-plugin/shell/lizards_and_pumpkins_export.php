@@ -33,6 +33,8 @@ class LizardsAndPumpkins_Export extends Mage_Shell_Abstract
         } elseif ($this->getArg('all-categories')) {
             $filename = $exporter->exportAllCategories();
             $this->triggerCatalogUpdateApi($filename);
+        } elseif ($this->getArg('blocks')) {
+            Mage::getModel('lizardsAndPumpkins_magentoconnector/export_content')->export();
         } elseif ($this->getArg('stats')) {
             $this->outputStatistics();
         } else {

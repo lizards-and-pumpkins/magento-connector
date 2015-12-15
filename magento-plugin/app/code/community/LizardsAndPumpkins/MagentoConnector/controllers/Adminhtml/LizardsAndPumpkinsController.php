@@ -75,7 +75,7 @@ class LizardsAndPumpkins_MagentoConnector_Adminhtml_LizardsAndPumpkinsController
     public function exportAllCmsBlocksAction()
     {
         try {
-            $exporter = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_cms_block');
+            $exporter = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_content');
             $exporter->export();
             // todo 1: decouple CMS and non-CMS block exports
             // todo 2: decouple triggering the API request from the export
