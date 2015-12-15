@@ -25,8 +25,8 @@ class LizardsAndPumpkins_Export extends Mage_Shell_Abstract
             $this->getCatalogExport()->exportCategoriesInQueue();
         } elseif ($this->getArg('all-categories')) {
             $this->getCatalogExport()->exportAllCategories();
-        } elseif ($this->getArg('cms-blocks')) {
-            Mage::getModel('lizardsAndPumpkins_magentoconnector/export_cms_block')->export();
+        } elseif ($this->getArg('blocks')) {
+            Mage::getModel('lizardsAndPumpkins_magentoconnector/export_content')->export();
         } elseif ($this->getArg('stats')) {
             $this->outputStatistics();
         } else {

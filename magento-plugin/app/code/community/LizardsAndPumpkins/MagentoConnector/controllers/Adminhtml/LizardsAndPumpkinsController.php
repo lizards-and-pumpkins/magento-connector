@@ -68,7 +68,7 @@ class LizardsAndPumpkins_MagentoConnector_Adminhtml_LizardsAndPumpkinsController
     public function exportAllCmsBlocksAction()
     {
         try {
-            $exporter = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_cms_block');
+            $exporter = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_content');
             $exporter->export();
             Mage::getSingleton('core/session')->addSuccess('All cms blocks exported');
         } catch (Mage_Core_Exception $e) {
