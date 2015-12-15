@@ -1,6 +1,5 @@
 <?php
 
-use LizardsAndPumpkins\MagentoConnector\Api\Api;
 use LizardsAndPumpkins\MagentoConnector\XmlBuilder\StockBuilder;
 
 class LizardsAndPumpkins_MagentoConnector_Model_Export_Stock
@@ -35,8 +34,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Stock
         }
 
         $this->uploadXml($stockBuilder->getXml());
-        $this->triggerStockUpdateApi();
+        $filename = $this->getStockUploader()->getFileName();
         $helper->deleteStockMessages($this->messagesToDelete);
+        return $filename;
     }
 
     /**
@@ -93,12 +93,5 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Stock
     private function getStockUploader()
     {
         return $this->stockUploader;
-    }
-
-    private function triggerStockUpdateApi()
-    {
-        $apiUrl = Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/api_url');
-        $api = new Api($apiUrl);
-        $api->triggerProductStockImport($this->getStockUploader()->getFileName());
     }
 }
