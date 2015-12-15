@@ -1,6 +1,5 @@
 <?php
 
-use LizardsAndPumpkins\MagentoConnector\Api\Api;
 use LizardsAndPumpkins\MagentoConnector\XmlBuilder\CatalogMerge;
 
 class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
@@ -16,25 +15,33 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
      */
     private $memoizedExportHelper;
 
+    /**
+     * @return string
+     */
     public function exportAllCategories()
     {
         $helper = $this->getExportHelper();
         $helper->addAllCategoryIdsToCategoryQueue();
 
-        $this->exportCategoriesInQueue();
+        $filename = $this->exportCategoriesInQueue();
+        return $filename;
     }
 
+    /**
+     * @return string
+     */
     public function exportAllProducts()
     {
         $helper = $this->getExportHelper();
         $helper->addAllProductIdsToProductUpdateQueue();
 
-        $this->exportProductsInQueue();
+        $filename = $this->exportProductsInQueue();
+        return $filename;
     }
 
     /**
      * @param Mage_Core_Model_Store $store
-     * @return int
+     * @return string
      */
     public function exportOneStore(Mage_Core_Model_Store $store)
     {
@@ -45,7 +52,8 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
 
         $collector->setStoresToExport([$store]);
 
-        $this->export($collector);
+        $filename = $this->export($collector);
+        return $filename;
     }
 
     /**
@@ -61,25 +69,23 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
 
         $collector->setStoresToExport($website->getStores());
 
-        $this->export($collector);
-    }
-
-    public function exportProductsInQueue()
-    {
-        $collector = $this->createProductCollector();
-        $this->export($collector);
+        $filename = $this->export($collector);
+        return $filename;
     }
 
     /**
-     * @param string $filename
+     * @return string
      */
-    private function triggerCatalogUpdateApi($filename)
+    public function exportProductsInQueue()
     {
-        $apiUrl = Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/api_url');
-        $api = new Api($apiUrl);
-        $api->triggerProductImport($filename);
+        $collector = $this->createProductCollector();
+        $filename = $this->export($collector);
+        return $filename;
     }
 
+    /**
+     * @return string
+     */
     public function exportCategoriesInQueue()
     {
         $xmlMerge = new CatalogMerge();
@@ -94,16 +100,17 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
         }
 
         if ($this->numberOfProductsExported + $this->numberOfCategoriesExported === 0) {
-            return;
+            return $uploader->getFilename();
         }
 
         $uploader->writePartialXmlString($xmlMerge->finish());
         $filename = $uploader->getFilename();
-        $this->triggerCatalogUpdateApi($filename);
+        return $filename;
     }
 
     /**
      * @param LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector $collector
+     * @return string
      */
     private function export(LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector $collector)
     {
@@ -131,12 +138,11 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
         }
 
         if ($this->numberOfProductsExported + $this->numberOfCategoriesExported === 0) {
-            return;
+            return $uploader->getFilename();
         }
 
         $uploader->writePartialXmlString($xmlMerge->finish());
-        $filename = $uploader->getFilename();
-        $this->triggerCatalogUpdateApi($filename);
+        return $uploader->getFilename();
     }
 
     /**
