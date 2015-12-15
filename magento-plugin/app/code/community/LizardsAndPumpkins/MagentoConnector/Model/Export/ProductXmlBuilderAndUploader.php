@@ -1,8 +1,5 @@
 <?php
 
-require_once 'LizardsAndPumpkins/src/XmlBuilder/ProductBuilder.php';
-require_once 'LizardsAndPumpkins/src/XmlBuilder/CatalogMerge.php';
-
 use LizardsAndPumpkins\MagentoConnector\XmlBuilder\CatalogMerge;
 use LizardsAndPumpkins\MagentoConnector\XmlBuilder\ProductBuilder;
 
