@@ -17,15 +17,16 @@ class LizardsAndPumpkins_Export extends Mage_Shell_Abstract
     public function run()
     {
         /** @var LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter $exporter */
-        $exporter = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_catalogExporter');
         if ($this->getArg('all-products')) {
-            $exporter->exportAllProducts();
+            $this->getCatalogExport()->exportAllProducts();
         } elseif ($this->getArg('queued-products')) {
-            $exporter->exportProductsInQueue();
+            $this->getCatalogExport()->exportProductsInQueue();
         } elseif ($this->getArg('queued-categories')) {
-            $exporter->exportCategoriesInQueue();
+            $this->getCatalogExport()->exportCategoriesInQueue();
         } elseif ($this->getArg('all-categories')) {
-            $exporter->exportAllCategories();
+            $this->getCatalogExport()->exportAllCategories();
+        } elseif ($this->getArg('cms-blocks')) {
+            Mage::getModel('lizardsAndPumpkins_magentoconnector/export_cms_block')->export();
         } elseif ($this->getArg('stats')) {
             $this->outputStatistics();
         } else {
@@ -57,6 +58,14 @@ USAGE;
         $stats = new LizardsAndPumpkins_MagentoConnector_Model_Statistics(Mage::getSingleton('core/resource'));
         echo sprintf('%s queued products.' . "\n", $stats->getQueuedProductCount());
         echo sprintf('%s queued categories.' . "\n", $stats->getQueuedCategoriesCount());
+    }
+
+    /**
+     * @return LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
+     */
+    private function getCatalogExport()
+    {
+        return Mage::getModel('lizardsAndPumpkins_magentoconnector/export_catalogExporter');
     }
 }
 
