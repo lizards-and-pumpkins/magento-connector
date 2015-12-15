@@ -2,7 +2,7 @@
 
 use LizardsAndPumpkins\MagentoConnector\Api\Api;
 
-class LizardsAndPumpkins_MagentoConnector_Model_Export_Cms_Block
+class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
 {
 
     const XML_SPECIAL_BLOCKS = 'lizardsAndPumpkins/magentoconnector/cms_special_blocks';
@@ -17,7 +17,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Cms_Block
         $cmsBlocks = $this->getAllCmsBlocksWithStoreId();
         $this->api = $this->getApi();
         $this->exportCmsBlocks($cmsBlocks);
-        $this->exportSpecialBlocks();
+        $this->exportRealBlocks();
     }
 
     /**
@@ -61,7 +61,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Cms_Block
         }
     }
 
-    private function exportSpecialBlocks()
+    private function exportRealBlocks()
     {
         /** @var $appEmulation Mage_Core_Model_App_Emulation */
         $specialBlocks = Mage::getStoreConfig(self::XML_SPECIAL_BLOCKS);
