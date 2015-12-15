@@ -1,7 +1,2 @@
-lib/LizardsAndPumpkins/doc/product.xml
-lib/schema/catalog.xsd
-lib/guzzlehttp
-lib/composer
-lib/psr
-lib/autoload.php
+vendor/
 composer.lock
