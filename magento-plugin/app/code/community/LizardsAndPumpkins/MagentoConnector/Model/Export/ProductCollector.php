@@ -295,7 +295,10 @@ SQL;
                 }
                 /* @var $product Mage_Catalog_Model_Product */
                 $product->setConfigurableAttributes($productAttributeCodes);
-                $product->setSimpleProducts($associatedProducts[$product->getId()]);
+                $product->setSimpleProducts(
+                    isset($associatedProducts[$product->getId()])
+                        ? $associatedProducts[$product->getId()] : []
+                );
             }
         }
     }
