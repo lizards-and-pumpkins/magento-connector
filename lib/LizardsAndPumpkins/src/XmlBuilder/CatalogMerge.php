@@ -2,8 +2,6 @@
 
 namespace LizardsAndPumpkins\MagentoConnector\XmlBuilder;
 
-require_once('XmlString.php');
-
 class CatalogMerge
 {
     /**

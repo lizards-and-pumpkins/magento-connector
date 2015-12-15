@@ -1,9 +1,6 @@
 <?php
 namespace LizardsAndPumpkins\MagentoConnector\XmlBuilder;
 
-require_once('XmlString.php');
-require_once('InvalidImageDefinitionException.php');
-
 class ProductBuilder
 {
     const IGNORED_PRODUCT_ATTRIBUTES = [
