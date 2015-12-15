@@ -28,7 +28,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
             if ($product->isRecurring() && $profile = $product->getData('recurring_profile')) {
                 $product->setData('recurring_profile', unserialize($profile));
             }
-            $product->setData('store', $this->getStoreId());
+            $product->setData('store_id', $this->getStoreId());
         }, $this->getItems());
 
         return $this;
