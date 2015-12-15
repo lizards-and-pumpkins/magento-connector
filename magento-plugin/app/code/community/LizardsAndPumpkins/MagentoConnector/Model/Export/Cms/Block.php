@@ -17,6 +17,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Cms_Block
         $cmsBlocks = $this->getAllCmsBlocksWithStoreId();
         $this->api = $this->getApi();
         $this->exportCmsBlocks($cmsBlocks);
+        $this->exportSpecialBlocks();
     }
 
     /**
@@ -28,7 +29,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Cms_Block
             ->join(['block_store' => 'cms/block_store'], 'main_table.block_id=block_store.block_id', 'store_id')
             ->addExpressionFieldToSelect(
                 'block_id',
-                "CONCAT({{block_id}}, {{store_id}})",
+                "CONCAT({{block_id}},'_', {{store_id}})",
                 [
                     'block_id' => 'main_table.block_id',
                     'store_id' => 'store_id',
@@ -58,7 +59,6 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Cms_Block
             ];
             $this->api->triggerCmsBlockUpdate($block->getIdentifier(), $block->getContent(), $context);
         }
-        $this->exportSpecialBlocks();
     }
 
     private function exportSpecialBlocks()
