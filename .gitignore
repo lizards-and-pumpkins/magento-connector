@@ -1,5 +1,3 @@
 /vendor/
+/tests/Integration/Suites/expected/
 /composer.lock
-/lib/*
-!/lib/LizardsAndPumpkins/
-/tests/Integration/Suites/expected
