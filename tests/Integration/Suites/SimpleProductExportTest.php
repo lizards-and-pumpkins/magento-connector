@@ -44,7 +44,7 @@ class SimpleProductExportTest extends AbstractInitializableProductExportTest
     /**
      * @return string
      */
-    protected function getProductIdsFixtureFileName()
+    final protected function getProductIdsFixtureFileName()
     {
         return self::$simpleProductIdFile;
     }

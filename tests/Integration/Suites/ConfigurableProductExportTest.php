@@ -45,7 +45,7 @@ class ConfigurableProductExportTest extends AbstractInitializableProductExportTe
     /**
      * @return string
      */
-    protected function getProductIdsFixtureFileName()
+    final protected function getProductIdsFixtureFileName()
     {
         return self::$configurableProductIdFile;
     }

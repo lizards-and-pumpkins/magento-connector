@@ -44,7 +44,7 @@ class TwoProductsExportTest extends AbstractInitializableProductExportTest
     /**
      * @return string
      */
-    protected function getProductIdsFixtureFileName()
+    final protected function getProductIdsFixtureFileName()
     {
         return self::$productIdsFile;
     }
