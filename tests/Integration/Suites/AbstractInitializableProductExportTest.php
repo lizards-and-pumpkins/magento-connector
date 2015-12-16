@@ -12,6 +12,18 @@ abstract class AbstractInitializableProductExportTest
     }
 
     /**
+     * @return int[]
+     */
+    final protected function getVisibleInCatalogValues()
+    {
+        return [
+            \Mage_Catalog_Model_Product_Visibility::VISIBILITY_BOTH,
+            \Mage_Catalog_Model_Product_Visibility::VISIBILITY_IN_CATALOG,
+            \Mage_Catalog_Model_Product_Visibility::VISIBILITY_IN_SEARCH,
+        ];
+    }
+
+    /**
      * @return string
      */
     protected abstract function getProductIdsFixtureFileName();
@@ -96,5 +108,14 @@ abstract class AbstractInitializableProductExportTest
         if (!file_exists($this->getExpectationFileName())) {
             $this->markTestSkipped('Run tests/integration/util/initExpectedXml.php first');
         }
+    }
+
+    /**
+     * @after
+     */
+    public function resetFactory()
+    {
+        $helper = Mage::helper('lizardsAndPumpkins_magentoconnector/factory');
+        $helper->reset();
     }
 }

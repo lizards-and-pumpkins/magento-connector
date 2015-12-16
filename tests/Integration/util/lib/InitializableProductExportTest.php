@@ -1,6 +1,6 @@
 <?php
 
-interface InitializableProductExportTest
+interface InitializableProductExportTest extends \PHPUnit_Framework_Test
 {
     /**
      * @return void
@@ -16,4 +16,9 @@ interface InitializableProductExportTest
      * @return string[]|int[]
      */
     public function getProductIdsForInitialization();
+
+    /**
+     * @return void
+     */
+    public function resetFactory();
 }

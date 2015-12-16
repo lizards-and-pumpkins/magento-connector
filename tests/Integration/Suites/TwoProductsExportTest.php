@@ -2,10 +2,10 @@
 
 require_once __DIR__ . '/AbstractInitializableProductExportTest.php';
 
-class ConfigurableProductExportTest extends AbstractInitializableProductExportTest
+class TwoProductsExportTest extends AbstractInitializableProductExportTest
 {
-    private static $expectedXmlFile = __DIR__ . '/expected/configurable-product.xml';
-    private static $configurableProductIdFile = __DIR__ . '/expected/configurable-product-id.php';
+    private static $expectedXmlFile = __DIR__ . '/expected/two-products.xml';
+    private static $productIdsFile = __DIR__ . '/expected/two-product-ids.php';
 
     /**
      * @var string
@@ -26,20 +26,18 @@ class ConfigurableProductExportTest extends AbstractInitializableProductExportTe
             /** @var Mage_Catalog_Model_Resource_Product_Collection $configurableProductCollection */
             $configurableProductCollection = Mage::getResourceModel('catalog/product_collection');
             $configurableProductCollection
-                ->addAttributeToFilter('type_id', \Mage_Catalog_Model_Product_Type::TYPE_CONFIGURABLE)
                 ->addAttributeToFilter('is_saleable', 1)
                 ->setVisibility($this->getVisibleInCatalogValues());
 
             $select = $configurableProductCollection->getSelect();
             $select->reset(Zend_Db_Select::COLUMNS);
             $select->columns(['entity_id']);
-            $select->limit(1);
+            $select->limit(2);
             $this->productIdForInitialization = Mage::getSingleton('core/resource')
                 ->getConnection('default_read')
-                ->fetchOne($select);
+                ->fetchCol($select);
         }
         return $this->productIdForInitialization;
-
     }
 
     /**
@@ -47,7 +45,7 @@ class ConfigurableProductExportTest extends AbstractInitializableProductExportTe
      */
     final protected function getProductIdsFixtureFileName()
     {
-        return self::$configurableProductIdFile;
+        return self::$productIdsFile;
     }
 
     /**
@@ -68,7 +66,7 @@ class ConfigurableProductExportTest extends AbstractInitializableProductExportTe
 
     protected function setUp()
     {
-        $this->testExportFile = sys_get_temp_dir() . '/lizards-and-pumpkins/magento-connector/configurable-product-test.xml';
+        $this->testExportFile = sys_get_temp_dir() . '/lizards-and-pumpkins/magento-connector/two-products-test.xml';
         $this->prepareTestExportDirectory(dirname($this->testExportFile));
     }
 

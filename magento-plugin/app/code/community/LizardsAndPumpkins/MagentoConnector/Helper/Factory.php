@@ -19,6 +19,13 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Factory
      */
     private $sourceTableDataProvider;
 
+    public function reset()
+    {
+        $this->catalogMerge = null;
+        $this->productXmlUploader = null;
+        $this->sourceTableDataProvider = null;
+    }
+
     /**
      * @return CatalogMerge
      */
