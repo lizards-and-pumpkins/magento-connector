@@ -54,7 +54,7 @@ class ConfigurableProductExportTest extends \PHPUnit_Framework_TestCase
      * @param int[] $productIds
      * @return LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector
      */
-    private function createProductCollectorForId(array $productIds)
+    private function createProductCollectorForIds(array $productIds)
     {
         return new LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector(
             $this->createProductQueueReaderForTestProduct($productIds)
@@ -71,6 +71,9 @@ class ConfigurableProductExportTest extends \PHPUnit_Framework_TestCase
         $this->saveProductIdToTest($productIds[0]);
     }
 
+    /**
+     * @param int $configurableProductId
+     */
     private function saveProductIdToTest($configurableProductId)
     {
         file_put_contents(
@@ -88,7 +91,7 @@ class ConfigurableProductExportTest extends \PHPUnit_Framework_TestCase
         $this->setTargetExportFile($exportFile);
         /** @var LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter $exporter */
         $exporter = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_catalogExporter');
-        $exporter->exportProducts($this->createProductCollectorForId($productIds));
+        $exporter->exportProducts($this->createProductCollectorForIds($productIds));
     }
 
     protected function setUp()
