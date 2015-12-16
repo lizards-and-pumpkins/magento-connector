@@ -25,7 +25,7 @@
         timeoutForLargeTests="60"
         verbose="false">
     <testsuite name="Magento-Connector Integration Tests">
-        <directory>suite</directory>
+        <directory>Suites</directory>
     </testsuite>
     <php>
         <ini name="display_errors" value="On"/>

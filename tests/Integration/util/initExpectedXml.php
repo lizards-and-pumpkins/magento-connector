@@ -2,7 +2,7 @@
 <?php
 
 require __DIR__ . '/../bootstrap.php';
-require_once __DIR__ . '/../suite/ConfigurableProductExportTest.php';
+require_once __DIR__ . '/../Suites/ConfigurableProductExportTest.php';
 
 // todo: move getting the product ids to export into test method
 /** @var Mage_Catalog_Model_Resource_Product_Collection $configurableProductCollection */
