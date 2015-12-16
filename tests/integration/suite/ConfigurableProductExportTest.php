@@ -68,6 +68,15 @@ class ConfigurableProductExportTest extends \PHPUnit_Framework_TestCase
     public function initTestExpectations($exportFile, array $productIds)
     {
         $this->exportToFile($exportFile, $productIds);
+        $this->saveProductIdToTest($productIds[0]);
+    }
+
+    private function saveProductIdToTest($configurableProductId)
+    {
+        file_put_contents(
+            self::CONFIGURABLE_PRODUCT_ID_FILE,
+            '<?php return ' . var_export($configurableProductId, true) . ';'
+        );
     }
 
     /**

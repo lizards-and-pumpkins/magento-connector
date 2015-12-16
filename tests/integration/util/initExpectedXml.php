@@ -4,15 +4,7 @@
 require __DIR__ . '/../bootstrap.php';
 require_once __DIR__ . '/../suite/ConfigurableProductExportTest.php';
 
-if (! isset($argv[1])) {
-    $argv[1] = ConfigurableProductExportTest::EXPECTED_XML_FILE;
-}
-
-$isAbsolutePathToFile = substr($argv[1], 0, 1) === '/';
-$exportFile = $isAbsolutePathToFile ?
-    $argv[1] :
-    sprintf('%s/%s', getcwd(), $argv[1]);
-
+// todo: move getting the product ids to export into test method
 /** @var Mage_Catalog_Model_Resource_Product_Collection $configurableProductCollection */
 $configurableProductCollection = Mage::getResourceModel('catalog/product_collection');
 $configurableProductCollection
@@ -25,14 +17,15 @@ $select->reset(Zend_Db_Select::COLUMNS);
 $select->columns(['entity_id']);
 $configurableProductId = Mage::getSingleton('core/resource')->getConnection('default_read')->fetchOne($select);
 
-printf("Exporting the configurable product %d to the test fixture file %s\n", $configurableProductId, $argv[1]);
+// todo: move getting the filename to export to into test method
+$file = ConfigurableProductExportTest::EXPECTED_XML_FILE;
+
+$isAbsolutePathToFile = substr($file, 0, 1) === '/';
+$exportFile = $isAbsolutePathToFile ?
+    $file :
+    sprintf('%s/%s', getcwd(), $file);
+
+printf("Exporting the configurable product %d to the test fixture file %s\n", $configurableProductId, $file);
 
 (new ConfigurableProductExportTest())->initTestExpectations($exportFile, [$configurableProductId]);
-
-if (ConfigurableProductExportTest::EXPECTED_XML_FILE === $argv[1]) {
-    file_put_contents(
-        ConfigurableProductExportTest::CONFIGURABLE_PRODUCT_ID_FILE,
-        '<?php return ' . var_export($configurableProductId, true) . ';'
-    );
-}
 
