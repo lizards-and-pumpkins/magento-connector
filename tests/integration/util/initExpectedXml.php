@@ -27,8 +27,7 @@ $configurableProductId = Mage::getSingleton('core/resource')->getConnection('def
 
 printf("Exporting the configurable product %d to the test fixture file %s\n", $configurableProductId, $argv[1]);
 
-$test = new ConfigurableProductExportTest();
-$test->exportToFile($exportFile, [$configurableProductId]);
+(new ConfigurableProductExportTest())->initTestExpectations($exportFile, [$configurableProductId]);
 
 if (ConfigurableProductExportTest::EXPECTED_XML_FILE === $argv[1]) {
     file_put_contents(

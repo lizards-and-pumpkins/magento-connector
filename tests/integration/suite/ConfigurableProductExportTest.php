@@ -63,9 +63,18 @@ class ConfigurableProductExportTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param string $exportFile
+     * @param int[]|string[] $productIds
+     */
+    public function initTestExpectations($exportFile, array $productIds)
+    {
+        $this->exportToFile($exportFile, $productIds);
+    }
+
+    /**
+     * @param string $exportFile
      * @param int[] $productIds
      */
-    public function exportToFile($exportFile, array $productIds)
+    private function exportToFile($exportFile, array $productIds)
     {
         $this->setTargetExportFile($exportFile);
         /** @var LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter $exporter */
