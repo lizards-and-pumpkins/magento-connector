@@ -39,7 +39,6 @@ class SimpleProductExportTest extends AbstractInitializableProductExportTest
                 ->fetchOne($select);
         }
         return $this->productIdForInitialization;
-
     }
 
     /**
