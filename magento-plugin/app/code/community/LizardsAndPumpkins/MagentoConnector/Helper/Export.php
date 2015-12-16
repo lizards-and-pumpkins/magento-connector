@@ -236,13 +236,16 @@ SQL;
         return $queueId;
     }
 
+    /**
+     * @return string[]
+     */
     public function getQueuedProductIds()
     {
         $messageIterator = $this->getProductUpdatesToExport();
         $productIds = [];
         foreach ($messageIterator as $item) {
             /** @var $item Zend_Queue_Message */
-            $productIds[] = $item->body;
+            $productIds[] = (string) $item->body;
         }
         if ($productIds) {
             $this->deleteMessages(iterator_to_array($messageIterator), self::QUEUE_PRODUCT_UPDATES);
