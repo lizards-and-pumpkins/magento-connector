@@ -200,7 +200,6 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
     }
 
     /**
-     * @see  http://www.magentocommerce.com/boards/viewthread/17414/#t141830
      * @return array[]
      */
     public function loadMediaGalleryData()
@@ -217,26 +216,27 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
 
         $productIds = array_keys($this->_data);
 
-        // todo: use Zend_Db_Select instead of raw sql
-        $query = <<<SQL
-        SELECT
-            main.entity_id, `main`.`value_id`, `main`.`value` AS `file`,
-            `value`.`label`, `value`.`position`, `value`.`disabled`, `default_value`.`label` AS `label_default`,
-            `default_value`.`position` AS `position_default`,
-            `default_value`.`disabled` AS `disabled_default`
-        FROM `$mediaGalleryTable` AS `main`
-            LEFT JOIN `$mediaGalleryValueTable` AS `value`
-                ON main.value_id=value.value_id AND value.store_id={$this->getStoreId()}
-            LEFT JOIN `$mediaGalleryValueTable` AS `default_value`
-                ON main.value_id=default_value.value_id AND default_value.store_id=0
-        WHERE (
-            main.attribute_id = {$readConnection->quote($mediaGalleryAttributeId)}
-            )
-            AND (main.entity_id IN ({$readConnection->quote($productIds)} ))
-        ORDER BY IF(value.position IS NULL, default_value.position, value.position) ASC
-SQL;
+        $select = $readConnection->select();
+        $select->from(
+            ['main' => $mediaGalleryTable],
+            ['entity_id', 'value_id', 'file' => 'value']
+        );
+        $select->joinLeft(
+            ['value' => $mediaGalleryValueTable],
+            $readConnection->quoteInto("main.value_id=value.value_id AND value.store_id=?", $this->getStoreId()),
+            ['label', 'position', 'label_default' => 'value.label']
+        );
+        $select->joinLeft(
+            ['default_value' => $mediaGalleryValueTable],
+            "main.value_id=value.value_id AND value.store_id=0",
+            ['position_default' => 'default_value.position', 'disabled_default' => 'default_value.disabled']
+        );
+        $select->where("main.attribute_id=?", $mediaGalleryAttributeId);
+        $select->where("main.entity_id IN (?)", $productIds);
+        $select->order(new Zend_Db_Expr("IF(value.position IS NULL, default_value.position, value.position) ASC"));
+
         $mediaGalleryData = [];
-        foreach ($readConnection->fetchAll($query) as $row) {
+        foreach ($readConnection->fetchAll($select) as $row) {
             $mediaGalleryData[$row['entity_id']]['images'][] = $row;
         }
         return $mediaGalleryData;
@@ -360,12 +360,11 @@ SQL;
     protected function _setItemAttributeValue($valueInfo)
     {
         $attributeId = $valueInfo['attribute_id'];
-        $attributeCode = array_search($attributeId, $this->_selectAttributes);
         $rawValue = $valueInfo['value'];
+        $attributeCode = array_search($attributeId, $this->_selectAttributes);
         $options = $this->loadConfigurableAttributeOptions();
-        $configurableAttributes = $this->loadConfigurableAttributes();
         $this->_data[$valueInfo['entity_id']][$attributeCode] =
-            isset($configurableAttributes[$attributeId]) && isset($options[$rawValue]) ?
+            isset($this->loadConfigurableAttributes()[$attributeId]) && isset($options[$rawValue]) ?
                 $options[$rawValue] :
                 $rawValue;
     }

@@ -89,7 +89,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector implemen
      */
     private function createProductCollectionForCurrentBatch()
     {
-        // todo: eav attributes, tax_class name
+        // todo: tax_class name
         $collection = $this->createCollection($this->currentStoreForExport);
         $collection->addIdFilter($this->currentBatchOfProductIds);
         return $collection;
