@@ -62,7 +62,7 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Factory
     
     public function createProductCollector()
     {
-        $helper = $helper = Mage::helper('lizardsAndPumpkins_magentoconnector/export');
+        $helper = Mage::helper('lizardsAndPumpkins_magentoconnector/export');
         return new LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector($helper);
     }
 }
