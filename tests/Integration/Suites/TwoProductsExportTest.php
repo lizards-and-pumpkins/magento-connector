@@ -38,7 +38,6 @@ class TwoProductsExportTest extends AbstractInitializableProductExportTest
                 ->fetchCol($select);
         }
         return $this->productIdForInitialization;
-
     }
 
     /**
