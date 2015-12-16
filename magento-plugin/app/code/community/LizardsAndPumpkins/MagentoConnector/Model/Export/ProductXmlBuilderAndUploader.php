@@ -1,18 +1,10 @@
 <?php
 
-require_once 'LizardsAndPumpkins/src/XmlBuilder/ProductBuilder.php';
-require_once 'LizardsAndPumpkins/src/XmlBuilder/CatalogMerge.php';
-
 use LizardsAndPumpkins\MagentoConnector\XmlBuilder\CatalogMerge;
 use LizardsAndPumpkins\MagentoConnector\XmlBuilder\ProductBuilder;
 
 class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
 {
-    /**
-     * @var Mage_Catalog_Model_Resource_Product_Collection
-     */
-    private $product;
-
     /**
      * @var CatalogMerge
      */
@@ -29,34 +21,32 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploa
     private $sourceTableDataProvider;
 
     public function __construct(
-        Mage_Catalog_Model_Product $product,
         CatalogMerge $merge,
         LizardsAndPumpkins_MagentoConnector_Model_XmlUploader $uploader,
         LizardsAndPumpkins_MagentoConnector_Model_Export_SourceTableDataProvider $sourceTableDataProvider
     ) {
-        $this->product = $product;
         $this->merge = $merge;
         $this->uploader = $uploader;
         $this->sourceTableDataProvider = $sourceTableDataProvider;
     }
 
     /**
+     * @param Mage_Catalog_Model_Product $product
      * @return string[]
      */
-    private function getContext()
+    private function getContext(Mage_Catalog_Model_Product $product)
     {
         return [
-            'website' => $this->product->getStore()->getWebsite()->getCode(),
-            'locale'  => Mage::getStoreConfig('general/locale/code', $this->product->getStore()),
+            'website' => $product->getStore()->getWebsite()->getCode(),
+            'locale'  => Mage::getStoreConfig('general/locale/code', $product->getStore()),
         ];
     }
 
-    public function process()
+    public function process(Mage_Catalog_Model_Product $product)
     {
-        /** @var $product Mage_Catalog_Model_Product */
         $productBuilder = new ProductBuilder(
-            $this->transformData($this->product),
-            $this->getContext()
+            $this->transformData($product),
+            $this->getContext($product)
         );
         $xmlString = $productBuilder->getXmlString();
         $this->merge->addProduct($xmlString);

@@ -5,11 +5,6 @@ namespace LizardsAndPumpkins\MagentoConnector\Api;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 
-// TODO fix autoloading
-require_once __DIR__ . '/../../../guzzlehttp/psr7/src/functions.php';
-require_once __DIR__ . '/../../../guzzlehttp/guzzle/src/functions.php';
-require_once __DIR__ . '/../../../guzzlehttp/promises/src/functions.php';
-
 class Api
 {
     const API_ENDPOINT_CATALOG_IMPORT = 'catalog_import/';

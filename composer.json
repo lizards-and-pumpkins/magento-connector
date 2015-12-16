@@ -1,8 +1,13 @@
 {
   "require": {
-    "guzzlehttp/guzzle": "~6.0"
+    "guzzlehttp/guzzle": "~6.0",
+    "phpunit/phpunit": "^5.1"
   },
-  "config": {
-    "vendor-dir": "lib"
+  "autoload": {
+    "psr-4": {
+      "LizardsAndPumpkins\\MagentoConnector\\" : [
+        "lib/LizardsAndPumpkins/src/"
+      ]
+    }
   }
 }

@@ -1,6 +1,9 @@
 <?php
-require_once 'abstract.php';
-require '../lib/autoload_lizards_and_pumpkins.php';
+
+use LizardsAndPumpkins\MagentoConnector\Api\Api;
+
+require  __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../../../../shell/abstract.php';
 
 class LizardsAndPumpkins_Export extends Mage_Shell_Abstract
 {
@@ -19,18 +22,31 @@ class LizardsAndPumpkins_Export extends Mage_Shell_Abstract
         /** @var LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter $exporter */
         $exporter = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_catalogExporter');
         if ($this->getArg('all-products')) {
-            $exporter->exportAllProducts();
+            $filename = $exporter->exportAllProducts();
+            $this->triggerCatalogUpdateApi($filename);
         } elseif ($this->getArg('queued-products')) {
-            $exporter->exportProductsInQueue();
+            $filename = $exporter->exportProductsInQueue();
+            $this->triggerCatalogUpdateApi($filename);
         } elseif ($this->getArg('queued-categories')) {
-            $exporter->exportCategoriesInQueue();
+            $filename = $exporter->exportCategoriesInQueue();
+            $this->triggerCatalogUpdateApi($filename);
         } elseif ($this->getArg('all-categories')) {
-            $exporter->exportAllCategories();
+            $filename = $exporter->exportAllCategories();
+            $this->triggerCatalogUpdateApi($filename);
         } elseif ($this->getArg('stats')) {
             $this->outputStatistics();
         } else {
             echo $this->usageHelp();
         }
+    }
+
+    /**
+     * @param string $filename
+     */
+    private function triggerCatalogUpdateApi($filename)
+    {
+        $apiUrl = Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/api_url');
+        (new Api($apiUrl))->triggerProductImport($filename);
     }
 
     /**

@@ -1,6 +1,6 @@
 <?php
 
-class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector
+class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector implements \IteratorAggregate
 {
     /**
      * @var int[]
@@ -61,6 +61,23 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector
      * @var array
      */
     private $configurableProductAttributes;
+
+    /**
+     * @var LizardsAndPumpkins_MagentoConnector_Helper_ProductsToUpdateQueueReader
+     */
+    private $productUpdatesQueueReader;
+
+    public function __construct(LizardsAndPumpkins_MagentoConnector_Helper_ProductsToUpdateQueueReader $queueReader)
+    {
+        $this->productUpdatesQueueReader = $queueReader;
+    }
+
+    public function getIterator()
+    {
+        while ($product = $this->getProduct()) {
+            yield $product;
+        }
+    }
 
     /**
      * @return Mage_Catalog_Model_Product
@@ -126,32 +143,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector
      */
     private function getQueuedProductIds()
     {
-        /** @var LizardsAndPumpkins_MagentoConnector_Helper_Export $helper */
-        $helper = Mage::helper('lizardsAndPumpkins_magentoconnector/export');
-        $this->messageIterator = $helper->getProductUpdatesToExport();
-        $productIds = [];
-        foreach ($this->messageIterator as $item) {
-            /** @var $item Zend_Queue_Message */
-            $productIds[] = $item->body;
-        }
-        if ($productIds) {
-            $this->deleteMessages();
-        }
-
-        return $productIds;
-    }
-
-    private function deleteMessages()
-    {
-        $ids = [];
-        foreach ($this->messageIterator as $message) {
-            $ids[] = (int) $message->message_id;
-        }
-
-        $ids = implode(',', $ids);
-        /** @var Mage_Core_Model_Resource $resouce */
-        $resouce = Mage::getSingleton('core/resource');
-        $resouce->getConnection('core_write')->delete('message', "message_id IN ($ids)");
+        return $this->productUpdatesQueueReader->getQueuedProductIds();
     }
 
     private function prepareNextBunchOfProducts()

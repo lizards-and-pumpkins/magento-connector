@@ -1,5 +1,7 @@
 <?php
 
+use LizardsAndPumpkins\MagentoConnector\Api\Api;
+
 class LizardsAndPumpkins_MagentoConnector_Adminhtml_LizardsAndPumpkinsController
     extends Mage_Adminhtml_Controller_Action
 {
@@ -8,10 +10,11 @@ class LizardsAndPumpkins_MagentoConnector_Adminhtml_LizardsAndPumpkinsController
         try {
             /** @var LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter $exporter */
             $exporter = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_catalogExporter');
-            $exporter->exportAllCategories();
-            $categoriesExporterd = $exporter->getNumberOfCategoriesExported();
+            $filename = $exporter->exportAllCategories();
+            $this->triggerCatalogUpdateApi($filename);
+            $categoriesExported = $exporter->getNumberOfCategoriesExported();
             Mage::getSingleton('core/session')->addSuccess(
-                sprintf('All %s categories exported.', $categoriesExporterd)
+                sprintf('All %s categories exported.', $categoriesExported)
             );
         } catch (Mage_Core_Exception $e) {
             Mage::getSingleton('core/session')->addError($e->getMessage());
@@ -24,11 +27,12 @@ class LizardsAndPumpkins_MagentoConnector_Adminhtml_LizardsAndPumpkinsController
         try {
             /** @var LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter $exporter */
             $exporter = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_catalogExporter');
-            $exporter->exportAllProducts();
+            $filename = $exporter->exportAllProducts();
+            $this->triggerCatalogUpdateApi($filename);
             $productsExported = $exporter->getNumberOfProductsExported();
-            $categoriesExporterd = $exporter->getNumberOfCategoriesExported();
+            $categoriesExported = $exporter->getNumberOfCategoriesExported();
             Mage::getSingleton('core/session')->addSuccess(
-                sprintf('All (%s) products and %s categories exported.', $productsExported, $categoriesExporterd)
+                sprintf('All (%s) products and %s categories exported.', $productsExported, $categoriesExported)
             );
         } catch (Mage_Core_Exception $e) {
             Mage::getSingleton('core/session')->addError($e->getMessage());
@@ -41,11 +45,12 @@ class LizardsAndPumpkins_MagentoConnector_Adminhtml_LizardsAndPumpkinsController
         try {
             /** @var LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter $exporter */
             $exporter = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_catalogExporter');
-            $exporter->exportProductsInQueue();
+            $filename = $exporter->exportProductsInQueue();
+            $this->triggerCatalogUpdateApi($filename);
             $productsExported = $exporter->getNumberOfProductsExported();
-            $categoriesExporterd = $exporter->getNumberOfCategoriesExported();
+            $categoriesExported = $exporter->getNumberOfCategoriesExported();
             Mage::getSingleton('core/session')->addSuccess(
-                sprintf('%s products and %s categories from queue exported.', $productsExported, $categoriesExporterd)
+                sprintf('%s products and %s categories from queue exported.', $productsExported, $categoriesExported)
             );
         } catch (Mage_Core_Exception $e) {
             Mage::getSingleton('core/session')->addError($e->getMessage());
@@ -57,7 +62,9 @@ class LizardsAndPumpkins_MagentoConnector_Adminhtml_LizardsAndPumpkinsController
     {
         try {
             Mage::helper('lizardsAndPumpkins_magentoconnector/export')->addAllProductIdsToStockExport();
-            Mage::getModel('lizardsAndPumpkins_magentoconnector/export_stock')->export();
+            $filename = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_stock')->export();
+            $apiUrl = Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/api_url');
+            (new Api($apiUrl))->triggerProductStockImport($filename);
             Mage::getSingleton('core/session')->addSuccess('All stocks exported');
         } catch (Mage_Core_Exception $e) {
             Mage::getSingleton('core/session')->addError($e->getMessage());
@@ -70,11 +77,21 @@ class LizardsAndPumpkins_MagentoConnector_Adminhtml_LizardsAndPumpkinsController
         try {
             $exporter = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_cms_block');
             $exporter->export();
+            // todo 1: decouple CMS and non-CMS block exports
+            // todo 2: decouple triggering the API request from the export
             Mage::getSingleton('core/session')->addSuccess('All cms blocks exported');
         } catch (Mage_Core_Exception $e) {
             Mage::getSingleton('core/session')->addError($e->getMessage());
         }
         $this->_redirect('/');
+    }
 
+    /**
+     * @param string $filename
+     */
+    private function triggerCatalogUpdateApi($filename)
+    {
+        $apiUrl = Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/api_url');
+        (new Api($apiUrl))->triggerProductImport($filename);
     }
 }

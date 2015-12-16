@@ -6,8 +6,8 @@ magento-plugin/app/design/frontend/base/default/template/lizardsAndPumpkins_mage
 
 magento-plugin/skin/frontend/base/default/js/lizardsAndPumpkins_magentoconnector                skin/frontend/base/default/js/lizardsAndPumpkins_magentoconnector
 
-lib/*                                                                                           lib/
+lib/LizardsAndPumpkins/src/*                                                                    lib/LizardsAndPumpkins/MagentoConnector/
 
 magento-plugin/shell/*                                                                          shell/
 pollExportQueue.php                                                                             pollExportQueue.php
-composer.json                                                                                   composer.json
+
