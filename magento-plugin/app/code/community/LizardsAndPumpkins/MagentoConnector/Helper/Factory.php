@@ -2,7 +2,7 @@
 
 use LizardsAndPumpkins\MagentoConnector\XmlBuilder\CatalogMerge;
 
-class LizardsAndPumpkins_MagentoConnector_Helper_Factory extends Mage_Core_Helper_Abstract
+class LizardsAndPumpkins_MagentoConnector_Helper_Factory
 {
     /**
      * @var CatalogMerge
