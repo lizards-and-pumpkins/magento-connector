@@ -14,7 +14,7 @@ abstract class AbstractInitializableProductExportTest
     /**
      * @return int[]
      */
-    protected function getVisibleInCatalogValues()
+    final protected function getVisibleInCatalogValues()
     {
         return [
             \Mage_Catalog_Model_Product_Visibility::VISIBILITY_BOTH,
