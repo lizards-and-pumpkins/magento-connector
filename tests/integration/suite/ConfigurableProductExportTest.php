@@ -23,7 +23,7 @@ class ConfigurableProductExportTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param $exportFile
+     * @param string $exportFile
      */
     private function setTargetExportFile($exportFile)
     {
@@ -35,18 +35,42 @@ class ConfigurableProductExportTest extends \PHPUnit_Framework_TestCase
         $store->setConfig('lizardsAndPumpkins/magentoconnector/local_filename_template', basename($exportFile));
     }
 
-    private function addConfigurableProductToQueue()
+    /**
+     * @param int[] $productId
+     * @return LizardsAndPumpkins_MagentoConnector_Helper_ProductsToUpdateQueueReader
+     */
+    private function createProductQueueReaderForTestProduct(array $productIds)
     {
-        /** @var LizardsAndPumpkins_MagentoConnector_Helper_Export $helper */
-        $helper = Mage::helper('lizardsAndPumpkins_magentoconnector/export');
-        $helper->addProductUpdatesToQueue([$this->configurableProductId]);
+        /** @var \PHPUnit_Framework_MockObject_MockObject $reader */
+        $reader = $this->getMock(LizardsAndPumpkins_MagentoConnector_Helper_ProductsToUpdateQueueReader::class);
+        $reader->method('getQueuedProductIds')->willReturnOnConsecutiveCalls(
+            $productIds,
+            []
+        );
+        return $reader;
     }
 
-    private function exportProductsInQueue()
+    /**
+     * @param int[] $productIds
+     * @return LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector
+     */
+    private function createProductCollectorForId(array $productIds)
     {
+        return new LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector(
+            $this->createProductQueueReaderForTestProduct($productIds)
+        );
+    }
+
+    /**
+     * @param string $exportFile
+     * @param int[] $productIds
+     */
+    public function exportToFile($exportFile, array $productIds)
+    {
+        $this->setTargetExportFile($exportFile);
         /** @var LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter $exporter */
         $exporter = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_catalogExporter');
-        $exporter->exportProductsInQueue();
+        $exporter->exportProducts($this->createProductCollectorForId($productIds));
     }
 
     protected function setUp()
@@ -67,12 +91,8 @@ class ConfigurableProductExportTest extends \PHPUnit_Framework_TestCase
 
     public function testExportConfigurableProduct()
     {
-        $testExportFile = $this->testExportFile;
-        $this->setTargetExportFile($testExportFile);
+        $this->exportToFile($this->testExportFile, [$this->configurableProductId]);
         
-        $this->addConfigurableProductToQueue();
-        $this->exportProductsInQueue();
-        
-        $this->assertFileEquals(self::EXPECTED_XML_FILE, $testExportFile);
+        $this->assertFileEquals(self::EXPECTED_XML_FILE, $this->testExportFile);
     }
 }
