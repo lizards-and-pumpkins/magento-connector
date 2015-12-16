@@ -5,6 +5,9 @@ class ConfigurableProductExportTest extends \PHPUnit_Framework_TestCase
     const EXPECTED_XML_FILE = __DIR__ . '/expected/configurable-product.xml';
     const CONFIGURABLE_PRODUCT_ID_FILE = __DIR__ . '/expected/configurable-product-id.php';
 
+    /**
+     * @var string
+     */
     private $testExportFile;
 
     /**
