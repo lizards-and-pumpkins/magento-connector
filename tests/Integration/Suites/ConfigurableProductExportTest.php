@@ -69,7 +69,6 @@ class ConfigurableProductExportTest extends AbstractInitializableProductExportTe
     protected function setUp()
     {
         $this->testExportFile = sys_get_temp_dir() . '/lizards-and-pumpkins/magento-connector/configurable-product-test.xml';
-        $this->prepareTestExportDirectory(dirname($this->testExportFile));
     }
 
     protected function tearDown()

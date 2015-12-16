@@ -34,6 +34,7 @@ abstract class AbstractInitializableProductExportTest
      */
     protected function exportToFile($exportFile, array $productIds)
     {
+        $this->prepareTestExportDirectory(dirname($exportFile));
         $this->setTargetExportFile($exportFile);
         $this->createDirIfNotExisting($exportFile);
 

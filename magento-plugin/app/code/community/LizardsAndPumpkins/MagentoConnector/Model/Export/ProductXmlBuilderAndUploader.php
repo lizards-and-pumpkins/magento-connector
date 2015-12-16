@@ -42,7 +42,10 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploa
         ];
     }
 
-    public function process(Mage_Catalog_Model_Product $product)
+    /**
+     * @param mixed[] $product
+     */
+    public function process(array $product)
     {
         $productBuilder = new ProductBuilder(
             $this->transformData($product),
@@ -63,41 +66,39 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploa
     }
 
     /**
-     * @param Mage_Catalog_Model_Product $product
+     * @param mixed[] $product
      * @return string[]
      */
-    private function transformData(Mage_Catalog_Model_Product $product)
+    private function transformData(array $product)
     {
         $productData = [];
         $anySimpleProductIsAvailable = false;
-        foreach ($product->getData() as $key => $value) {
-            if (!$product->getData($key)) {
-                $productData[$key] = $product->getData($key);
+        foreach ($product as $key => $value) {
+            if (!$product[$key]) {
+                $productData[$key] = $product[$key];
             } elseif ($key == 'media_gallery') {
                 if (isset($value['images']) && is_array($value['images'])) {
                     foreach ($value['images'] as $image) {
                         $productData['images'][] = [
-                            'main'  => $image['file'] == $product->getData('image'),
+                            'main'  => $image['file'] == $product['image'],
                             'label' => $image['label'],
                             'file'  => basename($image['file']),
                         ];
                     }
                 }
-            } elseif ($key == 'simple_products') {
+            } elseif ($key == 'associated_products') {
                 if (is_array($value)) {
-                    /** @var Mage_Catalog_Model_Product $simpleProduct */
                     foreach ($value as $simpleProduct) {
-                        $anySimpleProductIsAvailable = $anySimpleProductIsAvailable || $simpleProduct->isSalable();
+                        $anySimpleProductIsAvailable = true;
                         $associatedProduct = [
-                            'sku'          => $simpleProduct->getSku(),
-                            'type_id'      => $simpleProduct->getTypeId(),
-                            'visibility'   => $simpleProduct->getAttributeText('visibility'),
-                            'tax_class_id' => $simpleProduct->getAttributeText('tax_class_id'),
-                            'stock_qty'    => $simpleProduct->getData('stock_qty'),
+                            'sku'          => $simpleProduct['sku'],
+                            'type_id'      => $simpleProduct['type_id'],
+                            'tax_class_id' => $simpleProduct['tax_class_id'],
+                            'stock_qty'    => $simpleProduct['stock_qty'],
                         ];
 
-                        foreach ($product->getData('configurable_attributes') as $attribute) {
-                            $associatedProduct['attributes'][$attribute] = $simpleProduct->getAttributeText($attribute);
+                        foreach ($product['configurable_attributes'] as $attribute) {
+                            $associatedProduct['attributes'][$attribute] = $simpleProduct[$attribute];
                         }
                         $productData['associated_products'][] = $associatedProduct;
                     }
