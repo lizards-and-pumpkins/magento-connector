@@ -1,6 +1,7 @@
 <?php
 
 class LizardsAndPumpkins_MagentoConnector_Helper_Export
+    implements LizardsAndPumpkins_MagentoConnector_Helper_ProductsToUpdateQueueReader
 {
     const QUEUE_STOCK_UPDATES = "stockUpdates";
     const QUEUE_PRODUCT_UPDATES = "productUpdates";
@@ -233,5 +234,20 @@ SQL;
             Mage::throwException('Queue not found.');
         }
         return $queueId;
+    }
+
+    public function getQueuedProductIds()
+    {
+        $messageIterator = $this->getProductUpdatesToExport();
+        $productIds = [];
+        foreach ($messageIterator as $item) {
+            /** @var $item Zend_Queue_Message */
+            $productIds[] = $item->body;
+        }
+        if ($productIds) {
+            $this->deleteMessages(iterator_to_array($messageIterator), self::QUEUE_PRODUCT_UPDATES);
+        }
+
+        return $productIds;
     }
 }
