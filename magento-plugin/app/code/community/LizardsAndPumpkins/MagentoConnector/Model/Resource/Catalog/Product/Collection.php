@@ -32,6 +32,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
     {
         $this->addCategoryUrlKeys();
         $this->addStockItemData();
+        $this->addAttributeToSelect('tax_class_id');
         $this->addConfigurableAttributeCodes();
     }
 
@@ -56,10 +57,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
         }
         $this->_data = $productData;
 
+        $this->loadEavAttributeValues();
         $this->mergeAdditionalProductData();
-
-        $this->_loadAttributes();
-
+        
         return parent::_afterLoadData();
     }
 
@@ -69,6 +69,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
         $associatedProductData = $this->getFlag(self::FLAG_LOAD_ASSOCIATED_PRODUCTS) ?
             $this->loadAssociatedSimpleProductData() :
             [];
+        $taxClassNames = $this->loadTaxClassNames();
 
         foreach ($this->_data as $productId => $productData) {
             $this->_data[$productId]['media_gallery'] = isset($mediaGalleryData[$productId]) ?
@@ -77,6 +78,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
             $this->_data[$productId]['associated_products'] = isset($associatedProductData[$productId]) ?
                 $associatedProductData[$productId] :
                 [];
+            $this->_data[$productId]['tax_class'] = isset($taxClassNames[$productData['tax_class_id']]) ?
+                $taxClassNames[$productData['tax_class_id']] :
+                '';
         }
     }
 
@@ -333,9 +337,14 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
             $sourceModel = Mage::getModel('tax/class_source_product');
             $taxClassNames = array_reduce($sourceModel->getAllOptions(), function ($carry, array $option) {
                 return array_merge($carry, [$option['value'] => $option['label']]);
-            });
+            }, []);
         }
         return $taxClassNames;
+    }
+
+    private function loadEavAttributeValues()
+    {
+        $this->_loadAttributes();
     }
 
     /**
