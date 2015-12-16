@@ -4,12 +4,9 @@ abstract class AbstractInitializableProductExportTest
     extends \PHPUnit_Framework_TestCase
     implements InitializableProductExportTest
 {
-    /**
-     * @param string|string[] $productIds
-     * @return void
-     */
-    public function initTestExpectations($productIds)
+    public function initTestExpectations()
     {
+        $productIds = $this->getProductIdsForInitialization();
         $this->exportToFile($this->getExpectationFileName(), is_array($productIds) ? $productIds : [$productIds]);
         $this->saveProductIdsToTest($productIds);
     }

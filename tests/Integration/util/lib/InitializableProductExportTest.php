@@ -3,13 +3,17 @@
 interface InitializableProductExportTest
 {
     /**
-     * @param string[]|string $productIds
      * @return void
      */
-    public function initTestExpectations($productIds);
+    public function initTestExpectations();
 
     /**
      * @return string
      */
     public function getExpectationFileName();
+
+    /**
+     * @return string[]|int[]
+     */
+    public function getProductIdsForInitialization();
 }
