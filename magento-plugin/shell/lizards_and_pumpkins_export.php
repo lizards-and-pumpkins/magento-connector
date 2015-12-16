@@ -40,6 +40,9 @@ class LizardsAndPumpkins_Export extends Mage_Shell_Abstract
         }
     }
 
+    /**
+     * @param string $filename
+     */
     private function triggerCatalogUpdateApi($filename)
     {
         $apiUrl = Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/api_url');
