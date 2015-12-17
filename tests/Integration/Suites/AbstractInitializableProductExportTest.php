@@ -35,6 +35,8 @@ abstract class AbstractInitializableProductExportTest
     protected function exportToFile($exportFile, array $productIds)
     {
         $this->setTargetExportFile($exportFile);
+        $this->createDirIfNotExisting($exportFile);
+
         /** @var LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter $exporter */
         $exporter = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_catalogExporter');
         $exporter->exportProducts($this->createProductCollectorForIds($productIds));
@@ -117,5 +119,16 @@ abstract class AbstractInitializableProductExportTest
     {
         $helper = Mage::helper('lizardsAndPumpkins_magentoconnector/factory');
         $helper->reset();
+    }
+
+    /**
+     * @param string $exportFile
+     */
+    private function createDirIfNotExisting($exportFile)
+    {
+        $dirname = dirname($exportFile);
+        if (!is_dir($dirname)) {
+            mkdir($dirname, 0777, true);
+        }
     }
 }
