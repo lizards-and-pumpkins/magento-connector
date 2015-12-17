@@ -31,4 +31,5 @@ foreach ($filteredDirectoryIterator as $testFile) {
         $testToInitialize->resetFactory();
     }
 }
+echo "Test data initialized.\n";
 

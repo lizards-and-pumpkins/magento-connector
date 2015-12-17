@@ -38,4 +38,4 @@ Mage::helper('lizardsAndPumpkins_magentoconnector/export')->addProductUpdatesToQ
     $collection->getConnection()->fetchCol($select)
 );
 
-echo "done\n";
+echo "Added {$numberOfProducts} product id(s) to the export queue\n";

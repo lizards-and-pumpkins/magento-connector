@@ -29,5 +29,5 @@ $exporter = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_catalogEx
 $exporter->exportProducts($queueProductCollector);
 
 if ($exportFile !== 'php://stdout') {
-    echo "done\n";
+    echo "Export finished\n";
 }
