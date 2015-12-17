@@ -17,7 +17,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
         $cmsBlocks = $this->getAllCmsBlocksWithStoreId();
         $this->api = $this->getApi();
         $this->exportCmsBlocks($cmsBlocks);
-        $this->exportRealBlocks();
+        $this->exportNonCmsBlocks();
     }
 
     /**
@@ -61,7 +61,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
         }
     }
 
-    private function exportRealBlocks()
+    private function exportNonCmsBlocks()
     {
         /** @var $appEmulation Mage_Core_Model_App_Emulation */
         $specialBlocks = Mage::getStoreConfig(self::XML_SPECIAL_BLOCKS);
