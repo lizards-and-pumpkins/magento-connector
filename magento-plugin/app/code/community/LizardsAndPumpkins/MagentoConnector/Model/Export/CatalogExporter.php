@@ -4,7 +4,7 @@ use LizardsAndPumpkins\MagentoConnector\XmlBuilder\CatalogMerge;
 
 class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
 {
-    const GARBAGE_COLLECT_ALL_N_PRODUCTS = 100;
+    const GARBAGE_COLLECT_ALL_N_PRODUCTS = 10000;
 
     private $numberOfProductsExported = 0;
 
