@@ -1,5 +1,7 @@
 <?php
-require 'lib/LizardsAndPumpkins/autoload.php';
+error_reporting(E_ALL);
+
+require __DIR__ . '/../../vendor/autoload.php';
 
 spl_autoload_register(function ($classname) {
     $classnameReplaced = str_replace('_', '/', $classname);
