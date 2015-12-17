@@ -30,9 +30,10 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
 
     private function _beforeLoadData()
     {
+        // todo: is_in_stock, is_salable
         $this->addCategoryUrlKeys();
         $this->addStockItemData();
-        $this->addAttributeToSelect('tax_class_id');
+        $this->addAttributeToSelect(['tax_class_id', 'visibility', 'status']);
         $this->addConfigurableAttributeCodes();
     }
 
@@ -49,9 +50,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
     {
         $websiteCode = $this->getStore()->getWebsite()->getCode();
         $localeCode = Mage::getStoreConfig('general/locale/code', $this->getStore());
-        $productData = [];
+        $indexedProductData = [];
         foreach ($this->_data as $row) {
-            $productData[$row['entity_id']] = array_merge(
+            $indexedProductData[$row['entity_id']] = array_merge(
                 $row,
                 ['categories' => $this->categoryUrlKeysToPaths($row['categories'])],
                 ['configurable_attributes' => $this->configAttributeIdsToCodes($row['configurable_attributes'])],
@@ -59,11 +60,11 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
                 ['locale' => $localeCode]
             );
         }
-        $this->_data = $productData;
+        $this->_data = $indexedProductData;
 
         $this->loadEavAttributeValues();
         $this->mergeAdditionalProductData();
-        
+
         return parent::_afterLoadData();
     }
 
@@ -73,7 +74,6 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
         $associatedProductData = $this->getFlag(self::FLAG_LOAD_ASSOCIATED_PRODUCTS) ?
             $this->loadAssociatedSimpleProductData() :
             [];
-        $taxClassNames = $this->loadTaxClassNames();
 
         foreach ($this->_data as $productId => $productData) {
             $this->_data[$productId]['media_gallery'] = isset($mediaGalleryData[$productId]) ?
@@ -82,10 +82,24 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
             $this->_data[$productId]['associated_products'] = isset($associatedProductData[$productId]) ?
                 $associatedProductData[$productId] :
                 [];
-            $this->_data[$productId]['tax_class'] = isset($taxClassNames[$productData['tax_class_id']]) ?
-                $taxClassNames[$productData['tax_class_id']] :
-                '';
+            $this->_data[$productId]['is_in_stock'] = $this->isInStock($this->_data[$productId]);
         }
+    }
+
+    /**
+     * @param array $productData
+     * @return string
+     */
+    private function isInStock(array $productData)
+    {
+        if (isset($productData['associated_products']) && count($productData['associated_products']) > 0) {
+            $isInStock = array_reduce($productData['associated_products'], function ($isSalable, $childProduct) {
+                return $isSalable || $this->isInStock($childProduct); 
+            }, false);
+        } else {
+            $isInStock = $productData['stock_qty'] > 0 && 'true' === $productData['backorders'];
+        }
+        return sprintf('%d', $isInStock);
     }
 
     /**
@@ -190,7 +204,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
         $simpleProducts->addAttributeToSelect('sku');
         $simpleProducts->addAttributeToFilter('type_id', Mage_Catalog_Model_Product_Type::TYPE_SIMPLE);
         $simpleProducts->addAttributeToFilter('status', Mage_Catalog_Model_Product_Status::STATUS_ENABLED);
-        $simpleProducts->addAttributeToSelect($this->loadConfigurableAttributes());
+        $simpleProducts->addAttributeToSelect($this->getConfigurableAttributeIdToCodeMap());
 
         $select = $simpleProducts->getSelect();
         $select->joinInner(
@@ -251,38 +265,6 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
     }
 
     /**
-     * @return string[]
-     */
-    private function loadConfigurableAttributeOptions()
-    {
-        static $configurableAttributeOptions;
-        $storeId = $this->getStoreId();
-        if (null === $configurableAttributeOptions || !isset($configurableAttributeOptions[$storeId])) {
-            $coreResource = Mage::getSingleton('core/resource');
-            $connection = $coreResource->getConnection('default_read');
-            $optionTable = $coreResource->getTableName('eav/attribute_option');
-            $optionValueTable = $coreResource->getTableName('eav/attribute_option_value');
-
-            $columns = ['o.option_id', 'label' => new Zend_Db_Expr('IFNULL(ovs.value, ovd.value)')];
-            $select = $connection->select()->from(['o' => $optionTable], $columns);
-            $select->joinInner(
-                ['ovd' => $optionValueTable],
-                "o.option_id=ovd.option_id AND ovd.store_id=0",
-                []
-            );
-            $select->joinLeft(
-                ['ovs' => $optionValueTable],
-                $connection->quoteInto("o.option_id=ovd.option_id AND ovd.store_id=?", $storeId),
-                []
-            );
-            $select->where('o.attribute_id IN (?)', array_keys($this->loadConfigurableAttributes()));
-
-            $configurableAttributeOptions[$storeId] = $connection->fetchPairs($select);
-        }
-        return $configurableAttributeOptions[$storeId];
-    }
-
-    /**
      * @param string $combinedCategoryUrlKeys
      * @return string[]
      */
@@ -300,7 +282,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
      */
     private function configAttributeIdsToCodes($configurableAttributeIds)
     {
-        $configurableAttributes = $this->loadConfigurableAttributes();
+        $configurableAttributes = $this->getConfigurableAttributeIdToCodeMap();
         return $configurableAttributeIds ?
             array_map(function ($configurableAttributeId) use ($configurableAttributes) {
                 return $configurableAttributes[$configurableAttributeId];
@@ -311,7 +293,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
     /**
      * @return string[]
      */
-    private function loadConfigurableAttributes()
+    private function getConfigurableAttributeIdToCodeMap()
     {
         static $configurableAttributes;
         if (null === $configurableAttributes) {
@@ -332,9 +314,88 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
     }
 
     /**
+     * @param int $attributeId
      * @return string[]
      */
-    private function loadTaxClassNames()
+    private function getEavAttributeOptions($attributeId)
+    {
+        static $eavAttributeOptions;
+        $storeId = $this->getStoreId();
+        if (
+            null === $eavAttributeOptions ||
+            !isset($eavAttributeOptions[$attributeId]) ||
+            !isset($eavAttributeOptions[$attributeId][$storeId])
+        ) {
+            $eavAttributeOptions[$attributeId][$storeId] = [];
+            if (isset($this->getAttributeToSourceModelMap()[$attributeId])) {
+                $eavAttributeOptions[$attributeId][$storeId] = $this->loadOptionsForAttribute($attributeId);
+            }
+        }
+        return $eavAttributeOptions[$attributeId][$storeId];
+    }
+
+    /**
+     * @param int $attributeId
+     * @return mixed[]
+     */
+    private function loadOptionsForAttribute($attributeId)
+    {
+        $sourceModel = $this->getAttributeToSourceModelMap()[$attributeId];
+        $source = $this->createSourceModel($sourceModel, $attributeId);
+        $options = [];
+        if ($source->getAttribute()->getAttributeCode() === 'visibility') {
+            foreach (Mage_Catalog_Model_Product_Visibility::getOptionArray() as $value => $label) {
+                $options[$value] = array_map('trim', explode(',', $label));
+            }
+        } else {
+            foreach ($source->getAllOptions() as $option) {
+                $options[$option['value']] = $option['label'];
+            }
+        }
+        return $options;
+    }
+
+    /**
+     * @param string $sourceModelClassId
+     * @param int $attributeId
+     * @return Mage_Eav_Model_Entity_Attribute_Source_Abstract
+     */
+    private function createSourceModel($sourceModelClassId, $attributeId)
+    {
+        /** @var Mage_Eav_Model_Entity_Attribute_Source_Abstract $sourceModel */
+        $sourceModel = Mage::getModel($sourceModelClassId);
+        $attribute = Mage::getSingleton('eav/config')->getAttribute('catalog_product', $attributeId);
+        $attribute->setStoreId($this->getStoreId());
+        $sourceModel->setAttribute($attribute);
+        return $sourceModel;
+    }
+
+    private function getAttributeToSourceModelMap()
+    {
+        static $attributeToSourceModelMap;
+        if (null === $attributeToSourceModelMap) {
+            $coreResource = Mage::getSingleton('core/resource');
+            $connection = $coreResource->getConnection('default_read');
+            $attributesTable = $coreResource->getTableName('eav/attribute');
+            $select = $connection->select();
+            $select->from(
+                $attributesTable, [
+                    'attribute_id',
+                    'source_model' => new Zend_Db_Expr("IFNULL(source_model, 'eav/entity_attribute_source_table')"),
+                ]
+            );
+            $select->where('entity_type_id=?',
+                Mage::getSingleton('eav/config')->getEntityType('catalog_product')->getId());
+            $select->where('frontend_input IN(?)', ['select', 'multiselect']);
+            $attributeToSourceModelMap = $connection->fetchPairs($select);
+        }
+        return $attributeToSourceModelMap;
+    }
+
+    /**
+     * @return string[]
+     */
+    private function getTaxClassIdToNameMap()
     {
         static $taxClassNames;
         if (null === $taxClassNames) {
@@ -377,10 +438,52 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
         $attributeId = $valueInfo['attribute_id'];
         $rawValue = $valueInfo['value'];
         $attributeCode = array_search($attributeId, $this->_selectAttributes);
-        $options = $this->loadConfigurableAttributeOptions();
-        $this->_data[$valueInfo['entity_id']][$attributeCode] =
-            isset($this->loadConfigurableAttributes()[$attributeId]) && isset($options[$rawValue]) ?
-                $options[$rawValue] :
-                $rawValue;
+
+        if ($this->hasOptions($attributeId)) {
+            $value = $this->getValuesFromOptions($attributeId, $rawValue);
+        } else {
+            $value = $rawValue;
+        }
+        $this->_data[$valueInfo['entity_id']][$attributeCode] = $value;
+    }
+
+    /**
+     * @param int $attributeId
+     * @return bool
+     */
+    private function hasOptions($attributeId)
+    {
+        return count($this->getEavAttributeOptions($attributeId)) > 0;
+    }
+
+    /**
+     * @param int $attributeId
+     * @param string $rawValue
+     * @return string[]|string
+     */
+    private function getValuesFromOptions($attributeId, $rawValue)
+    {
+        $options = $this->getEavAttributeOptions($attributeId);
+        $values = explode(',', $rawValue);
+        if (count($values) > 1) {
+            $value = array_map(function ($optionId) use ($options) {
+                return $this->getOptionValue($options, $optionId);
+            }, $values);
+        } else {
+            $value = $this->getOptionValue($options, $rawValue);
+        }
+        return $value;
+    }
+
+    /**
+     * @param string[] $options
+     * @param string $optionId
+     * @return string
+     */
+    private function getOptionValue(array $options, $optionId)
+    {
+        return isset($options[$optionId]) ?
+            $options[$optionId] :
+            $optionId;
     }
 }

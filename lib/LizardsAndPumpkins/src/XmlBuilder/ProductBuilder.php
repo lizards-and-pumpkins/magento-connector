@@ -36,6 +36,7 @@ class ProductBuilder
         $this->context = $context;
         $this->xml = new \XMLWriter();
         $this->xml->openMemory();
+        $this->xml->setIndent(true);
         $this->xml->startDocument('1.0', 'UTF-8');
         $this->buildProductXml();
     }
@@ -54,7 +55,7 @@ class ProductBuilder
         $this->addProductNodeAttributes($this->productData);
 
         $this->createImagesNodes();
-        if (isset($this->productData['associated_products'])) {
+        if (count($this->productData['associated_products']) > 0) {
             $this->createAssociatedProductsNodes();
         }
         $this->createVariations();

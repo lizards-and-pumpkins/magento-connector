@@ -77,25 +77,32 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_PrepareProductDataForXmlB
                 case 'media_gallery':
                     $preparedData['images'] = $this->prepareImagesData($value, $productData['image']);
                     break;
-                
+
                 case 'associated_products':
                     $configurableAttributes = $productData['configurable_attributes'];
                     $associatedProducts = $this->prepareAssociatedProductsData($value, $configurableAttributes);
                     $preparedData['associated_products'] = $associatedProducts;
                     break;
-                
+
                 case 'configurable_attributes':
                     if (is_array($value) && count($value) > 0) {
                         $preparedData['variations'] = $value;
                     }
                     break;
-                
+
+                case 'tax_class_id':
+                    $preparedData['tax_class'] = $value;
+                    break;
+
                 case 'type_id':
                 case 'sku':
-                case 'tax_class':
                     $preparedData[$key] = $value;
                     break;
                 
+                case 'website':
+                case 'locale':
+                    break;
+
                 default:
                     $preparedData['attributes'][$key] = $value;
                     break;
@@ -160,7 +167,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_PrepareProductDataForXmlB
             $associatedProduct = [
                 'sku'       => $associatedProductData['sku'],
                 'type_id'   => $associatedProductData['type_id'],
-                'tax_class' => $associatedProductData['tax_class'],
+                'tax_class' => $associatedProductData['tax_class_id'],
                 'stock_qty' => $associatedProductData['stock_qty'],
             ];
 
