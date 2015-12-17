@@ -24,17 +24,16 @@
     <php>
         <ini name="display_errors" value="On"/>
         <ini name="display_startup_errors" value="On"/>
-        <ini name="error_reporting" value="32767"/>
     </php>
     <testsuites>
         <testsuite name="XmlBuilder">
-            <directory>lib/LizardsAndPumpkins/tests/XmlBuilder</directory>
+            <directory>Suites/XmlBuilder</directory>
         </testsuite>
         <testsuite name="Api">
-            <directory>lib/LizardsAndPumpkins/tests/Api</directory>
+            <directory>Suites/XmlBuilder</directory>
         </testsuite>
         <testsuite name="MagentoModule">
-            <directory>magento-plugin/app/code/community/LizardsAndPumpkins/MagentoConnector/Test</directory>
+            <directory>Suites/XmlBuilder</directory>
         </testsuite>
     </testsuites>
 </phpunit>
