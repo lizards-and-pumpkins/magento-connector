@@ -47,12 +47,16 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
      */
     protected function _afterLoadData()
     {
+        $websiteCode = $this->getStore()->getWebsite()->getCode();
+        $localeCode = Mage::getStoreConfig('general/locale/code', $this->getStore());
         $productData = [];
         foreach ($this->_data as $row) {
             $productData[$row['entity_id']] = array_merge(
                 $row,
                 ['categories' => $this->categoryUrlKeysToPaths($row['categories'])],
-                ['configurable_attributes' => $this->configAttributeIdsToCodes($row['configurable_attributes'])]
+                ['configurable_attributes' => $this->configAttributeIdsToCodes($row['configurable_attributes'])],
+                ['website' => $websiteCode],
+                ['locale' => $localeCode]
             );
         }
         $this->_data = $productData;
@@ -335,8 +339,10 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
         static $taxClassNames;
         if (null === $taxClassNames) {
             $sourceModel = Mage::getModel('tax/class_source_product');
-            $taxClassNames = array_reduce($sourceModel->getAllOptions(), function ($carry, array $option) {
-                return array_merge($carry, [$option['value'] => $option['label']]);
+            $options = $sourceModel->getAllOptions();
+            $taxClassNames = array_reduce($options, function ($carry, array $option) {
+                $carry[$option['value']] = $option['label']; // don't use array_merge() because of numeric array keys
+                return $carry;
             }, []);
         }
         return $taxClassNames;

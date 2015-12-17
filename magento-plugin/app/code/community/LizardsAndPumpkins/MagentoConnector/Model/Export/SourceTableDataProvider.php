@@ -29,13 +29,13 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_SourceTableDataProvider
     private function loadOptionValues()
     {
         $this->setupDefaultValues();
-        $this->setupStoreViewSpecifivValues();
+        $this->setupStoreViewSpecificValues();
     }
 
     /**
-     * @param int $attributeCode
-     * @param int $optionId
      * @param int $store
+     * @param string $attributeCode
+     * @param int $optionId
      * @return string
      */
     public function getValue($store, $attributeCode, $optionId)
@@ -67,7 +67,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_SourceTableDataProvider
         }
     }
 
-    private function setupStoreViewSpecifivValues()
+    private function setupStoreViewSpecificValues()
     {
         $attributeOption = $this->resource->getTableName('eav/attribute_option');
         $attributeOptionValue = $this->resource->getTableName('eav/attribute_option_value');

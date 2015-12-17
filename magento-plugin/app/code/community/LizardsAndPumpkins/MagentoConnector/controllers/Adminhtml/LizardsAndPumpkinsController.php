@@ -14,7 +14,7 @@ class LizardsAndPumpkins_MagentoConnector_Adminhtml_LizardsAndPumpkinsController
             $this->triggerCatalogUpdateApi($filename);
             $categoriesExported = $exporter->getNumberOfCategoriesExported();
             Mage::getSingleton('core/session')->addSuccess(
-                sprintf('All %s categories exported.', $categoriesExported)
+                sprintf('All %s categorie(s) exported.', $categoriesExported)
             );
         } catch (Mage_Core_Exception $e) {
             Mage::getSingleton('core/session')->addError($e->getMessage());
@@ -32,7 +32,7 @@ class LizardsAndPumpkins_MagentoConnector_Adminhtml_LizardsAndPumpkinsController
             $productsExported = $exporter->getNumberOfProductsExported();
             $categoriesExported = $exporter->getNumberOfCategoriesExported();
             Mage::getSingleton('core/session')->addSuccess(
-                sprintf('All (%s) products and %s categories exported.', $productsExported, $categoriesExported)
+                sprintf('All products (%s) and %s categorie(s) exported.', $productsExported, $categoriesExported)
             );
         } catch (Mage_Core_Exception $e) {
             Mage::getSingleton('core/session')->addError($e->getMessage());
@@ -50,7 +50,7 @@ class LizardsAndPumpkins_MagentoConnector_Adminhtml_LizardsAndPumpkinsController
             $productsExported = $exporter->getNumberOfProductsExported();
             $categoriesExported = $exporter->getNumberOfCategoriesExported();
             Mage::getSingleton('core/session')->addSuccess(
-                sprintf('%s products and %s categories from queue exported.', $productsExported, $categoriesExported)
+                sprintf('%s product(s) and %s categorie(s) from queue exported.', $productsExported, $categoriesExported)
             );
         } catch (Mage_Core_Exception $e) {
             Mage::getSingleton('core/session')->addError($e->getMessage());
@@ -79,6 +79,7 @@ class LizardsAndPumpkins_MagentoConnector_Adminhtml_LizardsAndPumpkinsController
             $exporter->export();
             // todo 1: decouple CMS and non-CMS block exports
             // todo 2: decouple triggering the API request from the export
+            // todo 3: add display of count like for products and categories
             Mage::getSingleton('core/session')->addSuccess('All cms blocks exported');
         } catch (Mage_Core_Exception $e) {
             Mage::getSingleton('core/session')->addError($e->getMessage());
