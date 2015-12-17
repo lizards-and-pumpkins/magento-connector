@@ -99,7 +99,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
             }
         }
 
-        if ($this->numberOfProductsExported + $this->numberOfCategoriesExported !== 0) {
+        if ($this->numberOfProductsExported + $this->numberOfCategoriesExported > 0) {
             $factory->getProductXmlUploader()->writePartialXmlString($factory->getCatalogMerge()->finish());
         }
 
@@ -124,7 +124,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
             $this->numberOfCategoriesExported++;
         }
 
-        if ($this->numberOfProductsExported + $this->numberOfCategoriesExported !== 0) {
+        if ($this->numberOfProductsExported + $this->numberOfCategoriesExported > 0) {
             $uploader->writePartialXmlString($xmlMerge->finish());
         }
 

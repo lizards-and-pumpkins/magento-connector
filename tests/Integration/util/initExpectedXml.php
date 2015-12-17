@@ -2,7 +2,6 @@
 <?php
 
 require __DIR__ . '/../bootstrap.php';
-require __DIR__ . '/../Suites/ConfigurableProductExportTest.php';
 
 $directoryIterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(__DIR__ . '/../Suites'));
 $filteredDirectoryIterator = new RegexIterator($directoryIterator, '/^.+Test\.php$/i',

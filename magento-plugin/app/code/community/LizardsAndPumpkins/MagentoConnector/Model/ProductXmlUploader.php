@@ -23,7 +23,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_ProductXmlUploader
         $xmlPath = $this->config->getLocalPathForProductExport();
         $xmlFilename = $this->config->getLocalFilenameTemplate();
         $this->filename = $xmlFilename;
-        $xmlPath = $this->suffixPathWithDirectorySeperatorIfNeeded($xmlPath);
+        $xmlPath = $this->suffixPathWithDirectorySeparatorIfNeeded($xmlPath);
         parent::__construct($xmlPath . $xmlFilename);
     }
 
@@ -31,13 +31,11 @@ class LizardsAndPumpkins_MagentoConnector_Model_ProductXmlUploader
      * @param string $xmlPath
      * @return string
      */
-    private function suffixPathWithDirectorySeperatorIfNeeded($xmlPath)
+    private function suffixPathWithDirectorySeparatorIfNeeded($xmlPath)
     {
-        if (substr($xmlPath, -1) !== '/') {
-            $xmlPath .= '/';
-            return $xmlPath;
-        }
-        return $xmlPath;
+        return $this->filename !== '' && substr($xmlPath, -1) !== '/' ?
+            $xmlPath . '/' :
+            $xmlPath;
     }
 
     /**
