@@ -2,3 +2,4 @@
 /composer.lock
 /lib/*
 !/lib/LizardsAndPumpkins/
+/tests/Integration/Suites/expected
