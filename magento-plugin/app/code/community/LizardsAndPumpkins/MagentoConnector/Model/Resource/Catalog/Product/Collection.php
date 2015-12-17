@@ -349,7 +349,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
             }
         } else {
             foreach ($source->getAllOptions() as $option) {
-                $options[$option['value']] = $option['label'];
+                if (! is_array($option['value'])) {
+                    $options[$option['value']] = $option['label'];
+                }
             }
         }
         return $options;
