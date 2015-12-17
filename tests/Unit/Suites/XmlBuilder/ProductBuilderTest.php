@@ -37,21 +37,15 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertStringStartsWith(self::XML_START, $xml);
     }
 
-    public function testXmlWithProductNode()
-    {
-        $xml = $this->getProductBuilderXml([], $this->getValidContext());
-
-        // TODO implement XPath Constraint and use this here
-        $this->assertContains('<product><attributes/></product>', $xml);
-    }
-
     public function testXmlWithAttributes()
     {
         $productData = [
-            'type_id'      => 'simple',
-            'sku'          => '123',
-            'visibility'   => 3,
-            'tax_class_id' => 7,
+            'type_id'    => 'simple',
+            'sku'        => '123',
+            'tax_class'  => 7,
+            'attributes' => [
+                'visibility' => 3,
+            ],
         ];
         $xml = $this->getProductBuilderXml($productData, $this->getValidContext());
 
@@ -65,7 +59,9 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
     public function testXmlWithNodes()
     {
         $productData = [
-            'url_key' => '',
+            'attributes' => [
+                'url_key' => '',
+            ],
         ];
         $xml = $this->getProductBuilderXml($productData, $this->getValidContext());
 
@@ -77,7 +73,9 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
     {
         $this->setExpectedException(\DOMException::class, 'Invalid Character Error');
         $productData = [
-            'url_key',
+            'attributes' => [
+                'url_key',
+            ],
         ];
         $xml = $this->getProductBuilderXml($productData, $this->getValidContext());
     }
@@ -146,10 +144,55 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         $this->getProductBuilderXml($productData, $this->getValidContext());
     }
 
+    /**
+     * @return array[]
+     */
+    public function getInvalidImageData()
+    {
+        return [
+            'invalid main type' => [
+                [
+                    'images' => [
+                        [
+                            'main'  => 2,
+                            'file'  => 'some/file/somewhere.png',
+                            'label' => 'This is the label',
+                        ],
+                    ],
+                ],
+                '"main" must be either "true" or "false".',
+            ],
+            'invalid file type' => [
+                [
+                    'images' => [
+                        [
+                            'main'  => true,
+                            'file'  => 8,
+                            'label' => 'This is the label',
+                        ],
+                    ],
+                ],
+                '"file" must be a string.',
+            ],
+            'invalid label type' => [
+                [
+                    'images' => [
+                        [
+                            'main'  => true,
+                            'file'  => 'some/file/somewhere.png',
+                            'label' => 20,
+                        ],
+                    ],
+                ],
+                '"label" must be a string.',
+            ]
+        ];
+    }
+
     public function testEntityInNodeValue()
     {
         $productData = [
-            'accessories_type' => 'Bags & Luggage',
+            'attributes' => ['accessories_type' => 'Bags & Luggage',]
         ];
         $xml = $this->getProductBuilderXml($productData, $this->getValidContext());
 
@@ -159,7 +202,7 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
     public function testCdataInNodeValue()
     {
         $productData = [
-            'accessories_type' => '<![CDATA[Bags & Luggage]]>',
+            'attributes' => ['accessories_type' => '<![CDATA[Bags & Luggage]]>'],
         ];
         $xml = $this->getProductBuilderXml($productData, $this->getValidContext());
 
@@ -172,7 +215,7 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
     public function testCategoryForProduct()
     {
         $productData = [
-            'categories' => ['shirts'],
+            'attributes' => ['categories' => ['shirts']],
         ];
         $xml = $this->getProductBuilderXml($productData, $this->getValidContext());
 
@@ -182,7 +225,7 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
     public function testMultipleCategories()
     {
         $productData = [
-            'categories' => ['shirts', 'clothing'],
+            'attributes' => ['categories' => ['shirts', 'clothing']]
         ];
         $xml = $this->getProductBuilderXml($productData, $this->getValidContext());
 
@@ -197,7 +240,7 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         ];
         $xml = $this->getProductBuilderXml($productData, $this->getValidContext());
 
-        $this->assertContains('<associated_products/>', $xml);
+        $this->assertNotContains('<associated_products/>', $xml);
     }
 
     public function testUndefinedAssociatedProducts()
@@ -213,11 +256,11 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         $productData = [
             'associated_products' => [
                 [
-                    'stock_qty'    => 12,
                     'sku'          => 'associated-product-1',
-                    'visible'      => true,
-                    'tax_class_id' => 4,
                     'attributes'   => [
+                        'stock_qty'    => 12,
+                        'visible'      => true,
+                        'tax_class_id' => 4,
                         'color' => 'green',
                     ],
                 ],
@@ -245,63 +288,6 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertContains('<variations>', $xml);
         $this->assertContains('<attribute>color</attribute>', $xml);
         $this->assertContains('<attribute>size</attribute>', $xml);
-    }
-
-    /**
-     * @return array[]
-     */
-    public function getInvalidImageData()
-    {
-        return [
-            [
-                [
-                    'images' => [
-                        [
-                            'main'  => 2,
-                            'file'  => 'some/file/somewhere.png',
-                            'label' => 'This is the label',
-                        ],
-                    ],
-                ],
-                '"main" must be either "true" or "false".',
-            ],
-            [
-                [
-                    'images' => [
-                        [
-                            'main'  => true,
-                            'file'  => 8,
-                            'label' => 'This is the label',
-                        ],
-                    ],
-                ],
-                '"file" must be a string.',
-            ],
-            [
-                [
-                    'images' => [
-                        [
-                            'main'  => true,
-                            'file'  => 'some/file/somewhere.png',
-                            'label' => 20,
-                        ],
-                    ],
-                ],
-                '"label" must be a string.',
-            ],
-            [
-                [
-                    'images' =>
-                        [
-                            'main'  => true,
-                            'file'  => 'some/file/somewhere.png',
-                            'label' => 20,
-                        ],
-
-                ],
-                'images must be an array of image definitions.',
-            ],
-        ];
     }
 
     public function testXmlStringIsOne()

@@ -30,7 +30,6 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
 
     private function _beforeLoadData()
     {
-        // todo: is_in_stock, is_salable
         $this->addCategoryUrlKeys();
         $this->addStockItemData();
         $this->addAttributeToSelect(['tax_class_id', 'visibility', 'status']);
@@ -94,10 +93,11 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
     {
         if (isset($productData['associated_products']) && count($productData['associated_products']) > 0) {
             $isInStock = array_reduce($productData['associated_products'], function ($isSalable, $childProduct) {
-                return $isSalable || $this->isInStock($childProduct); 
+                return $isSalable || $this->isInStock($childProduct);
             }, false);
         } else {
-            $isInStock = $productData['stock_qty'] > 0 && 'true' === $productData['backorders'];
+            $hasBackorders = isset($productData['backorders']) && 'true' === $productData['backorders'];
+            $isInStock = $productData['stock_qty'] > 0 && $hasBackorders;
         }
         return sprintf('%d', $isInStock);
     }
@@ -214,8 +214,18 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
         );
 
         $simpleProductData = [];
+        $attributesToCopy = array_merge(
+            ['sku', 'stock_qty', 'tax_class_id', 'type_id'],
+            $this->getConfigurableAttributeIdToCodeMap()
+        );
         foreach ($simpleProducts->getData() as $row) {
-            $simpleProductData[$row['parent_id']][] = $row;
+            $simpleProductData[$row['parent_id']][] = array_reduce(
+                $attributesToCopy,
+                function ($carry, $attribute) use ($row) {
+                    return array_merge($carry, [$attribute => $row[$attribute]]);
+                },
+                []
+            );
         }
 
         return $simpleProductData;
@@ -349,7 +359,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
             }
         } else {
             foreach ($source->getAllOptions() as $option) {
-                if (! is_array($option['value'])) {
+                if (!is_array($option['value'])) {
                     $options[$option['value']] = $option['label'];
                 }
             }

@@ -15,19 +15,12 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_PrepareProductDataForXmlB
      */
     private $uploader;
 
-    /**
-     * @var LizardsAndPumpkins_MagentoConnector_Model_Export_SourceTableDataProvider
-     */
-    private $sourceTableDataProvider;
-
     public function __construct(
         CatalogMerge $merge,
-        LizardsAndPumpkins_MagentoConnector_Model_XmlUploader $uploader,
-        LizardsAndPumpkins_MagentoConnector_Model_Export_SourceTableDataProvider $sourceTableDataProvider
+        LizardsAndPumpkins_MagentoConnector_Model_XmlUploader $uploader
     ) {
         $this->merge = $merge;
         $this->uploader = $uploader;
-        $this->sourceTableDataProvider = $sourceTableDataProvider;
     }
 
     /**
@@ -75,7 +68,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_PrepareProductDataForXmlB
         foreach ($productData as $key => $value) {
             switch ($key) {
                 case 'media_gallery':
-                    $preparedData['images'] = $this->prepareImagesData($value, $productData['image']);
+                    if (isset($productData['image'])) {
+                        $preparedData['images'] = $this->prepareImagesData($value, $productData['image']);
+                    }
                     break;
 
                 case 'associated_products':
@@ -111,30 +106,6 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_PrepareProductDataForXmlB
         return $preparedData;
     }
 
-//    /**
-//     * @param Mage_Catalog_Model_Resource_Eav_Attribute $attribute
-//     * @return bool
-//     */
-//    private function isAttributeSelectOrMultiselect(Mage_Catalog_Model_Resource_Eav_Attribute $attribute)
-//    {
-//        return in_array($attribute->getData('frontend_input'), ['multiselect', 'select']);
-//    }
-//
-//    /**
-//     * @param mixed[] $productData
-//     * @return bool
-//     */
-//    private function getIsSalableFromData(array $productData)
-//    {
-//        $salable = $productData['status'] == Mage_Catalog_Model_Product_Status::STATUS_ENABLED;
-//
-//        if ($salable && $productData['is_salable']) {
-//            return (bool) $productData['is_salable'];
-//        }
-//
-//        return $salable && count($productData['associated_products']) === 0;
-//    }
-
     /**
      * @param array[] $mediaGalleryData
      * @param string $mainProductImage
@@ -164,16 +135,17 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_PrepareProductDataForXmlB
     {
         $preparedAssociatedProductsData = [];
         foreach ($associatedProductsData as $associatedProductData) {
-            $associatedProduct = [
-                'sku'       => $associatedProductData['sku'],
-                'type_id'   => $associatedProductData['type_id'],
-                'tax_class' => $associatedProductData['tax_class_id'],
-                'stock_qty' => $associatedProductData['stock_qty'],
-            ];
+            $associatedProduct = $this->transformData($associatedProductData);
+//            $associatedProduct = [
+//                'sku'       => $associatedProductData['sku'],
+//                'type_id'   => $associatedProductData['type_id'],
+//                'tax_class' => $associatedProductData['tax_class_id'],
+//                'stock_qty' => $associatedProductData['stock_qty'],
+//            ];
 
-            foreach ($configurableAttributes as $code) {
-                $associatedProduct['attributes'][$code] = $associatedProductData[$code];
-            }
+//            foreach ($configurableAttributes as $code) {
+//                $associatedProduct['attributes'][$code] = $associatedProductData[$code];
+//            }
             $preparedAssociatedProductsData[] = $associatedProduct;
         }
         return $preparedAssociatedProductsData;

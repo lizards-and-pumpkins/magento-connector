@@ -16,11 +16,6 @@ class ProductBuilder
     private $xml;
 
     /**
-     * @var mixed[]
-     */
-    private $productData;
-
-    /**
      * @var string[]
      */
     private $context;
@@ -31,14 +26,13 @@ class ProductBuilder
      */
     public function __construct(array $productData, array $context)
     {
-        $this->productData = $productData;
         $this->validateContext($context);
         $this->context = $context;
         $this->xml = new \XMLWriter();
         $this->xml->openMemory();
         $this->xml->setIndent(true);
         $this->xml->startDocument('1.0', 'UTF-8');
-        $this->buildProductXml();
+        $this->buildProductXml($productData);
     }
 
     /**
@@ -49,28 +43,33 @@ class ProductBuilder
         return new XmlString($this->xml->flush());
     }
 
-    private function buildProductXml()
+    /**
+     * @param mixed[] $productXml
+     */
+    private function buildProductXml(array $productXml)
     {
         $this->xml->startElement('product');
-        $this->addProductNodeAttributes($this->productData);
+        $this->addProductNodeAttributes($productXml);
 
-        $this->createImagesNodes();
-        if (count($this->productData['associated_products']) > 0) {
-            $this->createAssociatedProductsNodes();
+        $this->createImagesNodes($productXml);
+        if (isset($productXml['associated_products']) && count($productXml['associated_products']) > 0) {
+            $this->createAssociatedProductsNodes($productXml);
         }
-        $this->createVariations();
+        $this->createVariations($productXml);
 
         $this->xml->startElement('attributes');
-        foreach ($this->productData['attributes'] as $attributeName => $value) {
-            $this->checkAttributeName($attributeName);
-            if (!$this->isNodeRequiredForAttribute($attributeName)) {
-                continue;
-            }
+        if (isset($productXml['attributes'])) {
+            foreach ($productXml['attributes'] as $attributeName => $value) {
+                $this->checkAttributeName($attributeName);
+                if (!$this->shouldNodeBeChildOfAttributesNode($attributeName)) {
+                    continue;
+                }
 
-            if ($attributeName == 'categories') {
-                $this->createAttributeNode('category', $value);
-            } else {
-                $this->createAttributeNode($attributeName, $value);
+                if ($attributeName == 'categories') {
+                    $this->createAttributeNode('category', $value);
+                } else {
+                    $this->createAttributeNode($attributeName, $value);
+                }
             }
         }
         $this->xml->endElement(); // attributes
@@ -92,7 +91,7 @@ class ProductBuilder
      * @param string $attribute
      * @return bool
      */
-    private function isNodeRequiredForAttribute($attribute)
+    private function shouldNodeBeChildOfAttributesNode($attribute)
     {
         return !in_array($attribute, array_keys(self::$productNodeAttributesMap));
     }
@@ -157,13 +156,16 @@ class ProductBuilder
         return false;
     }
 
-    private function createImagesNodes()
+    /**
+     * @param mixed[] $productXml
+     */
+    private function createImagesNodes(array $productXml)
     {
-        if (!isset($this->productData['images'])) {
+        if (!isset($productXml['images'])) {
             return;
         }
         $this->xml->startElement('images');
-        foreach ($this->productData['images'] as $image) {
+        foreach ($productXml['images'] as $image) {
             $this->createImageNode($image);
         }
         $this->xml->endElement();
@@ -225,29 +227,18 @@ class ProductBuilder
         }
     }
 
-    private function createAssociatedProductsNodes()
+    /**
+     * @param mixed[] $productXml
+     */
+    private function createAssociatedProductsNodes(array $productXml)
     {
         /** @var $associatedProductsData mixed[] */
-        $associatedProductsData = $this->productData['associated_products'];
+        $associatedProductsData = $productXml['associated_products'];
         $this->validateAssociatedProducts($associatedProductsData);
         $xml = $this->xml;
         $xml->startElement('associated_products');
         foreach ($associatedProductsData as $associatedProduct) {
-            $xml->startElement('product');
-            $this->addProductNodeAttributes($associatedProduct);
-            $xml->startElement('attributes');
-            $xml->writeElement('stock_qty', $associatedProduct['stock_qty']);
-            foreach ($associatedProduct['attributes'] as $attributeName => $value) {
-                if ($attributeName === 'stock_qty') {
-                    continue;
-                }
-                $xml->startElement($attributeName);
-                $xml->writeAttribute('locale', $this->context['locale']);
-                $xml->text($value);
-                $xml->endElement(); // $attributeName
-            }
-            $xml->endElement(); // attributes
-            $xml->endElement(); // product
+            $this->buildProductXml($associatedProduct);
         }
         $xml->endElement(); // associated_products
     }
@@ -264,7 +255,7 @@ class ProductBuilder
             if (!isset($associatedProductData['sku'])) {
                 throw new \InvalidArgumentException('SKU is missing on associated product.');
             }
-            if (!isset($associatedProductData['stock_qty'])) {
+            if (!isset($associatedProductData['attributes']['stock_qty'])) {
                 throw new \InvalidArgumentException(
                     sprintf('Stock qty is missing on product %s', $associatedProductData['sku'])
                 );
@@ -272,17 +263,23 @@ class ProductBuilder
         }
     }
 
-    private function createVariations()
+    /**
+     * @param mixed[] $productXml
+     */
+    private function createVariations(array $productXml)
     {
-        if (isset($this->productData['variations'])) {
-            $this->createVariationsNodes();
+        if (isset($productXml['variations'])) {
+            $this->createVariationsNodes($productXml);
         }
     }
 
-    private function createVariationsNodes()
+    /**
+     * @param mixed[] $productXml
+     */
+    private function createVariationsNodes(array $productXml)
     {
         $this->xml->startElement('variations');
-        foreach ($this->productData['variations'] as $attributeCode) {
+        foreach ($productXml['variations'] as $attributeCode) {
             $this->xml->writeElement('attribute', $attributeCode);
         }
         $this->xml->endElement(); // variations
