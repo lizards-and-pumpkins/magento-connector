@@ -250,7 +250,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
         );
         $select->joinLeft(
             ['default_value' => $mediaGalleryValueTable],
-            "main.value_id=value.value_id AND value.store_id=0",
+            "main.value_id=default_value.value_id AND default_value.store_id=0",
             ['position_default' => 'default_value.position', 'disabled_default' => 'default_value.disabled']
         );
         $select->where("main.attribute_id=?", $mediaGalleryAttributeId);
