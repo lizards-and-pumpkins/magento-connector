@@ -75,7 +75,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_PrepareProductDataForXmlB
 
                 case 'associated_products':
                     $configurableAttributes = $productData['configurable_attributes'];
-                    $associatedProducts = $this->prepareAssociatedProductsData($value, $configurableAttributes);
+                    $associatedProducts = $this->prepareAssociatedProductsData($value);
                     $preparedData['associated_products'] = $associatedProducts;
                     break;
 
@@ -113,7 +113,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_PrepareProductDataForXmlB
      */
     private function prepareImagesData(array $mediaGalleryData, $mainProductImage)
     {
-        if (! isset($mediaGalleryData['images']) || ! is_array($mediaGalleryData['images'])) {
+        if (!isset($mediaGalleryData['images']) || !is_array($mediaGalleryData['images'])) {
             return [];
         }
         return array_map(function (array $image) use ($mainProductImage) {
@@ -127,26 +127,12 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_PrepareProductDataForXmlB
 
     /**
      * @param array[] $associatedProductsData
-     * @param string[] $configurableAttributes
      * @return array[]
      */
-    private function prepareAssociatedProductsData(array $associatedProductsData, array $configurableAttributes)
+    private function prepareAssociatedProductsData(array $associatedProductsData)
     {
-        $preparedAssociatedProductsData = [];
-        foreach ($associatedProductsData as $associatedProductData) {
-            $associatedProduct = $this->transformData($associatedProductData);
-//            $associatedProduct = [
-//                'sku'       => $associatedProductData['sku'],
-//                'type_id'   => $associatedProductData['type_id'],
-//                'tax_class' => $associatedProductData['tax_class_id'],
-//                'stock_qty' => $associatedProductData['stock_qty'],
-//            ];
-
-//            foreach ($configurableAttributes as $code) {
-//                $associatedProduct['attributes'][$code] = $associatedProductData[$code];
-//            }
-            $preparedAssociatedProductsData[] = $associatedProduct;
-        }
-        return $preparedAssociatedProductsData;
+        return array_map(function (array $associatedProductData) {
+            return $this->transformData($associatedProductData);
+        }, $associatedProductsData);
     }
 }
