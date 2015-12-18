@@ -9,11 +9,18 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
     private $numberOfProductsExported = 0;
 
     private $numberOfCategoriesExported = 0;
+    
+    private $echoProgress = false;
 
     /**
      * @var LizardsAndPumpkins_MagentoConnector_Helper_Export
      */
     private $memoizedExportHelper;
+
+    public function setShowProgress($enableProgressDisplay)
+    {
+        $this->echoProgress = (bool) $enableProgressDisplay;
+    }
 
     /**
      * @return string
@@ -92,18 +99,43 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
         $xmlBuilderAndUploader = $factory->createCatalogExporter();
         $filename = $factory->getProductXmlFilename();
 
+        $startTime = microtime(true);
         foreach ($collector as $product) {
             $xmlBuilderAndUploader->process($product);
             if ($this->numberOfProductsExported++ % self::GARBAGE_COLLECT_ALL_N_PRODUCTS === 0) {
                 gc_collect_cycles();
             }
+            $totalTime = microtime(true) - $startTime;
+            $avgTime = $totalTime / $this->numberOfProductsExported;
+            $this->echoProgress($avgTime);
         }
+        $this->echoToStdErr(PHP_EOL);
 
         if ($this->numberOfProductsExported + $this->numberOfCategoriesExported > 0) {
             $factory->getProductXmlUploader()->writePartialXmlString($factory->getCatalogMerge()->finish());
         }
 
         return $filename;
+    }
+
+    /**
+     * @param float $avgTime
+     */
+    private function echoProgress($avgTime)
+    {
+        if ($this->echoProgress) {
+            $this->echoToStdErr(sprintf("\r%d | %.4f", $this->numberOfProductsExported, $avgTime));
+        }
+    }
+
+    /**
+     * @param string $str
+     */
+    private function echoToStdErr($str)
+    {
+        $f = fopen('php://stderr', 'a');
+        fwrite($f, $str);
+        fclose($f);
     }
 
     /**

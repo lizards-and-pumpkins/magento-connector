@@ -51,7 +51,7 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Factory
     }
 
     /**
-     * @return LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
+     * @return LizardsAndPumpkins_MagentoConnector_Model_Export_PrepareProductDataForXmlBuilder
      */
     public function createCatalogExporter()
     {
