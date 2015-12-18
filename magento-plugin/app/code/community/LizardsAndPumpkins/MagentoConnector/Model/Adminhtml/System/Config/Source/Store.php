@@ -4,7 +4,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Adminhtml_System_Config_Source_S
 {
     public function toOptionArray()
     {
-        $options = array_merge(
+        return array_merge(
             [[
                 'value' => '',
                 'label' => Mage::helper('lizardsAndPumpkins_magentoconnector')->__('-- All Stores --')
@@ -16,6 +16,5 @@ class LizardsAndPumpkins_MagentoConnector_Model_Adminhtml_System_Config_Source_S
                 ];
             }, Mage::app()->getStores())
         );
-        return $options;
     }
 }
