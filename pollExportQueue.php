@@ -15,4 +15,4 @@ do {
     (new Api($apiUrl))->triggerProductImport($filename);
 
     usleep(500000);
-} while (false);
+} while (true);
