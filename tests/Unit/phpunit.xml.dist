@@ -1,6 +1,6 @@
 <phpunit
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/4.5/phpunit.xsd"
+        xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/5.1/phpunit.xsd"
         backupGlobals="true"
         backupStaticAttributes="false"
         bootstrap="./bootstrap.php"
@@ -20,6 +20,8 @@
         timeoutForSmallTests="1"
         timeoutForMediumTests="10"
         timeoutForLargeTests="60"
+        beStrictAboutOutputDuringTests="true"
+        beStrictAboutTestsThatDoNotTestAnything="true"
         verbose="true">
     <php>
         <ini name="display_errors" value="On"/>
@@ -30,9 +32,6 @@
             <directory>Suites/XmlBuilder</directory>
         </testsuite>
         <testsuite name="Api">
-            <directory>Suites/XmlBuilder</directory>
-        </testsuite>
-        <testsuite name="MagentoModule">
             <directory>Suites/XmlBuilder</directory>
         </testsuite>
     </testsuites>

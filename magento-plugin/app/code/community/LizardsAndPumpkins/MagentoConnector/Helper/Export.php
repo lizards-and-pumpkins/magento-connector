@@ -155,9 +155,7 @@ SQL;
 
     public function addAllProductIdsToStockExport()
     {
-        /** @var int[] $ids */
-        $ids = Mage::getResourceModel('catalog/product_collection')->getAllIds();
-        array_map([$this, 'addStockUpdateToQueue'], $ids);
+        array_map([$this, 'addStockUpdateToQueue'], $this->getAllProductIds());
     }
 
     /**
@@ -228,10 +226,9 @@ SQL;
     {
         $query = "SELECT queue_id FROM queue WHERE queue_name = :queueName";
 
-        $result = $this->connection->query($query, [':queueName' => $queueName]);
-        $queueId = $result->fetchColumn();
+        $queueId = $this->connection->fetchOne($query, [':queueName' => $queueName]);
         if (!$queueId) {
-            Mage::throwException('Queue not found.');
+            Mage::throwException(sprintf('Queue "%s" not found.', $queueName));
         }
         return $queueId;
     }
@@ -252,5 +249,15 @@ SQL;
         }
 
         return $productIds;
+    }
+
+    /**
+     * @return int[]
+     */
+    private function getAllProductIds()
+    {
+        $collection = Mage::getResourceModel('catalog/product_collection');
+        $select = $collection->getSelect()->reset(Zend_Db_Select::COLUMNS)->columns(['entity_id']);
+        return $collection->getConnection()->fetchCol($select);
     }
 }

@@ -75,6 +75,7 @@ abstract class LizardsAndPumpkins_MagentoConnector_Model_XmlUploader
             'ssh2.scp://',
             'ssh2.sftp://',
             'file://',
+            'php://',
         ];
     }
 }

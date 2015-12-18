@@ -14,16 +14,10 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Factory
      */
     private $productXmlUploader;
 
-    /**
-     * @var LizardsAndPumpkins_MagentoConnector_Model_Export_SourceTableDataProvider
-     */
-    private $sourceTableDataProvider;
-
     public function reset()
     {
         $this->catalogMerge = null;
         $this->productXmlUploader = null;
-        $this->sourceTableDataProvider = null;
     }
 
     /**
@@ -57,28 +51,13 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Factory
     }
 
     /**
-     * @return LizardsAndPumpkins_MagentoConnector_Model_Export_SourceTableDataProvider
-     */
-    public function getSourceTableDataProvider()
-    {
-        if (null === $this->sourceTableDataProvider) {
-            $this->sourceTableDataProvider = new LizardsAndPumpkins_MagentoConnector_Model_Export_SourceTableDataProvider(
-                Mage::getSingleton('core/resource'),
-                Mage::getModel('lizardsAndPumpkins_magentoconnector/export_magentoConfig')
-            );
-        }
-        return $this->sourceTableDataProvider;
-    }
-
-    /**
      * @return LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader
      */
     public function createCatalogExporter()
     {
-        return new LizardsAndPumpkins_MagentoConnector_Model_Export_ProductXmlBuilderAndUploader(
+        return new LizardsAndPumpkins_MagentoConnector_Model_Export_PrepareProductDataForXmlBuilder(
             $this->getCatalogMerge(),
-            $this->getProductXmlUploader(),
-            $this->getSourceTableDataProvider()
+            $this->getProductXmlUploader()
         );
     }
 

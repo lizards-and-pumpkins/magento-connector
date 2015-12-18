@@ -16,6 +16,7 @@ class LizardsAndPumpkins_MagentoConnector_CartController extends Mage_Core_Contr
             $product = Mage::getModel('catalog/product');
             $product->load($product->getIdBySku($sku));
 
+            // todo: use Mage_Checkout_Model_Cart instead of quote (because of checkout_cart_product_add_after)
             $quote = Mage::getSingleton('checkout/session')->getQuote();
 
             if (!$product->isVisibleInSiteVisibility()) {

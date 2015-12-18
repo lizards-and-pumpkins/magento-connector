@@ -49,7 +49,6 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
         $helper->addAllProductIdsFromWebsiteToProductUpdateQueue($store->getWebsite());
 
         $collector = $this->createProductCollector();
-
         $collector->setStoresToExport([$store]);
 
         $filename = $this->exportProducts($collector);
@@ -66,7 +65,6 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
         $helper->addAllProductIdsFromWebsiteToProductUpdateQueue($website);
 
         $collector = $this->createProductCollector();
-
         $collector->setStoresToExport($website->getStores());
 
         $filename = $this->exportProducts($collector);
@@ -101,7 +99,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
             }
         }
 
-        if ($this->numberOfProductsExported + $this->numberOfCategoriesExported !== 0) {
+        if ($this->numberOfProductsExported + $this->numberOfCategoriesExported > 0) {
             $factory->getProductXmlUploader()->writePartialXmlString($factory->getCatalogMerge()->finish());
         }
 
@@ -117,6 +115,8 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
         $config = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_magentoConfig');
         $categoryCollector = new LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryCollector($config);
         $uploader = new LizardsAndPumpkins_MagentoConnector_Model_ProductXmlUploader();
+        $filename = $uploader->getFilename();
+        
         while ($category = $categoryCollector->getCategory()) {
             $transformer = LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryTransformer::createFrom($category);
             $categoryXml = $transformer->getCategoryXml();
@@ -124,12 +124,10 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
             $this->numberOfCategoriesExported++;
         }
 
-        if ($this->numberOfProductsExported + $this->numberOfCategoriesExported === 0) {
-            return $uploader->getFilename();
+        if ($this->numberOfProductsExported + $this->numberOfCategoriesExported > 0) {
+            $uploader->writePartialXmlString($xmlMerge->finish());
         }
 
-        $uploader->writePartialXmlString($xmlMerge->finish());
-        $filename = $uploader->getFilename();
         return $filename;
     }
 

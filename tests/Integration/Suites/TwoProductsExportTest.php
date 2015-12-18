@@ -67,7 +67,6 @@ class TwoProductsExportTest extends AbstractInitializableProductExportTest
     protected function setUp()
     {
         $this->testExportFile = sys_get_temp_dir() . '/lizards-and-pumpkins/magento-connector/two-products-test.xml';
-        $this->prepareTestExportDirectory(dirname($this->testExportFile));
     }
 
     protected function tearDown()

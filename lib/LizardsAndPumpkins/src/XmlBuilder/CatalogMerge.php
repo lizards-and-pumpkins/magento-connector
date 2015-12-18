@@ -75,7 +75,7 @@ class CatalogMerge
      */
     public function isCategoryMode()
     {
-        return $this->mode === 'category';
+        return 'category' === $this->mode;
     }
 
     /**
@@ -83,7 +83,7 @@ class CatalogMerge
      */
     public function isProductMode()
     {
-        return $this->mode === 'product';
+        return 'product' === $this->mode;
     }
 
     private function startXml()
@@ -114,11 +114,11 @@ class CatalogMerge
     }
 
     /**
-     * @param XmlString $category
+     * @param XmlString $catalogEntity
      */
-    private function addXml(XmlString $category)
+    private function addXml(XmlString $catalogEntity)
     {
-        $this->xml->writeRaw($category->getXml());
+        $this->xml->writeRaw($catalogEntity->getXml());
     }
 
 }
