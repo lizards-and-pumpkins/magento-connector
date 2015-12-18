@@ -65,11 +65,10 @@ class ProductBuilder
                     continue;
                 }
 
-                if ($attributeName == 'categories') {
-                    $this->createAttributeNode('category', $value);
-                } else {
-                    $this->createAttributeNode($attributeName, $value);
-                }
+                $attributeNodeName = 'categories' == $attributeName ?
+                    'category' :
+                    $attributeName;
+                $this->createAttributeNode($attributeNodeName, $value);
             }
         }
         $this->xml->endElement(); // attributes
@@ -282,6 +281,6 @@ class ProductBuilder
         foreach ($productXml['variations'] as $attributeCode) {
             $this->xml->writeElement('attribute', $attributeCode);
         }
-        $this->xml->endElement(); // variations
+        $this->xml->endElement();
     }
 }
