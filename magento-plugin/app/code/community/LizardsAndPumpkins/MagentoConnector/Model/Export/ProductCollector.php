@@ -15,12 +15,12 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector implemen
     /**
      * @var int[]
      */
-    private $currentBatchOfProductIds;
+    private $currentBatchOfProductIds = [];
 
     /**
      * @var Mage_Core_Model_Store[]
      */
-    private $remainingStoresToExportForCurrentProductBatch;
+    private $remainingStoresToExportForCurrentProductBatch = [];
 
     /**
      * @var Mage_Core_Model_Store
@@ -56,13 +56,13 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector implemen
             return $this->productIterator->current();
         }
 
-        if (empty($this->remainingStoresToExportForCurrentProductBatch)) {
+        if (count($this->remainingStoresToExportForCurrentProductBatch) === 0) {
             $this->remainingStoresToExportForCurrentProductBatch = $this->getStoresToExport();
             $this->currentBatchOfProductIds = $this->getQueuedProductIds();
         }
 
         $this->currentStoreForExport = array_pop($this->remainingStoresToExportForCurrentProductBatch);
-        if (empty($this->currentBatchOfProductIds)) {
+        if (count($this->currentBatchOfProductIds) === 0) {
             return null;
         }
 
