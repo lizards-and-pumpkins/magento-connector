@@ -64,8 +64,8 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_PrepareProductDataForXmlB
      */
     private function transformData(array $productData)
     {
-        $preparedData = [];
-        foreach ($productData as $key => $value) {
+        return array_reduce(array_keys($productData), function ($preparedData, $key) use ($productData) {
+            $value = $productData[$key];
             switch ($key) {
                 case 'media_gallery':
                     if (isset($productData['image'])) {
@@ -93,7 +93,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_PrepareProductDataForXmlB
                 case 'sku':
                     $preparedData[$key] = $value;
                     break;
-                
+
                 case 'website':
                 case 'locale':
                     break;
@@ -102,8 +102,8 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_PrepareProductDataForXmlB
                     $preparedData['attributes'][$key] = $value;
                     break;
             }
-        }
-        return $preparedData;
+            return $preparedData;
+        }, []);
     }
 
     /**
