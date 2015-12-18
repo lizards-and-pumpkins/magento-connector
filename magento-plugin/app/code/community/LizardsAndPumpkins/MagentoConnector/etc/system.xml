@@ -2,7 +2,7 @@
 <config>
     <sections>
         <lizardsAndPumpkins translate="label" module="lizardsAndPumpkins_magentoconnector">
-            <label>Lizards &amp; Pumpkins</label>
+            <label><![CDATA[🐉&amp;🎃]]></label>
             <tab>catalog</tab>
             <sort_order>1000</sort_order>
             <show_in_default>1</show_in_default>
@@ -59,6 +59,16 @@
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
                         </stock_xml_target>
+                        <stores_to_export translate="label">
+                            <label>Stores to Export</label>
+                            <frontend_type>multiselect</frontend_type>
+                            <source_model>lizardsAndPumpkins_magentoconnector/adminhtml_system_config_source_store</source_model>
+                            <backend_model>lizardsAndPumpkins_magentoconnector/adminhtml_system_config_backend_arrayBackend</backend_model>
+                            <sort_order>50</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </stores_to_export>
                     </fields>
                 </magentoconnector>
             </groups>

@@ -213,14 +213,8 @@
                 <cms_special_blocks>
                     <top.menu/>
                 </cms_special_blocks>
+                <stores_to_export></stores_to_export>
             </magentoconnector>
         </lizardsAndPumpkins>
     </default>
-    <phpunit>
-        <suite>
-            <modules>
-                <LizardsAndPumpkins_MagentoConnector/>
-            </modules>
-        </suite>
-    </phpunit>
 </config>

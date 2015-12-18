@@ -67,6 +67,14 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Factory
     public function createProductCollector()
     {
         $helper = Mage::helper('lizardsAndPumpkins_magentoconnector/export');
-        return new LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector($helper);
+        $collector = new LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector($helper);
+        
+        if ($config = Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/stores_to_export')) {
+            $stores = array_map(function ($storeId) {
+                return Mage::app()->getStore($storeId);
+            }, array_filter(explode(',', $config)));
+            $collector->setStoresToExport($stores);
+        }
+        return $collector;
     }
 }

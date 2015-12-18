@@ -4,8 +4,6 @@ use LizardsAndPumpkins\MagentoConnector\XmlBuilder\CatalogMerge;
 
 class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
 {
-    const GARBAGE_COLLECT_ALL_N_PRODUCTS = 10000;
-
     private $numberOfProductsExported = 0;
 
     private $numberOfCategoriesExported = 0;
@@ -102,15 +100,12 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
         $startTime = microtime(true);
         foreach ($collector as $product) {
             $xmlBuilderAndUploader->process($product);
-            if ($this->numberOfProductsExported++ % self::GARBAGE_COLLECT_ALL_N_PRODUCTS === 0) {
-                gc_collect_cycles();
-            }
             $totalTime = microtime(true) - $startTime;
-            $avgTime = $totalTime / $this->numberOfProductsExported;
+            $avgTime = $totalTime / ++$this->numberOfProductsExported;
             $this->echoProgress($avgTime);
         }
-        $this->echoToStdErr(PHP_EOL);
-
+        $this->echoProgressDone();
+        
         if ($this->numberOfProductsExported + $this->numberOfCategoriesExported > 0) {
             $factory->getProductXmlUploader()->writePartialXmlString($factory->getCatalogMerge()->finish());
         }
@@ -125,6 +120,13 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
     {
         if ($this->echoProgress) {
             $this->echoToStdErr(sprintf("\r%d | %.4f", $this->numberOfProductsExported, $avgTime));
+        }
+    }
+
+    private function echoProgressDone()
+    {
+        if ($this->echoProgress) {
+            $this->echoToStdErr(PHP_EOL);
         }
     }
 
