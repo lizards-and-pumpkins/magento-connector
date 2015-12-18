@@ -150,7 +150,7 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
     public function getInvalidImageData()
     {
         return [
-            'invalid main type' => [
+            'invalid main type'  => [
                 [
                     'images' => [
                         [
@@ -162,7 +162,7 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
                 ],
                 '"main" must be either "true" or "false".',
             ],
-            'invalid file type' => [
+            'invalid file type'  => [
                 [
                     'images' => [
                         [
@@ -185,14 +185,14 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
                     ],
                 ],
                 '"label" must be a string.',
-            ]
+            ],
         ];
     }
 
     public function testEntityInNodeValue()
     {
         $productData = [
-            'attributes' => ['accessories_type' => 'Bags & Luggage',]
+            'attributes' => ['accessories_type' => 'Bags & Luggage',],
         ];
         $xml = $this->getProductBuilderXml($productData, $this->getValidContext());
 
@@ -225,7 +225,7 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
     public function testMultipleCategories()
     {
         $productData = [
-            'attributes' => ['categories' => ['shirts', 'clothing']]
+            'attributes' => ['categories' => ['shirts', 'clothing']],
         ];
         $xml = $this->getProductBuilderXml($productData, $this->getValidContext());
 
@@ -256,12 +256,12 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         $productData = [
             'associated_products' => [
                 [
-                    'sku'          => 'associated-product-1',
-                    'attributes'   => [
-                        'stock_qty'    => 12,
-                        'visible'      => true,
-                        'tax_class_id' => 4,
-                        'color' => 'green',
+                    'sku'        => 'associated-product-1',
+                    'tax_class'  => 4,
+                    'attributes' => [
+                        'stock_qty' => 12,
+                        'visible'   => true,
+                        'color'     => 'green',
                     ],
                 ],
             ],
@@ -270,7 +270,7 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
 
         $this->assertContains('<product sku="associated-product-1" tax_class="4"', $xml);
         $this->assertContains('<attributes>', $xml);
-        $this->assertContains('<stock_qty>12</stock_qty>', $xml);
+        $this->assertContains('<stock_qty locale="de_DE">12</stock_qty>', $xml);
         $this->assertContains('<color locale="', $xml);
         $this->assertNotContains('<label locale="', $xml);
         $this->assertContains('green</color>', $xml);
