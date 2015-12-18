@@ -113,17 +113,16 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_PrepareProductDataForXmlB
      */
     private function prepareImagesData(array $mediaGalleryData, $mainProductImage)
     {
-        $preparedImages = [];
-        if (isset($mediaGalleryData['images']) && is_array($mediaGalleryData['images'])) {
-            foreach ($mediaGalleryData['images'] as $image) {
-                $preparedImages[] = [
-                    'main'  => $image['file'] === $mainProductImage,
-                    'label' => $image['label'],
-                    'file'  => basename($image['file']),
-                ];
-            }
+        if (! isset($mediaGalleryData['images']) || ! is_array($mediaGalleryData['images'])) {
+            return [];
         }
-        return $preparedImages;
+        return array_map(function (array $image) use ($mainProductImage) {
+            return [
+                'main'  => $image['file'] === $mainProductImage,
+                'label' => $image['label'],
+                'file'  => basename($image['file']),
+            ];
+        }, $mediaGalleryData['images']);
     }
 
     /**
