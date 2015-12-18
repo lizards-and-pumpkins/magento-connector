@@ -404,23 +404,6 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
         return $attributeToSourceModelMap;
     }
 
-    /**
-     * @return string[]
-     */
-    private function getTaxClassIdToNameMap()
-    {
-        static $taxClassNames;
-        if (null === $taxClassNames) {
-            $sourceModel = Mage::getModel('tax/class_source_product');
-            $options = $sourceModel->getAllOptions();
-            $taxClassNames = array_reduce($options, function ($carry, array $option) {
-                $carry[$option['value']] = $option['label']; // don't use array_merge() because of numeric array keys
-                return $carry;
-            }, []);
-        }
-        return $taxClassNames;
-    }
-
     private function loadEavAttributeValues()
     {
         $this->_loadAttributes();
