@@ -7,11 +7,10 @@ class LizardsAndPumpkins_MagentoConnector_Model_Adminhtml_System_Config_Backend_
     {
         $value = $this->getValue();
         if (is_array($value)) {
-            if ('' === $value[0]) {
-                $this->setValue('');
-            } else {
-                $this->setValue(implode(',', $value));
-            }
+            $valueToStore = '' !== $value[0] ?
+                implode(',', $value) :
+                '';
+            $this->setValue($valueToStore);
         }
         return parent::_beforeSave();
     }
