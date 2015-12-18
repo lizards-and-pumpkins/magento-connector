@@ -26,8 +26,11 @@ $store->setConfig('lizardsAndPumpkins/magentoconnector/local_filename_template',
 $queueProductCollector = Mage::helper('lizardsAndPumpkins_magentoconnector/factory')->createProductCollector();
 
 $exporter = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_catalogExporter');
+$exporter->setShowProgress(true);
 $exporter->exportProducts($queueProductCollector);
 
-if ($exportFile !== 'php://stdout') {
-    echo "Export finished\n";
+if ($exportFile !== 'php://stderr') {
+    $f = fopen('php://stderr', 'a');
+    fwrite($f, "Export finished\n");
+    fclose($f);
 }
