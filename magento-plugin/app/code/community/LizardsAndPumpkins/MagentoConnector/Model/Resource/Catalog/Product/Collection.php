@@ -36,6 +36,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
         $this->addConfigurableAttributeCodes();
     }
 
+    /**
+     * @return array[]
+     */
     public function getData()
     {
         $this->_beforeLoadData();
