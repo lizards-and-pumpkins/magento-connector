@@ -171,7 +171,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
         $select->join(
             ['stock_item' => $table],
             'e.entity_id=stock_item.product_id',
-            ['stock_qty' => 'qty', 'backorders' => $configBackordersIf]
+            ['stock_qty' => 'FLOOR(qty)', 'backorders' => $configBackordersIf]
         );
     }
 
