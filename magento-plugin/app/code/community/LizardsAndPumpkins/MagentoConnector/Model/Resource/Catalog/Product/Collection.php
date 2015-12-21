@@ -118,9 +118,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
 
     private function addCategoryUrlKeys()
     {
-        $table = Mage::getSingleton('core/resource')->getTableName('catalog/category_product');
+        $table = $this->getCoreResource()->getTableName('catalog/category_product');
         $connection = $this->getConnection();
-        $categoryUrlKeyAttribute = Mage::getSingleton('eav/config')->getAttribute('catalog_category', 'url_key');
+        $categoryUrlKeyAttribute = $this->getEavConfig()->getAttribute('catalog_category', 'url_key');
         $select = $this->getSelect();
         $columnValue = new Zend_Db_Expr("GROUP_CONCAT(IFNULL(category_s.value, category_d.value) SEPARATOR '|||')");
         $select->joinInner(
@@ -154,9 +154,11 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
 
     public function addStockItemData()
     {
-        $defaultBackOrders = $this->getStore()->getConfig('cataloginventory/item_options/backorders') ? 'true' : 'false';
+        $defaultBackOrders = $this->getStore()->getConfig('cataloginventory/item_options/backorders') ?
+            'true' :
+            'false';
 
-        $table = Mage::getSingleton('core/resource')->getTableName('cataloginventory/stock_item');
+        $table = $this->getCoreResource()->getTableName('cataloginventory/stock_item');
 
         $stockItemBackordersIf = new Zend_Db_Expr(
             "IF(stock_item.backorders > 0, 'true', 'false')"
@@ -178,7 +180,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
         $this->getSelect()->joinLeft(
             ['configurable_attribute' => $this->getResource()->getTable('catalog/product_super_attribute')],
             "e.entity_id=configurable_attribute.product_id",
-            ['configurable_attributes' => new Zend_Db_Expr("GROUP_CONCAT(configurable_attribute.attribute_id SEPARATOR ',')")]
+            ['configurable_attributes' => new Zend_Db_Expr(
+                "GROUP_CONCAT(configurable_attribute.attribute_id SEPARATOR ',')"
+            )]
         );
         $this->groupSelectBy($this->getSelect(), 'e.entity_id');
     }
@@ -199,7 +203,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
      */
     public function loadAssociatedSimpleProductData()
     {
-        $coreResource = Mage::getSingleton('core/resource');
+        $coreResource = $this->getCoreResource();
         $connection = $this->getConnection();
 
         /** @var LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collection $simpleProducts */
@@ -239,12 +243,11 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
      */
     public function loadMediaGalleryData()
     {
-        $mediaGalleryAttributeId = Mage::getSingleton('eav/config')
+        $mediaGalleryAttributeId = $this->getEavConfig()
             ->getAttribute('catalog_product', 'media_gallery')
             ->getAttributeId();
-        /* @var $coreResource Mage_Core_Model_Resource */
-        $coreResource = Mage::getSingleton('core/resource');
-        /* @var $readConnection Varien_Db_Adapter_Interface */
+
+        $coreResource = $this->getCoreResource();
         $readConnection = $this->getConnection();
         $mediaGalleryTable = $coreResource->getTableName('catalog/product_attribute_media_gallery');
         $mediaGalleryValueTable = $coreResource->getTableName('catalog/product_attribute_media_gallery_value');
@@ -310,7 +313,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
     {
         static $configurableAttributes;
         if (null === $configurableAttributes) {
-            $coreResource = Mage::getSingleton('core/resource');
+            $coreResource = $this->getCoreResource();
             $connection = $coreResource->getConnection('default_read');
             $attributesTable = $coreResource->getTableName('eav/attribute');
             $configurableAttributesTable = $coreResource->getTableName('catalog/product_super_attribute');
@@ -367,6 +370,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
         static $tableOptions;
         $storeId = $this->getStoreId();
         if (null === $tableOptions ||! isset($tableOptions[$storeId])) {
+            /** @var Mage_Eav_Model_Resource_Entity_Attribute_Option_Collection $collection */
             $collection = Mage::getResourceModel('eav/entity_attribute_option_collection')
                 ->setPositionOrder('asc')
                 ->setStoreFilter($storeId);
@@ -412,7 +416,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
     {
         /** @var Mage_Eav_Model_Entity_Attribute_Source_Abstract $sourceModel */
         $sourceModel = Mage::getModel($sourceModelClassId);
-        $attribute = Mage::getSingleton('eav/config')->getAttribute('catalog_product', $attributeId);
+        $attribute = $this->getEavConfig()->getAttribute('catalog_product', $attributeId);
         $attribute->setStoreId($this->getStoreId());
         $sourceModel->setAttribute($attribute);
         return $sourceModel;
@@ -422,7 +426,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
     {
         static $attributeToSourceModelMap;
         if (null === $attributeToSourceModelMap) {
-            $coreResource = Mage::getSingleton('core/resource');
+            $coreResource = $this->getCoreResource();
             $connection = $coreResource->getConnection('default_read');
             $attributesTable = $coreResource->getTableName('eav/attribute');
             $select = $connection->select();
@@ -433,7 +437,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
                 ]
             );
             $select->where('entity_type_id=?',
-                Mage::getSingleton('eav/config')->getEntityType('catalog_product')->getId());
+                $this->getEavConfig()->getEntityType('catalog_product')->getId());
             $select->where('frontend_input IN(?)', ['select', 'multiselect']);
             $attributeToSourceModelMap = $connection->fetchPairs($select);
         }
@@ -462,7 +466,6 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
     /**
      * @param string[] $valueInfo
      * @return Mage_Eav_Model_Entity_Collection_Abstract
-     * @throws Mage_Core_Exception
      */
     protected function _setItemAttributeValue($valueInfo)
     {
@@ -516,5 +519,21 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
         return isset($options[$optionId]) ?
             $options[$optionId] :
             $optionId;
+    }
+
+    /**
+     * @return Mage_Core_Model_Resource
+     */
+    private function getCoreResource()
+    {
+        return Mage::getSingleton('core/resource');
+    }
+
+    /**
+     * @return Mage_Eav_Model_Config
+     */
+    private function getEavConfig()
+    {
+        return Mage::getSingleton('eav/config');
     }
 }
