@@ -2,7 +2,7 @@
 
 use LizardsAndPumpkins\MagentoConnector\Api\Api;
 
-class LizardsAndPumpkins_MagentoConnector_Model_Export_Cms_Block
+class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
 {
 
     const XML_SPECIAL_BLOCKS = 'lizardsAndPumpkins/magentoconnector/cms_special_blocks';
@@ -17,6 +17,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Cms_Block
         $cmsBlocks = $this->getAllCmsBlocksWithStoreId();
         $this->api = $this->getApi();
         $this->exportCmsBlocks($cmsBlocks);
+        $this->exportNonCmsBlocks();
     }
 
     /**
@@ -28,7 +29,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Cms_Block
             ->join(['block_store' => 'cms/block_store'], 'main_table.block_id=block_store.block_id', 'store_id')
             ->addExpressionFieldToSelect(
                 'block_id',
-                "CONCAT({{block_id}}, {{store_id}})",
+                "CONCAT({{block_id}},'_', {{store_id}})",
                 [
                     'block_id' => 'main_table.block_id',
                     'store_id' => 'store_id',
@@ -58,10 +59,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Cms_Block
             ];
             $this->api->triggerCmsBlockUpdate($block->getIdentifier(), $block->getContent(), $context);
         }
-        $this->exportSpecialBlocks();
     }
 
-    private function exportSpecialBlocks()
+    private function exportNonCmsBlocks()
     {
         /** @var $appEmulation Mage_Core_Model_App_Emulation */
         $specialBlocks = Mage::getStoreConfig(self::XML_SPECIAL_BLOCKS);
