@@ -91,13 +91,14 @@ USAGE;
     private function exportProducts(LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter $exporter)
     {
         if ($store = $this->getStoreFromArguments()) {
-            $filename = $exporter->exportOneStore(Mage::app()->getStore($store));
-        } elseif ($website = $this->getWebsiteFromArgument()) {
-            $filename = $exporter->exportOneWebsite(Mage::app()->getWebsite($website));
-        } else {
-            $filename = $exporter->exportAllProducts();
+            return $exporter->exportOneStore(Mage::app()->getStore($store));
         }
-        return $filename;
+
+        if ($website = $this->getWebsiteFromArgument()) {
+            return $exporter->exportOneWebsite(Mage::app()->getWebsite($website));
+        }
+
+        return $exporter->exportAllProducts();
     }
 
     /**
