@@ -33,8 +33,7 @@ class LizardsAndPumpkins_Export extends Mage_Shell_Abstract
     {
         /** @var LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter $exporter */
         if ($this->getArg('all-products')) {
-            $this->exportProducts($exporter);
-            $filename = $this->exportProducts();
+            $filename = $this->exportProducts($exporter);
             $this->triggerCatalogUpdateApi($filename);
         } elseif ($this->getArg('queued-products')) {
             $filename = $this->catalogExporter->exportProductsInQueue();
@@ -89,11 +88,7 @@ USAGE;
         echo sprintf('%s queued categories.' . "\n", $stats->getQueuedCategoriesCount());
     }
 
-    /**
-     * @param LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter $exporter
-     * @throws Mage_Core_Exception
-     */
-    private function exportProducts($exporter)
+    private function exportProducts(LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter $exporter)
     {
         if ($store = $this->getStoreFromArguments()) {
             $filename = $exporter->exportOneStore(Mage::app()->getStore($store));
@@ -102,7 +97,7 @@ USAGE;
         } else {
             $filename = $exporter->exportAllProducts();
         }
-        $this->triggerCatalogUpdateApi($filename);
+        return $filename;
     }
 
     /**
