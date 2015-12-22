@@ -92,7 +92,7 @@ USAGE;
     {
         try {
             $store = $this->getArg('store');
-            Mage::app()->getStore($store);
+            $this->validateStore($store);
         } catch (Mage_Core_Model_Store_Exception $e) {
             die(sprintf('Store "%s" doesn\'t exist.', $store));
         }
@@ -107,11 +107,27 @@ USAGE;
     {
         try {
             $website = $this->getArg('website');
-            Mage::app()->getWebsite($website);
+            $this->validateWebsite($website);
         } catch (Mage_Core_Exception $e) {
             die($e->getMessage());
         }
         return $website;
+    }
+
+    /**
+     * @param $store
+     */
+    private function validateStore($store)
+    {
+        Mage::app()->getStore($store);
+    }
+
+    /**
+     * @param $website
+     */
+    private function validateWebsite($website)
+    {
+        Mage::app()->getWebsite($website);
     }
 }
 
