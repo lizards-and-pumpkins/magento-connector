@@ -151,6 +151,22 @@ USAGE;
         }
         return $website;
     }
+
+    /**
+     * @param $store
+     */
+    private function validateStore($store)
+    {
+        Mage::app()->getStore($store);
+    }
+
+    /**
+     * @param $website
+     */
+    private function validateWebsite($website)
+    {
+        Mage::app()->getWebsite($website);
+    }
 }
 
 $exporter = new LizardsAndPumpkins_Export();
