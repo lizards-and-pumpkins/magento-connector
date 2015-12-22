@@ -88,46 +88,20 @@ USAGE;
         echo sprintf('%s queued categories.' . "\n", $stats->getQueuedCategoriesCount());
     }
 
-    private function exportProducts(LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter $exporter)
+    /**
+     * @param $store
+     */
+    private function validateStore($store)
     {
-        if ($store = $this->getStoreFromArguments()) {
-            return $exporter->exportOneStore(Mage::app()->getStore($store));
-        }
-
-        if ($website = $this->getWebsiteFromArgument()) {
-            return $exporter->exportOneWebsite(Mage::app()->getWebsite($website));
-        }
-
-        return $exporter->exportAllProducts();
+        Mage::app()->getStore($store);
     }
 
     /**
-     * @return Mage_Core_Model_Store
+     * @param $website
      */
-    private function getStoreFromArguments()
+    private function validateWebsite($website)
     {
-        try {
-            $store = $this->getArg('store');
-            Mage::app()->getStore($store);
-        } catch (Mage_Core_Model_Store_Exception $e) {
-            die(sprintf('Store "%s" doesn\'t exist.', $store));
-        }
-
-        return $store;
-    }
-
-    /**
-     * @return Mage_Core_Model_Website
-     */
-    private function getWebsiteFromArgument()
-    {
-        try {
-            $website = $this->getArg('website');
-            Mage::app()->getWebsite($website);
-        } catch (Mage_Core_Exception $e) {
-            die($e->getMessage());
-        }
-        return $website;
+        Mage::app()->getWebsite($website);
     }
 
     /**
@@ -176,22 +150,6 @@ USAGE;
             exit(2);
         }
         return $website;
-    }
-
-    /**
-     * @param string|int $storeId
-     */
-    private function validateStore($storeId)
-    {
-        Mage::app()->getStore($storeId);
-    }
-
-    /**
-     * @param string|int $websiteId
-     */
-    private function validateWebsite($websiteId)
-    {
-        Mage::app()->getWebsite($websiteId);
     }
 }
 
