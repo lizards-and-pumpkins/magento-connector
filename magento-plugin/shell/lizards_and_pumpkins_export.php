@@ -33,6 +33,7 @@ class LizardsAndPumpkins_Export extends Mage_Shell_Abstract
     {
         /** @var LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter $exporter */
         if ($this->getArg('all-products')) {
+            $this->exportProducts($exporter);
             $filename = $this->exportProducts();
             $this->triggerCatalogUpdateApi($filename);
         } elseif ($this->getArg('queued-products')) {
@@ -86,6 +87,51 @@ USAGE;
         $stats = new LizardsAndPumpkins_MagentoConnector_Model_Statistics(Mage::getSingleton('core/resource'));
         echo sprintf('%s queued products.' . "\n", $stats->getQueuedProductCount());
         echo sprintf('%s queued categories.' . "\n", $stats->getQueuedCategoriesCount());
+    }
+
+    /**
+     * @param LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter $exporter
+     * @throws Mage_Core_Exception
+     */
+    private function exportProducts($exporter)
+    {
+        if ($store = $this->getStoreFromArguments()) {
+            $filename = $exporter->exportOneStore(Mage::app()->getStore($store));
+        } elseif ($website = $this->getWebsiteFromArgument()) {
+            $filename = $exporter->exportOneWebsite(Mage::app()->getWebsite($website));
+        } else {
+            $filename = $exporter->exportAllProducts();
+        }
+        $this->triggerCatalogUpdateApi($filename);
+    }
+
+    /**
+     * @return Mage_Core_Model_Store
+     */
+    private function getStoreFromArguments()
+    {
+        try {
+            $store = $this->getArg('store');
+            Mage::app()->getStore($store);
+        } catch (Mage_Core_Model_Store_Exception $e) {
+            die(sprintf('Store "%s" doesn\'t exist.', $store));
+        }
+
+        return $store;
+    }
+
+    /**
+     * @return Mage_Core_Model_Website
+     */
+    private function getWebsiteFromArgument()
+    {
+        try {
+            $website = $this->getArg('website');
+            Mage::app()->getWebsite($website);
+        } catch (Mage_Core_Exception $e) {
+            die($e->getMessage());
+        }
+        return $website;
     }
 
     /**
