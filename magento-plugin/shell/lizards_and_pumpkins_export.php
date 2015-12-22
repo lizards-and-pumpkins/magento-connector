@@ -7,11 +7,6 @@ require_once __DIR__ . '/../../../../shell/abstract.php';
 
 class LizardsAndPumpkins_Export extends Mage_Shell_Abstract
 {
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
     protected function _applyPhpVariables()
     {
         return;
