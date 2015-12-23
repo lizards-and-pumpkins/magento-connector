@@ -33,6 +33,11 @@ class LinkerTest extends \PHPUnit_Framework_TestCase
         $this->linker = ImageLinker::createFor($this->targetDir);
     }
 
+    protected function tearDown()
+    {
+        $this->removeDirectoryRecursivly($this->testDir);
+    }
+
     public function testIsLinker()
     {
         $this->assertInstanceOf(ImageLinker::class, $this->linker);
@@ -123,10 +128,5 @@ class LinkerTest extends \PHPUnit_Framework_TestCase
     {
         $this->setExpectedException(\RuntimeException::class);
         ImageLinker::createFor($targetDir);
-    }
-
-    protected function tearDown()
-    {
-        $this->removeDirectoryRecursivly($this->testDir);
     }
 }
