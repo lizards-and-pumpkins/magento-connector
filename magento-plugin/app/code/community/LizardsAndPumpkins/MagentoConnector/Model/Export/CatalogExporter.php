@@ -4,20 +4,49 @@ use LizardsAndPumpkins\MagentoConnector\XmlBuilder\CatalogMerge;
 
 class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
 {
+    const IMAGE_BASE_PATH = '/catalog/product';
+
+    /**
+     * @var LizardsAndPumpkins_MagentoConnector_Helper_Factory
+     */
+    private $factory;
+
+    public function __construct()
+    {
+        $this->factory = Mage::helper('lizardsAndPumpkins_magentoconnector/factory');
+    }
+
+    /**
+     * @var int
+     */
     private $numberOfProductsExported = 0;
 
+    /**
+     * @var int
+     */
     private $numberOfCategoriesExported = 0;
-    
+
+    /**
+     * @var bool
+     */
     private $echoProgress = false;
+
+    /**
+     * @var \LizardsAndPumpkins\MagentoConnector\Images\ImagesCollector
+     */
+    private $imageCollector;
 
     /**
      * @var LizardsAndPumpkins_MagentoConnector_Helper_Export
      */
     private $memoizedExportHelper;
 
+    /**
+     * @param bool $enableProgressDisplay
+     */
     public function setShowProgress($enableProgressDisplay)
     {
-        $this->echoProgress = (bool) $enableProgressDisplay;
+        $this->echoProgress = (bool)$enableProgressDisplay;
     }
 
     /**
@@ -92,10 +121,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
      */
     public function exportProducts(LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector $collector)
     {
-        $factory = Mage::helper('lizardsAndPumpkins_magentoconnector/factory');
-
-        $xmlBuilderAndUploader = $factory->createCatalogExporter();
-        $filename = $factory->getProductXmlFilename();
+        $xmlBuilderAndUploader = $this->factory->createCatalogExporter();
+        $filename = $this->factory->getProductXmlFilename();
+        $this->imageCollector = $this->factory->createImageCollector();
 
         $startTime = microtime(true);
         foreach ($collector as $product) {
@@ -103,11 +131,14 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
             $totalTime = microtime(true) - $startTime;
             $avgTime = $totalTime / ++$this->numberOfProductsExported;
             $this->echoProgress($avgTime);
+
+            $this->collectImages($product);
         }
         $this->echoProgressDone();
-        
+
         if ($this->numberOfProductsExported + $this->numberOfCategoriesExported > 0) {
-            $factory->getProductXmlUploader()->writePartialXmlString($factory->getCatalogMerge()->finish());
+            $this->factory->getProductXmlUploader()->writePartialXmlString($this->factory->getCatalogMerge()->finish());
+            $this->linkImages();
         }
 
         return $filename;
@@ -150,7 +181,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
         $categoryCollector = new LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryCollector($config);
         $uploader = new LizardsAndPumpkins_MagentoConnector_Model_ProductXmlUploader();
         $filename = $uploader->getFilename();
-        
+
         while ($category = $categoryCollector->getCategory()) {
             $transformer = LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryTransformer::createFrom($category);
             $categoryXml = $transformer->getCategoryXml();
@@ -200,5 +231,31 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
     {
         $factory = Mage::helper('lizardsAndPumpkins_magentoconnector/factory');
         return $factory->createProductCollector();
+    }
+
+    /**
+     * @param mixed[] $product
+     */
+    private function collectImages($product)
+    {
+        if (!isset($product['media_gallery']['images']) || !is_array($product['media_gallery']['images'])) {
+            return;
+        }
+
+        foreach ($product['media_gallery']['images'] as $image) {
+            try {
+                $this->imageCollector->addImage(Mage::getBaseDir('media') . self::IMAGE_BASE_PATH . $image['file']);
+            } catch (\InvalidArgumentException $e) {
+                Mage::logException($e);
+            }
+        }
+    }
+
+    private function linkImages()
+    {
+        $linker = $this->factory->createImageLinker();
+        foreach ($this->imageCollector as $image) {
+            $linker->link($image);
+        }
     }
 }

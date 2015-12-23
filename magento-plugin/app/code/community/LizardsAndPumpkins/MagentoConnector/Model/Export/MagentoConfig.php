@@ -45,4 +45,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig
     {
         return Mage::getStoreConfig(Mage_Catalog_Helper_Category::XML_PATH_CATEGORY_URL_SUFFIX);
     }
+
+    public function getImageTargetDirectory()
+    {
+        return Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/image_target');
+    }
 }

@@ -1,5 +1,7 @@
 <?php
 
+use LizardsAndPumpkins\MagentoConnector\Images\ImageLinker;
+use LizardsAndPumpkins\MagentoConnector\Images\ImagesCollector;
 use LizardsAndPumpkins\MagentoConnector\XmlBuilder\CatalogMerge;
 
 class LizardsAndPumpkins_MagentoConnector_Helper_Factory
@@ -13,6 +15,11 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Factory
      * @var LizardsAndPumpkins_MagentoConnector_Model_ProductXmlUploader
      */
     private $productXmlUploader;
+
+    /**
+     * @var LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig
+     */
+    private $config;
 
     public function reset()
     {
@@ -68,13 +75,43 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Factory
     {
         $helper = Mage::helper('lizardsAndPumpkins_magentoconnector/export');
         $collector = new LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector($helper);
-        
+
         if ($config = Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/stores_to_export')) {
-            $stores = array_map(function ($storeId) {
-                return Mage::app()->getStore($storeId);
-            }, array_filter(explode(',', $config)));
+            $stores = array_map(
+                function ($storeId) {
+                    return Mage::app()->getStore($storeId);
+                },
+                array_filter(explode(',', $config))
+            );
             $collector->setStoresToExport($stores);
         }
         return $collector;
+    }
+
+    /**
+     * @return ImagesCollector
+     */
+    public function createImageCollector()
+    {
+        return new ImagesCollector();
+    }
+
+    /**
+     * @return ImageLinker
+     */
+    public function createImageLinker()
+    {
+        return ImageLinker::createFor($this->getConfig()->getImageTargetDirectory());
+    }
+
+    /**
+     * @return LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig
+     */
+    private function getConfig()
+    {
+        if (null === $this->config) {
+            $this->config = new LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig();
+        }
+        return $this->config;
     }
 }

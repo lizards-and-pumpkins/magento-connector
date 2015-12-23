@@ -200,7 +200,8 @@
             <adminhtml>
                 <args>
                     <modules>
-                        <magentoconnector after="Mage_Adminhtml">LizardsAndPumpkins_MagentoConnector_Adminhtml</magentoconnector>
+                        <magentoconnector
+                                after="Mage_Adminhtml">LizardsAndPumpkins_MagentoConnector_Adminhtml</magentoconnector>
                     </modules>
                 </args>
             </adminhtml>
@@ -213,7 +214,6 @@
                 <cms_special_blocks>
                     <top.menu/>
                 </cms_special_blocks>
-                <stores_to_export></stores_to_export>
             </magentoconnector>
         </lizardsAndPumpkins>
     </default>

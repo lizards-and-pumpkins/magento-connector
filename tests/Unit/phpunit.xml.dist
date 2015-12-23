@@ -34,5 +34,8 @@
         <testsuite name="Api">
             <directory>Suites/XmlBuilder</directory>
         </testsuite>
+        <testsuite name="Images">
+            <directory>Suites/Images</directory>
+        </testsuite>
     </testsuites>
 </phpunit>
