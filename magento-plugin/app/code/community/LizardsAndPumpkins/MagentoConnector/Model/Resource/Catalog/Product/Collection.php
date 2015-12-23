@@ -98,13 +98,12 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
     private function hasBackorders(array $productData)
     {
         if (isset($productData['associated_products']) && count($productData['associated_products']) > 0) {
-            $hasBackorders = array_reduce($productData['associated_products'], function ($carry, $childProduct) {
+            return array_reduce($productData['associated_products'], function ($carry, $childProduct) {
                 return $carry || $this->hasBackorders($childProduct);
             }, false);
         } else {
-            $hasBackorders = isset($productData['backorders']) && 'true' === $productData['backorders'];
+            return isset($productData['backorders']) && 'true' === $productData['backorders'];
         }
-        return $hasBackorders;
     }
 
     /**
