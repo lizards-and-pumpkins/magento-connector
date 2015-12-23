@@ -243,7 +243,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
         }
 
         foreach ($product['media_gallery']['images'] as $image) {
-            $this->imageCollector->addImage(Mage::getBaseDir('media') . $image);
+            $this->imageCollector->addImage(Mage::getBaseDir('media') . $image['file']);
         }
     }
 
