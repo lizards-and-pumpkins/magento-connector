@@ -2,8 +2,13 @@
 
 namespace LizardsAndPumpkins\MagentoConnector\Images;
 
+require_once __DIR__ . '/../RemoveDirectory.php';
+
+use LizardsAndPumpkins\MagentoConnector\RemoveDirectory;
+
 class LinkerTest extends \PHPUnit_Framework_TestCase
 {
+    use RemoveDirectory;
     /**
      * @var string
      */
@@ -119,19 +124,6 @@ class LinkerTest extends \PHPUnit_Framework_TestCase
 
     protected function tearDown()
     {
-        if (!is_dir($this->targetDir)) {
-            return;
-        }
-        $dir = $this->targetDir;
-        $it = new \RecursiveDirectoryIterator($dir, \RecursiveDirectoryIterator::SKIP_DOTS);
-        $files = new \RecursiveIteratorIterator($it, \RecursiveIteratorIterator::CHILD_FIRST);
-        foreach ($files as $file) {
-            if ($file->isDir()) {
-                rmdir((string) $file);
-            } else {
-                unlink((string) $file);
-            }
-        }
-        rmdir($dir);
+        $this->removeDirectoryRecursivly($this->testDir);
     }
 }

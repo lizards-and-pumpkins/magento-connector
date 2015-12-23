@@ -2,9 +2,13 @@
 
 namespace LizardsAndPumpkins\MagentoConnector\Images;
 
+require_once __DIR__ . '/../RemoveDirectory.php';
+
+use LizardsAndPumpkins\MagentoConnector\RemoveDirectory;
 
 class CollectorTest extends \PHPUnit_Framework_TestCase
 {
+    use RemoveDirectory;
     /**
      * @var Collector
      */
@@ -13,6 +17,11 @@ class CollectorTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->collector = new Collector();
+    }
+
+    protected function tearDown()
+    {
+        $this->removeDirectoryRecursivly($this->testDir);
     }
 
     public function testAddImageAndReturnIt()
