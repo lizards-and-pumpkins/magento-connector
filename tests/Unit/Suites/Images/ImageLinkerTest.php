@@ -46,7 +46,7 @@ class ImageLinkerTest extends \PHPUnit_Framework_TestCase
     public function testDirectoryDoesNotExistThrowsException()
     {
         $targetDirectory = '/this/directory/does/not/exist/';
-        $this->setExpectedException(\RuntimeException::class,
+        $this->setExpectedException(\InvalidArgumentException::class,
             sprintf('Directory "%" does not exist.', $targetDirectory)
         );
         ImageLinker::createFor($targetDirectory);
@@ -66,7 +66,7 @@ class ImageLinkerTest extends \PHPUnit_Framework_TestCase
     {
         $target = '/file/does/not/exist';
         $this->setExpectedException(
-            \RuntimeException::class,
+            \InvalidArgumentException::class,
             sprintf('Link target "%s" does not exist.', $target)
         );
 
@@ -79,7 +79,7 @@ class ImageLinkerTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvalidLinkTargets($invalidLinkTarget)
     {
-        $this->setExpectedException(\RuntimeException::class);
+        $this->setExpectedException(\InvalidArgumentException::class);
         $this->linker->link($invalidLinkTarget);
     }
 
@@ -126,7 +126,7 @@ class ImageLinkerTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvalidTargetDirectory($targetDir)
     {
-        $this->setExpectedException(\RuntimeException::class);
+        $this->setExpectedException(\InvalidArgumentException::class);
         ImageLinker::createFor($targetDir);
     }
 }
