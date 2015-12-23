@@ -35,7 +35,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
      */
     public function setShowProgress($enableProgressDisplay)
     {
-        $this->echoProgress = (bool)$enableProgressDisplay;
+        $this->echoProgress = (bool) $enableProgressDisplay;
     }
 
     /**
@@ -130,6 +130,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
 
         if ($this->numberOfProductsExported + $this->numberOfCategoriesExported > 0) {
             $factory->getProductXmlUploader()->writePartialXmlString($factory->getCatalogMerge()->finish());
+            $this->linkImages($factory);
         }
 
         return $filename;
@@ -235,6 +236,16 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
 
         foreach ($product['media_gallery']['images'] as $image) {
             $this->imageCollector->addImage(Mage::getBaseDir('media') . $image);
+        }
+    }
+
+    /**
+     * @param LizardsAndPumpkins_MagentoConnector_Helper_Factory $factory
+     */
+    private function linkImages($factory)
+    {
+        foreach ($this->imageCollector as $image) {
+            $factory->createImageLinker()->link($image);
         }
     }
 }
