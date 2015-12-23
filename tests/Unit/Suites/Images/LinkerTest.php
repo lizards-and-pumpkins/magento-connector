@@ -9,26 +9,33 @@ use LizardsAndPumpkins\MagentoConnector\RemoveDirectory;
 class LinkerTest extends \PHPUnit_Framework_TestCase
 {
     use RemoveDirectory;
+
+    /**
+     * @var string
+     */
+    private $testDir;
+
     /**
      * @var string
      */
     private $targetDir;
 
     /**
-     * @var Linker
+     * @var ImageLinker
      */
     private $linker;
 
     protected function setUp()
     {
-        $this->targetDir = sys_get_temp_dir() . '/' . uniqid() . '/';
-        mkdir($this->targetDir);
-        $this->linker = Linker::createFor($this->targetDir);
+        $this->testDir = sys_get_temp_dir() . '/' . uniqid() . '/';
+        $this->targetDir = $this->testDir . 'targetDir/';
+        mkdir($this->targetDir, 0777, true);
+        $this->linker = ImageLinker::createFor($this->targetDir);
     }
 
     public function testIsLinker()
     {
-        $this->assertInstanceOf(Linker::class, $this->linker);
+        $this->assertInstanceOf(ImageLinker::class, $this->linker);
     }
 
     public function testDirectoryDoesNotExistThrowsException()
@@ -37,20 +44,20 @@ class LinkerTest extends \PHPUnit_Framework_TestCase
         $this->setExpectedException(\RuntimeException::class,
             sprintf('Directory "%" does not exist.', $targetDirectory)
         );
-        Linker::createFor($targetDirectory);
+        ImageLinker::createFor($targetDirectory);
     }
 
     public function testSymLink()
     {
         $filename = 'my_original_file';
-        $filePath = sys_get_temp_dir() . '/' . $filename;
+        $filePath = $this->testDir . $filename;
         touch($filePath);
         $this->linker->link($filePath);
         $this->assertTrue(is_link($this->targetDir . '/' . $filename));
         unlink($filePath);
     }
 
-    public function testExceptionWhenLinkTargetDoesntExist()
+    public function testExceptionWhenLinkTargetDoesNotExist()
     {
         $target = '/file/does/not/exist';
         $this->setExpectedException(
@@ -87,14 +94,13 @@ class LinkerTest extends \PHPUnit_Framework_TestCase
     public function testIgnoreIfLinkAlreadyExists()
     {
         $filename = 'my_original_file';
-        $filePath = sys_get_temp_dir() . '/' . $filename;
+        $filePath = $this->testDir . $filename;
         touch($filePath);
 
         $this->linker->link($filePath);
         $this->linker->link($filePath);
 
         $this->assertTrue(is_link($this->targetDir . '/' . $filename));
-        unlink($filePath);
     }
 
     public function testLinkAlreadyExistsAsFile()
@@ -102,14 +108,11 @@ class LinkerTest extends \PHPUnit_Framework_TestCase
         $this->setExpectedException(\RuntimeException::class);
 
         $filename = 'my_original_file';
-        $filePath = sys_get_temp_dir() . '/' . $filename;
+        $filePath = $this->testDir . $filename;
         touch($filePath);
         touch($this->targetDir . '/' . $filename);
 
         $this->linker->link($filePath);
-
-        unlink($this->targetDir . '/' . $filename);
-        unlink($filePath);
     }
 
     /**
@@ -119,7 +122,7 @@ class LinkerTest extends \PHPUnit_Framework_TestCase
     public function testInvalidTargetDirectory($targetDir)
     {
         $this->setExpectedException(\RuntimeException::class);
-        Linker::createFor($targetDir);
+        ImageLinker::createFor($targetDir);
     }
 
     protected function tearDown()
