@@ -52,7 +52,7 @@ class ImageLinkerTest extends \PHPUnit_Framework_TestCase
         ImageLinker::createFor($targetDirectory);
     }
 
-    public function testSymLink()
+    public function testSymLinkIsCreatedInTargetDir()
     {
         $filename = 'my_original_file';
         $filePath = $this->testDir . $filename;
