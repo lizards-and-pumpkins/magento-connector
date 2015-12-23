@@ -101,9 +101,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
             return array_reduce($productData['associated_products'], function ($carry, $childProduct) {
                 return $carry || $this->hasBackorders($childProduct);
             }, false);
-        } else {
-            return isset($productData['backorders']) && 'true' === $productData['backorders'];
         }
+        
+        return isset($productData['backorders']) && 'true' === $productData['backorders'];
     }
 
     /**
