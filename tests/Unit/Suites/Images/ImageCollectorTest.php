@@ -6,7 +6,7 @@ require_once __DIR__ . '/../RemoveDirectory.php';
 
 use LizardsAndPumpkins\MagentoConnector\RemoveDirectory;
 
-class CollectorTest extends \PHPUnit_Framework_TestCase
+class ImageCollectorTest extends \PHPUnit_Framework_TestCase
 {
     use RemoveDirectory;
 
