@@ -1,6 +1,7 @@
 <?php
 
 use LizardsAndPumpkins\MagentoConnector\Images\Collector;
+use LizardsAndPumpkins\MagentoConnector\Images\Linker;
 use LizardsAndPumpkins\MagentoConnector\XmlBuilder\CatalogMerge;
 
 class LizardsAndPumpkins_MagentoConnector_Helper_Factory
@@ -14,6 +15,11 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Factory
      * @var LizardsAndPumpkins_MagentoConnector_Model_ProductXmlUploader
      */
     private $productXmlUploader;
+
+    /**
+     * @var LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig
+     */
+    private $config;
 
     public function reset()
     {
@@ -73,7 +79,7 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Factory
         if ($config = Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/stores_to_export')) {
             $stores = array_map(
                 function ($storeId) {
-                return Mage::app()->getStore($storeId);
+                    return Mage::app()->getStore($storeId);
                 }, array_filter(explode(',', $config))
             );
             $collector->setStoresToExport($stores);
@@ -87,5 +93,24 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Factory
     public function createImageCollector()
     {
         return new Collector();
+    }
+
+    /**
+     * @return Linker
+     */
+    public function createImageLinker()
+    {
+        return Linker::createFor($this->getConfig()->getImageTargetDirectory());
+    }
+
+    /**
+     * @return LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig
+     */
+    private function getConfig()
+    {
+        if (null === $this->config) {
+            $this->config = new LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig();
+        }
+        return $this->config;
     }
 }
