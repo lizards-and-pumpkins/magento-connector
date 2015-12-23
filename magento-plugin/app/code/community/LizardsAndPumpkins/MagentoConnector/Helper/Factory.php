@@ -1,5 +1,6 @@
 <?php
 
+use LizardsAndPumpkins\MagentoConnector\Images\Collector;
 use LizardsAndPumpkins\MagentoConnector\XmlBuilder\CatalogMerge;
 
 class LizardsAndPumpkins_MagentoConnector_Helper_Factory
@@ -68,7 +69,7 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Factory
     {
         $helper = Mage::helper('lizardsAndPumpkins_magentoconnector/export');
         $collector = new LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector($helper);
-        
+
         if ($config = Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/stores_to_export')) {
             $stores = array_map(function ($storeId) {
                 return Mage::app()->getStore($storeId);
@@ -76,5 +77,13 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Factory
             $collector->setStoresToExport($stores);
         }
         return $collector;
+    }
+
+    /**
+     * @return Collector
+     */
+    public function createImageCollector()
+    {
+        return new Collector();
     }
 }
