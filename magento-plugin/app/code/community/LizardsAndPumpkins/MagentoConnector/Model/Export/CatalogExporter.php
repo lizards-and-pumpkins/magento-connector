@@ -64,7 +64,6 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
 
     /**
      * @param Mage_Core_Model_Store $store
-     *
      * @return string
      */
     public function exportOneStore(Mage_Core_Model_Store $store)
@@ -81,7 +80,6 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
 
     /**
      * @param Mage_Core_Model_Website $website
-     *
      * @return int
      */
     public function exportOneWebsite(Mage_Core_Model_Website $website)
@@ -108,7 +106,6 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
 
     /**
      * @param LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector $collector
-     *
      * @return string
      */
     public function exportProducts(LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector $collector)

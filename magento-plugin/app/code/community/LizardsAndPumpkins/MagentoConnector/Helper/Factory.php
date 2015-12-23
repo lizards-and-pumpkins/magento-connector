@@ -71,9 +71,11 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Factory
         $collector = new LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector($helper);
 
         if ($config = Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/stores_to_export')) {
-            $stores = array_map(function ($storeId) {
+            $stores = array_map(
+                function ($storeId) {
                 return Mage::app()->getStore($storeId);
-            }, array_filter(explode(',', $config)));
+                }, array_filter(explode(',', $config))
+            );
             $collector->setStoresToExport($stores);
         }
         return $collector;
