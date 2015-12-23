@@ -43,7 +43,7 @@ class ImagesCollector implements \IteratorAggregate
             throw new \InvalidArgumentException('Image file path must be string.');
         }
         if (!is_file($imageFilePath)) {
-            throw new \InvalidArgumentException('The file "%s" does not exist.');
+            throw new \InvalidArgumentException(sprintf('The file "%s" does not exist.', $imageFilePath));
         }
     }
 }
