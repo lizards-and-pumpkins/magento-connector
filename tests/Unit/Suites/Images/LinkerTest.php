@@ -79,6 +79,34 @@ class LinkerTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
+    public function testIgnoreIfLinkAlreadyExists()
+    {
+        $filename = 'my_original_file';
+        $filePath = sys_get_temp_dir() . '/' . $filename;
+        touch($filePath);
+
+        $this->linker->link($filePath);
+        $this->linker->link($filePath);
+
+        $this->assertTrue(is_link($this->targetDir . '/' . $filename));
+        unlink($filePath);
+    }
+
+    public function testLinkAlreadyExistsAsFile()
+    {
+        $this->setExpectedException(\RuntimeException::class);
+
+        $filename = 'my_original_file';
+        $filePath = sys_get_temp_dir() . '/' . $filename;
+        touch($filePath);
+        touch($this->targetDir . '/' . $filename);
+
+        $this->linker->link($filePath);
+
+        unlink($this->targetDir . '/' . $filename);
+        unlink($filePath);
+    }
+
     /**
      * @param string $targetDir
      * @dataProvider provideInvalidFileAndDirectoryNames

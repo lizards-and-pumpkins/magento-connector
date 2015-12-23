@@ -48,6 +48,10 @@ class Linker
     public function link($filePath)
     {
         $this->validateFile($filePath);
+        if ($this->linkExists($this->targetDir . basename($filePath))) {
+            return;
+        }
+        $this->validateLinkTarget($filePath);
         symlink($filePath, $this->targetDir . basename($filePath));
     }
 
@@ -61,6 +65,25 @@ class Linker
         }
         if (!is_file($filePath)) {
             throw new \RuntimeException(sprintf('Link target "%s" does not exist.', $filePath));
+        }
+    }
+
+    /**
+     * @param string $link
+     * @return bool
+     */
+    private function linkExists($link)
+    {
+        return is_link($link);
+    }
+
+    /**
+     * @param $filePath
+     */
+    private function validateLinkTarget($filePath)
+    {
+        if (is_file($this->targetDir . basename($filePath))) {
+            throw new \RuntimeException('Link already exists as file.');
         }
     }
 }
