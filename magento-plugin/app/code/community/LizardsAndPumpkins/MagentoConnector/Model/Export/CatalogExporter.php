@@ -243,7 +243,11 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
         }
 
         foreach ($product['media_gallery']['images'] as $image) {
-            $this->imageCollector->addImage(Mage::getBaseDir('media') . self::IMAGE_BASE_PATH . $image['file']);
+            try {
+                $this->imageCollector->addImage(Mage::getBaseDir('media') . self::IMAGE_BASE_PATH . $image['file']);
+            } catch (\InvalidArgumentException $e) {
+                Mage::logException($e);
+            }
         }
     }
 
