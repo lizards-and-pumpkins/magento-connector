@@ -61,10 +61,10 @@ class ImageLinker
     private function validateFile($filePath)
     {
         if (!is_string($filePath)) {
-            throw new \RuntimeException('Link target must be string.');
+            throw new \InvalidArgumentException('Link target must be string.');
         }
         if (!is_file($filePath)) {
-            throw new \RuntimeException(sprintf('Link target "%s" does not exist.', $filePath));
+            throw new \InvalidArgumentException(sprintf('Link target "%s" does not exist.', $filePath));
         }
     }
 
