@@ -69,7 +69,7 @@ class CollectorTest extends \PHPUnit_Framework_TestCase
         $this->assertSame([$this->image1], $this->collector->getImages());
     }
 
-    public function testIterator()
+    public function testImplementsIteratorInterface()
     {
         $this->assertInstanceOf(\Iterator::class, $this->collector->getIterator());
     }
