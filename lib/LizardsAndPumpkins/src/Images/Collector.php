@@ -2,12 +2,14 @@
 
 namespace LizardsAndPumpkins\MagentoConnector\Images;
 
-class Collector
+use IteratorAggregate;
+
+class Collector implements IteratorAggregate
 {
     /**
      * @var string[]
      */
-    private $images;
+    private $images = [];
 
     /**
      * @param string $image
@@ -23,5 +25,13 @@ class Collector
     public function getImages()
     {
         return array_values($this->images);
+    }
+
+    /**
+     * @return \ArrayIterator
+     */
+    public function getIterator()
+    {
+        return new \ArrayIterator($this->getImages());
     }
 }

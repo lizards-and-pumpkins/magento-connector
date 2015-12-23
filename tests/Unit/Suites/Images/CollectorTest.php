@@ -2,6 +2,8 @@
 
 namespace LizardsAndPumpkins\MagentoConnector\Images;
 
+use Iterator;
+
 class CollectorTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -39,5 +41,10 @@ class CollectorTest extends \PHPUnit_Framework_TestCase
         $this->collector->addImage($image);
         $this->collector->addImage($image);
         $this->assertSame($images, $this->collector->getImages());
+    }
+
+    public function testIterator()
+    {
+        $this->assertInstanceOf(Iterator::class, $this->collector->getIterator());
     }
 }
