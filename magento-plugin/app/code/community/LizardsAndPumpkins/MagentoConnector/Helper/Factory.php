@@ -1,7 +1,7 @@
 <?php
 
-use LizardsAndPumpkins\MagentoConnector\Images\Collector;
-use LizardsAndPumpkins\MagentoConnector\Images\Linker;
+use LizardsAndPumpkins\MagentoConnector\Images\ImageLinker;
+use LizardsAndPumpkins\MagentoConnector\Images\ImagesCollector;
 use LizardsAndPumpkins\MagentoConnector\XmlBuilder\CatalogMerge;
 
 class LizardsAndPumpkins_MagentoConnector_Helper_Factory
@@ -80,7 +80,8 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Factory
             $stores = array_map(
                 function ($storeId) {
                     return Mage::app()->getStore($storeId);
-                }, array_filter(explode(',', $config))
+                },
+                array_filter(explode(',', $config))
             );
             $collector->setStoresToExport($stores);
         }
@@ -88,19 +89,19 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Factory
     }
 
     /**
-     * @return Collector
+     * @return ImagesCollector
      */
     public function createImageCollector()
     {
-        return new Collector();
+        return new ImagesCollector();
     }
 
     /**
-     * @return Linker
+     * @return ImageLinker
      */
     public function createImageLinker()
     {
-        return Linker::createFor($this->getConfig()->getImageTargetDirectory());
+        return ImageLinker::createFor($this->getConfig()->getImageTargetDirectory());
     }
 
     /**

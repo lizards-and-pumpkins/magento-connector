@@ -5,6 +5,17 @@ use LizardsAndPumpkins\MagentoConnector\XmlBuilder\CatalogMerge;
 class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
 {
     const IMAGE_BASE_PATH = '/catalog/';
+
+    /**
+     * @var LizardsAndPumpkins_MagentoConnector_Helper_Factory
+     */
+    private $factory;
+
+    public function __construct()
+    {
+        $this->factory = Mage::helper('lizardsAndPumpkins_magentoconnector/factory');
+    }
+
     /**
      * @var int
      */
@@ -21,7 +32,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
     private $echoProgress = false;
 
     /**
-     * @var \LizardsAndPumpkins\MagentoConnector\Images\Collector
+     * @var \LizardsAndPumpkins\MagentoConnector\Images\ImagesCollector
      */
     private $imageCollector;
 
@@ -110,12 +121,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
      */
     public function exportProducts(LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector $collector)
     {
-        /** @var LizardsAndPumpkins_MagentoConnector_Helper_Factory $factory */
-        $factory = Mage::helper('lizardsAndPumpkins_magentoconnector/factory');
-
-        $xmlBuilderAndUploader = $factory->createCatalogExporter();
-        $filename = $factory->getProductXmlFilename();
-        $this->imageCollector = $factory->createImageCollector();
+        $xmlBuilderAndUploader = $this->factory->createCatalogExporter();
+        $filename = $this->factory->getProductXmlFilename();
+        $this->imageCollector = $this->factory->createImageCollector();
 
         $startTime = microtime(true);
         foreach ($collector as $product) {
@@ -129,8 +137,8 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
         $this->echoProgressDone();
 
         if ($this->numberOfProductsExported + $this->numberOfCategoriesExported > 0) {
-            $factory->getProductXmlUploader()->writePartialXmlString($factory->getCatalogMerge()->finish());
-            $this->linkImages($factory);
+            $this->factory->getProductXmlUploader()->writePartialXmlString($this->factory->getCatalogMerge()->finish());
+            $this->linkImages();
         }
 
         return $filename;
@@ -239,13 +247,11 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
         }
     }
 
-    /**
-     * @param LizardsAndPumpkins_MagentoConnector_Helper_Factory $factory
-     */
-    private function linkImages($factory)
+    private function linkImages()
     {
+        $linker = $this->factory->createImageLinker();
         foreach ($this->imageCollector as $image) {
-            $factory->createImageLinker()->link($image);
+            $linker->link($image);
         }
     }
 }

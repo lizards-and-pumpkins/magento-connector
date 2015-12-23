@@ -4,7 +4,6 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig
 {
     /**
      * @param string $store
-     *
      * @return string
      */
     public function getLocaleFrom($store)
@@ -26,11 +25,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig
     public function getLocalFilenameTemplate()
     {
         $filenameTemplate = Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/local_filename_template');
-        return $filenameTemplate !== ''
-            ?
-            strftime($filenameTemplate)
-            :
-            '';
+        return $filenameTemplate !== '' ? strftime($filenameTemplate) : '';
     }
 
     /**

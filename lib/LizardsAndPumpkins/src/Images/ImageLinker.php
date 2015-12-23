@@ -2,7 +2,7 @@
 
 namespace LizardsAndPumpkins\MagentoConnector\Images;
 
-class Linker
+class ImageLinker
 {
     /**
      * @var string
@@ -19,7 +19,7 @@ class Linker
 
     /**
      * @param string $targetDir
-     * @return Linker
+     * @return ImageLinker
      */
     public static function createFor($targetDir)
     {
@@ -69,16 +69,16 @@ class Linker
     }
 
     /**
-     * @param string $link
+     * @param string $filePath
      * @return bool
      */
-    private function linkExists($link)
+    private function linkExists($filePath)
     {
-        return is_link($link);
+        return is_link($filePath);
     }
 
     /**
-     * @param $filePath
+     * @param string $filePath
      */
     private function validateLinkTarget($filePath)
     {
