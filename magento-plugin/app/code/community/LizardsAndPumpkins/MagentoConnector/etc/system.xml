@@ -49,6 +49,15 @@
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
                         </local_filename_template>
+                        <image_target>
+                            <label>Image Target</label>
+                            <comment><![CDATA[Directory were the images are linked into.]]></comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </image_target>
                         <stock_xml_target translate="label comment">
                             <label>Target for stock XML</label>
                             <comment>
