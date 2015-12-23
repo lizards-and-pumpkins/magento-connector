@@ -12,7 +12,7 @@ class Linker
     /**
      * @param string $targetDir
      */
-    public function __construct($targetDir)
+    private function __construct($targetDir)
     {
         $this->targetDir = $targetDir;
     }
