@@ -84,12 +84,31 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
             $this->_data[$productId]['associated_products'] = isset($associatedProductData[$productId]) ?
                 $associatedProductData[$productId] :
                 [];
+            $this->_data[$productId]['backorders'] = $this->hasBackorders($this->_data[$productId]) ?
+                'true' :
+                'false';
             $this->_data[$productId]['is_in_stock'] = $this->isInStock($this->_data[$productId]);
         }
     }
 
     /**
-     * @param array $productData
+     * @param mixed[] $productData
+     * @return bool
+     */
+    private function hasBackorders(array $productData)
+    {
+        if (isset($productData['associated_products']) && count($productData['associated_products']) > 0) {
+            $hasBackorders = array_reduce($productData['associated_products'], function ($carry, $childProduct) {
+                return $carry || $this->hasBackorders($childProduct);
+            }, false);
+        } else {
+            $hasBackorders = isset($productData['backorders']) && 'true' === $productData['backorders'];
+        }
+        return $hasBackorders;
+    }
+
+    /**
+     * @param mixed[] $productData
      * @return string
      */
     private function isInStock(array $productData)
