@@ -4,7 +4,7 @@ use LizardsAndPumpkins\MagentoConnector\XmlBuilder\CatalogMerge;
 
 class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
 {
-    const IMAGE_BASE_PATH = '/catalog/';
+    const IMAGE_BASE_PATH = '/catalog/product';
 
     /**
      * @var LizardsAndPumpkins_MagentoConnector_Helper_Factory
@@ -46,7 +46,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
      */
     public function setShowProgress($enableProgressDisplay)
     {
-        $this->echoProgress = (bool) $enableProgressDisplay;
+        $this->echoProgress = (bool)$enableProgressDisplay;
     }
 
     /**
@@ -243,7 +243,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
         }
 
         foreach ($product['media_gallery']['images'] as $image) {
-            $this->imageCollector->addImage(Mage::getBaseDir('media') . $image['file']);
+            $this->imageCollector->addImage(Mage::getBaseDir('media') . self::IMAGE_BASE_PATH . $image['file']);
         }
     }
 
