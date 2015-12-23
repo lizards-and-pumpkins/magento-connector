@@ -4,11 +4,26 @@ use LizardsAndPumpkins\MagentoConnector\XmlBuilder\CatalogMerge;
 
 class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
 {
+    const IMAGE_BASE_PATH = '/catalog/';
+    /**
+     * @var int
+     */
     private $numberOfProductsExported = 0;
 
+    /**
+     * @var int
+     */
     private $numberOfCategoriesExported = 0;
 
+    /**
+     * @var bool
+     */
     private $echoProgress = false;
+
+    /**
+     * @var \LizardsAndPumpkins\MagentoConnector\Images\Collector
+     */
+    private $imageCollector;
 
     /**
      * @var LizardsAndPumpkins_MagentoConnector_Helper_Export
@@ -20,7 +35,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
      */
     public function setShowProgress($enableProgressDisplay)
     {
-        $this->echoProgress = (bool) $enableProgressDisplay;
+        $this->echoProgress = (bool)$enableProgressDisplay;
     }
 
     /**
@@ -49,6 +64,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
 
     /**
      * @param Mage_Core_Model_Store $store
+     *
      * @return string
      */
     public function exportOneStore(Mage_Core_Model_Store $store)
@@ -65,6 +81,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
 
     /**
      * @param Mage_Core_Model_Website $website
+     *
      * @return int
      */
     public function exportOneWebsite(Mage_Core_Model_Website $website)
@@ -91,14 +108,17 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
 
     /**
      * @param LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector $collector
+     *
      * @return string
      */
     public function exportProducts(LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector $collector)
     {
+        /** @var LizardsAndPumpkins_MagentoConnector_Helper_Factory $factory */
         $factory = Mage::helper('lizardsAndPumpkins_magentoconnector/factory');
 
         $xmlBuilderAndUploader = $factory->createCatalogExporter();
         $filename = $factory->getProductXmlFilename();
+        $this->imageCollector = $factory->createImageCollector();
 
         $startTime = microtime(true);
         foreach ($collector as $product) {
@@ -106,6 +126,8 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
             $totalTime = microtime(true) - $startTime;
             $avgTime = $totalTime / ++$this->numberOfProductsExported;
             $this->echoProgress($avgTime);
+
+            $this->collectImages($product);
         }
         $this->echoProgressDone();
 
@@ -203,5 +225,19 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
     {
         $factory = Mage::helper('lizardsAndPumpkins_magentoconnector/factory');
         return $factory->createProductCollector();
+    }
+
+    /**
+     * @param mixed[] $product
+     */
+    private function collectImages($product)
+    {
+        if (!isset($product['media_gallery']['images']) || !is_array($product['media_gallery']['images'])) {
+            return;
+        }
+
+        foreach ($product['media_gallery']['images'] as $image) {
+            $this->imageCollector->addImage(Mage::getBaseDir('media') . $image);
+        }
     }
 }
