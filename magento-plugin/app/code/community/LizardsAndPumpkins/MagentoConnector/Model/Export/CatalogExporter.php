@@ -7,7 +7,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
     private $numberOfProductsExported = 0;
 
     private $numberOfCategoriesExported = 0;
-    
+
     private $echoProgress = false;
 
     /**
@@ -15,6 +15,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
      */
     private $memoizedExportHelper;
 
+    /**
+     * @param bool $enableProgressDisplay
+     */
     public function setShowProgress($enableProgressDisplay)
     {
         $this->echoProgress = (bool) $enableProgressDisplay;
@@ -105,7 +108,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
             $this->echoProgress($avgTime);
         }
         $this->echoProgressDone();
-        
+
         if ($this->numberOfProductsExported + $this->numberOfCategoriesExported > 0) {
             $factory->getProductXmlUploader()->writePartialXmlString($factory->getCatalogMerge()->finish());
         }
@@ -150,7 +153,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
         $categoryCollector = new LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryCollector($config);
         $uploader = new LizardsAndPumpkins_MagentoConnector_Model_ProductXmlUploader();
         $filename = $uploader->getFilename();
-        
+
         while ($category = $categoryCollector->getCategory()) {
             $transformer = LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryTransformer::createFrom($category);
             $categoryXml = $transformer->getCategoryXml();
