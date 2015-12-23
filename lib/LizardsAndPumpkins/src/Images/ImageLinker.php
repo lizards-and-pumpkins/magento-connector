@@ -35,10 +35,10 @@ class ImageLinker
     private static function validateDirectory($targetDir)
     {
         if (!is_string($targetDir)) {
-            throw new \RuntimeException('Directory must be string.');
+            throw new \InvalidArgumentException('Directory must be string.');
         }
         if (!is_dir($targetDir)) {
-            throw new \RuntimeException(sprintf('Directory "%" does not exist.', $targetDir));
+            throw new \InvalidArgumentException(sprintf('Directory "%" does not exist.', $targetDir));
         }
     }
 
