@@ -76,7 +76,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
         $associatedProductData = $this->getFlag(self::FLAG_LOAD_ASSOCIATED_PRODUCTS) ?
             $this->loadAssociatedSimpleProductData() :
             [];
-
+        
         foreach ($this->_data as $productId => $productData) {
             $this->_data[$productId]['media_gallery'] = isset($mediaGalleryData[$productId]) ?
                 $mediaGalleryData[$productId] :
@@ -87,7 +87,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
             $this->_data[$productId]['backorders'] = $this->hasBackorders($this->_data[$productId]) ?
                 'true' :
                 'false';
+            $this->_data[$productId]['stock_qty'] = $this->getStockQty($this->_data[$productId]);
             $this->_data[$productId]['is_in_stock'] = $this->isInStock($this->_data[$productId]);
+            $this->_data[$productId]['url_key'] = $this->getUrlKey($this->_data[$productId]);
         }
     }
 
@@ -121,6 +123,37 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
             $isInStock = $productData['stock_qty'] > 0 && $hasBackorders;
         }
         return sprintf('%d', $isInStock);
+    }
+
+    /**
+     * @param mixed[] $productData
+     * @return int
+     */
+    private function getStockQty(array $productData)
+    {
+        if (isset($productData['associated_products']) && count($productData['associated_products']) > 0) {
+            return array_reduce($productData['associated_products'], function ($stockQty, $childProduct) {
+                return $stockQty + $this->getStockQty($childProduct);
+            }, 0);
+        }
+
+        return $productData['stock_qty'];
+    }
+
+    /**
+     * @param mixed[] $productData
+     * @return string
+     */
+    private function getUrlKey(array $productData)
+    {
+        static $productUrlKeySuffix;
+        $storeId = $this->getStoreId();
+        if (is_null($productUrlKeySuffix) || ! isset($productUrlKeySuffix[$storeId])) {
+            $productUrlKeySuffix[$storeId] = Mage::getStoreConfig('catalog/seo/category_url_suffix', $storeId);
+        }
+        return isset($productData['url_key']) && $productUrlKeySuffix[$storeId] ?
+            $productData['url_key'] . '.' . $productUrlKeySuffix[$storeId] :
+            '';
     }
 
     /**
