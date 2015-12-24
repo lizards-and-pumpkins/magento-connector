@@ -101,7 +101,11 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Factory
      */
     public function createImageLinker()
     {
-        return ImageLinker::createFor($this->getConfig()->getImageTargetDirectory());
+        $targetDir = $this->getConfig()->getImageTargetDirectory();
+        if (! $targetDir) {
+            $targetDir = $this->getConfig()->getLocalPathForProductExport() . '/product-images';
+        }
+        return ImageLinker::createFor($targetDir);
     }
 
     /**
