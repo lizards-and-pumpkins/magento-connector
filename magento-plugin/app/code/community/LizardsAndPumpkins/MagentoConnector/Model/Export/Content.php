@@ -48,14 +48,15 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
     }
 
     /**
-     * @param $cmsBlocks
+     * @param Mage_Cms_Model_Block[] $cmsBlocks
      */
     private function exportCmsBlocks($cmsBlocks)
     {
         foreach ($cmsBlocks as $block) {
             /* @var Mage_Cms_Model_Block $block */
             $context = [
-                'locale' => Mage::getStoreConfig('general/locale/code', $block->getStoreId()),
+                'locale'  => Mage::getStoreConfig('general/locale/code', $block->getStoreId()),
+                'website' => Mage::app()->getStore($block->getStoreId())->getWebsite()->getCode(),
             ];
             $this->api->triggerCmsBlockUpdate($block->getIdentifier(), $block->getContent(), $context);
         }
