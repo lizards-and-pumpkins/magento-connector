@@ -4,6 +4,7 @@ use LizardsAndPumpkins\MagentoConnector\Api\Api;
 
 class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
 {
+    const SNIPPET_KEY_REPLACE_PATTERN = '#[^a-zA-Z0-9:_\-]#';
 
     const XML_SPECIAL_BLOCKS = 'lizardsAndPumpkins/magentoconnector/cms_special_blocks';
 
@@ -21,10 +22,11 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
     }
 
     /**
-     * @return Mage_Core_Model_Resource_Db_Collection_Abstract
+     * @return Mage_Cms_Model_Resource_Block_Collection
      */
     private function getAllCmsBlocksWithStoreId()
     {
+        /** @var Mage_Cms_Model_Resource_Block_Collection $cmsBlocks */
         $cmsBlocks = Mage::getResourceModel('cms/block_collection')
             ->join(['block_store' => 'cms/block_store'], 'main_table.block_id=block_store.block_id', 'store_id')
             ->addExpressionFieldToSelect(
@@ -35,6 +37,16 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
                     'store_id' => 'store_id',
                 ]
             );
+        $cmsBlocks->addFieldToFilter(
+            [
+                'identifier',
+                'identifier',
+            ],
+            [
+                ['like' => 'product_listing_content_block_%'],
+                ['like' => 'content_block_%']
+            ]
+        );
         return $cmsBlocks;
     }
 
@@ -48,16 +60,21 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
     }
 
     /**
-     * @param $cmsBlocks
+     * @param Mage_Cms_Model_Resource_Block_Collection $cmsBlocks
      */
     private function exportCmsBlocks($cmsBlocks)
     {
         foreach ($cmsBlocks as $block) {
             /* @var Mage_Cms_Model_Block $block */
             $context = [
-                'locale' => Mage::getStoreConfig('general/locale/code', $block->getStoreId()),
+                'locale'  => Mage::getStoreConfig('general/locale/code', $block->getStoreId()),
+                'website' => Mage::app()->getStore($block->getStoreId())->getWebsite()->getCode(),
             ];
-            $this->api->triggerCmsBlockUpdate($block->getIdentifier(), $block->getContent(), $context);
+            $this->api->triggerCmsBlockUpdate(
+                $this->normalizeIdentifier($block->getIdentifier()),
+                $block->getContent(),
+                $context
+            );
         }
     }
 
@@ -71,6 +88,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
 
         $specialBlocks = array_keys($specialBlocks);
 
+        /** @var $store Mage_Core_Model_Store */
         foreach (Mage::app()->getStores(true) as $store) {
             $layout = $this->emulateStore($store);
 
@@ -82,15 +100,21 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
 
                 $content = $block->toHtml();
                 $context = [
-                    'locale' => Mage::getStoreConfig('general/locale/code', $store->getId()),
+                    'locale'  => Mage::getStoreConfig('general/locale/code', $store->getId()),
+                    'website' => $store->getWebsite()->getCode()
                 ];
-                $this->api->triggerCmsBlockUpdate($block->getNameInLayout(), $content, $context);
+                $this->api->triggerCmsBlockUpdate(
+                    'content_block_' . $this->normalizeIdentifier($block->getNameInLayout()),
+                    $content,
+                    $context
+                );
             }
         }
     }
 
     /**
-     * @param $store
+     * @param Mage_Core_Model_Store $store
+     *
      * @return Mage_Core_Model_Layout
      */
     private function emulateStore($store)
@@ -116,5 +140,15 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
         $layout->generateXml();
         $layout->generateBlocks();
         return $layout;
+    }
+
+    /**
+     * @param string $identifier
+     *
+     * @return string
+     */
+    private function normalizeIdentifier($identifier)
+    {
+        return preg_replace(self::SNIPPET_KEY_REPLACE_PATTERN, '-', $identifier);
     }
 }
