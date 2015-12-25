@@ -4,6 +4,7 @@ use LizardsAndPumpkins\MagentoConnector\Api\Api;
 
 class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
 {
+    const SNIPPET_KEY_REPLACE_PATTERN = '#[^a-zA-Z0-9:_\-]#';
 
     const XML_SPECIAL_BLOCKS = 'lizardsAndPumpkins/magentoconnector/cms_special_blocks';
 
@@ -21,7 +22,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
     }
 
     /**
-     * @return Mage_Core_Model_Resource_Db_Collection_Abstract
+     * @return Mage_Cms_Model_Resource_Block_Collection
      */
     private function getAllCmsBlocksWithStoreId()
     {
@@ -59,7 +60,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
     }
 
     /**
-     * @param Mage_Cms_Model_Block[] $cmsBlocks
+     * @param Mage_Cms_Model_Resource_Block_Collection $cmsBlocks
      */
     private function exportCmsBlocks($cmsBlocks)
     {
@@ -69,7 +70,11 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
                 'locale'  => Mage::getStoreConfig('general/locale/code', $block->getStoreId()),
                 'website' => Mage::app()->getStore($block->getStoreId())->getWebsite()->getCode(),
             ];
-            $this->api->triggerCmsBlockUpdate($block->getIdentifier(), $block->getContent(), $context);
+            $this->api->triggerCmsBlockUpdate(
+                $this->normalizeIdentifier($block->getIdentifier()),
+                $block->getContent(),
+                $context
+            );
         }
     }
 
@@ -98,13 +103,17 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
                     'locale'  => Mage::getStoreConfig('general/locale/code', $store->getId()),
                     'website' => $store->getWebsite()->getCode()
                 ];
-                $this->api->triggerCmsBlockUpdate($block->getNameInLayout(), $content, $context);
+                $this->api->triggerCmsBlockUpdate(
+                    $this->normalizeIdentifier($block->getNameInLayout()),
+                    $content,
+                    $context
+                );
             }
         }
     }
 
     /**
-     * @param $store
+     * @param Mage_Core_Model_Store $store
      *
      * @return Mage_Core_Model_Layout
      */
@@ -131,5 +140,15 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
         $layout->generateXml();
         $layout->generateBlocks();
         return $layout;
+    }
+
+    /**
+     * @param string $identifier
+     *
+     * @return string
+     */
+    private function normalizeIdentifier($identifier)
+    {
+        return preg_replace(self::SNIPPET_KEY_REPLACE_PATTERN, '-', $identifier);
     }
 }
