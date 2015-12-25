@@ -25,6 +25,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
      */
     private function getAllCmsBlocksWithStoreId()
     {
+        /** @var Mage_Cms_Model_Resource_Block_Collection $cmsBlocks */
         $cmsBlocks = Mage::getResourceModel('cms/block_collection')
             ->join(['block_store' => 'cms/block_store'], 'main_table.block_id=block_store.block_id', 'store_id')
             ->addExpressionFieldToSelect(
@@ -35,6 +36,16 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
                     'store_id' => 'store_id',
                 ]
             );
+        $cmsBlocks->addFieldToFilter(
+            [
+                'identifier',
+                'identifier',
+            ],
+            [
+                ['like' => 'product_listing_content_block_%'],
+                ['like' => 'content_block_%']
+            ]
+        );
         return $cmsBlocks;
     }
 
