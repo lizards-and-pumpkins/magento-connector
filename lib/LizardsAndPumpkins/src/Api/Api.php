@@ -9,7 +9,7 @@ class Api
 {
     const API_ENDPOINT_CATALOG_IMPORT = 'catalog_import/';
     const API_ENDPOINT_STOCK_UPDATE = 'multiple_product_stock_quantity/';
-    const API_ENDPOINT_CONTENT_BLOCK_UPDATE = '/content_blocks/';
+    const API_ENDPOINT_CONTENT_BLOCK_UPDATE = 'content_blocks/';
 
     /**
      * @var string
