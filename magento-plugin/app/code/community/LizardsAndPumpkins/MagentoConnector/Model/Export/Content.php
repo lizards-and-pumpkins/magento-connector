@@ -71,6 +71,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
 
         $specialBlocks = array_keys($specialBlocks);
 
+        /** @var $store Mage_Core_Model_Store */
         foreach (Mage::app()->getStores(true) as $store) {
             $layout = $this->emulateStore($store);
 
@@ -82,7 +83,8 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
 
                 $content = $block->toHtml();
                 $context = [
-                    'locale' => Mage::getStoreConfig('general/locale/code', $store->getId()),
+                    'locale'  => Mage::getStoreConfig('general/locale/code', $store->getId()),
+                    'website' => $store->getWebsite()->getCode()
                 ];
                 $this->api->triggerCmsBlockUpdate($block->getNameInLayout(), $content, $context);
             }
@@ -91,6 +93,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
 
     /**
      * @param $store
+     *
      * @return Mage_Core_Model_Layout
      */
     private function emulateStore($store)
