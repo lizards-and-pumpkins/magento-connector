@@ -104,7 +104,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
                     'website' => $store->getWebsite()->getCode()
                 ];
                 $this->api->triggerCmsBlockUpdate(
-                    $this->normalizeIdentifier($block->getNameInLayout()),
+                    'content_block_' . $this->normalizeIdentifier($block->getNameInLayout()),
                     $content,
                     $context
                 );
