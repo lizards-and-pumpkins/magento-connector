@@ -51,7 +51,7 @@
                         </local_filename_template>
                         <image_target>
                             <label>Image export directory</label>
-                            <comment><![CDATA[Directory were the images are linked into.]]></comment>
+                            <comment><![CDATA[Directory where the images are linked into.]]></comment>
                             <frontend_type>text</frontend_type>
                             <sort_order>20</sort_order>
                             <show_in_default>1</show_in_default>
