@@ -6,11 +6,13 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @param string $urlKey
+     * @param string $website
+     * @param string $locale
      * @return ListingBuilder
      */
-    private function createBuilder($urlKey)
+    private function createBuilder($urlKey, $website, $locale)
     {
-        return ListingBuilder::create($urlKey);
+        return ListingBuilder::create($urlKey, $website, $locale);
     }
 
     /**
@@ -20,7 +22,7 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
     public function testExceptionForInvalidUrlKey($urlKey)
     {
         $this->setExpectedExceptionRegExp(\InvalidArgumentException::class);
-        ListingBuilder::create($urlKey);
+        ListingBuilder::create($urlKey, 'ma', 'en_DK');
     }
 
     /**
@@ -44,7 +46,7 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
         $urlKey = 'sneaker';
         $urlKeyWithLeadingSlash = '/' . $urlKey;
 
-        $listingBuilder = ListingBuilder::create($urlKeyWithLeadingSlash);
+        $listingBuilder = ListingBuilder::create($urlKeyWithLeadingSlash, 'ma', 'en_DK');
         $xml = $listingBuilder->buildXml()->getXml();
 
         $this->assertContains($urlKeyWithLeadingSlash, $xml);
@@ -69,8 +71,7 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
     public function testExceptionForInvalidLocale($locale)
     {
         $this->setExpectedException(\InvalidArgumentException::class);
-        $builder = $this->createBuilder('valid-url-key');
-        $builder->setLocale($locale);
+        $builder = $this->createBuilder('valid-url-key', 'ma', $locale);
     }
 
     /**
@@ -90,7 +91,7 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
 
     public function testUrlInListingXml()
     {
-        $listingBuilder = $this->createBuilder('urlkey');
+        $listingBuilder = $this->createBuilder('urlkey', '42', 'cz_CN');
         $xmlString = $listingBuilder->buildXml();
         $this->assertInstanceOf(XmlString::class, $xmlString);
         $xml = $xmlString->getXml();
@@ -106,8 +107,7 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
      */
     public function testLocaleInXml()
     {
-        $listingBuilder = $this->createBuilder('urlkey');
-        $listingBuilder->setLocale('cs_CZ');
+        $listingBuilder = $this->createBuilder('urlkey', 'fu', 'cs_CZ');
         $xmlString = $listingBuilder->buildXml();
         $this->assertInstanceOf(XmlString::class, $xmlString);
         $xml = $xmlString->getXml();
@@ -123,8 +123,7 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
      */
     public function testWebsiteInXml()
     {
-        $listingBuilder = $this->createBuilder('urlkey');
-        $listingBuilder->setWebsite('ru_de');
+        $listingBuilder = $this->createBuilder('urlkey', 'ru_de', 'en_DK');
         $xmlString = $listingBuilder->buildXml();
         $this->assertInstanceOf(XmlString::class, $xmlString);
         $xml = $xmlString->getXml();
@@ -138,21 +137,21 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
     public function testForExceptionOnInvalidAttribute()
     {
         $this->setExpectedException(\InvalidArgumentException::class);
-        $listingBuilder = $this->createBuilder('urlkey');
+        $listingBuilder = $this->createBuilder('urlkey', 'ru_de', 'en_DK');
         $listingBuilder->addFilterCriterion(new \stdClass(), 'Equal', 'sale');
     }
 
     public function testExceptionForInvalidOperationOnFilter()
     {
         $this->setExpectedException(\InvalidArgumentException::class);
-        $listingBuilder = $this->createBuilder('urlkey');
+        $listingBuilder = $this->createBuilder('urlkey', 'ru_de', 'en_DK');
         $listingBuilder->addFilterCriterion('category', new \stdClass(), 'sale');
     }
 
     public function testExceptionForInvalidAttributeOnFilter()
     {
         $this->setExpectedException(\InvalidArgumentException::class);
-        $listingBuilder = $this->createBuilder('urlkey');
+        $listingBuilder = $this->createBuilder('urlkey', 'ru_de', 'en_DK');
         $listingBuilder->addFilterCriterion(new \stdClass(), 'Equal', 'sale');
     }
 
@@ -164,7 +163,7 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
      */
     public function testOneFilterForListing($validAttribute, $validOperation, $validValue)
     {
-        $listingBuilder = $this->createBuilder('urlkey');
+        $listingBuilder = $this->createBuilder('urlkey', 'ru_de', 'en_DK');
         $listingBuilder->addFilterCriterion($validAttribute, $validOperation, $validValue);
         $xml = $listingBuilder->buildXml()->getXml();
         $this->assertContains("<$validAttribute operation=\"$validOperation\">$validValue</$validAttribute>", $xml);
@@ -198,7 +197,7 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
 
     public function testFilterWithLeadingSlash()
     {
-        $listingBuilder = $this->createBuilder('urlkey');
+        $listingBuilder = $this->createBuilder('urlkey', 'ru_de', 'en_DK');
         $urlKey = 'sneaker';
         $urlKeyWithLeadingSlash = '/' . $urlKey;
         $listingBuilder->addFilterCriterion('category', 'Equal', $urlKeyWithLeadingSlash);

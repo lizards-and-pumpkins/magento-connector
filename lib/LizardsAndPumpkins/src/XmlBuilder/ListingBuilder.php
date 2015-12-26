@@ -47,20 +47,26 @@ class ListingBuilder
     /**
      * @param string $urlKey
      */
-    private function __construct($urlKey)
+    private function __construct($urlKey, $website, $locale)
     {
         $this->urlKey = $urlKey;
+        $this->locale = $locale;
+        $this->website = $website;
     }
 
     /**
      * @param string $urlKey
+     * @param string $website
+     * @param string $locale
      * @return ListingBuilder
      */
-    public static function create($urlKey)
+    public static function create($urlKey, $website, $locale)
     {
         self::validateUrlKey($urlKey);
+        self::validateWebsite($website);
+        self::validateLocale($locale);
 
-        return new self($urlKey);
+        return new self($urlKey, $website, $locale);
     }
 
     /**
@@ -85,9 +91,9 @@ class ListingBuilder
     }
 
     /**
-     * @param string $locale
+     * @param $locale
      */
-    public function setLocale($locale)
+    private static function validateLocale($locale)
     {
         if (!is_string($locale)) {
             throw new \InvalidArgumentException('Locale msut be string');
@@ -100,18 +106,16 @@ class ListingBuilder
         if (!ctype_lower($language) || !ctype_upper($country) || strlen($language) !== 2 || strlen($country) !== 2) {
             throw new \InvalidArgumentException(sprintf('Locale must be of form "de_DE", "%s" given.', $locale));
         }
-        $this->locale = $locale;
     }
 
     /**
-     * @param string $website
+     * @param $website
      */
-    public function setWebsite($website)
+    private static function validateWebsite($website)
     {
         if (!is_string($website)) {
             throw new \InvalidArgumentException('Website must be string.');
         }
-        $this->website = $website;
     }
 
     /**
