@@ -9,16 +9,15 @@ class ListingBuilder
     /**
      * @var string[]
      */
-    private $allowedOperations
-        = [
-            'Equal',
-            'GreaterOrEqualThan',
-            'GreaterThan',
-            'LessOrEqualThan',
-            'LessThan',
-            'Like',
-            'NotEqual',
-        ];
+    private $allowedOperations = [
+        'Equal',
+        'GreaterOrEqualThan',
+        'GreaterThan',
+        'LessOrEqualThan',
+        'LessThan',
+        'Like',
+        'NotEqual',
+    ];
 
     /**
      * @var string
