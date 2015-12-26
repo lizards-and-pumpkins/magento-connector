@@ -25,11 +25,11 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig
     public function getLocalFilenameTemplate()
     {
         $filenameTemplate = Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/local_filename_template');
-        return $filenameTemplate !== ''
-            ?
-            strftime($filenameTemplate)
-            :
-            '';
+        if ('' !== $filenameTemplate) {
+            return strftime($filenameTemplate);
+        }
+
+        return '';
     }
 
     /**
@@ -56,10 +56,8 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig
     public function getStoresToExport()
     {
         $stores = explode(',', Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/stores_to_export'));
-        return array_map(
-            function ($storeId) {
-                return Mage::app()->getStore($storeId);
-            }, $stores
-        );
+        return array_map(function ($storeId) {
+            return Mage::app()->getStore($storeId);
+        }, $stores);
     }
 }
