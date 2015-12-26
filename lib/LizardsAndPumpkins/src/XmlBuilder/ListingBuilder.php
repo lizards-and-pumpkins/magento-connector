@@ -5,12 +5,6 @@ namespace LizardsAndPumpkins\MagentoConnector\XmlBuilder;
 class ListingBuilder
 {
     const CONDITION_AND = 'and';
-    const CONDITION_OR = 'or';
-
-    /**
-     * @var string[]
-     */
-    private static $allowedConditions = [self::CONDITION_AND, self::CONDITION_OR];
 
     /**
      * @var string[]
@@ -38,7 +32,7 @@ class ListingBuilder
     /**
      * @var string
      */
-    private $condition;
+    private $condition = self::CONDITION_AND;
 
     /**
      * @var string
@@ -52,25 +46,21 @@ class ListingBuilder
 
     /**
      * @param string $urlKey
-     * @param string $condition
      */
-    private function __construct($urlKey, $condition)
+    private function __construct($urlKey)
     {
-        $this->condition = $condition;
         $this->urlKey = $urlKey;
     }
 
     /**
      * @param string $urlKey
-     * @param string $condition
      * @return ListingBuilder
      */
-    public static function create($urlKey, $condition)
+    public static function create($urlKey)
     {
-        self::validateCondition($condition);
         self::validateUrlKey($urlKey);
 
-        return new self($urlKey, $condition);
+        return new self($urlKey);
     }
 
     /**
@@ -89,25 +79,6 @@ class ListingBuilder
                 sprintf(
                     'Only a-z A-Z 0-9 and "$-_.+!*\'(),/" are allowed for a url, "%s" contains forbidden characters.',
                     $urlKey
-                )
-            );
-        }
-    }
-
-    /**
-     * @param string $condition
-     */
-    private static function validateCondition($condition)
-    {
-        if (!is_string($condition)) {
-            throw new \InvalidArgumentException('Condition must be string.');
-        }
-
-        if (!in_array($condition, self::$allowedConditions)) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    'Condition must be either "and" or "or". %s given.',
-                    $condition
                 )
             );
         }
