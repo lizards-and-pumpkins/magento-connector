@@ -96,7 +96,7 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
-    public function testUrlInListingXml()
+    public function testUrlKeyInListingNode()
     {
         $website = '42';
         $locale = 'cz_CN';
@@ -112,9 +112,9 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @depends testUrlInListingXml
+     * @depends testUrlKeyInListingNode
      */
-    public function testLocaleInXml()
+    public function testLocaleInListingNode()
     {
         $website = 'fu';
         $locale = 'cs_CZ';
@@ -130,9 +130,9 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @depends testUrlInListingXml
+     * @depends testUrlKeyInListingNode
      */
-    public function testWebsiteInXml()
+    public function testWebsiteInListingNode()
     {
         $website = 'ru_de';
         $locale = 'en_DK';
