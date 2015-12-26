@@ -216,4 +216,16 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
         $listingBuilder->addFilterCriterion('category', 'Equal', $category);
         $this->assertContains($xml, $listingBuilder->buildXml()->getXml());
     }
+
+    public function testContainsConditions()
+    {
+        $xml =
+            '<criteria type="and"><category is="Equal">accessoires</category><stock_qty is="GreaterThan">0</stock_qty></criteria>';
+
+        $category = 'accessoires';
+        $listingBuilder = $this->createBuilder($category, 'ru_de', 'en_DK');
+        $listingBuilder->addFilterCriterion('category', 'Equal', $category);
+        $listingBuilder->addFilterCriterion('stock_qty', 'GreaterThan', '0');
+        $this->assertContains($xml, $listingBuilder->buildXml()->getXml());
+    }
 }
