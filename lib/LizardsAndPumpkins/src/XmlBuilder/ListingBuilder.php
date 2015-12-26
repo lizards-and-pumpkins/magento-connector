@@ -9,15 +9,16 @@ class ListingBuilder
     /**
      * @var string[]
      */
-    private $allowedOperations = [
-        'Equal',
-        'GreaterOrEqualThan',
-        'GreaterThan',
-        'LessOrEqualThan',
-        'LessThan',
-        'Like',
-        'NotEqual',
-    ];
+    private $allowedOperations
+        = [
+            'Equal',
+            'GreaterOrEqualThan',
+            'GreaterThan',
+            'LessOrEqualThan',
+            'LessThan',
+            'Like',
+            'NotEqual',
+        ];
 
     /**
      * @var string
@@ -28,11 +29,6 @@ class ListingBuilder
      * @var string
      */
     private $locale;
-
-    /**
-     * @var string
-     */
-    private $condition = self::CONDITION_AND;
 
     /**
      * @var string
@@ -146,7 +142,7 @@ class ListingBuilder
         $this->writeAttributesToListingNode($xml);
         if (!empty($this->filter)) {
             $xml->startElement('criteria');
-            $xml->writeAttribute('type', $this->condition);
+            $xml->writeAttribute('type', self::CONDITION_AND);
             foreach ($this->filter as $filter) {
                 $xml->startElement($filter['attribute']);
                 $xml->writeAttribute('is', $filter['operation']);
@@ -203,6 +199,5 @@ class ListingBuilder
         if ($this->website) {
             $xml->writeAttribute('website', $this->website);
         }
-        $xml->writeAttribute('condition', $this->condition);
     }
 }
