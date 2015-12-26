@@ -24,7 +24,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryTransformer
     }
 
     /**
-     * @param Mage_Catalog_Model_Category $category
+     * @param Mage_Catalog_Model_Category                                    $category
      * @param LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig $config
      * @return LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryTransformer
      */
@@ -55,10 +55,13 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryTransformer
         }
 
         $urlPath = $this->category->getUrlPath();
-        $listingBuilder = ListingBuilder::create($urlPath, 'and');
+        $listingBuilder = ListingBuilder::create(
+            $urlPath,
+            $this->category->getStore()->getWebsite()->getCode(),
+            $this->getLocale($this->category->getStore())
+        );
+
         $listingBuilder->addFilterCriterion('category', 'Equal', $urlPath);
-        $listingBuilder->setLocale($this->getLocale($this->category->getStore()));
-        $listingBuilder->setWebsite($this->category->getStore()->getWebsite()->getCode());
 
         return $listingBuilder->buildXml();
     }
