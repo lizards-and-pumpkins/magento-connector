@@ -2,6 +2,8 @@
 
 namespace LizardsAndPumpkins\MagentoConnector\XmlBuilder;
 
+use DoctrineTest\InstantiatorTestAsset\XMLReaderAsset;
+
 class ListingBuilderTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -166,7 +168,7 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
         $listingBuilder = $this->createBuilder('urlkey', 'ru_de', 'en_DK');
         $listingBuilder->addFilterCriterion($validAttribute, $validOperation, $validValue);
         $xml = $listingBuilder->buildXml()->getXml();
-        $this->assertContains("<$validAttribute operation=\"$validOperation\">$validValue</$validAttribute>", $xml);
+        $this->assertContains("<$validAttribute is=\"$validOperation\">$validValue</$validAttribute>", $xml);
     }
 
     /**
@@ -202,6 +204,16 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
         $urlKeyWithLeadingSlash = '/' . $urlKey;
         $listingBuilder->addFilterCriterion('category', 'Equal', $urlKeyWithLeadingSlash);
         $xml = $listingBuilder->buildXml()->getXml();
-        $this->assertContains("<category operation=\"Equal\">$urlKeyWithLeadingSlash</category>", $xml);
+        $this->assertContains("<category is=\"Equal\">$urlKeyWithLeadingSlash</category>", $xml);
+    }
+
+    public function testContainsCondition()
+    {
+        $xml = '<criteria type="and"><category is="Equal">accessoires</category></criteria>';
+
+        $category = 'accessoires';
+        $listingBuilder = $this->createBuilder($category, 'ru_de', 'en_DK');
+        $listingBuilder->addFilterCriterion('category', 'Equal', $category);
+        $this->assertContains($xml, $listingBuilder->buildXml()->getXml());
     }
 }

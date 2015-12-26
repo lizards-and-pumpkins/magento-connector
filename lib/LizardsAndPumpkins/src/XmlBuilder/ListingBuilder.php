@@ -144,13 +144,18 @@ class ListingBuilder
         $xml->startElement('listing');
 
         $this->writeAttributesToListingNode($xml);
-
-        foreach ($this->filter as $filter) {
-            $xml->startElement($filter['attribute']);
-            $xml->writeAttribute('operation', $filter['operation']);
-            $xml->text($filter['value']);
+        if (!empty($this->filter)) {
+            $xml->startElement('criteria');
+            $xml->writeAttribute('type', $this->condition);
+            foreach ($this->filter as $filter) {
+                $xml->startElement($filter['attribute']);
+                $xml->writeAttribute('is', $filter['operation']);
+                $xml->text($filter['value']);
+                $xml->endElement();
+            }
             $xml->endElement();
         }
+
 
         $xml->endElement(); // listing
         return new XmlString($xml->flush());
