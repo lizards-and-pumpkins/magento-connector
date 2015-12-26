@@ -178,9 +178,11 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
     {
         $xmlMerge = new CatalogMerge();
         $config = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_magentoConfig');
+
         $categoryCollector = new LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryCollector($config);
+        $categoryCollector->setStoresToExport($config->getStoresToExport());
+
         $uploader = new LizardsAndPumpkins_MagentoConnector_Model_ProductXmlUploader();
-        $filename = $uploader->getFilename();
 
         while ($category = $categoryCollector->getCategory()) {
             $transformer = LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryTransformer::createFrom($category);
@@ -192,8 +194,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
         if ($this->numberOfProductsExported + $this->numberOfCategoriesExported > 0) {
             $uploader->writePartialXmlString($xmlMerge->finish());
         }
-
-        return $filename;
+        return $uploader->getFilename();
     }
 
     /**

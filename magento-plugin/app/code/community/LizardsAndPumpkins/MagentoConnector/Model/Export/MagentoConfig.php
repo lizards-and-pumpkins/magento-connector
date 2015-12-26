@@ -25,8 +25,10 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig
     public function getLocalFilenameTemplate()
     {
         $filenameTemplate = Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/local_filename_template');
-        return $filenameTemplate !== '' ?
-            strftime($filenameTemplate) :
+        return $filenameTemplate !== ''
+            ?
+            strftime($filenameTemplate)
+            :
             '';
     }
 
@@ -49,5 +51,15 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig
     public function getImageTargetDirectory()
     {
         return Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/image_target');
+    }
+
+    public function getStoresToExport()
+    {
+        $stores = explode(',', Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/stores_to_export'));
+        return array_map(
+            function ($storeId) {
+                return Mage::app()->getStore($storeId);
+            }, $stores
+        );
     }
 }
