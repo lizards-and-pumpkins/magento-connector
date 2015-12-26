@@ -1,5 +1,6 @@
 {
   "name": "lizards-and-pumpkins/magento-connector",
+  "type": "magento-module",
   "version": "dev-master",
   "description": "Lizards & Pumpkins Magento Connector",
   "license": "BSD-3-Clause",
