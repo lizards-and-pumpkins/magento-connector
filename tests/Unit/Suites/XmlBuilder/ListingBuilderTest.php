@@ -8,7 +8,7 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
      * @param string $urlKey
      * @dataProvider provideInvalidUrlKey
      */
-    public function testExceptionForInvalidUrlKey($urlKey)
+    public function testExceptionForInvalidUrlKeyIsThrown($urlKey)
     {
         $this->setExpectedExceptionRegExp(\InvalidArgumentException::class);
         $website = 'ma';
@@ -61,7 +61,7 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
      * @param string $locale
      * @dataProvider provideInvalidLocale
      */
-    public function testExceptionForInvalidLocale($locale)
+    public function testExceptionForInvalidLocaleIsThrown($locale)
     {
         $this->setExpectedException(\InvalidArgumentException::class);
         $website = 'ma';
@@ -83,7 +83,7 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
-    public function testUrlKeyInListingNode()
+    public function testUrlKeyAttributeIsAddedToListingNodes()
     {
         $website = '42';
         $locale = 'cz_CN';
@@ -99,9 +99,9 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @depends testUrlKeyInListingNode
+     * @depends testUrlKeyAttributeIsAddedToListingNodes
      */
-    public function testLocaleInListingNode()
+    public function testLocaleAttributeIsAddedToListingNodes()
     {
         $website = 'fu';
         $locale = 'cs_CZ';
@@ -117,9 +117,9 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @depends testUrlKeyInListingNode
+     * @depends testUrlKeyAttributeIsAddedToListingNodes
      */
-    public function testWebsiteInListingNode()
+    public function testWebsiteAttributeIsAddedToListingNodes()
     {
         $website = 'ru_de';
         $locale = 'en_DK';
@@ -134,7 +134,7 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    public function testForExceptionOnInvalidAttribute()
+    public function testExceptionOnInvalidAttributeIsThrown()
     {
         $this->setExpectedException(\InvalidArgumentException::class);
         $website = 'ru_de';
@@ -143,7 +143,7 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
         $listingBuilder->addFilterCriterion(new \stdClass(), 'Equal', 'sale');
     }
 
-    public function testExceptionForInvalidOperationOnFilter()
+    public function testExceptionForInvalidOperationOnFilterIsThrown()
     {
         $this->setExpectedException(\InvalidArgumentException::class);
         $locale = 'en_DK';
@@ -152,7 +152,7 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
         $listingBuilder->addFilterCriterion('category', new \stdClass(), 'sale');
     }
 
-    public function testExceptionForInvalidAttributeOnFilter()
+    public function testExceptionForInvalidAttributeOnFilterIsThrown()
     {
         $this->setExpectedException(\InvalidArgumentException::class);
         $website = 'ru_de';
@@ -167,7 +167,7 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
      * @param string $validValue
      * @dataProvider provideValidFilter
      */
-    public function testOneFilterForListing($validAttribute, $validOperation, $validValue)
+    public function testOneFilterForListingIsCreated($validAttribute, $validOperation, $validValue)
     {
         $website = 'ru_de';
         $locale = 'en_DK';
@@ -203,7 +203,7 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
         return $filter;
     }
 
-    public function testFilterWithLeadingSlash()
+    public function testFilterWithLeadingSlashIsCreated()
     {
         $website = 'ru_de';
         $locale = 'en_DK';
@@ -215,7 +215,7 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertContains("<category is=\"Equal\">$urlKeyWithLeadingSlash</category>", $xml);
     }
 
-    public function testContainsCondition()
+    public function testXmlContainsOneCondition()
     {
         $xml = '<criteria type="and"><category is="Equal">accessoires</category></criteria>';
 
@@ -227,7 +227,7 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertContains($xml, $listingBuilder->buildXml()->getXml());
     }
 
-    public function testContainsConditions()
+    public function testXmlContainsMultipleConditions()
     {
         $xml =
             '<criteria type="and"><category is="Equal">accessoires</category><stock_qty is="GreaterThan">0</stock_qty></criteria>';
