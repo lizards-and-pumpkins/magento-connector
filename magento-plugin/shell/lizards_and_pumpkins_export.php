@@ -2,8 +2,8 @@
 
 use LizardsAndPumpkins\MagentoConnector\Api\Api;
 
-require '../vendor/autoload.php';
-require_once 'abstract.php';
+require __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../../../../shell/abstract.php';
 
 class LizardsAndPumpkins_Export extends Mage_Shell_Abstract
 {
