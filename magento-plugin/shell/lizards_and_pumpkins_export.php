@@ -33,7 +33,7 @@ class LizardsAndPumpkins_Export extends Mage_Shell_Abstract
     {
         /** @var LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter $exporter */
         if ($this->getArg('all-products')) {
-            $filename = $this->exportProducts($exporter);
+            $filename = $this->exportProducts();
             $this->triggerCatalogUpdateApi($filename);
         } elseif ($this->getArg('queued-products')) {
             $filename = $this->catalogExporter->exportProductsInQueue();
