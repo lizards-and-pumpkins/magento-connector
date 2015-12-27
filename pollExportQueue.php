@@ -3,7 +3,7 @@
 
 use LizardsAndPumpkins\MagentoConnector\Api\Api;
 
-require __DIR__ . '/vendor/autoload.php';
+require dirname($_SERVER['SCRIPT_NAME']) . DIRECTORY_SEPARATOR . '/../vendor/autoload.php';
 require 'app/Mage.php';
 Mage::app();
 
