@@ -3,10 +3,27 @@
 use LizardsAndPumpkins\MagentoConnector\Api\Api;
 
 require __DIR__ . '/../../vendor/autoload.php';
-require_once __DIR__ . '/../../../../shell/abstract.php';
+require __DIR__ . '/../../../../shell/abstract.php';
 
 class LizardsAndPumpkins_Export extends Mage_Shell_Abstract
 {
+    /**
+     * @var LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
+     */
+    private $catalogExporter;
+
+    /**
+     * @var LizardsAndPumpkins_MagentoConnector_Model_Export_Content
+     */
+    private $contentExporter;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->contentExporter = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_content');
+        $this->catalogExporter = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_catalogExporter');
+    }
+
     protected function _applyPhpVariables()
     {
         return;
@@ -15,21 +32,20 @@ class LizardsAndPumpkins_Export extends Mage_Shell_Abstract
     public function run()
     {
         /** @var LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter $exporter */
-        $exporter = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_catalogExporter');
         if ($this->getArg('all-products')) {
-            $filename = $this->exportProducts($exporter);
+            $filename = $this->exportProducts();
             $this->triggerCatalogUpdateApi($filename);
         } elseif ($this->getArg('queued-products')) {
-            $filename = $exporter->exportProductsInQueue();
+            $filename = $this->catalogExporter->exportProductsInQueue();
             $this->triggerCatalogUpdateApi($filename);
         } elseif ($this->getArg('queued-categories')) {
-            $filename = $exporter->exportCategoriesInQueue();
+            $filename = $this->catalogExporter->exportCategoriesInQueue();
             $this->triggerCatalogUpdateApi($filename);
         } elseif ($this->getArg('all-categories')) {
-            $filename = $exporter->exportAllCategories();
+            $filename = $this->catalogExporter->exportAllCategories();
             $this->triggerCatalogUpdateApi($filename);
         } elseif ($this->getArg('blocks')) {
-            Mage::getModel('lizardsAndPumpkins_magentoconnector/export_content')->export();
+            $this->contentExporter->export();
         } elseif ($this->getArg('stats')) {
             $this->outputStatistics();
         } else {
@@ -72,17 +88,20 @@ USAGE;
         echo sprintf('%s queued categories.' . "\n", $stats->getQueuedCategoriesCount());
     }
 
-    private function exportProducts(LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter $exporter)
+    /**
+     * @return string
+     */
+    private function exportProducts()
     {
         if ($store = $this->getStoreFromArguments()) {
-            return $exporter->exportOneStore(Mage::app()->getStore($store));
+            return $this->catalogExporter->exportOneStore(Mage::app()->getStore($store));
         }
 
         if ($website = $this->getWebsiteFromArgument()) {
-            return $exporter->exportOneWebsite(Mage::app()->getWebsite($website));
+            return $this->catalogExporter->exportOneWebsite(Mage::app()->getWebsite($website));
         }
 
-        return $exporter->exportAllProducts();
+        return $this->catalogExporter->exportAllProducts();
     }
 
     /**
@@ -115,19 +134,19 @@ USAGE;
     }
 
     /**
-     * @param $store
+     * @param string|int $storeId
      */
-    private function validateStore($store)
+    private function validateStore($storeId)
     {
-        Mage::app()->getStore($store);
+        Mage::app()->getStore($storeId);
     }
 
     /**
-     * @param $website
+     * @param string|int $websiteId
      */
-    private function validateWebsite($website)
+    private function validateWebsite($websiteId)
     {
-        Mage::app()->getWebsite($website);
+        Mage::app()->getWebsite($websiteId);
     }
 }
 
