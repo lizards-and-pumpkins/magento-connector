@@ -102,7 +102,7 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Factory
     public function createImageLinker()
     {
         $targetDir = $this->getConfig()->getImageTargetDirectory();
-        if (!is_string($targetDir) || !is_dir($targetDir)) {
+        if ($this->validateDirectory($targetDir)) {
             $targetDir = $this->getConfig()->getLocalPathForProductExport() . '/product-images';
         }
         return ImageLinker::createFor($targetDir);
@@ -117,5 +117,14 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Factory
             $this->config = new LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig();
         }
         return $this->config;
+    }
+
+    /**
+     * @param string $targetDir
+     * @return bool
+     */
+    private function validateDirectory($targetDir)
+    {
+        return !is_string($targetDir) || !is_dir($targetDir);
     }
 }
