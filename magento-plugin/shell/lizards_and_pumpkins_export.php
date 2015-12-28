@@ -34,16 +34,16 @@ class LizardsAndPumpkins_Export extends Mage_Shell_Abstract
         /** @var LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter $exporter */
         if ($this->getArg('all-products')) {
             $filename = $this->exportProducts();
-            $this->triggerCatalogUpdateApi($filename);
+            $this->triggerCatalogUpdateApiIfSomethingWasExported($filename);
         } elseif ($this->getArg('queued-products')) {
             $filename = $this->catalogExporter->exportProductsInQueue();
-            $this->triggerCatalogUpdateApi($filename);
+            $this->triggerCatalogUpdateApiIfSomethingWasExported($filename);
         } elseif ($this->getArg('queued-categories')) {
             $filename = $this->catalogExporter->exportCategoriesInQueue();
-            $this->triggerCatalogUpdateApi($filename);
+            $this->triggerCatalogUpdateApiIfSomethingWasExported($filename);
         } elseif ($this->getArg('all-categories')) {
             $filename = $this->catalogExporter->exportAllCategories();
-            $this->triggerCatalogUpdateApi($filename);
+            $this->triggerCatalogUpdateApiIfSomethingWasExported($filename);
         } elseif ($this->getArg('blocks')) {
             $this->contentExporter->export();
         } elseif ($this->getArg('stats')) {
@@ -56,8 +56,11 @@ class LizardsAndPumpkins_Export extends Mage_Shell_Abstract
     /**
      * @param string $filename
      */
-    private function triggerCatalogUpdateApi($filename)
+    private function triggerCatalogUpdateApiIfSomethingWasExported($filename)
     {
+        if (!$this->catalogExporter->wasSomethingExported()) {
+            return;
+        }
         $apiUrl = Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/api_url');
         (new Api($apiUrl))->triggerProductImport($filename);
     }
