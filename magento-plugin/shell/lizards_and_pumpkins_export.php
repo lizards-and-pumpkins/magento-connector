@@ -2,8 +2,8 @@
 
 use LizardsAndPumpkins\MagentoConnector\Api\Api;
 
-require __DIR__ . '/../../vendor/autoload.php';
-require __DIR__ . '/../../../../shell/abstract.php';
+require dirname($_SERVER['SCRIPT_NAME']) . '/../../vendor/autoload.php';
+require dirname($_SERVER['SCRIPT_NAME']) . '/abstract.php';
 
 class LizardsAndPumpkins_Export extends Mage_Shell_Abstract
 {
@@ -89,6 +89,22 @@ USAGE;
     }
 
     /**
+     * @param string|int $store
+     */
+    private function validateStore($store)
+    {
+        Mage::app()->getStore($store);
+    }
+
+    /**
+     * @param string|int $website
+     */
+    private function validateWebsite($website)
+    {
+        Mage::app()->getWebsite($website);
+    }
+
+    /**
      * @return string
      */
     private function exportProducts()
@@ -134,22 +150,6 @@ USAGE;
             exit(2);
         }
         return $website;
-    }
-
-    /**
-     * @param string|int $storeId
-     */
-    private function validateStore($storeId)
-    {
-        Mage::app()->getStore($storeId);
-    }
-
-    /**
-     * @param string|int $websiteId
-     */
-    private function validateWebsite($websiteId)
-    {
-        Mage::app()->getWebsite($websiteId);
     }
 }
 
