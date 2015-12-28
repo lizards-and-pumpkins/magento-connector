@@ -5,7 +5,7 @@ use LizardsAndPumpkins\MagentoConnector\XmlBuilder\CatalogMerge;
 class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
 {
     const IMAGE_BASE_PATH = '/catalog/product';
-    const REFRESH_PRODUCT_QUEUE_COUNT_EVERY = 1000;
+    const REFRESH_PRODUCT_QUEUE_COUNT_EVERY_N_PRODUCTS = 1000;
 
     /**
      * @var LizardsAndPumpkins_MagentoConnector_Helper_Factory
@@ -16,11 +16,6 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
      * @var int
      */
     private $numberOfProductsInQueue;
-
-    public function __construct()
-    {
-        $this->factory = Mage::helper('lizardsAndPumpkins_magentoconnector/factory');
-    }
 
     /**
      * @var int
@@ -53,6 +48,17 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
     public function setShowProgress($enableProgressDisplay)
     {
         $this->echoProgress = (bool) $enableProgressDisplay;
+    }
+
+    /**
+     * @return LizardsAndPumpkins_MagentoConnector_Helper_Factory
+     */
+    public function getFactory()
+    {
+        if (null === $this->getFactory()) {
+            $this->factory = Mage::helper('lizardsAndPumpkins_magentoconnector/factory');
+        }
+        return $this->getFactory();
     }
 
     /**
@@ -127,9 +133,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
      */
     public function exportProducts(LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector $collector)
     {
-        $xmlBuilderAndUploader = $this->factory->createCatalogExporter();
-        $filename = $this->factory->getProductXmlFilename();
-        $this->imageCollector = $this->factory->createImageCollector();
+        $xmlBuilderAndUploader = $this->getFactory()->createXmlBuilderAndUploader();
+        $filename = $this->getFactory()->getProductXmlFilename();
+        $this->imageCollector = $this->getFactory()->createImageCollector();
 
         $startTime = microtime(true);
         foreach ($collector as $product) {
@@ -145,7 +151,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
         $this->echoProgressDone();
 
         if ($this->numberOfProductsExported + $this->numberOfCategoriesExported > 0) {
-            $this->factory->getProductXmlUploader()->writePartialXmlString($this->factory->getCatalogMerge()->finish());
+            $this->getFactory()->getProductXmlUploader()->writePartialXmlString(
+                $this->getFactory()->getCatalogMerge()->finish()
+            );
             $this->linkImages();
         }
 
@@ -172,7 +180,6 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
             gmdate("H:i:s", $avgTime * ($total - $done))
         );
         $this->echoToStdErr($write);
-
     }
 
     /**
@@ -286,7 +293,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
 
     private function linkImages()
     {
-        $linker = $this->factory->createImageLinker();
+        $linker = $this->getFactory()->createImageLinker();
         foreach ($this->imageCollector as $image) {
             $linker->link($image);
         }
@@ -300,7 +307,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
 
     private function refreshProductQueueCountIfNeeded()
     {
-        if ($this->numberOfProductsExported % self::REFRESH_PRODUCT_QUEUE_COUNT_EVERY === 0) {
+        if ($this->numberOfProductsExported % self::REFRESH_PRODUCT_QUEUE_COUNT_EVERY_N_PRODUCTS === 0) {
             $this->refreshNumberOfProductsInQueue();
         }
     }
