@@ -60,7 +60,7 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Factory
     /**
      * @return LizardsAndPumpkins_MagentoConnector_Model_Export_PrepareProductDataForXmlBuilder
      */
-    public function createCatalogExporter()
+    public function createXmlBuilderAndUploader()
     {
         return new LizardsAndPumpkins_MagentoConnector_Model_Export_PrepareProductDataForXmlBuilder(
             $this->getCatalogMerge(),
