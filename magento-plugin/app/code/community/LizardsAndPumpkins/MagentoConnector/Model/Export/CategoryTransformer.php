@@ -5,6 +5,8 @@ use LizardsAndPumpkins\MagentoConnector\XmlBuilder\XmlString;
 
 class LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryTransformer
 {
+    const URL_KEY_REPLACE_PATTERN = '#[^a-zA-Z0-9:_\-\.]#';
+
     /**
      * @var Mage_Catalog_Model_Category
      */
@@ -55,10 +57,13 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryTransformer
         }
 
         $urlPath = $this->category->getUrlPath();
-        $listingBuilder = ListingBuilder::create($urlPath, 'and');
-        $listingBuilder->addFilterCriterion('category', 'Equal', $urlPath);
-        $listingBuilder->setLocale($this->getLocale($this->category->getStore()));
-        $listingBuilder->setWebsite($this->category->getStore()->getWebsite()->getCode());
+        $listingBuilder = ListingBuilder::create(
+            $this->normalizeUrl($urlPath),
+            $this->category->getStore()->getWebsite()->getCode(),
+            $this->getLocale($this->category->getStore())
+        );
+
+        $listingBuilder->addFilterCriterion('category', 'Equal', $this->normalizeUrl($urlPath));
 
         return $listingBuilder->buildXml();
     }
@@ -70,5 +75,14 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryTransformer
     private function getLocale($store)
     {
         return $this->config->getLocaleFrom($store);
+    }
+
+    /**
+     * @param string $urlPath
+     * @return string
+     */
+    private function normalizeUrl($urlPath)
+    {
+        return preg_replace(self::URL_KEY_REPLACE_PATTERN, '_', $urlPath);
     }
 }

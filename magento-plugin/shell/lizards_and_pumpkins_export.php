@@ -112,11 +112,13 @@ USAGE;
      */
     private function getStoreFromArguments()
     {
+        $store = '';
         try {
             $store = $this->getArg('store');
             $this->validateStore($store);
         } catch (Mage_Core_Model_Store_Exception $e) {
-            die(sprintf('Store "%s" doesn\'t exist.', $store));
+            printf('Store "%s" doesn\'t exist.%s', $store, PHP_EOL);
+            exit(2);
         }
 
         return $store;
@@ -131,7 +133,8 @@ USAGE;
             $website = $this->getArg('website');
             $this->validateWebsite($website);
         } catch (Mage_Core_Exception $e) {
-            die($e->getMessage());
+            echo "Error: {$e->getMessage()}" . PHP_EOL;
+            exit(2);
         }
         return $website;
     }
