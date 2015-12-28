@@ -89,7 +89,7 @@ USAGE;
     }
 
     /**
-     * @param $store
+     * @param string|int $store
      */
     private function validateStore($store)
     {
@@ -97,7 +97,7 @@ USAGE;
     }
 
     /**
-     * @param $website
+     * @param string|int $website
      */
     private function validateWebsite($website)
     {
