@@ -2,14 +2,26 @@
 
 use LizardsAndPumpkins\MagentoConnector\Api\Api;
 
-require  __DIR__ . '/../../vendor/autoload.php';
-require_once __DIR__ . '/../../../../shell/abstract.php';
+require __DIR__ . '/../../vendor/autoload.php';
+require __DIR__ . '/../../../../shell/abstract.php';
 
 class LizardsAndPumpkins_Export extends Mage_Shell_Abstract
 {
+    /**
+     * @var LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
+     */
+    private $catalogExporter;
+
+    /**
+     * @var LizardsAndPumpkins_MagentoConnector_Model_Export_Content
+     */
+    private $contentExporter;
+
     public function __construct()
     {
         parent::__construct();
+        $this->contentExporter = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_content');
+        $this->catalogExporter = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_catalogExporter');
     }
 
     protected function _applyPhpVariables()
@@ -20,21 +32,20 @@ class LizardsAndPumpkins_Export extends Mage_Shell_Abstract
     public function run()
     {
         /** @var LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter $exporter */
-        $exporter = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_catalogExporter');
         if ($this->getArg('all-products')) {
-            $filename = $exporter->exportAllProducts();
+            $filename = $this->exportProducts();
             $this->triggerCatalogUpdateApi($filename);
         } elseif ($this->getArg('queued-products')) {
-            $filename = $exporter->exportProductsInQueue();
+            $filename = $this->catalogExporter->exportProductsInQueue();
             $this->triggerCatalogUpdateApi($filename);
         } elseif ($this->getArg('queued-categories')) {
-            $filename = $exporter->exportCategoriesInQueue();
+            $filename = $this->catalogExporter->exportCategoriesInQueue();
             $this->triggerCatalogUpdateApi($filename);
         } elseif ($this->getArg('all-categories')) {
-            $filename = $exporter->exportAllCategories();
+            $filename = $this->catalogExporter->exportAllCategories();
             $this->triggerCatalogUpdateApi($filename);
         } elseif ($this->getArg('blocks')) {
-            Mage::getModel('lizardsAndPumpkins_magentoconnector/export_content')->export();
+            $this->contentExporter->export();
         } elseif ($this->getArg('stats')) {
             $this->outputStatistics();
         } else {
@@ -75,6 +86,70 @@ USAGE;
         $stats = new LizardsAndPumpkins_MagentoConnector_Model_Statistics(Mage::getSingleton('core/resource'));
         echo sprintf('%s queued products.' . "\n", $stats->getQueuedProductCount());
         echo sprintf('%s queued categories.' . "\n", $stats->getQueuedCategoriesCount());
+    }
+
+    /**
+     * @return string
+     */
+    private function exportProducts()
+    {
+        if ($store = $this->getStoreFromArguments()) {
+            return $this->catalogExporter->exportOneStore(Mage::app()->getStore($store));
+        }
+
+        if ($website = $this->getWebsiteFromArgument()) {
+            return $this->catalogExporter->exportOneWebsite(Mage::app()->getWebsite($website));
+        }
+
+        return $this->catalogExporter->exportAllProducts();
+    }
+
+    /**
+     * @return Mage_Core_Model_Store
+     */
+    private function getStoreFromArguments()
+    {
+        $store = '';
+        try {
+            $store = $this->getArg('store');
+            $this->validateStore($store);
+        } catch (Mage_Core_Model_Store_Exception $e) {
+            printf('Store "%s" doesn\'t exist.%s', $store, PHP_EOL);
+            exit(2);
+        }
+
+        return $store;
+    }
+
+    /**
+     * @return Mage_Core_Model_Website
+     */
+    private function getWebsiteFromArgument()
+    {
+        try {
+            $website = $this->getArg('website');
+            $this->validateWebsite($website);
+        } catch (Mage_Core_Exception $e) {
+            echo "Error: {$e->getMessage()}" . PHP_EOL;
+            exit(2);
+        }
+        return $website;
+    }
+
+    /**
+     * @param string|int $storeId
+     */
+    private function validateStore($storeId)
+    {
+        Mage::app()->getStore($storeId);
+    }
+
+    /**
+     * @param string|int $websiteId
+     */
+    private function validateWebsite($websiteId)
+    {
+        Mage::app()->getWebsite($websiteId);
     }
 }
 

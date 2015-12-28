@@ -5,12 +5,6 @@ namespace LizardsAndPumpkins\MagentoConnector\XmlBuilder;
 class ListingBuilder
 {
     const CONDITION_AND = 'and';
-    const CONDITION_OR = 'or';
-
-    /**
-     * @var string[]
-     */
-    private static $allowedConditions = [self::CONDITION_AND, self::CONDITION_OR];
 
     /**
      * @var string[]
@@ -38,11 +32,6 @@ class ListingBuilder
     /**
      * @var string
      */
-    private $condition;
-
-    /**
-     * @var string
-     */
     private $urlKey;
 
     /**
@@ -52,25 +41,27 @@ class ListingBuilder
 
     /**
      * @param string $urlKey
-     * @param string $condition
      */
-    private function __construct($urlKey, $condition)
+    private function __construct($urlKey, $website, $locale)
     {
-        $this->condition = $condition;
         $this->urlKey = $urlKey;
+        $this->locale = $locale;
+        $this->website = $website;
     }
 
     /**
      * @param string $urlKey
-     * @param string $condition
+     * @param string $website
+     * @param string $locale
      * @return ListingBuilder
      */
-    public static function create($urlKey, $condition)
+    public static function create($urlKey, $website, $locale)
     {
-        self::validateCondition($condition);
         self::validateUrlKey($urlKey);
+        self::validateWebsite($website);
+        self::validateLocale($locale);
 
-        return new self($urlKey, $condition);
+        return new self($urlKey, $website, $locale);
     }
 
     /**
@@ -95,28 +86,9 @@ class ListingBuilder
     }
 
     /**
-     * @param string $condition
+     * @param $locale
      */
-    private static function validateCondition($condition)
-    {
-        if (!is_string($condition)) {
-            throw new \InvalidArgumentException('Condition must be string.');
-        }
-
-        if (!in_array($condition, self::$allowedConditions)) {
-            throw new \InvalidArgumentException(
-                sprintf(
-                    'Condition must be either "and" or "or". %s given.',
-                    $condition
-                )
-            );
-        }
-    }
-
-    /**
-     * @param string $locale
-     */
-    public function setLocale($locale)
+    private static function validateLocale($locale)
     {
         if (!is_string($locale)) {
             throw new \InvalidArgumentException('Locale msut be string');
@@ -129,18 +101,16 @@ class ListingBuilder
         if (!ctype_lower($language) || !ctype_upper($country) || strlen($language) !== 2 || strlen($country) !== 2) {
             throw new \InvalidArgumentException(sprintf('Locale must be of form "de_DE", "%s" given.', $locale));
         }
-        $this->locale = $locale;
     }
 
     /**
-     * @param string $website
+     * @param $website
      */
-    public function setWebsite($website)
+    private static function validateWebsite($website)
     {
         if (!is_string($website)) {
             throw new \InvalidArgumentException('Website must be string.');
         }
-        $this->website = $website;
     }
 
     /**
@@ -169,13 +139,18 @@ class ListingBuilder
         $xml->startElement('listing');
 
         $this->writeAttributesToListingNode($xml);
-
-        foreach ($this->filter as $filter) {
-            $xml->startElement($filter['attribute']);
-            $xml->writeAttribute('operation', $filter['operation']);
-            $xml->text($filter['value']);
+        if (!empty($this->filter)) {
+            $xml->startElement('criteria');
+            $xml->writeAttribute('type', self::CONDITION_AND);
+            foreach ($this->filter as $filter) {
+                $xml->startElement($filter['attribute']);
+                $xml->writeAttribute('is', $filter['operation']);
+                $xml->text($filter['value']);
+                $xml->endElement();
+            }
             $xml->endElement();
         }
+
 
         $xml->endElement(); // listing
         return new XmlString($xml->flush());
@@ -223,6 +198,5 @@ class ListingBuilder
         if ($this->website) {
             $xml->writeAttribute('website', $this->website);
         }
-        $xml->writeAttribute('condition', $this->condition);
     }
 }
