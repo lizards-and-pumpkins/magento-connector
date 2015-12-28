@@ -35,7 +35,7 @@ class ImagesCollector implements \IteratorAggregate
     }
 
     /**
-     * @param $imageFilePath
+     * @param string $imageFilePath
      */
     private function validateImageFile($imageFilePath)
     {
