@@ -2,8 +2,8 @@
 
 use LizardsAndPumpkins\MagentoConnector\Api\Api;
 
-require dirname($_SERVER['SCRIPT_NAME']) . '/../../vendor/autoload.php';
-require dirname($_SERVER['SCRIPT_NAME']) . '/abstract.php';
+require __DIR__ . '/../../vendor/autoload.php';
+require 'abstract.php';
 
 class LizardsAndPumpkins_Export extends Mage_Shell_Abstract
 {
@@ -22,6 +22,7 @@ class LizardsAndPumpkins_Export extends Mage_Shell_Abstract
         parent::__construct();
         $this->contentExporter = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_content');
         $this->catalogExporter = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_catalogExporter');
+        $this->catalogExporter->setShowProgress(true);
     }
 
     protected function _applyPhpVariables()

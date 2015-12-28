@@ -5,11 +5,17 @@ use LizardsAndPumpkins\MagentoConnector\XmlBuilder\CatalogMerge;
 class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
 {
     const IMAGE_BASE_PATH = '/catalog/product';
+    const REFRESH_PRODUCT_QUEUE_COUNT_EVERY = 1000;
 
     /**
      * @var LizardsAndPumpkins_MagentoConnector_Helper_Factory
      */
     private $factory;
+
+    /**
+     * @var int
+     */
+    private $numberOfProductsInQueue;
 
     public function __construct()
     {
@@ -46,7 +52,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
      */
     public function setShowProgress($enableProgressDisplay)
     {
-        $this->echoProgress = (bool)$enableProgressDisplay;
+        $this->echoProgress = (bool) $enableProgressDisplay;
     }
 
     /**
@@ -128,6 +134,8 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
         $startTime = microtime(true);
         foreach ($collector as $product) {
             $xmlBuilderAndUploader->process($product);
+            $this->refreshProductQueueCountIfNeeded();
+
             $totalTime = microtime(true) - $startTime;
             $avgTime = $totalTime / ++$this->numberOfProductsExported;
             $this->echoProgress($avgTime);
@@ -149,9 +157,33 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
      */
     private function echoProgress($avgTime)
     {
-        if ($this->echoProgress) {
-            $this->echoToStdErr(sprintf("\r%d | %.4f", $this->numberOfProductsExported, $avgTime));
+        if (!$this->echoProgress) {
+            return;
         }
+        $done = $this->getNumberOfProductsExported();
+        $total = $this->getNumberOfProductsInQueue();
+        $perc = floor(($done / $total) * 100);
+        $left = 100 - $perc;
+        $write = sprintf(
+            "\r\033[0G\033[2K[%'={$perc}s>%-{$left}s] - $perc%% - $done/$total - avg %.4f - %s",
+            "",
+            "",
+            $avgTime,
+            gmdate("H:i:s", $avgTime * ($total - $done))
+        );
+        $this->echoToStdErr($write);
+
+    }
+
+    /**
+     * @return int
+     */
+    private function getNumberOfProductsInQueue()
+    {
+        if (null === $this->numberOfProductsInQueue) {
+            $this->refreshNumberOfProductsInQueue();
+        }
+        return $this->numberOfProductsInQueue;
     }
 
     private function echoProgressDone()
@@ -258,5 +290,26 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
         foreach ($this->imageCollector as $image) {
             $linker->link($image);
         }
+    }
+
+    private function refreshNumberOfProductsInQueue()
+    {
+        $stats = new LizardsAndPumpkins_MagentoConnector_Model_Statistics(Mage::getSingleton('core/resource'));
+        $this->numberOfProductsInQueue = $stats->getQueuedProductCount();
+    }
+
+    private function refreshProductQueueCountIfNeeded()
+    {
+        if ($this->numberOfProductsExported % self::REFRESH_PRODUCT_QUEUE_COUNT_EVERY === 0) {
+            $this->refreshNumberOfProductsInQueue();
+        }
+    }
+
+    /**
+     * @return bool
+     */
+    public function wasSomethingExported()
+    {
+        return (bool) ($this->numberOfProductsExported + $this->numberOfCategoriesExported);
     }
 }
