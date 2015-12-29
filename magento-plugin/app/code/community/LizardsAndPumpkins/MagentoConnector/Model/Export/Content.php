@@ -80,6 +80,11 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
 
     private function exportNonCmsBlocks()
     {
+        $this->disableBlockCache();
+        $this->disableCollectionCache();
+
+        $this->replaceCatalogCategoryHelperToAvoidWrongTranslations();
+
         /** @var $appEmulation Mage_Core_Model_App_Emulation */
         $specialBlocks = Mage::getStoreConfig(self::XML_SPECIAL_BLOCKS);
         if (!is_array($specialBlocks)) {
@@ -90,9 +95,8 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
 
         /** @var $store Mage_Core_Model_Store */
         foreach (Mage::app()->getStores(true) as $store) {
-            $layout = $this->emulateStore($store);
-
             foreach ($specialBlocks as $blockName) {
+                $layout = $this->emulateStore($store);
                 $block = $layout->getBlock($blockName);
                 if (!$block) {
                     continue;
@@ -150,5 +154,22 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
     private function normalizeIdentifier($identifier)
     {
         return preg_replace(self::SNIPPET_KEY_REPLACE_PATTERN, '-', $identifier);
+    }
+
+    private function disableBlockCache()
+    {
+        Mage::app()->getCacheInstance()->banUse(Mage_Core_Block_Abstract::CACHE_GROUP);
+    }
+
+    private function disableCollectionCache()
+    {
+        Mage::app()->getCacheInstance()->banUse('collections');
+    }
+
+    private function replaceCatalogCategoryHelperToAvoidWrongTranslations()
+    {
+        $registryKey = '_helper/catalog/category';
+        Mage::unregister($registryKey);
+        Mage::register($registryKey, new LizardsAndPumpkins_MagentoConnector_Helper_Catalog_Category());
     }
 }
