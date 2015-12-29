@@ -80,8 +80,11 @@ Usage:  php $filename -- [options]
   --queued-products             Export queued products
   --all-categories              Export all categories
   --queued-categories           Export queued categories
+  --blocks                      Export cms and non-cms blocks
   --stats                       Show stats about queues
   help                          This help
+
+
 USAGE;
     }
 
