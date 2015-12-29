@@ -2,7 +2,6 @@
 
 class LizardsAndPumpkins_MagentoConnector_Helper_Catalog_Category extends Mage_Catalog_Helper_Category
 {
-
     /**
      * @param bool $sorted
      * @param bool $asCollection
@@ -11,10 +10,7 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Catalog_Category extends Mage_C
      */
     public function getStoreCategories($sorted = false, $asCollection = false, $toLoad = true)
     {
-        $categories = parent::getStoreCategories(
-            $sorted, $asCollection, $toLoad
-        );
-
+        $categories = parent::getStoreCategories($sorted, $asCollection, $toLoad);
         $this->deleteCacheBecauseEntriesMightBeInWrongLanguage();
 
         return $categories;
@@ -24,5 +20,4 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Catalog_Category extends Mage_C
     {
         $this->_storeCategories = [];
     }
-
 }
