@@ -55,10 +55,10 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
      */
     public function getFactory()
     {
-        if (null === $this->getFactory()) {
+        if (null === $this->factory) {
             $this->factory = Mage::helper('lizardsAndPumpkins_magentoconnector/factory');
         }
-        return $this->getFactory();
+        return $this->factory;
     }
 
     /**
