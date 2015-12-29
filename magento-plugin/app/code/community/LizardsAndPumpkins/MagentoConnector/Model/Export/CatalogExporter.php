@@ -133,7 +133,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
      */
     public function exportProducts(LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector $collector)
     {
-        $xmlBuilderAndUploader = $this->getFactory()->createXmlBuilderAndUploader();
+        $xmlBuilderAndUploader = $this->getFactory()->createPrepareProductDataForXmlBuilder();
         $filename = $this->getFactory()->getProductXmlFilename();
         $this->imageCollector = $this->getFactory()->createImageCollector();
 
@@ -168,18 +168,18 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
         if (!$this->echoProgress) {
             return;
         }
-        $done = $this->getNumberOfProductsExported();
-        $total = $this->getNumberOfProductsInQueue();
-        $perc = floor(($done / $total) * 100);
-        $left = 100 - $perc;
-        $write = sprintf(
-            "\r\033[0G\033[2K[%'={$perc}s>%-{$left}s] - $perc%% - $done/$total - avg %.4f - %s",
+        $absoluteDone = $this->getNumberOfProductsExported();
+        $absoluteTotal = $this->getNumberOfProductsInQueue();
+        $percentageDone = floor(($absoluteDone / $absoluteTotal) * 100);
+        $percetageLeft = 100 - $percentageDone;
+        $progressbarAndStatusInfo = sprintf(
+            "\r\033[0G\033[2K[%'={$percentageDone}s>%-{$percetageLeft}s] - $percentageDone%% - $absoluteDone/$absoluteTotal - avg %.4f - %s",
             "",
             "",
             $avgTime,
-            gmdate("H:i:s", $avgTime * ($total - $done))
+            gmdate("H:i:s", $avgTime * ($absoluteTotal - $absoluteDone))
         );
-        $this->echoToStdErr($write);
+        $this->echoToStdErr($progressbarAndStatusInfo);
     }
 
     /**
