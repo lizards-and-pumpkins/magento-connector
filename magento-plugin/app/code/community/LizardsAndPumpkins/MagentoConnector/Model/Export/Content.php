@@ -59,96 +59,59 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
         return new Api($apiUrl);
     }
 
-    /**
-     * @param Mage_Cms_Model_Resource_Block_Collection $cmsBlocks
-     */
-    private function exportCmsBlocks($cmsBlocks)
+    private function exportCmsBlocks(Mage_Cms_Model_Resource_Block_Collection $cmsBlocks)
     {
-        foreach ($cmsBlocks as $block) {
-            /* @var Mage_Cms_Model_Block $block */
+        array_map(function (Mage_Cms_Model_Block $block) {
+            $blockId = $this->normalizeIdentifier($block->getIdentifier());
             $context = [
-                'locale'  => Mage::getStoreConfig('general/locale/code', $block->getStoreId()),
-                'website' => Mage::app()->getStore($block->getStoreId())->getWebsite()->getCode(),
+                'locale'  => Mage::getStoreConfig('general/locale/code', $block->getData('store_id')),
+                'website' => Mage::app()->getStore($block->getData('store_id'))->getWebsite()->getCode(),
             ];
-            $this->api->triggerCmsBlockUpdate(
-                $this->normalizeIdentifier($block->getIdentifier()),
-                $block->getContent(),
-                $context
-            );
-        }
+            $this->api->triggerCmsBlockUpdate($blockId, $block->getContent(), $context);
+        }, iterator_to_array($cmsBlocks));
     }
 
     private function exportNonCmsBlocks()
     {
         $this->disableBlockCache();
         $this->disableCollectionCache();
-
         $this->replaceCatalogCategoryHelperToAvoidWrongTranslations();
 
-        /** @var $appEmulation Mage_Core_Model_App_Emulation */
         $specialBlocks = Mage::getStoreConfig(self::XML_SPECIAL_BLOCKS);
         if (!is_array($specialBlocks)) {
             return;
         }
 
-        $specialBlocks = array_keys($specialBlocks);
+        /** @var Mage_Core_Model_App_Emulation $appEmulation */
+        $appEmulation = Mage::getSingleton('core/app_emulation');
 
-        /** @var $store Mage_Core_Model_Store */
-        foreach (Mage::app()->getStores(true) as $store) {
-            foreach ($specialBlocks as $blockName) {
-                $layout = $this->emulateStore($store);
-                $block = $layout->getBlock($blockName);
-                if (!$block) {
-                    continue;
+        array_map(function ($blockIdentifier) use ($appEmulation) {
+            array_map(function (Mage_Core_Model_Store $store) use ($blockIdentifier, $appEmulation) {
+                $initialEnvironmentInfo = $appEmulation->startEnvironmentEmulation($store->getId());
+
+                $layout = $this->getLayout();
+                $block = $layout->getBlock($blockIdentifier);
+
+                if (null === $block) {
+                    return;
                 }
 
+                $blockId = 'content_block_' . $this->normalizeIdentifier($block->getNameInLayout());
                 $content = $block->toHtml();
                 $context = [
                     'locale'  => Mage::getStoreConfig('general/locale/code', $store->getId()),
                     'website' => $store->getWebsite()->getCode()
                 ];
-                $this->api->triggerCmsBlockUpdate(
-                    'content_block_' . $this->normalizeIdentifier($block->getNameInLayout()),
-                    $content,
-                    $context
-                );
-            }
-        }
-    }
 
-    /**
-     * @param Mage_Core_Model_Store $store
-     *
-     * @return Mage_Core_Model_Layout
-     */
-    private function emulateStore($store)
-    {
-        $storeId = $store->getId();
-        Mage::app()->getLocale()->emulate($storeId);
-        Mage::app()->setCurrentStore(Mage::app()->getStore($storeId));
+                $appEmulation->stopEnvironmentEmulation($initialEnvironmentInfo);
 
-        Mage::getDesign()->setArea('frontend')
-            ->setStore($storeId);
-
-        $designChange = Mage::getSingleton('core/design')
-            ->loadChange($storeId);
-
-        if ($designChange->getData()) {
-            Mage::getDesign()->setPackageName($designChange->getPackage())
-                ->setTheme($designChange->getTheme());
-        }
-
-        $layout = Mage::getModel('core/layout');
-        $layout->setArea(Mage_Core_Model_App_Area::AREA_FRONTEND);
-        $layout->getUpdate()->load('default');
-        $layout->generateXml();
-        $layout->generateBlocks();
-        return $layout;
+                $this->api->triggerCmsBlockUpdate($blockId, $content, $context);
+            }, Mage::app()->getStores(true));
+        }, array_keys($specialBlocks));
     }
 
     /**
      * @param string $identifier
-     *
      * @return string
      */
     private function normalizeIdentifier($identifier)
@@ -171,5 +134,19 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
         $registryKey = '_helper/catalog/category';
         Mage::unregister($registryKey);
         Mage::register($registryKey, new LizardsAndPumpkins_MagentoConnector_Helper_Catalog_Category());
+    }
+
+    /**
+     * @return Mage_Core_Model_Layout
+     */
+    private function getLayout()
+    {
+        /** @var Mage_Core_Model_Layout $layout */
+        $layout = Mage::getModel('core/layout');
+        $layout->getUpdate()->load('default');
+        $layout->generateXml();
+        $layout->generateBlocks();
+
+        return $layout;
     }
 }
