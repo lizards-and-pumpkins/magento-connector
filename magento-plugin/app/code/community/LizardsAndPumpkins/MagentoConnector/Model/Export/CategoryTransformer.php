@@ -5,7 +5,7 @@ use LizardsAndPumpkins\MagentoConnector\XmlBuilder\XmlString;
 
 class LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryTransformer
 {
-    const URL_KEY_REPLACE_PATTERN = '#[^a-zA-Z0-9:_\-\.]#';
+    const URL_KEY_REPLACE_PATTERN = '#[^a-zA-Z0-9:_\-\./]#';
 
     /**
      * @var Mage_Catalog_Model_Category
