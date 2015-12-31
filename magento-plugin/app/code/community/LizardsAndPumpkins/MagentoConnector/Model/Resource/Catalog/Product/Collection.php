@@ -153,7 +153,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
         }
         return isset($productData['url_key']) && $productUrlKeySuffix[$storeId] ?
             $productData['url_key'] . '.' . $productUrlKeySuffix[$storeId] :
-            '';
+            'catalog/product/view/id/' . $productData['entity_id'];
     }
 
     /**
