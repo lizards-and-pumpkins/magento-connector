@@ -218,27 +218,52 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
 
     public function testXmlContainsOneCondition()
     {
-        $xml = '<criteria type="and"><category is="Equal">accessoires</category></criteria>';
-
         $category = 'accessoires';
         $website = 'ru_de';
         $locale = 'en_DK';
         $listingBuilder = ListingBuilder::create($category, $website, $locale);
         $listingBuilder->addFilterCriterion('category', 'Equal', $category);
-        $this->assertContains($xml, $listingBuilder->buildXml()->getXml());
+
+        $result = $listingBuilder->buildXml()->getXml();
+
+        $this->assertContains('<category is="Equal">accessoires</category>', $result);
     }
 
     public function testXmlContainsMultipleConditions()
     {
-        $xml =
-            '<criteria type="and"><category is="Equal">accessoires</category><stock_qty is="GreaterThan">0</stock_qty></criteria>';
-
         $category = 'accessoires';
         $website = 'ru_de';
         $locale = 'en_DK';
         $listingBuilder = ListingBuilder::create($category, $website, $locale);
         $listingBuilder->addFilterCriterion('category', 'Equal', $category);
         $listingBuilder->addFilterCriterion('stock_qty', 'GreaterThan', '0');
-        $this->assertContains($xml, $listingBuilder->buildXml()->getXml());
+
+        $result = $listingBuilder->buildXml()->getXml();
+
+        $this->assertContains('<category is="Equal">accessoires</category>', $result);
+        $this->assertContains('<stock_qty is="GreaterThan">0</stock_qty>', $result);
+    }
+
+    public function testProductListingXmlContainsStockAvailabilityCriteria()
+    {
+        $category = 'foo';
+        $website = 'ru_de';
+        $locale = 'en_DK';
+
+        $listingBuilder = ListingBuilder::create($category, $website, $locale);
+
+        $listingBuilder->addFilterCriterion('category', 'Equal', $category);
+        $listingBuilder->addFilterCriterion('stock_qty', 'GreaterThan', '0');
+
+        $result = $listingBuilder->buildXml()->getXml();
+
+        $expectedXml = <<<EOX
+<criteria type="or">
+    <stock_qty is="GreaterThan">0</stock_qty>
+    <backorders is="Equal">true</backorders>
+</criteria>
+EOX;
+
+        $this->assertContains(str_replace(PHP_EOL, '', $expectedXml), str_replace(PHP_EOL, '', $result));
     }
 }
