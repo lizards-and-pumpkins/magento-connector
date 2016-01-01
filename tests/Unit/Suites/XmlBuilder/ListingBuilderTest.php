@@ -181,7 +181,7 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return string[]
+     * @return array[]
      */
     public function validFilterProvider()
     {
