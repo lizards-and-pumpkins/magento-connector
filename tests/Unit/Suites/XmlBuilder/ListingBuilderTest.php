@@ -5,6 +5,15 @@ namespace LizardsAndPumpkins\MagentoConnector\XmlBuilder;
 class ListingBuilderTest extends \PHPUnit_Framework_TestCase
 {
     /**
+     * @param string $string
+     * @return string
+     */
+    private function removeXmlFormatting($string)
+    {
+        return str_replace('/\n|\t/m', '', $string);
+    }
+
+    /**
      * @param string $urlKey
      * @dataProvider provideInvalidUrlKey
      */
@@ -264,6 +273,6 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
 </criteria>
 EOX;
 
-        $this->assertContains(str_replace(PHP_EOL, '', $expectedXml), str_replace(PHP_EOL, '', $result));
+        $this->assertContains($this->removeXmlFormatting($expectedXml), $this->removeXmlFormatting($result));
     }
 }
