@@ -165,7 +165,7 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
      * @param string $validAttribute
      * @param string $validOperation
      * @param string $validValue
-     * @dataProvider provideValidFilter
+     * @dataProvider validFilterProvider
      */
     public function testOneFilterForListingIsCreated($validAttribute, $validOperation, $validValue)
     {
@@ -173,14 +173,17 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
         $locale = 'en_DK';
         $listingBuilder = ListingBuilder::create('urlkey', $website, $locale);
         $listingBuilder->addFilterCriterion($validAttribute, $validOperation, $validValue);
-        $xml = $listingBuilder->buildXml()->getXml();
-        $this->assertContains("<$validAttribute is=\"$validOperation\">$validValue</$validAttribute>", $xml);
+        $result = $listingBuilder->buildXml()->getXml();
+
+        $expectedXml = sprintf('<%1$s is="%2$s">%3$s</%1$s>', $validAttribute, $validOperation, $validValue);
+
+        $this->assertContains($expectedXml, $result);
     }
 
     /**
      * @return string[]
      */
-    public function provideValidFilter()
+    public function validFilterProvider()
     {
         $validOperations = [
             'Equal',
@@ -192,15 +195,13 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
             'NotEqual',
         ];
 
-        $filter = [];
-        foreach ($validOperations as $operation) {
-            $filter[] = [
+        return array_map(function ($operation) {
+            return [
                 'attribute' => 'category',
                 'operation' => $operation,
-                'value'     => 'sale',
+                'value' => 'sale',
             ];
-        }
-        return $filter;
+        }, $validOperations);
     }
 
     public function testFilterWithLeadingSlashIsCreated()
