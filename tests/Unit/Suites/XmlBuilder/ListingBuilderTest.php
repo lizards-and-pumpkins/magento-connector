@@ -10,7 +10,7 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
      */
     private function removeXmlFormatting($string)
     {
-        return preg_replace('/\n|\t/m', '', $string);
+        return preg_replace("/>[^<]+</m", '><', $string);
     }
 
     /**
