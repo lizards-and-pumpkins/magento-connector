@@ -148,11 +148,13 @@ class ListingBuilder
                 $xml->text($filter['value']);
                 $xml->endElement();
             }
+
+            $xml->writeRaw($this->getStockAvailabilityCriteriaRawXml());
+
             $xml->endElement();
         }
 
-
-        $xml->endElement(); // listing
+        $xml->endElement();
         return new XmlString($xml->flush());
     }
 
@@ -198,5 +200,18 @@ class ListingBuilder
         if ($this->website) {
             $xml->writeAttribute('website', $this->website);
         }
+    }
+
+    /**
+     * @return string
+     */
+    private function getStockAvailabilityCriteriaRawXml()
+    {
+        return <<<EOX
+<criteria type="or">
+    <stock_qty is="GreaterThan">0</stock_qty>
+    <backorders is="Equal">true</backorders>
+</criteria>
+EOX;
     }
 }
