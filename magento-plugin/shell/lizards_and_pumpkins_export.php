@@ -3,7 +3,7 @@
 use LizardsAndPumpkins\MagentoConnector\Api\Api;
 
 require __DIR__ . '/../../vendor/autoload.php';
-require '/abstract.php';
+require 'abstract.php';
 
 class LizardsAndPumpkins_Export extends Mage_Shell_Abstract
 {
