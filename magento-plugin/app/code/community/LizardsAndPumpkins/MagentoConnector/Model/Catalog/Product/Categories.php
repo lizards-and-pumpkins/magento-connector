@@ -1,87 +1,52 @@
 <?php
 
-use LizardsAndPumpkins\MagentoConnector\Model\Catalog\Product\Exception\InvalidCategoryDataException;
 use LizardsAndPumpkins\MagentoConnector\Model\Catalog\Product\Exception\InvalidCategoryIdException;
 
 class LizardsAndPumpkins_MagentoConnector_Model_Catalog_Product_Categories
 {
     /**
-     * @var array[]
+     * @var LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collection
      */
-    private $categoriesData;
+    private $categories;
 
     /**
      * @param array[] $categoriesData
      */
-    public function __construct(array $categoriesData)
+    public function __construct(\LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collection $categories)
     {
-        $this->validateCategoriesData($categoriesData);
-        $this->categoriesData = $categoriesData;
-    }
-
-    /**
-     * @param array[] $categoriesData
-     */
-    private function validateCategoriesData(array $categoriesData)
-    {
-        array_map([$this, 'validateCategoryData'], array_keys($categoriesData), $categoriesData);
-    }
-
-    /**
-     * @param int $categoryId
-     * @param mixed[] $categoryData
-     */
-    private function validateCategoryData($categoryId, array $categoryData)
-    {
-        $this->validateRequiredArrayKeysArePresent($categoryId, $categoryData);
-
-        if (!is_array($categoryData['parent_ids'])) {
-            $type = $this->getType($categoryData['parent_ids']);
-            $message = sprintf('The Category %s parent_ids are not an array (got a %s)', $categoryId, $type);
-            throw new InvalidCategoryDataException($message);
-        }
-    }
-
-    /**
-     * @param int $categoryId
-     * @param mixed[] $categoryData
-     */
-    private function validateRequiredArrayKeysArePresent($categoryId, array $categoryData)
-    {
-        array_map(function ($requiredKey) use ($categoryId, $categoryData) {
-            if (!isset($categoryData[$requiredKey])) {
-                $message = sprintf('The Category %s has is missing the "%s" array key', $categoryId, $requiredKey);
-                throw new InvalidCategoryDataException($message);
-            }
-        }, ['parent_ids', 'is_anchor', 'name']);
+        $this->categories = $categories;
     }
 
     /**
      * @param int|string $categoryId
+     * @param int|string|Mage_Core_Model_Store $store
      * @return string[]
      */
-    public function getLayeredNavigationEnabledParentsByCategoryId($categoryId)
+    public function getLayeredNavigationEnabledParentsByCategoryId($categoryId, $store)
     {
         $intId = (int) $categoryId;
         if ($intId === 0) {
             $message = sprintf('The category ID has to be an integer, got "%s"', $this->getType($categoryId));
             throw new InvalidCategoryIdException($message);
         }
-        if (!isset($this->categoriesData[$intId])) {
+        $categoriesData = $this->categories->getCategoryNamesByStore($store);
+        if (!isset($categoriesData[$intId])) {
             return [];
         }
-        return $this->findIsAnchorParents($intId);
+        return $this->findLayeredNavigationParents($intId, $categoriesData);
     }
 
     /**
      * @param int $categoryId
+     * @param array[] $allCategories
      * @return string[]
+     * @internal param mixed[] $categoryData
      */
-    private function findIsAnchorParents($categoryId)
+    private function findLayeredNavigationParents($categoryId, array $allCategories)
     {
-        return array_reduce($this->categoriesData[$categoryId]['parent_ids'], function ($carry, $parentId) {
-            return isset($this->categoriesData[$parentId]) && $this->categoriesData[$parentId]['is_anchor'] ?
-                array_merge($carry, [$this->categoriesData[$parentId]['name']]) :
+        return array_reduce($allCategories[$categoryId]['parent_ids'], function ($carry, $parentId) use ($allCategories) {
+            return $allCategories[$parentId]['is_anchor'] ?
+                array_merge($carry, [$allCategories[$parentId]['name']]) :
                 $carry;
         }, []);
     }

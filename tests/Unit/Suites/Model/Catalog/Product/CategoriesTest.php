@@ -11,7 +11,14 @@ class LizardsAndPumpkins_MagentoConnector_Model_Catalog_Product_CategoriesTest
      */
     private $categories;
 
-    /*
+    /**
+     * @var LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collection|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $stubCategoryCollection;
+    
+    /**
+     * @var array[]
+     * 
      *                    1 (no)
      *           /                  \
      *         2 (no)                3 (yes)
@@ -34,45 +41,22 @@ class LizardsAndPumpkins_MagentoConnector_Model_Catalog_Product_CategoriesTest
         11 => ['parent_ids' => [1, 3, 7], 'is_anchor' => 1, 'name' => 'eleven'],
     ];
 
+    /**
+     * @param array $categoriesData
+     */
+    private function createMockCategoryCollectionWithData(array $categoriesData)
+    {
+        $class = \LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collection::class;
+        $this->stubCategoryCollection = $this->getMock($class, [], [], '', false);
+        $this->stubCategoryCollection->method('getCategoryNamesByStore')->willReturn($categoriesData);
+    }
+
     protected function setUp()
     {
+        $this->createMockCategoryCollectionWithData($this->categoryFixture);
+        
         $this->categories = new LizardsAndPumpkins_MagentoConnector_Model_Catalog_Product_Categories(
-            $this->categoryFixture
-        );
-    }
-
-    /**
-     * @param string $missingKey
-     * @dataProvider missingCategoriesDataArrayKeyProvider
-     */
-    public function testItThrowsAnExceptionIfACategoryDataKeyIsMissing($missingKey)
-    {
-        $categoriesData = ['222' => ['parent_ids' => [1], 'is_anchor' => 1, 'name' => 'test']];
-        unset($categoriesData['222'][$missingKey]);
-        $this->setExpectedException(
-            InvalidCategoryDataException::class,
-            sprintf('The Category 222 has is missing the "%s" array key', $missingKey)
-        );
-        new LizardsAndPumpkins_MagentoConnector_Model_Catalog_Product_Categories($categoriesData);
-    }
-
-    public function missingCategoriesDataArrayKeyProvider()
-    {
-        return [
-            ['parent_ids'],
-            ['is_anchor'],
-            ['name'],
-        ];
-    }
-
-    public function testItThrowsAnExceptionIfCategoryDataParentIdsIsNotAnArray()
-    {
-        $this->setExpectedException(
-            InvalidCategoryDataException::class,
-            'The Category 222 parent_ids are not an array (got a string)'
-        );
-        new LizardsAndPumpkins_MagentoConnector_Model_Catalog_Product_Categories(
-            ['222' => ['parent_ids' => 'a string', 'is_anchor' => 1, 'name' => 'test']]
+            $this->stubCategoryCollection
         );
     }
 
@@ -82,18 +66,18 @@ class LizardsAndPumpkins_MagentoConnector_Model_Catalog_Product_CategoriesTest
             InvalidCategoryIdException::class,
             'The category ID has to be an integer, got "string"'
         );
-        $this->categories->getLayeredNavigationEnabledParentsByCategoryId('foo');
+        $this->categories->getLayeredNavigationEnabledParentsByCategoryId('foo', 'test');
     }
 
     public function testItReturnsAnEmptyArrayForACategoryWithNoParents()
     {
-        $this->assertSame([], $this->categories->getLayeredNavigationEnabledParentsByCategoryId('1000000'));
+        $this->assertSame([], $this->categories->getLayeredNavigationEnabledParentsByCategoryId('1000000', 'test'));
     }
 
     public function testItTakesAStringOrIntCategoryId()
     {
-        $this->assertSame([], $this->categories->getLayeredNavigationEnabledParentsByCategoryId('1000000'));
-        $this->assertSame([], $this->categories->getLayeredNavigationEnabledParentsByCategoryId(1000000));
+        $this->assertSame([], $this->categories->getLayeredNavigationEnabledParentsByCategoryId('1000000', 'test'));
+        $this->assertSame([], $this->categories->getLayeredNavigationEnabledParentsByCategoryId(1000000, 'test'));
     }
 
     /**
@@ -103,8 +87,8 @@ class LizardsAndPumpkins_MagentoConnector_Model_Catalog_Product_CategoriesTest
      */
     public function testItReturnsTheParentCategoriesWithLayeredNavigation($categoryId, $expectedParents)
     {
-        $resultNavigationParents = $this->categories->getLayeredNavigationEnabledParentsByCategoryId($categoryId);
-        $this->assertSame($expectedParents, $resultNavigationParents);
+        $categoriesData = $this->categories->getLayeredNavigationEnabledParentsByCategoryId($categoryId, 'test');
+        $this->assertSame($expectedParents, $categoriesData);
     }
 
     public function layeredNavigationParentNamesProvider()
