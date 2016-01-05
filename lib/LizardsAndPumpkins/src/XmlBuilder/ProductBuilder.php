@@ -127,7 +127,8 @@ class ProductBuilder
             $value;
 
         foreach ($values as $value) {
-            $this->xml->startElement($attributeName);
+            $this->xml->startElement('attribute');
+            $this->xml->writeAttribute('name', $attributeName);
             $this->addContextAttributes();
             if ($this->isCDataNeeded($value)) {
                 $value = str_replace(']]>', ']]]]><![CDATA[', $value);
