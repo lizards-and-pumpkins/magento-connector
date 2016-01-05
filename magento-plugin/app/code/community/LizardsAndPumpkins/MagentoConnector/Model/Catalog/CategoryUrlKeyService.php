@@ -41,7 +41,6 @@ class LizardsAndPumpkins_MagentoConnector_Model_Catalog_CategoryUrlKeyService
      * @param int $categoryId
      * @param array[] $allCategories
      * @return string[]
-     * @internal param mixed[] $categoryData
      */
     private function findLayeredNavigationParents($categoryId, array $allCategories)
     {
