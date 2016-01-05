@@ -6,7 +6,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collec
     /**
      * @var array[]
      */
-    private $namesByStore = [];
+    private $urlKeysByStore = [];
 
     public function load($printQuery = false, $logQuery = false)
     {
@@ -28,11 +28,11 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collec
             $this->addAttributeToSelect(['path', 'is_anchor']);
             parent::getData();
         }
-        $storeNames = $this->getCategoryNamesByStore($store);
-        return array_reduce(array_keys($this->_data), function (array $carry, $categoryId) use ($storeNames) {
+        $storeUrlKeys = $this->getCategoryUrlKeysByStore($store);
+        return array_reduce(array_keys($this->_data), function (array $carry, $categoryId) use ($storeUrlKeys) {
             $carry[$categoryId] = array_merge(
                 $this->_data[$categoryId],
-                ['name' => $storeNames[$categoryId]]
+                ['url_key' => $storeUrlKeys[$categoryId]]
             );
             return $carry;
         }, []);
@@ -42,16 +42,16 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collec
      * @param int|string|Mage_Core_Model_Store $store
      * @return string[]
      */
-    public function getCategoryNamesByStore($store)
+    private function getCategoryUrlKeysByStore($store)
     {
         $storeId = Mage::app()->getStore($store)->getId();
-        if (!isset($this->namesByStore[$storeId])) {
-            $attribute = Mage::getSingleton('eav/config')->getAttribute('catalog_category', 'name');
+        if (!isset($this->urlKeysByStore[$storeId])) {
+            $attribute = Mage::getSingleton('eav/config')->getAttribute('catalog_category', 'url_key');
             $table = $attribute->getBackend()->getTable();
             $select = $this->getConnection()->select()
                 ->from(
                     ['t_d' => $table],
-                    ['entity_id', 'name' => 'IFNULL(t_s.value, t_d.value)']
+                    ['entity_id', 'url_key' => 'IFNULL(t_s.value, t_d.value)']
                 )
                 ->joinLeft(
                     ['t_s' => $table],
@@ -63,9 +63,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collec
                 )
                 ->where('t_d.store_id=0')
                 ->where('t_d.attribute_id=?', $attribute->getId());
-            $this->namesByStore[$storeId] = $this->getConnection()->fetchPairs($select);
+            $this->urlKeysByStore[$storeId] = $this->getConnection()->fetchPairs($select);
         }
-        return $this->namesByStore[$storeId];
+        return $this->urlKeysByStore[$storeId];
     }
 
     /**

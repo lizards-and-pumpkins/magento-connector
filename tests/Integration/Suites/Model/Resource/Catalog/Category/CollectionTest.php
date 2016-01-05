@@ -58,7 +58,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collec
         $this->assertGreaterThan(0, count($categoriesData));
 
         $this->assertAllCategoryRecordsHaveAttribute('is_anchor', $categoriesData);
-        $this->assertAllCategoryRecordsHaveAttribute('name', $categoriesData);
+        $this->assertAllCategoryRecordsHaveAttribute('url_key', $categoriesData);
     }
 
     public function testResultIsIndexedByEntityId()

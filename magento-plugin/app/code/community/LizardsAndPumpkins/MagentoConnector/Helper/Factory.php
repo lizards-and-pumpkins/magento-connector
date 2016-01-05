@@ -127,4 +127,20 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Factory
     {
         return !is_string($targetDir) || !is_dir($targetDir);
     }
+
+    /**
+     * @return LizardsAndPumpkins_MagentoConnector_Model_Catalog_CategoryUrlKeyService
+     */
+    public function createCategoryUrlKeyService()
+    {
+        return new LizardsAndPumpkins_MagentoConnector_Model_Catalog_CategoryUrlKeyService($this->getCategoryCollection());
+    }
+
+    /**
+     * @return LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collection
+     */
+    private function getCategoryCollection()
+    {
+        return Mage::getResourceSingleton('lizardsAndPumpkins_magentoconnector/catalog_category_collection');
+    }
 }

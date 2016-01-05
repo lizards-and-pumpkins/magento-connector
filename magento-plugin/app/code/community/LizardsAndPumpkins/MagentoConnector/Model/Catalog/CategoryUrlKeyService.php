@@ -1,8 +1,8 @@
 <?php
 
-use LizardsAndPumpkins\MagentoConnector\Model\Catalog\Product\Exception\InvalidCategoryIdException;
+use LizardsAndPumpkins\MagentoConnector\Model\Catalog\Exception\InvalidCategoryIdException;
 
-class LizardsAndPumpkins_MagentoConnector_Model_Catalog_Product_Categories
+class LizardsAndPumpkins_MagentoConnector_Model_Catalog_CategoryUrlKeyService
 {
     /**
      * @var LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collection
@@ -22,18 +22,19 @@ class LizardsAndPumpkins_MagentoConnector_Model_Catalog_Product_Categories
      * @param int|string|Mage_Core_Model_Store $store
      * @return string[]
      */
-    public function getLayeredNavigationEnabledParentsByCategoryId($categoryId, $store)
+    public function getCategoryUrlKeysByIdAndStore($categoryId, $store)
     {
         $intId = (int) $categoryId;
         if ($intId === 0) {
             $message = sprintf('The category ID has to be an integer, got "%s"', $this->getType($categoryId));
             throw new InvalidCategoryIdException($message);
         }
-        $categoriesData = $this->categories->getCategoryNamesByStore($store);
+        $categoriesData = $this->categories->getDataForStore($store);
         if (!isset($categoriesData[$intId])) {
             return [];
         }
-        return $this->findLayeredNavigationParents($intId, $categoriesData);
+        $parents = $this->findLayeredNavigationParents($intId, $categoriesData);
+        return array_merge($parents, [$categoriesData[$categoryId]['url_key']]);
     }
 
     /**
@@ -46,7 +47,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Catalog_Product_Categories
     {
         return array_reduce($allCategories[$categoryId]['parent_ids'], function ($carry, $parentId) use ($allCategories) {
             return $allCategories[$parentId]['is_anchor'] ?
-                array_merge($carry, [$allCategories[$parentId]['name']]) :
+                array_merge($carry, [$allCategories[$parentId]['url_key']]) :
                 $carry;
         }, []);
     }

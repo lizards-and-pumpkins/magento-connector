@@ -30,7 +30,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
 
     private function _beforeLoadData()
     {
-        $this->addCategoryUrlKeys();
+        $this->addCategoryIdsToSelect();
         $this->addStockItemData();
         $this->addAttributeToSelect(['tax_class_id', 'visibility', 'status']);
         $this->addConfigurableAttributeCodes();
@@ -56,7 +56,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
         foreach ($this->_data as $row) {
             $indexedProductData[$row['entity_id']] = array_merge(
                 $row,
-                ['categories' => $this->categoryUrlKeysToPaths($row['categories'])],
+                ['categories' => $this->addCategoryUrlKeys($row['category_ids'])],
                 ['configurable_attributes' => $this->configAttributeIdsToCodes($row['configurable_attributes'])],
                 ['website' => $websiteCode],
                 ['locale' => $localeCode]
@@ -76,7 +76,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
         $associatedProductData = $this->getFlag(self::FLAG_LOAD_ASSOCIATED_PRODUCTS) ?
             $this->loadAssociatedSimpleProductData() :
             [];
-        
+
         foreach ($this->_data as $productId => $productData) {
             $this->_data[$productId]['media_gallery'] = isset($mediaGalleryData[$productId]) ?
                 $mediaGalleryData[$productId] :
@@ -104,7 +104,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
                 return $carry || $this->hasBackorders($childProduct);
             }, false);
         }
-        
+
         return isset($productData['backorders']) && 'true' === $productData['backorders'];
     }
 
@@ -148,7 +148,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
     {
         static $productUrlKeySuffix;
         $storeId = $this->getStoreId();
-        if (is_null($productUrlKeySuffix) || ! isset($productUrlKeySuffix[$storeId])) {
+        if (is_null($productUrlKeySuffix) || !isset($productUrlKeySuffix[$storeId])) {
             $productUrlKeySuffix[$storeId] = Mage::getStoreConfig('catalog/seo/category_url_suffix', $storeId);
         }
         return isset($productData['url_key']) && $productUrlKeySuffix[$storeId] ?
@@ -167,30 +167,14 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
         return parent::addIdFilter($productId, $exclude);
     }
 
-    private function addCategoryUrlKeys()
+    private function addCategoryIdsToSelect()
     {
         $table = $this->getCoreResource()->getTableName('catalog/category_product');
-        $connection = $this->getConnection();
-        $categoryUrlKeyAttribute = $this->getEavConfig()->getAttribute('catalog_category', 'url_key');
         $select = $this->getSelect();
-        $columnValue = new Zend_Db_Expr("GROUP_CONCAT(IFNULL(category_s.value, category_d.value) SEPARATOR '|||')");
         $select->joinInner(
             ['category_link' => $table],
             'e.entity_id=category_link.product_id',
-            []
-        );
-        $select->joinInner(
-            ['category_d' => $categoryUrlKeyAttribute->getBackend()->getTable()],
-            "category_link.category_id=category_d.entity_id AND category_d.attribute_id='{$categoryUrlKeyAttribute->getId()}' AND category_d.store_id=0",
-            []
-        );
-        $select->joinLeft(
-            ['category_s' => $categoryUrlKeyAttribute->getBackend()->getTable()],
-            $connection->quoteInto(
-                "category_link.category_id=category_s.entity_id AND category_s.attribute_id='{$categoryUrlKeyAttribute->getId()}' AND category_s.store_id=?",
-                $this->getStoreId()
-            ),
-            ['categories' => $columnValue]
+            ['category_ids' => new Zend_Db_Expr("GROUP_CONCAT(category_link.category_id SEPARATOR ',')")]
         );
         $this->groupSelectBy($this->getSelect(), 'e.entity_id');
     }
@@ -231,9 +215,11 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
         $this->getSelect()->joinLeft(
             ['configurable_attribute' => $this->getResource()->getTable('catalog/product_super_attribute')],
             "e.entity_id=configurable_attribute.product_id",
-            ['configurable_attributes' => new Zend_Db_Expr(
-                "GROUP_CONCAT(configurable_attribute.attribute_id SEPARATOR ',')"
-            )]
+            [
+                'configurable_attributes' => new Zend_Db_Expr(
+                    "GROUP_CONCAT(configurable_attribute.attribute_id SEPARATOR ',')"
+                ),
+            ]
         );
         $this->groupSelectBy($this->getSelect(), 'e.entity_id');
     }
@@ -332,15 +318,30 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
     }
 
     /**
-     * @param string $combinedCategoryUrlKeys
+     * @param string $combinedCategoryIds
      * @return string[]
      */
-    private function categoryUrlKeysToPaths($combinedCategoryUrlKeys)
+    private function addCategoryUrlKeys($combinedCategoryIds)
     {
+        $categoryIds = array_unique(explode(',', $combinedCategoryIds));
+        return array_unique(array_reduce($categoryIds, function (array $carry, $categoryId) {
+            return array_merge($carry, $this->getCategoryUrlPathsForId($categoryId));
+        }, []));
+    }
+
+    /**
+     * @param int|string $categoryId
+     * @return string[]
+     */
+    private function getCategoryUrlPathsForId($categoryId)
+    {
+        $factory = Mage::helper('lizardsAndPumpkins_magentoconnector/factory');
+        $categoryUrlKeyService = $factory->createCategoryUrlKeyService();
+        $categoryUrlKeys = $categoryUrlKeyService->getCategoryUrlKeysByIdAndStore($categoryId, $this->getStoreId());
         $suffix = Mage::getStoreConfig('catalog/seo/category_url_suffix', $this->getStoreId());
         return array_map(function ($urlKey) use ($suffix) {
             return $urlKey . '.' . $suffix;
-        }, array_unique(explode('|||', $combinedCategoryUrlKeys)));
+        }, $categoryUrlKeys);
     }
 
     /**
@@ -420,7 +421,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
     {
         static $tableOptions;
         $storeId = $this->getStoreId();
-        if (null === $tableOptions ||! isset($tableOptions[$storeId])) {
+        if (null === $tableOptions || !isset($tableOptions[$storeId])) {
             /** @var Mage_Eav_Model_Resource_Entity_Attribute_Option_Collection $collection */
             $collection = Mage::getResourceModel('eav/entity_attribute_option_collection')
                 ->setPositionOrder('asc')
