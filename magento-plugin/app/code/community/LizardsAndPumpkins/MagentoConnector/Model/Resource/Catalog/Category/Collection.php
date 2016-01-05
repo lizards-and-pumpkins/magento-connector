@@ -68,14 +68,6 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collec
         return $this->urlKeysByStore[$storeId];
     }
 
-    /**
-     * @return Mage_Catalog_Model_Resource_Category
-     */
-    public function getResource()
-    {
-        return parent::getResource();
-    }
-
     protected function _afterLoadData()
     {
         $this->_data = array_reduce(parent::getData(), function ($carry, array $row) {
