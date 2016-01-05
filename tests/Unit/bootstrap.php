@@ -3,6 +3,11 @@
 error_reporting(E_ALL);
 
 require __DIR__ . '/../../vendor/autoload.php';
+require __DIR__ . '/../../../../app/Mage.php';
+
+set_error_handler(function ($errno, $errstr, $errfile) {
+    return substr($errfile, -19) == 'Varien/Autoload.php' ? null : false;
+});
 
 spl_autoload_register(function ($classname) {
     $classnameReplaced = str_replace(['_', '\\'], '/', $classname);
