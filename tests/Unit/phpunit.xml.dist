@@ -16,7 +16,6 @@
         stopOnFailure="false"
         stopOnIncomplete="false"
         stopOnSkipped="false"
-        testSuiteLoaderClass="PHPUnit_Runner_StandardTestSuiteLoader"
         timeoutForSmallTests="1"
         timeoutForMediumTests="10"
         timeoutForLargeTests="60"
@@ -28,14 +27,8 @@
         <ini name="display_startup_errors" value="On"/>
     </php>
     <testsuites>
-        <testsuite name="XmlBuilder">
-            <directory>Suites/XmlBuilder</directory>
-        </testsuite>
-        <testsuite name="Api">
-            <directory>Suites/XmlBuilder</directory>
-        </testsuite>
-        <testsuite name="Images">
-            <directory>Suites/Images</directory>
+        <testsuite name="Magento Connector Unit Tests">
+            <directory>Suites</directory>
         </testsuite>
     </testsuites>
 </phpunit>
