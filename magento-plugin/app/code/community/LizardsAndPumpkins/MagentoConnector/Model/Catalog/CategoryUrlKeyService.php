@@ -10,9 +10,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Catalog_CategoryUrlKeyService
     private $categories;
 
     /**
-     * @param array[] $categoriesData
+     * @param LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collection $categories
      */
-    public function __construct(\LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collection $categories)
+    public function __construct(LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collection $categories)
     {
         $this->categories = $categories;
     }
