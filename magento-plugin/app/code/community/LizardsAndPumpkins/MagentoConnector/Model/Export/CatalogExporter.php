@@ -168,29 +168,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
         if (!$this->echoProgress) {
             return;
         }
-        $absoluteDone = $this->getNumberOfProductsExported();
-        $absoluteTotal = $this->getNumberOfProductsInQueue();
-        $percentageDone = floor(($absoluteDone / $absoluteTotal) * 100);
-        $percetageLeft = 100 - $percentageDone;
-        $progressbarAndStatusInfo = sprintf(
-            "\r\033[0G\033[2K[%'={$percentageDone}s>%-{$percetageLeft}s] - $percentageDone%% - $absoluteDone/$absoluteTotal - avg %.4f - %s",
-            "",
-            "",
-            $avgTime,
-            gmdate("H:i:s", $avgTime * ($absoluteTotal - $absoluteDone))
-        );
-        $this->echoToStdErr($progressbarAndStatusInfo);
-    }
-
-    /**
-     * @return int
-     */
-    private function getNumberOfProductsInQueue()
-    {
-        if (null === $this->numberOfProductsInQueue) {
-            $this->refreshNumberOfProductsInQueue();
-        }
-        return $this->numberOfProductsInQueue;
+        $this->echoToStdErr(sprintf("\r%d | %.4f", $this->numberOfProductsExported, $avgTime));
     }
 
     private function echoProgressDone()
@@ -299,17 +277,17 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
         }
     }
 
-    private function refreshNumberOfProductsInQueue()
-    {
-        $stats = new LizardsAndPumpkins_MagentoConnector_Model_Statistics(Mage::getSingleton('core/resource'));
-        $this->numberOfProductsInQueue = $stats->getQueuedProductCount();
-    }
-
     private function refreshProductQueueCountIfNeeded()
     {
         if ($this->numberOfProductsExported % self::REFRESH_PRODUCT_QUEUE_COUNT_EVERY_N_PRODUCTS === 0) {
             $this->refreshNumberOfProductsInQueue();
         }
+    }
+
+    private function refreshNumberOfProductsInQueue()
+    {
+        $stats = new LizardsAndPumpkins_MagentoConnector_Model_Statistics(Mage::getSingleton('core/resource'));
+        $this->numberOfProductsInQueue = $stats->getQueuedProductCount();
     }
 
     /**
