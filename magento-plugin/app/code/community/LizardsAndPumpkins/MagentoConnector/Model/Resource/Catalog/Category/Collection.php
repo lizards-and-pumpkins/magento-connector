@@ -8,6 +8,11 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collec
      */
     private $urlKeysByStore = [];
 
+    /**
+     * @var array[]
+     */
+    private $categoryDataByStore = [];
+
     public function load($printQuery = false, $logQuery = false)
     {
         Mage::throwException('Do not use load(), use getDataForStore() instead');
@@ -24,27 +29,49 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collec
      */
     public function getDataForStore($store)
     {
+        $storeId = Mage::app()->getStore($store)->getId();
+        if (! isset($this->categoryDataByStore[$storeId])) {
+            $this->categoryDataByStore[$storeId] = $this->loadDataForStore($storeId);
+        }
+        return $this->categoryDataByStore[$storeId];
+    }
+
+
+    /**
+     * @param int $storeId
+     * @return array[]
+     */
+    public function loadDataForStore($storeId)
+    {
         if (null === $this->_data) {
             $this->addAttributeToSelect(['path', 'is_anchor']);
             parent::getData();
         }
-        $storeUrlKeys = $this->getCategoryUrlKeysByStore($store);
-        return array_reduce(array_keys($this->_data), function (array $carry, $categoryId) use ($storeUrlKeys) {
-            $carry[$categoryId] = array_merge(
-                $this->_data[$categoryId],
-                ['url_key' => $storeUrlKeys[$categoryId]]
-            );
-            return $carry;
-        }, []);
+        $storeUrlKeys = $this->getCategoryUrlKeysByStore($storeId);
+        return $this->addUrlKeysToCategoryData($this->_data, $storeUrlKeys);
     }
 
     /**
-     * @param int|string|Mage_Core_Model_Store $store
+     * @param array[] $categoryData
+     * @param string[] $storeUrlKeys
+     * @return mixed
+     */
+    private function addUrlKeysToCategoryData(array $categoryData, array $storeUrlKeys)
+    {
+        $mergedData = [];
+        foreach ($categoryData as $categoryId => $categoryInfo) {
+            $mergedData[$categoryId] = $categoryInfo;
+            $mergedData[$categoryId]['url_key'] = $storeUrlKeys[$categoryId];
+        }
+        return $mergedData;
+    }
+
+    /**
+     * @param int $storeId
      * @return string[]
      */
-    private function getCategoryUrlKeysByStore($store)
+    private function getCategoryUrlKeysByStore($storeId)
     {
-        $storeId = Mage::app()->getStore($store)->getId();
         if (!isset($this->urlKeysByStore[$storeId])) {
             $attribute = Mage::getSingleton('eav/config')->getAttribute('catalog_category', 'url_key');
             $table = $attribute->getBackend()->getTable();

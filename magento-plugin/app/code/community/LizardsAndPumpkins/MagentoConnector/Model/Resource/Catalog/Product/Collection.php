@@ -426,10 +426,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
             $collection = Mage::getResourceModel('eav/entity_attribute_option_collection')
                 ->setPositionOrder('asc')
                 ->setStoreFilter($storeId);
-            $tableOptions[$storeId] = array_reduce($collection->getData(), function (array $carry, array $row) {
-                $carry[$row['attribute_id']][$row['option_id']] = $row['value'];
-                return $carry;
-            }, []);
+            foreach ($collection->getData() as $row) {
+                $tableOptions[$storeId][$row['option_id']] = $row['value'];
+            }
         }
         return isset($tableOptions[$storeId][$attributeId]) ?
             $tableOptions[$storeId][$attributeId] :
