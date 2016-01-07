@@ -101,12 +101,21 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collec
             $carry[$row['entity_id']] = array_merge(
                 $row,
                 ['is_anchor' => 0],
-                ['parent_ids' => explode('/', $row['path'])]
+                ['parent_ids' => $this->getParentIdsWithoutRootAndCurrentCategory($row['path'])]
             );
             return $carry;
         }, []);
         $this->_loadAttributes();
         return parent::_afterLoadData();
+    }
+
+    /**
+     * @param string $idPath
+     * @return string[]
+     */
+    private function getParentIdsWithoutRootAndCurrentCategory($idPath)
+    {
+        return array_slice(explode('/', $idPath), 1, -1);
     }
 
     public function _loadAttributes($printQuery = false, $logQuery = false)
