@@ -94,16 +94,16 @@ class LizardsAndPumpkins_MagentoConnector_Model_Catalog_CategoryUrlKeyServiceTes
     {
         return [
             [1, ['one']],
-            [2, ['two']],
-            [3, ['three']],
-            [4, ['four']],
-            [5, ['five']],
-            [6, ['three', 'six']],
-            [7, ['three', 'seven']],
-            [8, ['four', 'eight']],
-            [9, ['nine']],
-            [10, ['three', 'six', 'ten']],
-            [11, ['three', 'eleven']],
+            [2, ['one/two']],
+            [3, ['one/three']],
+            [4, ['one/two/four']],
+            [5, ['one/two/five']],
+            [6, ['one/three', 'one/three/six']],
+            [7, ['one/three', 'one/three/seven']],
+            [8, ['one/two/four', 'one/two/four/eight']],
+            [9, ['one/two/five/nine']],
+            [10, ['one/three', 'one/three/six', 'one/three/six/ten']],
+            [11, ['one/three', 'one/three/seven/eleven']],
         ];
     }
 }

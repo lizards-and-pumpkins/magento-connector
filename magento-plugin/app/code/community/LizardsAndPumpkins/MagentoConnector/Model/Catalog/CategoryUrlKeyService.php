@@ -12,8 +12,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Catalog_CategoryUrlKeyService
     /**
      * @param LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collection $categories
      */
-    public function __construct(LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collection $categories)
-    {
+    public function __construct(
+        LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collection $categories
+    ) {
         $this->categories = $categories;
     }
 
@@ -33,22 +34,65 @@ class LizardsAndPumpkins_MagentoConnector_Model_Catalog_CategoryUrlKeyService
         if (!isset($categoriesData[$intId])) {
             return [];
         }
-        $parents = $this->findLayeredNavigationParents($intId, $categoriesData);
-        return array_merge($parents, [$categoriesData[$categoryId]['url_key']]);
+        $parentIds = $this->findLayeredNavigationParentIds($intId, $categoriesData);
+        return $this->buildUrlKeysFor(array_merge($parentIds, [$categoryId]), $categoriesData);
     }
 
     /**
      * @param int $categoryId
      * @param array[] $allCategories
+     * @return int[]
+     */
+    private function findLayeredNavigationParentIds($categoryId, array $allCategories)
+    {
+        return array_reduce($allCategories[$categoryId]['parent_ids'],
+            function ($carry, $parentId) use ($allCategories) {
+                return $allCategories[$parentId]['is_anchor'] ?
+                    array_merge($carry, [$parentId]) :
+                    $carry;
+            }, []);
+    }
+
+    /**
+     * @param int[] $categoryIds
+     * @param array[] $categoriesData
      * @return string[]
      */
-    private function findLayeredNavigationParents($categoryId, array $allCategories)
+    private function buildUrlKeysFor(array $categoryIds, array $categoriesData)
     {
-        return array_reduce($allCategories[$categoryId]['parent_ids'], function ($carry, $parentId) use ($allCategories) {
-            return $allCategories[$parentId]['is_anchor'] ?
-                array_merge($carry, [$allCategories[$parentId]['url_key']]) :
-                $carry;
-        }, []);
+        return array_map(function ($categoryId) use ($categoriesData) {
+            if (! isset($categoriesData[$categoryId]['_url_path'])) {
+                $categoriesData[$categoryId]['_url_path'] = $this->buildCategoryUrlKey($categoryId, $categoriesData);
+            }
+            return $categoriesData[$categoryId]['_url_path'];
+        }, $categoryIds);
+    }
+
+    /**
+     * @param int $categoryId
+     * @param array[] $categoriesData
+     * @param string[] $urlKeys
+     * @return string
+     */
+    private function buildCategoryUrlKey($categoryId, array $categoriesData, array $urlKeys = [])
+    {
+        return [] === $categoriesData[$categoryId]['parent_ids'] ?
+            implode('/', $this->prependUrlKey($urlKeys, $categoriesData[$categoryId])) :
+            $this->buildCategoryUrlKey(
+                end($categoriesData[$categoryId]['parent_ids']),
+                $categoriesData,
+                $this->prependUrlKey($urlKeys, $categoriesData[$categoryId])
+            );
+    }
+
+    /**
+     * @param string[] $urlKeys
+     * @param mixed[] $categoryData
+     * @return string[]
+     */
+    private function prependUrlKey(array $urlKeys, array $categoryData)
+    {
+        return array_merge([$categoryData['url_key']], $urlKeys);
     }
 
     /**
