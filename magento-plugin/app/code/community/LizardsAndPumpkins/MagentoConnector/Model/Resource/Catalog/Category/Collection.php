@@ -115,7 +115,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collec
      */
     private function getParentIdsWithoutRootAndCurrentCategory($idPath)
     {
-        return array_slice(explode('/', $idPath), 1, -1);
+        return array_slice(explode('/', $idPath), 2, -1);
     }
 
     public function _loadAttributes($printQuery = false, $logQuery = false)
