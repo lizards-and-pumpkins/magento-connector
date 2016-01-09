@@ -427,7 +427,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
                 ->setPositionOrder('asc')
                 ->setStoreFilter($storeId);
             foreach ($collection->getData() as $row) {
-                $tableOptions[$storeId][$row['option_id']] = $row['value'];
+                $tableOptions[$storeId][$row['attribute_id']][$row['option_id']] = $row['value'];
             }
         }
         return isset($tableOptions[$storeId][$attributeId]) ?
