@@ -143,7 +143,8 @@ class ListingBuilder
             $xml->startElement('criteria');
             $xml->writeAttribute('type', self::CONDITION_AND);
             foreach ($this->filter as $filter) {
-                $xml->startElement($filter['attribute']);
+                $xml->startElement('attribute');
+                $xml->writeAttribute('name', $filter['attribute']);
                 $xml->writeAttribute('is', $filter['operation']);
                 $xml->text($filter['value']);
                 $xml->endElement();
@@ -209,8 +210,8 @@ class ListingBuilder
     {
         return <<<EOX
 <criteria type="or">
-    <stock_qty is="GreaterThan">0</stock_qty>
-    <backorders is="Equal">true</backorders>
+    <attribute name="stock_qty" is="GreaterThan">0</attribute>
+    <attribute name="backorders" is="Equal">true</attribute>
 </criteria>
 EOX;
     }

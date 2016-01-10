@@ -184,7 +184,7 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
         $listingBuilder->addFilterCriterion($validAttribute, $validOperation, $validValue);
         $result = $listingBuilder->buildXml()->getXml();
 
-        $expectedXml = sprintf('<%1$s is="%2$s">%3$s</%1$s>', $validAttribute, $validOperation, $validValue);
+        $expectedXml = sprintf('<attribute name="%s" is="%s">%s</attribute>', $validAttribute, $validOperation, $validValue);
 
         $this->assertContains($expectedXml, $result);
     }
@@ -222,7 +222,7 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
         $urlKeyWithLeadingSlash = '/' . $urlKey;
         $listingBuilder->addFilterCriterion('category', 'Equal', $urlKeyWithLeadingSlash);
         $xml = $listingBuilder->buildXml()->getXml();
-        $this->assertContains("<category is=\"Equal\">$urlKeyWithLeadingSlash</category>", $xml);
+        $this->assertContains("<attribute name=\"category\" is=\"Equal\">$urlKeyWithLeadingSlash</attribute>", $xml);
     }
 
     public function testXmlContainsOneCondition()
@@ -235,7 +235,7 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
 
         $result = $listingBuilder->buildXml()->getXml();
 
-        $this->assertContains('<category is="Equal">accessoires</category>', $result);
+        $this->assertContains('<attribute name="category" is="Equal">accessoires</attribute>', $result);
     }
 
     public function testXmlContainsMultipleConditions()
@@ -249,8 +249,8 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
 
         $result = $listingBuilder->buildXml()->getXml();
 
-        $this->assertContains('<category is="Equal">accessoires</category>', $result);
-        $this->assertContains('<stock_qty is="GreaterThan">0</stock_qty>', $result);
+        $this->assertContains('<attribute name="category" is="Equal">accessoires</attribute>', $result);
+        $this->assertContains('<attribute name="stock_qty" is="GreaterThan">0</attribute>', $result);
     }
 
     public function testProductListingXmlContainsStockAvailabilityCriteria()
@@ -268,8 +268,8 @@ class ListingBuilderTest extends \PHPUnit_Framework_TestCase
 
         $expectedXml = <<<EOX
 <criteria type="or">
-    <stock_qty is="GreaterThan">0</stock_qty>
-    <backorders is="Equal">true</backorders>
+    <attribute name="stock_qty" is="GreaterThan">0</attribute>
+    <attribute name="backorders" is="Equal">true</attribute>
 </criteria>
 EOX;
 
