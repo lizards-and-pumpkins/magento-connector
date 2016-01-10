@@ -317,7 +317,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
 
         $simpleProductData = [];
         $attributesToCopy = array_merge(
-            ['sku', 'stock_qty', 'tax_class', 'tax_class_id', 'type_id'],
+            ['sku', 'stock_qty', 'tax_class', 'tax_class_id', 'type_id', 'backorders'],
             $this->getConfigurableAttributeIdToCodeMap()
         );
         foreach ($simpleProducts->getData() as $row) {
