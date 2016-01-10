@@ -90,7 +90,65 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
             $this->_data[$productId]['stock_qty'] = $this->getStockQty($this->_data[$productId]);
             $this->_data[$productId]['is_in_stock'] = $this->isInStock($this->_data[$productId]);
             $this->_data[$productId]['url_key'] = $this->getUrlKey($this->_data[$productId]);
+            if (isset($this->_data[$productId]['price'])) {
+                $this->_data[$productId]['price'] = $this->getPriceExcludingTax($this->_data[$productId], 'price');
+            }
+            if (isset($this->_data[$productId]['special_price'])) {
+                $this->_data[$productId]['special_price'] = $this->getPriceExcludingTax(
+                    $this->_data[$productId],
+                    'special_price'
+                );
+            }
         }
+    }
+
+    /**
+     * @param mixed[] $productData
+     * @param string $priceAttribute
+     * @return float
+     */
+    private function getPriceExcludingTax(array $productData, $priceAttribute)
+    {
+        $taxConfig = Mage::getSingleton('tax/config');
+        return $taxConfig->priceIncludesTax($this->getStore()) ?
+            $this->calculatePriceExcludingTax($productData['tax_class_id'], $productData[$priceAttribute]) :
+            $productData[$priceAttribute];
+    }
+
+    /**
+     * @param int $taxClassId
+     * @param string $price
+     * @return float
+     */
+    private function calculatePriceExcludingTax($taxClassId, $price)
+    {
+        static $product;
+        static $taxRatePercentCache;
+        if (null === $product) {
+            $product = Mage::getModel('catalog/product');
+            $taxRatePercentCache = [];
+        }
+        $product->setData(['tax_class_id' => $taxClassId]);
+        if (isset($taxRatePercentCache[$this->getStoreId()][$taxClassId])) {
+            $product->setData('tax_percent', $taxRatePercentCache[$this->getStoreId()][$taxClassId]['tax_percent']);
+            $product->setData('applied_rates', $taxRatePercentCache[$this->getStoreId()][$taxClassId]['applied_rates']);
+        }
+        $helper = Mage::helper('tax');
+        $priceExclTax = $helper->getPrice(
+            $product,
+            $price,
+            $includingTax = false,
+            $shippingAddress = null,
+            $billingAddress = null,
+            $ctc = null,
+            $this->getStore(),
+            $pricesIncludeTax = true,
+            $roundPrice = false
+        );
+        $taxRatePercentCache[$this->getStoreId()][$taxClassId]['tax_percent'] = $product->getData('tax_percent');
+        $taxRatePercentCache[$this->getStoreId()][$taxClassId]['applied_rates'] = $product->getData('applied_rates');
+        
+        return $priceExclTax;
     }
 
     /**
@@ -259,7 +317,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
 
         $simpleProductData = [];
         $attributesToCopy = array_merge(
-            ['sku', 'stock_qty', 'tax_class_id', 'type_id'],
+            ['sku', 'stock_qty', 'tax_class', 'tax_class_id', 'type_id'],
             $this->getConfigurableAttributeIdToCodeMap()
         );
         foreach ($simpleProducts->getData() as $row) {
@@ -529,7 +587,12 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
         } else {
             $value = $rawValue;
         }
-        $this->_data[$valueInfo['entity_id']][$attributeCode] = $value;
+        if ('tax_class_id' === $attributeCode) {
+            $this->_data[$valueInfo['entity_id']]['tax_class'] = $value;
+            $this->_data[$valueInfo['entity_id']]['tax_class_id'] = $rawValue;
+        } else {
+            $this->_data[$valueInfo['entity_id']][$attributeCode] = $value;
+        }
     }
 
     /**

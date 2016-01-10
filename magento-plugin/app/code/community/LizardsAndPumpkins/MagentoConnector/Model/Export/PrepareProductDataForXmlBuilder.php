@@ -14,6 +14,8 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_PrepareProductDataForXmlB
      * @var LizardsAndPumpkins_MagentoConnector_Model_XmlUploader
      */
     private $uploader;
+    
+    private $attributesToExclude = ['tax_class_id'];
 
     public function __construct(
         CatalogMerge $merge,
@@ -74,7 +76,6 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_PrepareProductDataForXmlB
                     break;
 
                 case 'associated_products':
-                    $configurableAttributes = $productData['configurable_attributes'];
                     $associatedProducts = $this->prepareAssociatedProductsData($value);
                     $preparedData['associated_products'] = $associatedProducts;
                     break;
@@ -85,12 +86,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_PrepareProductDataForXmlB
                     }
                     break;
 
-                case 'tax_class_id':
-                    $preparedData['tax_class'] = $value;
-                    break;
-
                 case 'type_id':
                 case 'sku':
+                case 'tax_class':
                     $preparedData[$key] = $value;
                     break;
 
@@ -99,7 +97,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_PrepareProductDataForXmlB
                     break;
 
                 default:
-                    $preparedData['attributes'][$key] = $value;
+                    if (! in_array($key, $this->attributesToExclude)) {
+                        $preparedData['attributes'][$key] = $value;
+                    }
                     break;
             }
             return $preparedData;
