@@ -106,6 +106,10 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector implemen
             LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collection::FLAG_LOAD_ASSOCIATED_PRODUCTS,
             true
         );
+        $collection->setFlag(
+            LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collection::FLAG_ADD_CATEGORY_IDS,
+            true
+        );
         $collection->setStore($store);
         $collection->addAttributeToSelect('*');
         $collection->addAttributeToFilter(
