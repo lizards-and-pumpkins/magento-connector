@@ -4,6 +4,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
     extends Mage_Catalog_Model_Resource_Product_Collection
 {
     const FLAG_LOAD_ASSOCIATED_PRODUCTS = 'load-associated-simple-products';
+    const FLAG_ADD_CATEGORY_IDS = 'add-category-ids';
 
     /**
      * @var string[]
@@ -30,7 +31,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
 
     private function _beforeLoadData()
     {
-        $this->addCategoryIdsToSelect();
+        if ($this->getFlag(self::FLAG_ADD_CATEGORY_IDS)) {
+            $this->addCategoryIdsToSelect();
+        }
         $this->addStockItemData();
         $this->addAttributeToSelect(['tax_class_id', 'visibility', 'status']);
         $this->addConfigurableAttributeCodes();
@@ -56,7 +59,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
         foreach ($this->_data as $row) {
             $indexedProductData[$row['entity_id']] = array_merge(
                 $row,
-                ['categories' => $this->addCategoryUrlKeys($row['category_ids'])],
+                ['categories' => isset($row['category_ids']) ? $this->addCategoryUrlKeys($row['category_ids']) : []],
                 ['configurable_attributes' => $this->configAttributeIdsToCodes($row['configurable_attributes'])],
                 ['website' => $websiteCode],
                 ['locale' => $localeCode]
