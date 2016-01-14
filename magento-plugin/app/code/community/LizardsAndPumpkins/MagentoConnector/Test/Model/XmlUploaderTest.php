@@ -12,8 +12,6 @@ class LizardsAndPumpkins_MagentoConnector_Model_ProductXmlUploaderTest extends P
      */
     public function testAllowProtocols($protocol)
     {
-        $string = '<xml version="1.0"?><root />';
-
         $target = $protocol . 'some/path';
         $config = $this->getConfigStub($target);
         $uploader = new LizardsAndPumpkins_MagentoConnector_Model_ProductXmlUploader($config);
@@ -27,7 +25,6 @@ class LizardsAndPumpkins_MagentoConnector_Model_ProductXmlUploaderTest extends P
     public function testDisallowedProtocols($protocol)
     {
         $this->setExpectedException(Mage_Core_Exception::class);
-        $string = '<xml version="1.0"?><root />';
 
         $target = $protocol . 'some/path';
         $config = $this->getConfigStub($target);
@@ -74,7 +71,8 @@ class LizardsAndPumpkins_MagentoConnector_Model_ProductXmlUploaderTest extends P
     }
 
     /**
-     * @return PHPUnit_Framework_MockObject_MockObject|LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig
+     * @param string $target
+     * @return LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig|PHPUnit_Framework_MockObject_MockObject
      */
     private function getConfigStub($target)
     {
@@ -82,51 +80,5 @@ class LizardsAndPumpkins_MagentoConnector_Model_ProductXmlUploaderTest extends P
         $config->method('getLocalPathForProductExport')->willReturn($target);
         $config->method('getLocalFilenameTemplate')->willReturn('magento.xml');
         return $config;
-    }
-}
-
-
-if (!class_exists(Mage_Core_Exception::class)) {
-    class Mage_Core_Exception extends Exception
-    {
-        protected $_messages = [];
-
-        public function addMessage(Mage_Core_Model_Message_Abstract $message)
-        {
-            if (!isset($this->_messages[$message->getType()])) {
-                $this->_messages[$message->getType()] = [];
-            }
-            $this->_messages[$message->getType()][] = $message;
-            return $this;
-        }
-
-        public function getMessages($type = '')
-        {
-            if ('' == $type) {
-                $arrRes = [];
-                foreach ($this->_messages as $messageType => $messages) {
-                    $arrRes = array_merge($arrRes, $messages);
-                }
-                return $arrRes;
-            }
-            return isset($this->_messages[$type]) ? $this->_messages[$type] : [];
-        }
-
-        /**
-         * Set or append a message to existing one
-         *
-         * @param string $message
-         * @param bool $append
-         * @return Mage_Core_Exception
-         */
-        public function setMessage($message, $append = false)
-        {
-            if ($append) {
-                $this->message .= $message;
-            } else {
-                $this->message = $message;
-            }
-            return $this;
-        }
     }
 }
