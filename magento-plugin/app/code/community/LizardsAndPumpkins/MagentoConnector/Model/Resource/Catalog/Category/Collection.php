@@ -14,9 +14,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collec
     private $categoryDataByStore = [];
 
     /**
-     * @var int[]
+     * @var string[]
      */
-    private $rootCategoryIds = [];
+    private $rootCategoryIdPaths = [];
 
     public function load($printQuery = false, $logQuery = false)
     {
@@ -104,16 +104,16 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collec
 
     private function getRootCategoryIdPathForStore($storeId)
     {
-        if (!isset($this->rootCategoryIds[$storeId])) {
+        if (!isset($this->rootCategoryIdPaths[$storeId])) {
             $select = $this->getConnection()->select();
             $categoryTable = $this->getResource()->getEntityTable();
             $select->from(['s' => $this->getTable('core/store')], ['store_id']);
             $select->joinInner(['g' => $this->getTable('core/store_group')], 's.group_id=g.group_id', []);
             $select->joinInner(['c' => $categoryTable], 'g.root_category_id=c.entity_id', ['path']);
             $pairs = $this->getConnection()->fetchPairs($select);
-            $this->rootCategoryIds = $pairs;
+            $this->rootCategoryIdPaths = $pairs;
         }
-        return $this->rootCategoryIds[$storeId];
+        return $this->rootCategoryIdPaths[$storeId];
     }
 
     protected function _afterLoadData()
