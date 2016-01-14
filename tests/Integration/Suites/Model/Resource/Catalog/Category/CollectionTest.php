@@ -107,6 +107,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collec
         $categoriesData = $this->collection->getDataForStore($this->testStoreCode);
         $rootPathLength = strlen($this->testStoreRootCategoryPath);
         $expected = $this->testStoreRootCategoryPath . '/';
+        $this->assertGreaterThan(0, count($categoriesData));
         foreach ($categoriesData as $categoryData) {
             $this->assertSame($expected, substr($categoryData['path'], 0, $rootPathLength + 1));
         }
