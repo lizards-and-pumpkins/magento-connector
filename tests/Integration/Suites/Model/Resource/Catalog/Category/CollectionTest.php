@@ -3,7 +3,15 @@
 class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_CollectionTest
     extends \PHPUnit_Framework_TestCase
 {
-    private $testStore = 'admin';
+    /**
+     * @var string
+     */
+    private $testStoreCode;
+
+    /**
+     * @var int
+     */
+    private $testStoreRootCategoryPath;
 
     /**
      * @var LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collection
@@ -22,8 +30,24 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collec
         }, $categoriesData);
     }
 
+    /**
+     * @return Mage_Core_Model_Store
+     */
+    protected function getFrontendStoreInstance()
+    {
+        $stores = Mage::app()->getStores();
+        /** @var Mage_Core_Model_Store $testStore */
+        $testStore = reset($stores);
+        return $testStore;
+    }
+
     protected function setUp()
     {
+        $testStore = $this->getFrontendStoreInstance();
+        $this->testStoreCode = $testStore->getCode();
+        $rootCategory = Mage::getModel('catalog/category')->load($testStore->getRootCategoryId());
+        $this->testStoreRootCategoryPath = $rootCategory->getPath();
+
         $this->collection = new LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collection();
     }
 
@@ -52,7 +76,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collec
 
     public function testAllRecordsHaveTheRequiredAttributes()
     {
-        $categoriesData = $this->collection->getDataForStore($this->testStore);
+        $categoriesData = $this->collection->getDataForStore($this->testStoreCode);
 
         $this->assertInternalType('array', $categoriesData);
         $this->assertGreaterThan(0, count($categoriesData));
@@ -63,7 +87,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collec
 
     public function testResultIsIndexedByEntityId()
     {
-        $categoriesData = $this->collection->getDataForStore($this->testStore);
+        $categoriesData = $this->collection->getDataForStore($this->testStoreCode);
 
         array_map(function ($index, array $categoryData) {
             $this->assertEquals($index, $categoryData['entity_id'], 'The category data array not indexed by entity id');
@@ -75,6 +99,16 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collec
         array_map(function (array $categoryData) {
             $this->assertArrayHasKey('parent_ids', $categoryData);
             $this->assertInternalType('array', $categoryData['parent_ids']);
-        }, $this->collection->getDataForStore($this->testStore));
+        }, $this->collection->getDataForStore($this->testStoreCode));
+    }
+
+    public function testItIncludesOnlyChildCategoriesOfTheRootCategoryForTheGivenStore()
+    {
+        $categoriesData = $this->collection->getDataForStore($this->testStoreCode);
+        $rootPathLength = strlen($this->testStoreRootCategoryPath);
+        $expected = $this->testStoreRootCategoryPath . '/';
+        foreach ($categoriesData as $categoryData) {
+            $this->assertSame($expected, substr($categoryData['path'], 0, $rootPathLength + 1));
+        }
     }
 }
