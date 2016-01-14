@@ -110,8 +110,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collec
             $select->from(['s' => $this->getTable('core/store')], ['store_id']);
             $select->joinInner(['g' => $this->getTable('core/store_group')], 's.group_id=g.group_id', []);
             $select->joinInner(['c' => $categoryTable], 'g.root_category_id=c.entity_id', ['path']);
-            $pairs = $this->getConnection()->fetchPairs($select);
-            $this->rootCategoryIdPaths = $pairs;
+            $this->rootCategoryIdPaths = $this->getConnection()->fetchPairs($select);
         }
         return $this->rootCategoryIdPaths[$storeId];
     }
