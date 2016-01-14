@@ -13,6 +13,11 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collec
      */
     private $categoryDataByStore = [];
 
+    /**
+     * @var string[]
+     */
+    private $rootCategoryIdPaths = [];
+
     public function load($printQuery = false, $logQuery = false)
     {
         Mage::throwException('Do not use load(), use getDataForStore() instead');
@@ -30,12 +35,11 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collec
     public function getDataForStore($store)
     {
         $storeId = Mage::app()->getStore($store)->getId();
-        if (! isset($this->categoryDataByStore[$storeId])) {
+        if (!isset($this->categoryDataByStore[$storeId])) {
             $this->categoryDataByStore[$storeId] = $this->loadDataForStore($storeId);
         }
         return $this->categoryDataByStore[$storeId];
     }
-
 
     /**
      * @param int $storeId
@@ -45,6 +49,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collec
     {
         if (null === $this->_data) {
             $this->addAttributeToSelect(['path', 'is_anchor']);
+            $this->limitResultsToChildrenOfStoreRootCategory($storeId);
             parent::getData();
         }
         $storeUrlKeys = $this->getCategoryUrlKeysByStore($storeId);
@@ -73,6 +78,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collec
     private function getCategoryUrlKeysByStore($storeId)
     {
         if (!isset($this->urlKeysByStore[$storeId])) {
+
             $attribute = Mage::getSingleton('eav/config')->getAttribute('catalog_category', 'url_key');
             $table = $attribute->getBackend()->getTable();
             $select = $this->getConnection()->select()
@@ -89,10 +95,24 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collec
                     []
                 )
                 ->where('t_d.store_id=0')
+                ->where('t_d.entity_id IN (?)', array_keys($this->_data))
                 ->where('t_d.attribute_id=?', $attribute->getId());
             $this->urlKeysByStore[$storeId] = $this->getConnection()->fetchPairs($select);
         }
         return $this->urlKeysByStore[$storeId];
+    }
+
+    private function getRootCategoryIdPathForStore($storeId)
+    {
+        if (!isset($this->rootCategoryIdPaths[$storeId])) {
+            $select = $this->getConnection()->select();
+            $categoryTable = $this->getResource()->getEntityTable();
+            $select->from(['s' => $this->getTable('core/store')], ['store_id']);
+            $select->joinInner(['g' => $this->getTable('core/store_group')], 's.group_id=g.group_id', []);
+            $select->joinInner(['c' => $categoryTable], 'g.root_category_id=c.entity_id', ['path']);
+            $this->rootCategoryIdPaths = $this->getConnection()->fetchPairs($select);
+        }
+        return $this->rootCategoryIdPaths[$storeId];
     }
 
     protected function _afterLoadData()
@@ -121,19 +141,8 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collec
     public function _loadAttributes($printQuery = false, $logQuery = false)
     {
         $this->_items = ['dummy value so the parent attribute load method is executed'];
-        $this->_itemsById = ['dummy value so the parent attribute load method is executed'];
+        $this->_itemsById = $this->_data;
         return parent::_loadAttributes($printQuery, $logQuery);
-    }
-
-    protected function _getLoadAttributesSelect($table, $attributeIds = [])
-    {
-        /** @var Varien_Db_Select $select */
-        $select = parent::_getLoadAttributesSelect($table, $attributeIds);
-        $where = array_filter($select->getPart(Zend_Db_Select::WHERE), function ($condition) {
-            return strpos($condition, 'entity_id IN (0)') === false;
-        });
-        $select->setPart(Zend_Db_Select::WHERE, $where);
-        return $select;
     }
 
     protected function _setItemAttributeValue($valueInfo)
@@ -148,5 +157,13 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collec
         }
         $this->_data[$valueInfo['entity_id']][$attributeCode] = $valueInfo['value'];
         return $this;
+    }
+
+    /**
+     * @param int $storeId
+     */
+    private function limitResultsToChildrenOfStoreRootCategory($storeId)
+    {
+        $this->getSelect()->where("e.path like ?", $this->getRootCategoryIdPathForStore($storeId) . '/%');
     }
 }
