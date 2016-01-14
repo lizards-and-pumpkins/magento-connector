@@ -141,7 +141,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collec
     public function _loadAttributes($printQuery = false, $logQuery = false)
     {
         $this->_items = ['dummy value so the parent attribute load method is executed'];
-        $this->_itemsById = array_flip(array_keys($this->_data));
+        $this->_itemsById = $this->_data;
         return parent::_loadAttributes($printQuery, $logQuery);
     }
 
