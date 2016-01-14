@@ -33,7 +33,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collec
     /**
      * @return Mage_Core_Model_Store
      */
-    protected function getFrontendStoreInstance()
+    private function getFrontendStoreInstance()
     {
         $stores = Mage::app()->getStores();
         /** @var Mage_Core_Model_Store $testStore */

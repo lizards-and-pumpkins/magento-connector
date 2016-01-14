@@ -162,7 +162,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collec
     /**
      * @param int $storeId
      */
-    protected function limitResultsToChildrenOfStoreRootCategory($storeId)
+    private function limitResultsToChildrenOfStoreRootCategory($storeId)
     {
         $this->getSelect()->where("e.path like ?", $this->getRootCategoryIdPathForStore($storeId) . '/%');
     }
