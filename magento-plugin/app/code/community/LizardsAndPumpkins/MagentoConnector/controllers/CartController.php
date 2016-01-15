@@ -4,6 +4,8 @@ class LizardsAndPumpkins_MagentoConnector_CartController extends Mage_Core_Contr
 {
     public function addAction()
     {
+        $session = $this->getSession();
+
         try {
             $sku = $this->getRequest()->getParam('sku');
             $qty = $this->getRequest()->getParam('qty');
@@ -16,58 +18,46 @@ class LizardsAndPumpkins_MagentoConnector_CartController extends Mage_Core_Contr
             $product = Mage::getModel('catalog/product');
             $product->load($product->getIdBySku($sku));
 
-            // todo: use Mage_Checkout_Model_Cart instead of quote (because of checkout_cart_product_add_after)
-            $quote = Mage::getSingleton('checkout/session')->getQuote();
-
             if (!$product->isVisibleInSiteVisibility()) {
                 $this->addConfigurableProductForSimpleProduct($product, $qty);
             } else {
-                $quote->addProduct($product, $qty);
+                $params = ['qty' => $qty];
+                $this->addProductToCart($product, $params);
             }
 
-            $this->_getCart()->save();
-            $this->_getSession()->setCartWasUpdated(true);
+            $session->setData('cart_was_updated', true);
 
             Mage::dispatchEvent('checkout_cart_add_product_complete',
                 ['product' => $product, 'request' => $this->getRequest(), 'response' => $this->getResponse()]
             );
         } catch (Mage_Core_Exception $e) {
             $message = $e->getMessage();
-            $this->_getSession()->addError($message);
+            $session->addError($message);
         }
 
         if (!isset($product)) {
             $this->_redirect('/');
             return;
         }
-        $this->redirect($product);
+        $this->redirect();
     }
 
-    /**
-     * @param Mage_Catalog_Model_Product $product
-     */
-    private function redirect(Mage_Catalog_Model_Product $product)
+    private function redirect()
     {
-        $cart = $this->_getCart();
-        if (!$this->_getSession()->getNoCartRedirect(true)) {
-            if (!$cart->getQuote()->getHasError()) {
-                $message = $this->__('%s was added to your shopping cart.',
-                    Mage::helper('core')->escapeHtml($product->getName()));
-                $this->_getSession()->addSuccess($message);
-            }
-            $this->_goBack();
+        if (!$this->getSession()->getNoCartRedirect(true)) {
+            $this->goBack();
         }
     }
 
     /**
      * @return Mage_Checkout_Model_Session
      */
-    private function _getSession()
+    private function getSession()
     {
         return Mage::getSingleton('checkout/session');
     }
 
-    private function _goBack()
+    private function goBack()
     {
         $returnUrl = $this->getRequest()->getParam('return_url');
         if ($returnUrl) {
@@ -76,7 +66,7 @@ class LizardsAndPumpkins_MagentoConnector_CartController extends Mage_Core_Contr
                 throw new Mage_Exception('External urls redirect to "' . $returnUrl . '" denied!');
             }
 
-            $this->_getSession()->getMessages(true);
+            $this->getSession()->getMessages(true);
             $this->getResponse()->setRedirect($returnUrl);
         } elseif (!Mage::getStoreConfig('checkout/cart/redirect_to_cart')
             && !$this->getRequest()->getParam('in_cart')
@@ -85,7 +75,7 @@ class LizardsAndPumpkins_MagentoConnector_CartController extends Mage_Core_Contr
             $this->getResponse()->setRedirect($backUrl);
         } else {
             if (($this->getRequest()->getActionName() == 'add') && !$this->getRequest()->getParam('in_cart')) {
-                $this->_getSession()->setContinueShoppingUrl($this->_getRefererUrl());
+                $this->getSession()->setContinueShoppingUrl($this->_getRefererUrl());
             }
             $this->_redirect('checkout/cart');
         }
@@ -94,7 +84,7 @@ class LizardsAndPumpkins_MagentoConnector_CartController extends Mage_Core_Contr
     /**
      * @return Mage_Checkout_Model_Cart
      */
-    private function _getCart()
+    private function getCart()
     {
         return Mage::getSingleton('checkout/cart');
     }
@@ -109,6 +99,7 @@ class LizardsAndPumpkins_MagentoConnector_CartController extends Mage_Core_Contr
             ->getParentIdsByChild($product->getId());
         /* @var Mage_Catalog_Model_Product $configProduct */
         $configProduct = Mage::getResourceModel('catalog/product_collection')
+            ->addAttributeToSelect('name')
             ->addAttributeToFilter('visibility', $product->getVisibleInSiteVisibilities())
             ->addIdFilter($configProductIds)
             ->setOrder('entity_id', Varien_Data_Collection::SORT_ORDER_ASC)
@@ -132,11 +123,32 @@ class LizardsAndPumpkins_MagentoConnector_CartController extends Mage_Core_Contr
         $stockItem = Mage::getModel('cataloginventory/stock_item')->loadByProduct($configProduct);
         $configProduct->setStockItem($stockItem);
         $params = [
-            'product'         => $configProduct->getId(),
+            'product' => $configProduct->getId(),
             'super_attribute' => $superAttributes,
-            'qty'             => $qty,
+            'qty' => $qty,
         ];
 
-        $this->_getCart()->addProduct($configProduct, $params);
+        $this->addProductToCart($configProduct, $params);
+    }
+
+    /**
+     * @param Mage_Catalog_Model_Product $product
+     * @param mixed[] $params
+     */
+    private function addProductToCart(Mage_Catalog_Model_Product $product, array $params)
+    {
+        $cart = $this->getCart();
+        $cart->addProduct($product, $params);
+        $cart->save();
+
+        if (! $cart->getQuote()->getData('has_error')) {
+            $this->addSuccessMessage($product);
+        }
+    }
+
+    private function addSuccessMessage(Mage_Catalog_Model_Product $product)
+    {
+        $productName = Mage::helper('core')->escapeHtml($product->getName());
+        $this->getSession()->addSuccess($this->__('%s was added to your shopping cart.', $productName));
     }
 }
