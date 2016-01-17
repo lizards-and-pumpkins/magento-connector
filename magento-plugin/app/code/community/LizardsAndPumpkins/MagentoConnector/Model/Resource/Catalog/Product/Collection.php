@@ -304,6 +304,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
         $coreResource = $this->getCoreResource();
         $connection = $this->getConnection();
 
+
         /** @var LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collection $simpleProducts */
         $simpleProducts = Mage::getResourceModel('lizardsAndPumpkins_magentoconnector/catalog_product_collection');
         $simpleProducts->addAttributeToSelect('sku');
@@ -311,6 +312,12 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
         $simpleProducts->addAttributeToFilter('type_id', Mage_Catalog_Model_Product_Type::TYPE_SIMPLE);
         $simpleProducts->addAttributeToFilter('status', Mage_Catalog_Model_Product_Status::STATUS_ENABLED);
         $simpleProducts->addAttributeToSelect($this->getConfigurableAttributeIdToCodeMap());
+        
+        $configValue = Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/associated_product_attributes');
+        $additionalAttributes = array_filter(preg_split('/\s*,\s*/', trim($configValue), -1, PREG_SPLIT_NO_EMPTY));
+        if (count($additionalAttributes) > 0) {
+            $simpleProducts->addAttributeToSelect($additionalAttributes);
+        }
 
         $select = $simpleProducts->getSelect();
         $select->joinInner(
@@ -321,7 +328,8 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
 
         $simpleProductData = [];
         $attributesToCopy = array_merge(
-            ['sku', 'stock_qty', 'tax_class', 'tax_class_id', 'type_id', 'backorders', 'size_eu'],
+            ['sku', 'stock_qty', 'tax_class', 'tax_class_id', 'type_id', 'backorders'],
+            $additionalAttributes,
             $this->getConfigurableAttributeIdToCodeMap()
         );
         foreach ($simpleProducts->getData() as $row) {

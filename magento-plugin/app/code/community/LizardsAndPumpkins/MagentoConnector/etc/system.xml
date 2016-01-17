@@ -78,6 +78,14 @@
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
                         </stores_to_export>
+                        <associated_product_attributes>
+                            <label>Child Product Attributes</label>
+                            <comment><![CDATA[Additional (comma separated) attributes to add to exported associated simplple products.]]></comment>
+                            <sort_order>80</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </associated_product_attributes>
                     </fields>
                 </magentoconnector>
             </groups>
