@@ -2,6 +2,7 @@
 
 use LizardsAndPumpkins\MagentoConnector\Images\ImagesCollector;
 use LizardsAndPumpkins\MagentoConnector\XmlBuilder\CatalogMerge;
+use LizardsAndPumpkins\MagentoConnector\XmlBuilder\ListingXml;
 
 class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
 {
@@ -203,10 +204,10 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
         $categoryCollector->setStoresToExport($config->getStoresToExport());
 
         $uploader = new LizardsAndPumpkins_MagentoConnector_Model_ProductXmlUploader();
+        $listingXml = new ListingXml($config);
 
         while ($category = $categoryCollector->getCategory()) {
-            $transformer = LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryTransformer::createFrom($category);
-            $categoryXml = $transformer->getCategoryXml();
+            $categoryXml = $listingXml->buildXml($category);
             $xmlMerge->addCategory($categoryXml);
             $this->numberOfCategoriesExported++;
         }
