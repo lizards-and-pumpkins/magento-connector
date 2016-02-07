@@ -41,6 +41,8 @@ class ListingBuilder
 
     /**
      * @param string $urlKey
+     * @param string $website
+     * @param string $locale
      */
     private function __construct($urlKey, $website, $locale)
     {
