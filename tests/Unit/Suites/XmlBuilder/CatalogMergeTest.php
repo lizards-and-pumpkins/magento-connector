@@ -7,11 +7,15 @@ namespace LizardsAndPumpkins\MagentoConnector\XmlBuilder;
  */
 class CatalogMergeTest extends \PHPUnit_Framework_TestCase
 {
-
     /**
-     * @var ProductMerge
+     * @var CatalogMerge
      */
     private $merge;
+
+    protected function setUp()
+    {
+        $this->merge = new CatalogMerge();
+    }
 
     public function testEmptyXml()
     {
@@ -48,10 +52,5 @@ class CatalogMergeTest extends \PHPUnit_Framework_TestCase
         $xml = $this->merge->finish();
         $this->assertContains('</products>', $xml);
         $this->assertContains('</catalog>', $xml);
-    }
-
-    protected function setUp()
-    {
-        $this->merge = new CatalogMerge();
     }
 }
