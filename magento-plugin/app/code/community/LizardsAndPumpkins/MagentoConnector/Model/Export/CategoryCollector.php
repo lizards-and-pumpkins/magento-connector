@@ -195,8 +195,10 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryCollector
         }
 
         $ids = implode(',', $ids);
-        $resouce = Mage::getSingleton('core/resource');
-        $resouce->getConnection('core_write')->delete('message', "message_id IN ($ids)");
+
+        /** @var Mage_Core_Model_Resource $resource */
+        $resource = Mage::getSingleton('core/resource');
+        $resource->getConnection('core_write')->delete('message', "message_id IN ($ids)");
     }
 
     private function setNextStoreToExport()
