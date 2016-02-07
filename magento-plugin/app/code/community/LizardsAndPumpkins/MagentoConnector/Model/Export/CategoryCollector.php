@@ -42,11 +42,6 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryCollector
      */
     private $config;
 
-    /**
-     * array[]
-     */
-    private $rootCategories;
-
     public function __construct(LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig $config)
     {
         $this->config = $config;
