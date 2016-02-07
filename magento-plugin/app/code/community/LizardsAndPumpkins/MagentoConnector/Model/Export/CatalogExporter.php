@@ -194,6 +194,8 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
     public function exportCategoriesInQueue()
     {
         $xmlMerge = new CatalogMerge();
+
+        /** @var LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig $config */
         $config = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_magentoConfig');
 
         $categoryCollector = new LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryCollector($config);
@@ -247,7 +249,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
      */
     private function createProductCollector()
     {
+        /** @var LizardsAndPumpkins_MagentoConnector_Helper_Factory $factory */
         $factory = Mage::helper('lizardsAndPumpkins_magentoconnector/factory');
+
         return $factory->createProductCollector();
     }
 
@@ -286,7 +290,10 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
 
     private function refreshNumberOfProductsInQueue()
     {
-        $stats = new LizardsAndPumpkins_MagentoConnector_Model_Statistics(Mage::getSingleton('core/resource'));
+        /** @var Mage_Core_Model_Resource $resource */
+        $resource = Mage::getSingleton('core/resource');
+
+        $stats = new LizardsAndPumpkins_MagentoConnector_Model_Statistics($resource);
         $this->numberOfProductsInQueue = $stats->getQueuedProductCount();
     }
 
