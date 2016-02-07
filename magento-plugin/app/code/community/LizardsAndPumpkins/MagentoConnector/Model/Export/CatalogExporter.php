@@ -1,5 +1,6 @@
 <?php
 
+use LizardsAndPumpkins\MagentoConnector\Images\ImagesCollector;
 use LizardsAndPumpkins\MagentoConnector\XmlBuilder\CatalogMerge;
 
 class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
@@ -10,7 +11,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
     /**
      * @var LizardsAndPumpkins_MagentoConnector_Helper_Factory
      */
-    private $factory;
+    private $memoizedFactory;
 
     /**
      * @var int
@@ -33,7 +34,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
     private $echoProgress = false;
 
     /**
-     * @var \LizardsAndPumpkins\MagentoConnector\Images\ImagesCollector
+     * @var ImagesCollector
      */
     private $imageCollector;
 
@@ -53,12 +54,12 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
     /**
      * @return LizardsAndPumpkins_MagentoConnector_Helper_Factory
      */
-    public function getFactory()
+    private function getFactory()
     {
-        if (null === $this->factory) {
-            $this->factory = Mage::helper('lizardsAndPumpkins_magentoconnector/factory');
+        if (null === $this->memoizedFactory) {
+            $this->memoizedFactory = Mage::helper('lizardsAndPumpkins_magentoconnector/factory');
         }
-        return $this->factory;
+        return $this->memoizedFactory;
     }
 
     /**
