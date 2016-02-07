@@ -31,4 +31,9 @@
             <directory>Suites</directory>
         </testsuite>
     </testsuites>
+    <filter>
+        <whitelist>
+            <directory>../../lib/LizardsAndPumpkins/src</directory>
+        </whitelist>
+    </filter>
 </phpunit>
