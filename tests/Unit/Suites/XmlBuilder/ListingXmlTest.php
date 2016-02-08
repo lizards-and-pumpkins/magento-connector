@@ -145,7 +145,7 @@ EOX;
 
         $result = $this->listingXml->buildXml($this->stubCategory);
         $expectedRegExp = sprintf(
-            '/<attributes>.*<attribute name="%s"><![CDATA[%s]]><\/attribute>.*<\/attributes>/s',
+            '/<attributes>.*<attribute name="%s"><!\[CDATA\[%s\]\]><\/attribute>.*<\/attributes>/s',
             $attributeCode,
             $attributeValue
         );
