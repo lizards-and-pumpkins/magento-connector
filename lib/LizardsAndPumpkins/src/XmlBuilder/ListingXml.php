@@ -103,7 +103,7 @@ EOX;
         array_map(function ($attributeName) use ($xml, $category) {
             $xml->startElement('attribute');
             $xml->writeAttribute('name', $attributeName);
-            $xml->text($category->getData($attributeName));
+            $xml->text('<![CDATA[' . $category->getData($attributeName) . ']]>');
             $xml->endElement();
         }, $attributeNames);
 
