@@ -3,11 +3,12 @@
 
 use LizardsAndPumpkins\MagentoConnector\Api\Api;
 
-require dirname($_SERVER['SCRIPT_NAME']) . '/../vendor/autoload.php';
+require __DIR__ . '/vendor/autoload.php';
 require 'app/Mage.php';
 Mage::app();
 
 do {
+    /** @var LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter $exporter */
     $exporter = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_catalogExporter');
     $filename = $exporter->exportProductsInQueue();
     if ($exporter->wasSomethingExported()) {
