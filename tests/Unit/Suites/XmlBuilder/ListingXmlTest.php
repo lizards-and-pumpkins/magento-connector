@@ -42,6 +42,20 @@ class ListingXmlTest extends \PHPUnit_Framework_TestCase
         return preg_replace('/>[^<]+</m', '><', $string);
     }
 
+    /**
+     * @param string $listingXmlString
+     * @return string[]
+     */
+    private function getListingAttributesAsArray($listingXmlString)
+    {
+        $listingAttributes = [];
+        $listing = new \SimpleXMLElement($listingXmlString);
+        foreach ($listing->attributes->attribute as $attribute) {
+            $listingAttributes[(string) $attribute['name']] = (string) $attribute;
+        }
+        return $listingAttributes;
+    }
+
     protected function setUp()
     {
         $this->stubConfig = $this->getMock(LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig::class);
@@ -136,20 +150,32 @@ EOX;
         $this->assertContains('<attributes>', $result->getXml());
     }
 
-    public function testAttributesNodeContainsMetaTitleAttribute()
+    /**
+     * @param string $attributeCode
+     * @param string $attributeValue
+     * @dataProvider listingAttributesProvider
+     */
+    public function testAttributesNodeContainsMetaTitleAttribute($attributeCode, $attributeValue)
     {
-        $attributeCode = 'meta_title';
-        $attributeValue = 'foo';
+        $this->stubCategory->method('getData')->willReturnMap([
+            [$attributeCode, null, $attributeValue],
+        ]);
 
-        $this->stubCategory->method('getData')->with($attributeCode)->willReturn($attributeValue);
+        $listingXml = $this->listingXml->buildXml($this->stubCategory);
+        $attributes = $this->getListingAttributesAsArray($listingXml->getXml());
+        
+        $this->assertArrayHasKey($attributeCode, $attributes);
+        $this->assertSame($attributeValue, $attributes[$attributeCode]);
+    }
 
-        $result = $this->listingXml->buildXml($this->stubCategory);
-        $expectedRegExp = sprintf(
-            '/<attributes>.*<attribute name="%s"><!\[CDATA\[%s\]\]><\/attribute>.*<\/attributes>/s',
-            $attributeCode,
-            $attributeValue
-        );
-
-        $this->assertRegExp($expectedRegExp, $result->getXml());
+    /**
+     * @return array[]
+     */
+    public function listingAttributesProvider()
+    {
+        return [
+            ['meta_title', 'This would only work in a <CDATA> section'],
+            ['description', 'Description with <strong>HTML</strong>'],
+        ];
     }
 }

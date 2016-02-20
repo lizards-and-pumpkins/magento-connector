@@ -100,7 +100,7 @@ class ListingXml
      */
     private function writeCategoryAttributesXml(\XMLWriter $xml, Mage_Catalog_Model_Category $category)
     {
-        $attributeNames = ['meta_title']; // TODO: Put into configuration
+        $attributeNames = ['meta_title', 'description']; // TODO: Put into configuration
         $xml->startElement('attributes');
 
         array_map(function ($attributeName) use ($xml, $category) {
