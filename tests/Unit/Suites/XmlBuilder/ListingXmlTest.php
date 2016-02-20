@@ -72,7 +72,7 @@ class ListingXmlTest extends \PHPUnit_Framework_TestCase
 
     public function testExceptionIsThrownIfStoreIsNotSetOnACategory()
     {
-        $this->setExpectedException(StoreNotSetOnCategoryException::class);
+        $this->expectException(StoreNotSetOnCategoryException::class);
 
         /** @var Mage_Catalog_Model_Category|\PHPUnit_Framework_MockObject_MockObject $stubCategory */
         $stubCategory = $this->getMock(Mage_Catalog_Model_Category::class, [], [], '', false);

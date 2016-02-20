@@ -71,13 +71,14 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
 
     public function testXmlWithEmptyNodeName()
     {
-        $this->setExpectedException(\DOMException::class, 'Invalid Character Error');
+        $this->expectException(\DOMException::class);
+        $this->expectExceptionMessage('Invalid Character Error');
         $productData = [
             'attributes' => [
                 'url_key',
             ],
         ];
-        $xml = $this->getProductBuilderXml($productData, $this->getValidContext());
+        $this->getProductBuilderXml($productData, $this->getValidContext());
     }
 
     public function testImageNode()
@@ -140,7 +141,8 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvalidImageArgument($productData, $exceptionMessage)
     {
-        $this->setExpectedException(InvalidImageDefinitionException::class, $exceptionMessage);
+        $this->expectException(InvalidImageDefinitionException::class);
+        $this->expectExceptionMessage($exceptionMessage);
         $this->getProductBuilderXml($productData, $this->getValidContext());
     }
 
@@ -304,7 +306,7 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
      */
     public function testExceptionOnInvalidContext($invalidContext)
     {
-        $this->setExpectedException(\InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
         new ProductBuilder([], $invalidContext);
     }
 
@@ -326,7 +328,7 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
      */
     public function testExceptionOnInvalidAssociatedProducts($invalidAssociatedProducts)
     {
-        $this->setExpectedException(\InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
         new ProductBuilder($invalidAssociatedProducts, $this->getValidContext());
     }
 

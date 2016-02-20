@@ -13,7 +13,7 @@ class ApiTest extends \PHPUnit_Framework_TestCase
      */
     public function testWrongHost($url)
     {
-        $this->setExpectedException(InvalidHostException::class);
+        $this->expectException(InvalidHostException::class);
         new Api($url);
     }
 

@@ -24,7 +24,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_XmlUploaderTest extends PHPUnit_
      */
     public function testDisallowedProtocols($protocol)
     {
-        $this->setExpectedException(Mage_Core_Exception::class);
+        $this->expectException(Mage_Core_Exception::class);
 
         $target = $protocol . 'some/path';
         $config = $this->getConfigStub($target);
