@@ -155,7 +155,7 @@ EOX;
      * @param string $attributeValue
      * @dataProvider listingAttributesProvider
      */
-    public function testAttributesNodeContainsMetaTitleAttribute($attributeCode, $attributeValue)
+    public function testAttributesNodeContainsAttributeWithValue($attributeCode, $attributeValue)
     {
         $this->stubCategory->method('getData')->willReturnMap([
             [$attributeCode, null, $attributeValue],
