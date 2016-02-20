@@ -46,9 +46,8 @@ class ImageLinkerTest extends \PHPUnit_Framework_TestCase
     public function testDirectoryDoesNotExistThrowsException()
     {
         $targetDirectory = '/this/directory/does/not/exist/';
-        $this->setExpectedException(\InvalidArgumentException::class,
-            sprintf('Directory "%" does not exist.', $targetDirectory)
-        );
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage(sprintf('Directory "%" does not exist.', $targetDirectory));
         new ImageLinker($targetDirectory);
     }
 
@@ -65,10 +64,8 @@ class ImageLinkerTest extends \PHPUnit_Framework_TestCase
     public function testExceptionWhenLinkTargetDoesNotExist()
     {
         $target = '/file/does/not/exist';
-        $this->setExpectedException(
-            \InvalidArgumentException::class,
-            sprintf('Link target "%s" does not exist.', $target)
-        );
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage(sprintf('Link target "%s" does not exist.', $target));
 
         $this->linker->export($target);
     }
@@ -79,7 +76,7 @@ class ImageLinkerTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvalidLinkTargets($invalidLinkTarget)
     {
-        $this->setExpectedException(\InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
         $this->linker->export($invalidLinkTarget);
     }
 
@@ -110,7 +107,7 @@ class ImageLinkerTest extends \PHPUnit_Framework_TestCase
 
     public function testLinkAlreadyExistsAsFile()
     {
-        $this->setExpectedException(\RuntimeException::class);
+        $this->expectException(\RuntimeException::class);
 
         $filename = 'my_original_file';
         $filePath = $this->testDir . $filename;
@@ -126,7 +123,7 @@ class ImageLinkerTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvalidTargetDirectory($targetDir)
     {
-        $this->setExpectedException(\InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
         new ImageLinker($targetDir);
     }
 }

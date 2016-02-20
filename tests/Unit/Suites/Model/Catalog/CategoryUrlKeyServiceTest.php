@@ -61,10 +61,8 @@ class LizardsAndPumpkins_MagentoConnector_Model_Catalog_CategoryUrlKeyServiceTes
 
     public function testItThrowsAnExceptionIfTheInputCategoryIdIsNotNumeric()
     {
-        $this->setExpectedException(
-            InvalidCategoryIdException::class,
-            'The category ID has to be an integer, got "string"'
-        );
+        $this->expectException(InvalidCategoryIdException::class);
+        $this->expectExceptionMessage('The category ID has to be an integer, got "string"');
         $this->categories->getCategoryUrlKeysByIdAndStore('foo', 'test');
     }
 

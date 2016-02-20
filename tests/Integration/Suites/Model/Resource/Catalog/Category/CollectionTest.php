@@ -58,19 +58,15 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collec
 
     public function testItThrowsAnExceptionIfTheRegularLoadMethodIsCalled()
     {
-        $this->setExpectedException(
-            Mage_Core_Exception::class,
-            'Do not use load(), use getDataForStore() instead'
-        );
+        $this->expectException(Mage_Core_Exception::class);
+        $this->expectExceptionMessage('Do not use load(), use getDataForStore() instead');
         $this->collection->load();
     }
 
     public function testItThrowsAnExceptionIfTheRegularGetDataMethodIsCalled()
     {
-        $this->setExpectedException(
-            Mage_Core_Exception::class,
-            'Do not use getData(), use getDataForStore() instead'
-        );
+        $this->expectException(Mage_Core_Exception::class);
+        $this->expectExceptionMessage('Do not use getData(), use getDataForStore() instead');
         $this->collection->getData();
     }
 
