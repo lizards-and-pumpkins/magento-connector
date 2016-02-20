@@ -16,6 +16,11 @@ $getInitializableProductExportTestClass = function ($testFile) {
     }
 };
 
+$factory = Mage::helper('lizardsAndPumpkins_magentoconnector/factory');
+$factory->disableImageExport();
+$queueProductCollector = $factory->createProductCollector();
+
+
 foreach ($filteredDirectoryIterator as $testFile) {
     if ($testClass = $getInitializableProductExportTestClass($testFile[0])) {
         /** @var \InitializableProductExportTest $testToInitialize */

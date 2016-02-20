@@ -30,7 +30,7 @@ class ImageLinkerTest extends \PHPUnit_Framework_TestCase
         $this->testDir = sys_get_temp_dir() . '/' . uniqid() . '/';
         $this->targetDir = $this->testDir . 'targetDir/';
         mkdir($this->targetDir, 0777, true);
-        $this->linker = ImageLinker::createFor($this->targetDir);
+        $this->linker = new ImageLinker($this->targetDir);
     }
 
     protected function tearDown()
@@ -49,7 +49,7 @@ class ImageLinkerTest extends \PHPUnit_Framework_TestCase
         $this->setExpectedException(\InvalidArgumentException::class,
             sprintf('Directory "%" does not exist.', $targetDirectory)
         );
-        ImageLinker::createFor($targetDirectory);
+        new ImageLinker($targetDirectory);
     }
 
     public function testSymLinkIsCreatedInTargetDir()
@@ -57,7 +57,7 @@ class ImageLinkerTest extends \PHPUnit_Framework_TestCase
         $filename = 'my_original_file';
         $filePath = $this->testDir . $filename;
         touch($filePath);
-        $this->linker->link($filePath);
+        $this->linker->export($filePath);
         $this->assertTrue(is_link($this->targetDir . '/' . $filename));
         unlink($filePath);
     }
@@ -70,7 +70,7 @@ class ImageLinkerTest extends \PHPUnit_Framework_TestCase
             sprintf('Link target "%s" does not exist.', $target)
         );
 
-        $this->linker->link($target);
+        $this->linker->export($target);
     }
 
     /**
@@ -80,7 +80,7 @@ class ImageLinkerTest extends \PHPUnit_Framework_TestCase
     public function testInvalidLinkTargets($invalidLinkTarget)
     {
         $this->setExpectedException(\InvalidArgumentException::class);
-        $this->linker->link($invalidLinkTarget);
+        $this->linker->export($invalidLinkTarget);
     }
 
     /**
@@ -102,8 +102,8 @@ class ImageLinkerTest extends \PHPUnit_Framework_TestCase
         $filePath = $this->testDir . $filename;
         touch($filePath);
 
-        $this->linker->link($filePath);
-        $this->linker->link($filePath);
+        $this->linker->export($filePath);
+        $this->linker->export($filePath);
 
         $this->assertTrue(is_link($this->targetDir . '/' . $filename));
     }
@@ -117,7 +117,7 @@ class ImageLinkerTest extends \PHPUnit_Framework_TestCase
         touch($filePath);
         touch($this->targetDir . '/' . $filename);
 
-        $this->linker->link($filePath);
+        $this->linker->export($filePath);
     }
 
     /**
@@ -127,6 +127,6 @@ class ImageLinkerTest extends \PHPUnit_Framework_TestCase
     public function testInvalidTargetDirectory($targetDir)
     {
         $this->setExpectedException(\InvalidArgumentException::class);
-        ImageLinker::createFor($targetDir);
+        new ImageLinker($targetDir);
     }
 }
