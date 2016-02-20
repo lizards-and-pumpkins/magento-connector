@@ -4,7 +4,7 @@ error_reporting(E_ALL);
 
 require __DIR__ . '/../../vendor/autoload.php';
 require __DIR__ . '/../../../../app/Mage.php';
-require __DIR__ . '/util/lib/InitializableProductExportTest.php';
+require __DIR__ . '/util/lib/InitializableCatalogEntityExportTest.php';
 
 Mage::setIsDeveloperMode(true);
 Mage::app();

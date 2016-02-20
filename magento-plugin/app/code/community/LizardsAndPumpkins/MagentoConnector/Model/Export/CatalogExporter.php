@@ -74,7 +74,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
         $filename = $this->exportCategoriesInQueue();
         return $filename;
     }
-
+    
     /**
      * @return string
      */
@@ -287,9 +287,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
 
     private function exportImages()
     {
-        $linker = $this->getFactory()->createImageExporter();
+        $imageExporter = $this->getFactory()->createImageExporter();
         foreach ($this->imageCollector as $image) {
-            $linker->link($image);
+            $imageExporter->export($image);
         }
     }
 

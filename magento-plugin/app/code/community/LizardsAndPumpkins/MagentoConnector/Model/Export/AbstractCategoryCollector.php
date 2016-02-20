@@ -16,7 +16,7 @@ abstract class LizardsAndPumpkins_MagentoConnector_Model_Export_AbstractCategory
     /**
      * @var Mage_Core_Model_Store[]
      */
-    private $allStoresToExport;
+    private $storesToExportTemplate;
 
     /**
      * @var Mage_Core_Model_Store[]
@@ -38,7 +38,7 @@ abstract class LizardsAndPumpkins_MagentoConnector_Model_Export_AbstractCategory
      */
     private $config;
 
-    public function __construct(LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig $config)
+    final public function __construct(LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig $config)
     {
         $this->config = $config;
     }
@@ -139,10 +139,10 @@ abstract class LizardsAndPumpkins_MagentoConnector_Model_Export_AbstractCategory
      */
     private function getStoresToExport()
     {
-        if (!$this->allStoresToExport) {
+        if (!$this->storesToExportTemplate) {
             return Mage::app()->getStores();
         }
-        return $this->allStoresToExport;
+        return $this->storesToExportTemplate;
     }
 
     /**
@@ -150,7 +150,7 @@ abstract class LizardsAndPumpkins_MagentoConnector_Model_Export_AbstractCategory
      */
     public function setStoresToExport(array $stores)
     {
-        $this->allStoresToExport = $stores;
+        $this->storesToExportTemplate = $stores;
     }
 
     /**

@@ -1,8 +1,8 @@
 <?php
 
-require_once __DIR__ . '/AbstractInitializableProductExportTest.php';
+require_once __DIR__ . '/AbstractInitializableEntityExportTest.php';
 
-class TwoProductsExportTest extends AbstractInitializableProductExportTest
+class TwoProductsExportTest extends AbstractInitializableEntityExportTest
 {
     private static $expectedXmlFile = __DIR__ . '/expected/two-products.xml';
     private static $productIdsFile = __DIR__ . '/expected/two-product-ids.php';
@@ -43,7 +43,7 @@ class TwoProductsExportTest extends AbstractInitializableProductExportTest
     /**
      * @return string
      */
-    final protected function getProductIdsFixtureFileName()
+    final protected function getEntityIdsFixtureFileName()
     {
         return self::$productIdsFile;
     }
@@ -61,7 +61,7 @@ class TwoProductsExportTest extends AbstractInitializableProductExportTest
      */
     private function getConfigurableProductId()
     {
-        return require $this->getProductIdsFixtureFileName();
+        return require $this->getEntityIdsFixtureFileName();
     }
 
     protected function setUp()
@@ -80,5 +80,17 @@ class TwoProductsExportTest extends AbstractInitializableProductExportTest
         $this->exportToFile($this->testExportFile, [$this->getConfigurableProductId()]);
         
         $this->assertFileEquals($this->getExpectationFileName(), $this->testExportFile);
+    }
+
+    /**
+     * @param LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter $exporter
+     * @param int[] $entityIds
+     * @return mixed
+     */
+    public function exportEntities(
+        LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter $exporter,
+        $entityIds
+    ) {
+        $exporter->exportProducts($this->createProductCollectorForIds($entityIds));
     }
 }

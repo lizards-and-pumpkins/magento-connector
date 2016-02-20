@@ -10,7 +10,6 @@ use Mage_Core_Model_Store;
 class ListingXml
 {
     const CONDITION_AND = 'and';
-
     const URL_KEY_REPLACE_PATTERN = '#[^a-zA-Z0-9:_\-./]#';
 
     /**
@@ -39,6 +38,8 @@ class ListingXml
 
         $xml = new \XMLWriter();
         $xml->openMemory();
+        $xml->setIndent(true);
+
         $xml->startElement('listing');
 
         $xml->writeAttribute('url_key', $urlPath);
@@ -47,56 +48,58 @@ class ListingXml
 
         $xml->startElement('criteria');
         $xml->writeAttribute('type', self::CONDITION_AND);
-        $xml->writeRaw($this->getCategoryCriteriaXml($urlPath));
-        $xml->writeRaw($this->getStockAvailabilityCriteriaXml());
+        $this->writeCategoryCriteriaXml($xml, $urlPath);
+        $this->writeStockAvailabilityCriteriaXml($xml);
         $xml->endElement();
 
-        $xml->writeRaw($this->getCategoryAttributesXml($category));
+        $this->writeCategoryAttributesXml($xml, $category);
 
         $xml->endElement();
         return new XmlString($xml->flush());
     }
 
     /**
-     * @return string
+     * @param \XMLWriter $xml
      */
-    private function getStockAvailabilityCriteriaXml()
+    private function writeStockAvailabilityCriteriaXml(\XMLWriter $xml)
     {
-        return <<<EOX
-<criteria type="or">
-    <attribute name="stock_qty" is="GreaterThan">0</attribute>
-    <attribute name="backorders" is="Equal">true</attribute>
-</criteria>
-EOX;
+        $xml->startElement('criteria');
+        $xml->writeAttribute('type', 'or');
+        
+        $xml->startElement('attribute');
+        $xml->writeAttribute('name', 'stock_qty');
+        $xml->writeAttribute('is', 'GreaterThan');
+        $xml->text('0');
+        $xml->endElement();
+
+        $xml->startElement('attribute');
+        $xml->writeAttribute('name', 'backorders');
+        $xml->writeAttribute('is', 'Equal');
+        $xml->text('true');
+        $xml->endElement();
+        
+        $xml->endElement();
     }
 
     /**
+     * @param \XMLWriter $xml
      * @param string $urlPath
-     * @return string
      */
-    private function getCategoryCriteriaXml($urlPath)
+    private function writeCategoryCriteriaXml(\XMLWriter $xml, $urlPath)
     {
-        $xml = new \XMLWriter();
-        $xml->openMemory();
-
         $xml->startElement('attribute');
         $xml->writeAttribute('name', 'category');
         $xml->writeAttribute('is', 'Equal');
         $xml->text($urlPath);
         $xml->endElement();
-
-        return $xml->flush();
     }
 
     /**
+     * @param \XMLWriter $xml
      * @param Mage_Catalog_Model_Category $category
-     * @return string
      */
-    private function getCategoryAttributesXml(Mage_Catalog_Model_Category $category)
+    private function writeCategoryAttributesXml(\XMLWriter $xml, Mage_Catalog_Model_Category $category)
     {
-        $xml = new \XMLWriter();
-        $xml->openMemory();
-
         $attributeNames = ['meta_title']; // TODO: Put into configuration
         $xml->startElement('attributes');
 
@@ -110,8 +113,6 @@ EOX;
         }, $attributeNames);
 
         $xml->endElement();
-
-        return $xml->flush();
     }
 
     /**

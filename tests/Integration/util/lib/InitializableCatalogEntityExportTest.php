@@ -1,6 +1,6 @@
 <?php
 
-interface InitializableProductExportTest extends \PHPUnit_Framework_Test
+interface InitializableCatalogEntityExportTest extends \PHPUnit_Framework_Test
 {
     /**
      * @return void

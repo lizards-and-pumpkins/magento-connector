@@ -13,6 +13,8 @@ class StockBuilder
     {
         $this->xml = new \XMLWriter();
         $this->xml->openMemory();
+        $this->xml->setIndent(true);
+        
         $this->xml->startDocument('1.0', 'UTF-8');
         $this->xml->startElement('update');
     }

@@ -15,6 +15,7 @@ class XmlString
     {
         $this->xml = new \DOMDocument();
         $this->xml->loadXML($this->removeControlCharacters($productXml));
+        $this->xml->formatOutput = true;
     }
 
     /**

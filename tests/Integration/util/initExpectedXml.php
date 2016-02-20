@@ -7,10 +7,10 @@ $directoryIterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterato
 $filteredDirectoryIterator = new RegexIterator($directoryIterator, '/^.+Test\.php$/i',
     RecursiveRegexIterator::GET_MATCH);
 
-$getInitializableProductExportTestClass = function ($testFile) {
+$getInitializableCatalogEntityExportTestClass = function ($testFile) {
     if (preg_match('/^class (\w+)/mi', file_get_contents($testFile), $matches)) {
         require_once $testFile;
-        if (in_array(\InitializableProductExportTest::class, class_implements($matches[1]))) {
+        if (in_array(\InitializableCatalogEntityExportTest::class, class_implements($matches[1]))) {
             return $matches[1];
         }
     }
@@ -22,13 +22,13 @@ $queueProductCollector = $factory->createProductCollector();
 
 
 foreach ($filteredDirectoryIterator as $testFile) {
-    if ($testClass = $getInitializableProductExportTestClass($testFile[0])) {
-        /** @var \InitializableProductExportTest $testToInitialize */
+    if ($testClass = $getInitializableCatalogEntityExportTestClass($testFile[0])) {
+        /** @var \InitializableCatalogEntityExportTest $testToInitialize */
         $testToInitialize = new $testClass();
-        $productIds = $testToInitialize->getEntityIdsForInitialization();
+        $entityIds = $testToInitialize->getEntityIdsForInitialization();
         printf(
-            "Exporting the product(s) %s to the test fixture file %s\n",
-            is_array($productIds) ? implode(',', $productIds) : $productIds,
+            "Exporting the entities [%s] to the test fixture file %s\n",
+            is_array($entityIds) ? implode(',', $entityIds) : $entityIds,
             substr($testToInitialize->getExpectationFileName(), strlen(BP) + 1)
         );
 
