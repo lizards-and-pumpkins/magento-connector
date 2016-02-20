@@ -1,8 +1,8 @@
 <?php
 
-require_once __DIR__ . '/AbstractInitializableProductExportTest.php';
+require_once __DIR__ . '/AbstractInitializableEntityExportTest.php';
 
-class SimpleProductExportTest extends AbstractInitializableProductExportTest
+class SimpleEntityExportTest extends AbstractInitializableEntityExportTest
 {
     private static $expectedXmlFile = __DIR__ . '/expected/simple-product.xml';
     private static $simpleProductIdFile = __DIR__ . '/expected/simple-product-id.php';
@@ -20,17 +20,17 @@ class SimpleProductExportTest extends AbstractInitializableProductExportTest
     /**
      * @return string
      */
-    public function getProductIdsForInitialization()
+    public function getEntityIdsForInitialization()
     {
         if (null === $this->productIdForInitialization) {
-            /** @var Mage_Catalog_Model_Resource_Product_Collection $configurableProductCollection */
-            $configurableProductCollection = Mage::getResourceModel('catalog/product_collection');
-            $configurableProductCollection
+            /** @var Mage_Catalog_Model_Resource_Product_Collection $simpleProductCollection */
+            $simpleProductCollection = Mage::getResourceModel('catalog/product_collection');
+            $simpleProductCollection
                 ->addAttributeToFilter('type_id', \Mage_Catalog_Model_Product_Type::TYPE_SIMPLE)
                 ->addAttributeToFilter('is_saleable', 1)
-                ->setVisibility($this->getVisibleInCatalogValues());
+                ->setVisibility($this->getProductVisibleInCatalogValues());
 
-            $select = $configurableProductCollection->getSelect();
+            $select = $simpleProductCollection->getSelect();
             $select->reset(Zend_Db_Select::COLUMNS);
             $select->columns(['entity_id']);
             $select->limit(1);
@@ -44,7 +44,7 @@ class SimpleProductExportTest extends AbstractInitializableProductExportTest
     /**
      * @return string
      */
-    final protected function getProductIdsFixtureFileName()
+    final protected function getEntityIdsFixtureFileName()
     {
         return self::$simpleProductIdFile;
     }
@@ -60,9 +60,9 @@ class SimpleProductExportTest extends AbstractInitializableProductExportTest
     /**
      * @return string
      */
-    private function getConfigurableProductId()
+    private function getSimpleProductId()
     {
-        return require $this->getProductIdsFixtureFileName();
+        return require $this->getEntityIdsFixtureFileName();
     }
 
     protected function setUp()
@@ -78,8 +78,20 @@ class SimpleProductExportTest extends AbstractInitializableProductExportTest
 
     public function testExportConfigurableProduct()
     {
-        $this->exportToFile($this->testExportFile, [$this->getConfigurableProductId()]);
+        $this->exportToFile($this->testExportFile, [$this->getSimpleProductId()]);
         
         $this->assertFileEquals($this->getExpectationFileName(), $this->testExportFile);
+    }
+
+    /**
+     * @param LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter $exporter
+     * @param int[] $entityIds
+     * @return mixed
+     */
+    public function exportEntities(
+        LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter $exporter,
+        $entityIds
+    ) {
+        $exporter->exportProducts($this->createProductCollectorForIds($entityIds));
     }
 }

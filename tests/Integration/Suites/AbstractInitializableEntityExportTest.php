@@ -1,20 +1,20 @@
 <?php
 
-abstract class AbstractInitializableProductExportTest
+abstract class AbstractInitializableEntityExportTest
     extends \PHPUnit_Framework_TestCase
-    implements InitializableProductExportTest
+    implements InitializableCatalogEntityExportTest
 {
     public function initTestExpectations()
     {
-        $productIds = $this->getProductIdsForInitialization();
-        $this->exportToFile($this->getExpectationFileName(), is_array($productIds) ? $productIds : [$productIds]);
-        $this->saveProductIdsToTest($productIds);
+        $entityIds = $this->getEntityIdsForInitialization();
+        $this->exportToFile($this->getExpectationFileName(), is_array($entityIds) ? $entityIds : [$entityIds]);
+        $this->saveEntityIdsToTest($entityIds);
     }
 
     /**
      * @return int[]
      */
-    final protected function getVisibleInCatalogValues()
+    final protected function getProductVisibleInCatalogValues()
     {
         return [
             \Mage_Catalog_Model_Product_Visibility::VISIBILITY_BOTH,
@@ -26,13 +26,13 @@ abstract class AbstractInitializableProductExportTest
     /**
      * @return string
      */
-    protected abstract function getProductIdsFixtureFileName();
+    protected abstract function getEntityIdsFixtureFileName();
 
     /**
      * @param string $exportFile
-     * @param string[] $productIds
+     * @param string[] $entityIds
      */
-    protected function exportToFile($exportFile, array $productIds)
+    protected function exportToFile($exportFile, array $entityIds)
     {
         $this->prepareTestExportDirectory(dirname($exportFile));
         $this->setTargetExportFile($exportFile);
@@ -40,8 +40,18 @@ abstract class AbstractInitializableProductExportTest
 
         /** @var LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter $exporter */
         $exporter = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_catalogExporter');
-        $exporter->exportProducts($this->createProductCollectorForIds($productIds));
+        $this->exportEntities($exporter, $entityIds);
     }
+
+    /**
+     * @param LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter $exporter
+     * @param int[] $entityIds
+     * @return mixed
+     */
+    abstract public function exportEntities(
+        LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter $exporter,
+        $entityIds
+    );
 
     /**
      * @param string $exportFile
@@ -85,10 +95,10 @@ abstract class AbstractInitializableProductExportTest
     /**
      * @param string|string[] $productIds
      */
-    protected function saveProductIdsToTest($productIds)
+    protected function saveEntityIdsToTest($productIds)
     {
         file_put_contents(
-            $this->getProductIdsFixtureFileName(),
+            $this->getEntityIdsFixtureFileName(),
             '<?php return ' . var_export($productIds, true) . ';'
         );
     }

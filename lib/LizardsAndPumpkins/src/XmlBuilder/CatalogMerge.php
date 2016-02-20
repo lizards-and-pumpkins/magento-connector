@@ -17,6 +17,8 @@ class CatalogMerge
     {
         $this->xml = new \XMLWriter();
         $this->xml->openMemory();
+        $this->xml->setIndent(true);
+        
         $this->xml->startDocument('1.0', 'UTF-8');
         $this->startXml();
     }
@@ -118,7 +120,7 @@ class CatalogMerge
      */
     private function addXml(XmlString $catalogEntity)
     {
-        $this->xml->writeRaw($catalogEntity->getXml());
+        $this->xml->writeRaw(PHP_EOL . $catalogEntity->getXml());
     }
 
 }

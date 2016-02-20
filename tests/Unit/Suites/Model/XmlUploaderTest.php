@@ -3,7 +3,7 @@
 /**
  * @covers LizardsAndPumpkins_MagentoConnector_Model_XmlUploader
  */
-class LizardsAndPumpkins_MagentoConnector_Model_ProductXmlUploaderTest extends PHPUnit_Framework_TestCase
+class LizardsAndPumpkins_MagentoConnector_Model_XmlUploaderTest extends PHPUnit_Framework_TestCase
 {
 
     /**
@@ -37,9 +37,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_ProductXmlUploaderTest extends P
     public function getAllowedProtocols()
     {
         return [
-            ['ssh2.scp://'],
-            ['ssh2.sftp://'],
-            ['file://'],
+            'ssh2.scp' => ['ssh2.scp://'],
+            'ssh2.ssh' => ['ssh2.sftp://'],
+            'file' => ['file://'],
         ];
     }
 
@@ -49,23 +49,22 @@ class LizardsAndPumpkins_MagentoConnector_Model_ProductXmlUploaderTest extends P
     public function getDisallowedProtocols()
     {
         return [
-            ['http://'],
-            ['ftp://'],
-            ['php://'],
-            ['zlib://'],
-            ['data://'],
-            ['glob://'],
-            ['phar://'],
-            ['ssh2://'],
-            ['rar://'],
-            ['ogg://'],
-            ['expect://'],
-            ['compress.zlib://'],
-            ['compress.bzip2://'],
-            ['zip://'],
-            ['ssh2.shell://'],
-            ['ssh2.exec://'],
-            ['ssh2.tunnel://'],
+            'http' => ['http://'],
+            'ftp' => ['ftp://'],
+            'zlib' => ['zlib://'],
+            'data' => ['data://'],
+            'glob' => ['glob://'],
+            'phar' => ['phar://'],
+            'ssh2' => ['ssh2://'],
+            'rar' => ['rar://'],
+            'ogg' => ['ogg://'],
+            'expect' => ['expect://'],
+            'compress.zlib' => ['compress.zlib://'],
+            'compress.bzip2' => ['compress.bzip2://'],
+            'zip' => ['zip://'],
+            'ssh2.shell' => ['ssh2.shell://'],
+            'ssh2.exec' => ['ssh2.exec://'],
+            'ssh2.tunnel' => ['ssh2.tunnel://'],
         ];
 
     }
