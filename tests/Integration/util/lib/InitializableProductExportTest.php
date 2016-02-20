@@ -15,7 +15,7 @@ interface InitializableProductExportTest extends \PHPUnit_Framework_Test
     /**
      * @return string[]|int[]
      */
-    public function getProductIdsForInitialization();
+    public function getEntityIdsForInitialization();
 
     /**
      * @return void

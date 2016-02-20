@@ -20,14 +20,14 @@ class TwoProductsExportTest extends AbstractInitializableProductExportTest
     /**
      * @return string
      */
-    public function getProductIdsForInitialization()
+    public function getEntityIdsForInitialization()
     {
         if (null === $this->productIdForInitialization) {
             /** @var Mage_Catalog_Model_Resource_Product_Collection $configurableProductCollection */
             $configurableProductCollection = Mage::getResourceModel('catalog/product_collection');
             $configurableProductCollection
                 ->addAttributeToFilter('is_saleable', 1)
-                ->setVisibility($this->getVisibleInCatalogValues());
+                ->setVisibility($this->getProductVisibleInCatalogValues());
 
             $select = $configurableProductCollection->getSelect();
             $select->reset(Zend_Db_Select::COLUMNS);

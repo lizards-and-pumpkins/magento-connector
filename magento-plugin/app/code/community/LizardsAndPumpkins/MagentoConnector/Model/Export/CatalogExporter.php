@@ -49,7 +49,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
      */
     public function setShowProgress($enableProgressDisplay)
     {
-        $this->echoProgress = (bool) $enableProgressDisplay;
+        $this->echoProgress = (bool)$enableProgressDisplay;
     }
 
     /**
@@ -195,14 +195,24 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
      */
     public function exportCategoriesInQueue()
     {
-        $xmlMerge = new CatalogMerge();
-
         /** @var LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig $config */
         $config = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_magentoConfig');
 
-        $categoryCollector = new LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryCollector($config);
+        $categoryCollector = new LizardsAndPumpkins_MagentoConnector_Model_Export_CategoriesInQueueCollector($config);
         $categoryCollector->setStoresToExport($config->getStoresToExport());
 
+        return $this->exportCategories($categoryCollector);
+    }
+
+    /**
+     * @param LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryCollector $categoryCollector
+     * @return string
+     */
+    public function exportCategories(
+        LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryCollector $categoryCollector
+    ) {
+        $xmlMerge = new CatalogMerge();
+        $config = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_magentoConfig');
         $uploader = new LizardsAndPumpkins_MagentoConnector_Model_ProductXmlUploader();
         $listingXml = new ListingXml($config);
 
@@ -304,6 +314,6 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
      */
     public function wasSomethingExported()
     {
-        return (bool) ($this->numberOfProductsExported + $this->numberOfCategoriesExported);
+        return (bool)($this->numberOfProductsExported + $this->numberOfCategoriesExported);
     }
 }

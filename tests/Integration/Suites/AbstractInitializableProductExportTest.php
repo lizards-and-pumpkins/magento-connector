@@ -6,15 +6,15 @@ abstract class AbstractInitializableProductExportTest
 {
     public function initTestExpectations()
     {
-        $productIds = $this->getProductIdsForInitialization();
-        $this->exportToFile($this->getExpectationFileName(), is_array($productIds) ? $productIds : [$productIds]);
-        $this->saveProductIdsToTest($productIds);
+        $entityIds = $this->getEntityIdsForInitialization();
+        $this->exportToFile($this->getExpectationFileName(), is_array($entityIds) ? $entityIds : [$entityIds]);
+        $this->saveEntityIdsToTest($entityIds);
     }
 
     /**
      * @return int[]
      */
-    final protected function getVisibleInCatalogValues()
+    final protected function getProductVisibleInCatalogValues()
     {
         return [
             \Mage_Catalog_Model_Product_Visibility::VISIBILITY_BOTH,
@@ -85,7 +85,7 @@ abstract class AbstractInitializableProductExportTest
     /**
      * @param string|string[] $productIds
      */
-    protected function saveProductIdsToTest($productIds)
+    protected function saveEntityIdsToTest($productIds)
     {
         file_put_contents(
             $this->getProductIdsFixtureFileName(),

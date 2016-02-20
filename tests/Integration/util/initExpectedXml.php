@@ -25,7 +25,7 @@ foreach ($filteredDirectoryIterator as $testFile) {
     if ($testClass = $getInitializableProductExportTestClass($testFile[0])) {
         /** @var \InitializableProductExportTest $testToInitialize */
         $testToInitialize = new $testClass();
-        $productIds = $testToInitialize->getProductIdsForInitialization();
+        $productIds = $testToInitialize->getEntityIdsForInitialization();
         printf(
             "Exporting the product(s) %s to the test fixture file %s\n",
             is_array($productIds) ? implode(',', $productIds) : $productIds,
