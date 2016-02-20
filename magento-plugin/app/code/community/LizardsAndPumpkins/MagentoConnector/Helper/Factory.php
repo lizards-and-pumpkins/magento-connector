@@ -7,6 +7,11 @@ use LizardsAndPumpkins\MagentoConnector\XmlBuilder\CatalogMerge;
 class LizardsAndPumpkins_MagentoConnector_Helper_Factory
 {
     /**
+     * @var callable
+     */
+    private $imageExporterFactory;
+
+    /**
      * @var CatalogMerge
      */
     private $catalogMerge;
@@ -21,6 +26,11 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Factory
      */
     private $config;
 
+    public function __construct()
+    {
+        $this->setImageExportStrategySymlink();
+    }
+    
     public function reset()
     {
         $this->catalogMerge = null;
@@ -97,17 +107,45 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Factory
     }
 
     /**
-     * @return ImageLinker
+     * @return \LizardsAndPumpkins\MagentoConnector\Images\ImageExporter
      */
-    public function createImageLinker()
+    public function createImageExporter()
     {
         $targetDir = $this->getConfig()->getImageTargetDirectory();
         if ($this->validateDirectory($targetDir)) {
             $targetDir = $this->getConfig()->getLocalPathForProductExport() . '/product-images';
         }
-        return ImageLinker::createFor($targetDir);
+        $factory = $this->getImageExporterFactory();
+        return $factory($targetDir);
+    }
+    
+    public function setImageExporterFactory(callable $imageExporterFactory)
+    {
+        $this->imageExporterFactory = $imageExporterFactory;
     }
 
+    public function disableImageExport()
+    {
+        $this->setImageExporterFactory(function () {
+            return new \LizardsAndPumpkins\MagentoConnector\Images\NullImageExporter();
+        });
+    }
+
+    public function setImageExportStrategySymlink()
+    {
+        $this->setImageExporterFactory(function ($targetDir) {
+            return new ImageLinker($targetDir);
+        });
+    }
+
+    /**
+     * @return \Closure
+     */
+    private function getImageExporterFactory()
+    {
+        return $this->imageExporterFactory;
+    }
+    
     /**
      * @return LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig
      */

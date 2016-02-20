@@ -2,7 +2,7 @@
 
 namespace LizardsAndPumpkins\MagentoConnector\Images;
 
-class ImageLinker
+class ImageLinker implements ImageExporter
 {
     /**
      * @var string
@@ -12,21 +12,11 @@ class ImageLinker
     /**
      * @param string $targetDir
      */
-    private function __construct($targetDir)
-    {
-        $this->targetDir = $targetDir;
-    }
-
-    /**
-     * @param string $targetDir
-     * @return ImageLinker
-     */
-    public static function createFor($targetDir)
+    public function __construct($targetDir)
     {
         self::validateDirectory($targetDir);
         $targetDir = rtrim($targetDir, '/') . '/';
-
-        return new self($targetDir);
+        $this->targetDir = $targetDir;
     }
 
     /**
@@ -45,7 +35,7 @@ class ImageLinker
     /**
      * @param string $filePath
      */
-    public function link($filePath)
+    public function export($filePath)
     {
         $this->validateFile($filePath);
         if ($this->linkExists($this->targetDir . basename($filePath))) {

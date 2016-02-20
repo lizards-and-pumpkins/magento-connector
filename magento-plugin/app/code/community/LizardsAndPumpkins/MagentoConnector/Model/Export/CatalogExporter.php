@@ -156,7 +156,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
             $this->getFactory()->getProductXmlUploader()->writePartialXmlString(
                 $this->getFactory()->getCatalogMerge()->finish()
             );
-            $this->linkImages();
+            $this->exportImages();
         }
 
         return $filename;
@@ -275,9 +275,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
         }
     }
 
-    private function linkImages()
+    private function exportImages()
     {
-        $linker = $this->getFactory()->createImageLinker();
+        $linker = $this->getFactory()->createImageExporter();
         foreach ($this->imageCollector as $image) {
             $linker->link($image);
         }

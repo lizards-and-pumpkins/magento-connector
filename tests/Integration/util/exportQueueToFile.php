@@ -23,7 +23,9 @@ $store = Mage::app()->getStore();
 $store->setConfig('lizardsAndPumpkins/magentoconnector/local_path_for_product_export', $dir );
 $store->setConfig('lizardsAndPumpkins/magentoconnector/local_filename_template', $file);
 
-$queueProductCollector = Mage::helper('lizardsAndPumpkins_magentoconnector/factory')->createProductCollector();
+$factory = Mage::helper('lizardsAndPumpkins_magentoconnector/factory');
+$factory->disableImageExport();
+$queueProductCollector = $factory->createProductCollector();
 
 $exporter = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_catalogExporter');
 $exporter->setShowProgress(true);
