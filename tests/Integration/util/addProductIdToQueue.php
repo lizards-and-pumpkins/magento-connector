@@ -17,4 +17,4 @@ $productIds = array_slice($argv, 1);
 
 Mage::helper('lizardsAndPumpkins_magentoconnector/export')->addProductUpdatesToQueue($productIds);
 
-printf('IDs added to the queue "%s"', implode('", "', $productIds));
+printf("IDs added to the queue \"%s\"\n", implode('", "', $productIds));
