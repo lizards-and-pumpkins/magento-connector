@@ -14,7 +14,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_PrepareProductDataForXmlB
      * @var LizardsAndPumpkins_MagentoConnector_Model_XmlUploader
      */
     private $uploader;
-    
+
     private $attributesToExclude = ['tax_class_id'];
 
     public function __construct(
@@ -70,8 +70,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_PrepareProductDataForXmlB
             $value = $productData[$key];
             switch ($key) {
                 case 'media_gallery':
-                    if (isset($productData['image'])) {
-                        $preparedData['images'] = $this->prepareImagesData($value, $productData['image']);
+                    if (isset($value['images'])) {
+                        $mainImage = isset($productData['image']) ? $productData['image'] : '';
+                        $preparedData['images'] = $this->prepareImagesData($value, $mainImage);
                     }
                     break;
 
@@ -97,7 +98,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_PrepareProductDataForXmlB
                     break;
 
                 default:
-                    if (! in_array($key, $this->attributesToExclude)) {
+                    if (!in_array($key, $this->attributesToExclude)) {
                         $preparedData['attributes'][$key] = $value;
                     }
                     break;
@@ -113,7 +114,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_PrepareProductDataForXmlB
      */
     private function prepareImagesData(array $mediaGalleryData, $mainProductImage)
     {
-        if (!isset($mediaGalleryData['images']) || !is_array($mediaGalleryData['images'])) {
+        if (!is_array($mediaGalleryData['images'])) {
             return [];
         }
         return array_map(function (array $image) use ($mainProductImage) {
