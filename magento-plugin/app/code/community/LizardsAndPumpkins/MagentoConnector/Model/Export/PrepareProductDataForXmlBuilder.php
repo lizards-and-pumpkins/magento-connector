@@ -62,6 +62,50 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_PrepareProductDataForXmlB
 
     /**
      * @param mixed[] $productData
+     * @return bool
+     */
+    private function isMainImageSet(array $productData)
+    {
+        return isset($productData['image']) && trim($productData['image']) !== '';
+    }
+
+    /**
+     * @param mixed[] $productData
+     * @return bool
+     */
+    private function hasMediaGalleryImages(array $productData)
+    {
+        $gallery = $productData['media_gallery'];
+        return is_array($gallery['images']) && count($gallery['images']);
+    }
+
+    /**
+     * @param mixed[] $productData
+     * @return string
+     */
+    private function getFirstImageFromMediaGallery(array $productData)
+    {
+        return $productData['media_gallery']['images'][0]['file'];
+    }
+    
+    /**
+     * @param mixed[] $productData
+     * @return string
+     */
+    private function getMainProductImage(array $productData)
+    {
+        if ($this->isMainImageSet($productData)) {
+            $mainImage = $productData['image'];
+        } elseif ($this->hasMediaGalleryImages($productData)) {
+            $mainImage = $this->getFirstImageFromMediaGallery($productData);
+        } else {
+            $mainImage = '';
+        }
+        return $mainImage;
+    }
+
+    /**
+     * @param mixed[] $productData
      * @return mixed[]
      */
     private function transformData(array $productData)
@@ -71,7 +115,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_PrepareProductDataForXmlB
             switch ($key) {
                 case 'media_gallery':
                     if (isset($value['images'])) {
-                        $mainImage = isset($productData['image']) ? $productData['image'] : '';
+                        $mainImage = $this->getMainProductImage($productData);
                         $preparedData['images'] = $this->prepareImagesData($value, $mainImage);
                     }
                     break;
