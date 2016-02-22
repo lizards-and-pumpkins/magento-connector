@@ -9,9 +9,10 @@ Mage::app();
 
 class PollsExportQueue
 {
-    private static $sleepMicroSeconds =  500000;
+    private static $sleepMicroSeconds = 500000;
+
     private static $iterationsUntilExit = 200;
-    
+
     public static function run()
     {
         $iteration = 0;
