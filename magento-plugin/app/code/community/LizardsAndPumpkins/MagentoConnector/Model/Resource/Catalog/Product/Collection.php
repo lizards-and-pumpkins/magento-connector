@@ -210,7 +210,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
         static $productUrlKeySuffix;
         $storeId = $this->getStoreId();
         if (is_null($productUrlKeySuffix) || !isset($productUrlKeySuffix[$storeId])) {
-            $productUrlKeySuffix[$storeId] = Mage::getStoreConfig('catalog/seo/category_url_suffix', $storeId);
+            $productUrlKeySuffix[$storeId] = Mage::getStoreConfig('catalog/seo/product_url_suffix', $storeId);
         }
         return isset($productData['url_key']) && $productUrlKeySuffix[$storeId] ?
             $productData['url_key'] . '.' . $productUrlKeySuffix[$storeId] :
