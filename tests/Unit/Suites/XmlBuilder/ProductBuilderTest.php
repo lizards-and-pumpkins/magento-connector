@@ -49,11 +49,14 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         ];
         $xml = $this->getProductBuilderXml($productData, $this->getValidContext());
 
-        // TODO exchange with XPath constraint
-        $this->assertContains('type="simple"', $xml);
-        $this->assertContains('sku="123"', $xml);
-        $this->assertContains('<attribute name="visibility" locale="cs_CZ">3</attribute>', $xml);
-        $this->assertContains('tax_class="7"', $xml);
+        $productNode = simplexml_load_string($xml);
+        $this->assertXmlAttribute($productData['type_id'], 'type', $productNode);
+        $this->assertXmlAttribute($productData['sku'], 'sku', $productNode);
+        $this->assertXmlAttribute($productData['tax_class'], 'tax_class', $productNode);
+
+        $this->assertXmlAttribute('visibility', 'name', $productNode->attributes->attribute);
+        $this->assertXmlAttribute('cs_CZ', 'locale', $productNode->attributes->attribute);
+        $this->assertSame($productData['attributes']['visibility'], (int)$productNode->attributes->attribute);
     }
 
     public function testXmlWithNodes()
@@ -65,8 +68,10 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         ];
         $xml = $this->getProductBuilderXml($productData, $this->getValidContext());
 
-        // TODO exchange with XPath constraint
-        $this->assertContains('<attribute name="url_key" locale="cs_CZ"></attribute>', $xml);
+        $productNode = simplexml_load_string($xml);
+        $this->assertSame($productData['attributes']['url_key'], (string)$productNode->attributes->attribute);
+        $this->assertXmlAttribute('url_key', 'name', $productNode->attributes->attribute);
+        $this->assertXmlAttribute('cs_CZ', 'locale', $productNode->attributes->attribute);
     }
 
     public function testXmlWithEmptyNodeName()
@@ -94,12 +99,12 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         ];
         $xml = $this->getProductBuilderXml($productData, $this->getValidContext());
 
-        // TODO exchange with XPath constraint
-        $this->assertContains('<images>', $xml);
-        $this->assertContains('<image>', $xml);
-        $this->assertContains('<main>true</main>', $xml);
-        $this->assertContains('<file>some/file/somewhere.png</file>', $xml);
-        $this->assertContains('<label>This is the label</label>', $xml);
+        $images = (array) simplexml_load_string($xml)->images;
+        $this->assertNotEmpty($images);
+        $this->assertArrayHasKey('image', $images);
+        $this->assertSame('true', (string)$images['image']->main);
+        $this->assertSame($productData['images'][0]['file'], (string)$images['image']->file);
+        $this->assertSame($productData['images'][0]['label'], (string)$images['image']->label);
     }
 
     public function testImageMainIsNull()
@@ -114,8 +119,8 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         ];
         $xml = $this->getProductBuilderXml($productData, $this->getValidContext());
 
-        // TODO exchange with XPath constraint
-        $this->assertContains('<main>false</main>', $xml);
+        $images = (array) simplexml_load_string($xml)->images;
+        $this->assertSame('false', (string)$images['image']->main);
     }
 
     public function testImageLabelIsNull()
@@ -130,8 +135,10 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         ];
         $xml = $this->getProductBuilderXml($productData, $this->getValidContext());
 
-        // TODO exchange with XPath constraint
-        $this->assertContains('<label/>', $xml);
+        $images = (array) simplexml_load_string($xml)->images;
+        
+        $this->assertArrayHasKey('label', (array) $images['image']);
+        $this->assertSame('', (string)$images['image']->label);
     }
 
     /**
@@ -198,7 +205,8 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         ];
         $xml = $this->getProductBuilderXml($productData, $this->getValidContext());
 
-        $this->assertContains('<attribute name="accessories_type" locale="cs_CZ"><![CDATA[Bags & Luggage]]></attribute>', $xml);
+        $this->assertContains('<attribute name="accessories_type" locale="cs_CZ"><![CDATA[Bags & Luggage]]></attribute>',
+            $xml);
     }
 
     public function testCdataInNodeValue()
@@ -380,5 +388,15 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
                 ],
             ],
         ];
+    }
+
+    /**
+     * @param string $expectedValue
+     * @param string $attributeName
+     * @param \SimpleXMLElement $simpleXMLElement
+     */
+    private function assertXmlAttribute($expectedValue, $attributeName, \SimpleXMLElement $simpleXMLElement)
+    {
+        $this->assertEquals($expectedValue, (string)$simpleXMLElement->attributes()[$attributeName]);
     }
 }
