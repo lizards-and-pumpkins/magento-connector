@@ -99,7 +99,7 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         ];
         $xml = $this->getProductBuilderXml($productData, $this->getValidContext());
 
-        $images = (array) simplexml_load_string($xml)->images;
+        $images = (array)simplexml_load_string($xml)->images;
         $this->assertNotEmpty($images);
         $this->assertArrayHasKey('image', $images);
         $this->assertSame('true', (string)$images['image']->main);
@@ -119,7 +119,7 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         ];
         $xml = $this->getProductBuilderXml($productData, $this->getValidContext());
 
-        $images = (array) simplexml_load_string($xml)->images;
+        $images = (array)simplexml_load_string($xml)->images;
         $this->assertSame('false', (string)$images['image']->main);
     }
 
@@ -135,9 +135,9 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         ];
         $xml = $this->getProductBuilderXml($productData, $this->getValidContext());
 
-        $images = (array) simplexml_load_string($xml)->images;
-        
-        $this->assertArrayHasKey('label', (array) $images['image']);
+        $images = (array)simplexml_load_string($xml)->images;
+
+        $this->assertArrayHasKey('label', (array)$images['image']);
         $this->assertSame('', (string)$images['image']->label);
     }
 
@@ -241,6 +241,25 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
 
         $this->assertContains('<attribute name="category" locale="cs_CZ">shirts</attribute>', $xml);
         $this->assertContains('<attribute name="category" locale="cs_CZ">clothing</attribute>', $xml);
+    }
+
+    public function testInCategoryUrlsAreAddedAsNonCanonicalUrlKeys()
+    {
+        $productData = [
+            'attributes' => [
+                'non_canonical_url_key' => [
+                    'foo/bar.html',
+                    'foo/buz.html',
+                    'qux/foo.html',
+                ],
+            ],
+        ];
+        $xml = $this->getProductBuilderXml($productData, $this->getValidContext());
+
+        $stringTemplate = '<attribute name="non_canonical_url_key" locale="cs_CZ">%s</attribute>';
+        foreach ($productData['attributes']['non_canonical_url_key'] as $urlKey) {
+            $this->assertContains(sprintf($stringTemplate, $urlKey), $xml);
+        }
     }
 
     public function testNoAssociatedProducts()
