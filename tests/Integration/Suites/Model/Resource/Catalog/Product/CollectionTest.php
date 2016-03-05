@@ -51,7 +51,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
             true
         );
         $productData = $this->findProductWithSeveralCategories($this->collection->getData());
-        $this->assertNotNull($productData, 'No product with categories found within the first 25 products');
+        if (null === $productData) {
+            $this->markTestSkipped('No product with categories found within the first 25 products');
+        }
 
         $missingKeyMessage = 'No non_canonical_url_keys found on product with category assignment';
         $this->assertArrayHasKey('non_canonical_url_key', $productData, $missingKeyMessage);
