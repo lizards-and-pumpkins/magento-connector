@@ -93,6 +93,12 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
             $this->_data[$productId]['stock_qty'] = $this->getStockQty($this->_data[$productId]);
             $this->_data[$productId]['is_in_stock'] = $this->isInStock($this->_data[$productId]);
             $this->_data[$productId]['url_key'] = $this->getUrlKey($this->_data[$productId]);
+            if (isset($this->_data[$productId]['category_ids'])) {
+                $this->_data[$productId]['non_canonical_url_key'] = $this->addProductInCategoryUrlKeys(
+                    $this->_data[$productId]['category_ids'],
+                    $this->_data[$productId]['url_key']
+                );
+            }
             if (isset($this->_data[$productId]['price'])) {
                 $this->_data[$productId]['price'] = $this->getPriceExcludingTax($this->_data[$productId], 'price');
             }
@@ -150,7 +156,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
         );
         $taxRatePercentCache[$this->getStoreId()][$taxClassId]['tax_percent'] = $product->getData('tax_percent');
         $taxRatePercentCache[$this->getStoreId()][$taxClassId]['applied_rates'] = $product->getData('applied_rates');
-        
+
         return $priceExclTax;
     }
 
@@ -312,7 +318,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
         $simpleProducts->addAttributeToFilter('type_id', Mage_Catalog_Model_Product_Type::TYPE_SIMPLE);
         $simpleProducts->addAttributeToFilter('status', Mage_Catalog_Model_Product_Status::STATUS_ENABLED);
         $simpleProducts->addAttributeToSelect($this->getConfigurableAttributeIdToCodeMap());
-        
+
         $configValue = Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/associated_product_attributes');
         $additionalAttributes = array_filter(preg_split('/\s*,\s*/', trim($configValue), -1, PREG_SPLIT_NO_EMPTY));
         if (count($additionalAttributes) > 0) {
@@ -405,13 +411,38 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
      */
     private function getCategoryUrlPathsForId($categoryId)
     {
-        $factory = Mage::helper('lizardsAndPumpkins_magentoconnector/factory');
-        $categoryUrlKeyService = $factory->createCategoryUrlKeyService();
-        $categoryUrlKeys = $categoryUrlKeyService->getCategoryUrlKeysByIdAndStore($categoryId, $this->getStoreId());
+        $categoryUrlKeys = $this->getCategoryUrlKeysForId($categoryId);
         $suffix = Mage::getStoreConfig('catalog/seo/category_url_suffix', $this->getStoreId());
         return array_map(function ($urlKey) use ($suffix) {
             return $urlKey . '.' . $suffix;
         }, $categoryUrlKeys);
+    }
+
+    /**
+     * @param int|string $categoryId
+     * @return string[]
+     */
+    private function getCategoryUrlKeysForId($categoryId)
+    {
+        $factory = Mage::helper('lizardsAndPumpkins_magentoconnector/factory');
+        $categoryUrlKeyService = $factory->createCategoryUrlKeyService();
+        return $categoryUrlKeyService->getCategoryUrlKeysByIdAndStore($categoryId, $this->getStoreId());
+    }
+
+    /**
+     * @param string $combinedCategoryIds
+     * @param string $productUrlKey
+     * @return string[]
+     */
+    private function addProductInCategoryUrlKeys($combinedCategoryIds, $productUrlKey)
+    {
+        $categoryIds = array_unique(explode(',', $combinedCategoryIds));
+        return array_unique(array_reduce($categoryIds, function (array $carry, $categoryId) use ($productUrlKey) {
+            $productInCategoryUrlKeys = array_map(function ($categoryUrlKey) use ($productUrlKey) {
+                return $categoryUrlKey . '/' . $productUrlKey;
+            }, $this->getCategoryUrlKeysForId($categoryId));
+            return array_merge($carry, $productInCategoryUrlKeys);
+        }, []));
     }
 
     /**
