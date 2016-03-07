@@ -53,13 +53,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Observer
         $this->addProductToExportQueueByIds([$productId]);
     }
 
-    public function salesModelServiceQuoteSubmitBefore(Varien_Event_Observer $observer)
-    {
-        $productIds = $this->getProductIdsFrom($observer, 'quote');
-        $this->addProductToExportQueueByIds($productIds);
-    }
-
-    public function salesModelServiceQuoteSubmitFailure(Varien_Event_Observer $observer)
+    public function salesModelServiceQuoteSubmitAfter(Varien_Event_Observer $observer)
     {
         $productIds = $this->getProductIdsFrom($observer, 'quote');
         $this->addProductToExportQueueByIds($productIds);
