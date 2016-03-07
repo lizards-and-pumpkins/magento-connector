@@ -20,73 +20,73 @@ class LizardsAndPumpkins_MagentoConnector_Model_Observer
     public function catalogProductSaveAfter(Varien_Event_Observer $observer)
     {
         $productId = $observer->getProduct()->getId();
-        $this->logProductUpdateForProductIds([$productId]);
+        $this->addProductIntoExportQueueByIds([$productId]);
     }
 
     public function catalogProductDeleteAfter(Varien_Event_Observer $observer)
     {
         $productId = $observer->getProduct()->getId();
-        $this->logProductUpdateForProductIds([$productId]);
+        $this->addProductIntoExportQueueByIds([$productId]);
     }
 
     public function catalogProductAttributeUpdateAfter(Varien_Event_Observer $observer)
     {
         $productIds = $observer->getProductIds();
-        $this->logProductUpdateForProductIds($productIds);
+        $this->addProductIntoExportQueueByIds($productIds);
     }
 
     public function catalogControllerProductDelete(Varien_Event_Observer $observer)
     {
         $productId = $observer->getProduct()->getId();
-        $this->logProductUpdateForProductIds([$productId]);
+        $this->addProductIntoExportQueueByIds([$productId]);
     }
 
     public function cataloginventoryStockItemSaveCommitAfter(Varien_Event_Observer $observer)
     {
         $productId = $observer->getItem()->getProductId();
-        $this->logStockUpdateForProductIds([$productId]);
+        $this->addProductIntoExportQueueByIds([$productId]);
     }
 
     public function salesOrderItemCancel(Varien_Event_Observer $observer)
     {
         $productId = $observer->getItem()->getProductId();
-        $this->logStockUpdateForProductIds([$productId]);
+        $this->addProductIntoExportQueueByIds([$productId]);
     }
 
     public function salesModelServiceQuoteSubmitBefore(Varien_Event_Observer $observer)
     {
         $productIds = $this->getProductIdsFrom($observer, 'quote');
-        $this->logStockUpdateForProductIds($productIds);
+        $this->addProductIntoExportQueueByIds($productIds);
     }
 
     public function salesModelServiceQuoteSubmitFailure(Varien_Event_Observer $observer)
     {
         $productIds = $this->getProductIdsFrom($observer, 'quote');
-        $this->logStockUpdateForProductIds($productIds);
+        $this->addProductIntoExportQueueByIds($productIds);
     }
 
     public function salesOrderCreditmemoSaveAfter(Varien_Event_Observer $observer)
     {
         $productIds = $this->getProductIdsFrom($observer, 'creditmemo');
-        $this->logStockUpdateForProductIds($productIds);
+        $this->addProductIntoExportQueueByIds($productIds);
     }
 
     public function cobbyAfterProductImport(Varien_Event_Observer $observer)
     {
         $skus = $observer->getEntities();
-        $this->logProductUpdatesForProductSkus($skus);
+        $this->addProductIntoExportQueueBySkus($skus);
     }
 
     public function magmiStockWasUpdated(Varien_Event_Observer $observer)
     {
         $skus = $observer->getSkus();
-        $this->logStockUpdatesForProductSkus($skus);
+        $this->addProductIntoExportQueueBySkus($skus);
     }
 
     public function magmiProductsWereUpdated(Varien_Event_Observer $observer)
     {
         $skus = $observer->getSkus();
-        $this->logProductUpdatesForProductSkus($skus);
+        $this->addProductIntoExportQueueBySkus($skus);
     }
 
     public function controllerActionPredispatchCheckoutCartAdd(Varien_Event_Observer $observer)
@@ -112,37 +112,22 @@ class LizardsAndPumpkins_MagentoConnector_Model_Observer
     }
 
     /**
-     * @param int[] $ids
-     */
-    private function logStockUpdateForProductIds(array $ids)
-    {
-        $this->logProductUpdateForProductIds($ids);
-    }
-
-    /**
      * @param string[] $skus
      */
-    private function logStockUpdatesForProductSkus(array $skus)
-    {
-        $this->logProductUpdatesForProductSkus($skus);
-    }
-
-    /**
-     * @param string[] $skus
-     */
-    private function logProductUpdatesForProductSkus($skus)
+    private function addProductIntoExportQueueBySkus(array $skus)
     {
         /** @var Mage_Catalog_Model_Resource_Product_Collection $collection */
         $collection = Mage::getResourceModel('catalog/product_collection')
             ->addAttributeToFilter('sku', ['in' => $skus])
             ->load();
-        $this->logProductUpdateForProductIds($collection->getLoadedIds());
+
+        $this->addProductIntoExportQueueByIds($collection->getLoadedIds());
     }
 
     /**
      * @param int[] $ids
      */
-    private function logProductUpdateForProductIds(array $ids)
+    private function addProductIntoExportQueueByIds(array $ids)
     {
         $visibleProductIds = $this->replaceChildProductIdsWithParentProductIds($ids);
         $this->getExportHelper()->addProductUpdatesToQueue($visibleProductIds);
