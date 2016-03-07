@@ -2,12 +2,12 @@
 
 class LizardsAndPumpkins_MagentoConnector_Model_Observer
 {
-    public function catalogCategorySaveAfter(Varien_Event_Observer $observer)
+    public function catalogCategorySaveCommitAfter(Varien_Event_Observer $observer)
     {
         $this->getExportHelper()->addCategoryToQueue($observer->getCategory()->getId());
     }
 
-    public function catalogCategoryDeleteAfter(Varien_Event_Observer $observer)
+    public function catalogCategoryDeleteCommitAfter(Varien_Event_Observer $observer)
     {
         $this->getExportHelper()->addCategoryToQueue($observer->getCategory()->getId());
     }
@@ -17,13 +17,13 @@ class LizardsAndPumpkins_MagentoConnector_Model_Observer
         $this->getExportHelper()->addCategoryToQueue($observer->getCategory()->getId());
     }
 
-    public function catalogProductSaveAfter(Varien_Event_Observer $observer)
+    public function catalogProductSaveCommitAfter(Varien_Event_Observer $observer)
     {
         $productId = $observer->getProduct()->getId();
         $this->addProductToExportQueueByIds([$productId]);
     }
 
-    public function catalogProductDeleteAfter(Varien_Event_Observer $observer)
+    public function catalogProductDeleteCommitAfter(Varien_Event_Observer $observer)
     {
         $productId = $observer->getProduct()->getId();
         $this->addProductToExportQueueByIds([$productId]);
@@ -59,7 +59,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Observer
         $this->addProductToExportQueueByIds($productIds);
     }
 
-    public function salesOrderCreditmemoSaveAfter(Varien_Event_Observer $observer)
+    public function salesOrderCreditmemoSaveCommitAfter(Varien_Event_Observer $observer)
     {
         $productIds = $this->getProductIdsFrom($observer, 'creditmemo');
         $this->addProductToExportQueueByIds($productIds);

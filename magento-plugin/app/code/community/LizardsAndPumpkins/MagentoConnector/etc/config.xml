@@ -39,7 +39,7 @@
                     <lizardsAndPumpkins_magentoconnector>
                         <type>singleton</type>
                         <class>lizardsAndPumpkins_magentoconnector/observer</class>
-                        <method>catalogCategorySaveAfter</method>
+                        <method>catalogCategorySaveCommitAfter</method>
                     </lizardsAndPumpkins_magentoconnector>
                 </observers>
             </catalog_category_save_commit_after>
@@ -48,7 +48,7 @@
                     <lizardsAndPumpkins_magentoconnector>
                         <type>singleton</type>
                         <class>lizardsAndPumpkins_magentoconnector/observer</class>
-                        <method>catalogCategoryDeleteAfter</method>
+                        <method>catalogCategoryDeleteCommitAfter</method>
                     </lizardsAndPumpkins_magentoconnector>
                 </observers>
             </catalog_category_delete_commit_after>
@@ -66,7 +66,7 @@
                     <lizardsAndPumpkins_magentoconnector>
                         <type>singleton</type>
                         <class>lizardsAndPumpkins_magentoconnector/observer</class>
-                        <method>catalogProductSaveAfter</method>
+                        <method>catalogProductSaveCommitAfter</method>
                     </lizardsAndPumpkins_magentoconnector>
                 </observers>
             </catalog_product_save_commit_after>
@@ -75,7 +75,7 @@
                     <lizardsAndPumpkins_magentoconnector>
                         <type>singleton</type>
                         <class>lizardsAndPumpkins_magentoconnector/observer</class>
-                        <method>catalogProductDeleteAfter</method>
+                        <method>catalogProductDeleteCommitAfter</method>
                     </lizardsAndPumpkins_magentoconnector>
                 </observers>
             </catalog_product_delete_commit_after>
@@ -88,15 +88,6 @@
                     </lizardsAndPumpkins_magentoconnector>
                 </observers>
             </catalog_product_attribute_update_after>
-            <!--<catalog_controller_product_delete>-->
-                <!--<observers>-->
-                    <!--<lizardsAndPumpkins_magentoconnector>-->
-                        <!--<type>singleton</type>-->
-                        <!--<class>lizardsAndPumpkins_magentoconnector/observer</class>-->
-                        <!--<method>catalogControllerProductDelete</method>-->
-                    <!--</lizardsAndPumpkins_magentoconnector>-->
-                <!--</observers>-->
-            <!--</catalog_controller_product_delete>-->
             <cataloginventory_stock_item_save_commit_after>
                 <observers>
                     <lizardsAndPumpkins_magentoconnector>
@@ -125,7 +116,7 @@
                 <observers>
                     <lizardsAndPumpkins_magentoconnector>
                         <class>lizardsAndPumpkins_magentoconnector/observer</class>
-                        <method>salesOrderCreditmemoSaveAfter</method>
+                        <method>salesOrderCreditmemoSaveCommitAfter</method>
                     </lizardsAndPumpkins_magentoconnector>
                 </observers>
             </sales_order_creditmemo_save_commit_after>
