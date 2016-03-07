@@ -20,73 +20,73 @@ class LizardsAndPumpkins_MagentoConnector_Model_Observer
     public function catalogProductSaveAfter(Varien_Event_Observer $observer)
     {
         $productId = $observer->getProduct()->getId();
-        $this->addProductIntoExportQueueByIds([$productId]);
+        $this->addProductToExportQueueByIds([$productId]);
     }
 
     public function catalogProductDeleteAfter(Varien_Event_Observer $observer)
     {
         $productId = $observer->getProduct()->getId();
-        $this->addProductIntoExportQueueByIds([$productId]);
+        $this->addProductToExportQueueByIds([$productId]);
     }
 
     public function catalogProductAttributeUpdateAfter(Varien_Event_Observer $observer)
     {
         $productIds = $observer->getProductIds();
-        $this->addProductIntoExportQueueByIds($productIds);
+        $this->addProductToExportQueueByIds($productIds);
     }
 
     public function catalogControllerProductDelete(Varien_Event_Observer $observer)
     {
         $productId = $observer->getProduct()->getId();
-        $this->addProductIntoExportQueueByIds([$productId]);
+        $this->addProductToExportQueueByIds([$productId]);
     }
 
     public function cataloginventoryStockItemSaveCommitAfter(Varien_Event_Observer $observer)
     {
         $productId = $observer->getItem()->getProductId();
-        $this->addProductIntoExportQueueByIds([$productId]);
+        $this->addProductToExportQueueByIds([$productId]);
     }
 
     public function salesOrderItemCancel(Varien_Event_Observer $observer)
     {
         $productId = $observer->getItem()->getProductId();
-        $this->addProductIntoExportQueueByIds([$productId]);
+        $this->addProductToExportQueueByIds([$productId]);
     }
 
     public function salesModelServiceQuoteSubmitBefore(Varien_Event_Observer $observer)
     {
         $productIds = $this->getProductIdsFrom($observer, 'quote');
-        $this->addProductIntoExportQueueByIds($productIds);
+        $this->addProductToExportQueueByIds($productIds);
     }
 
     public function salesModelServiceQuoteSubmitFailure(Varien_Event_Observer $observer)
     {
         $productIds = $this->getProductIdsFrom($observer, 'quote');
-        $this->addProductIntoExportQueueByIds($productIds);
+        $this->addProductToExportQueueByIds($productIds);
     }
 
     public function salesOrderCreditmemoSaveAfter(Varien_Event_Observer $observer)
     {
         $productIds = $this->getProductIdsFrom($observer, 'creditmemo');
-        $this->addProductIntoExportQueueByIds($productIds);
+        $this->addProductToExportQueueByIds($productIds);
     }
 
     public function cobbyAfterProductImport(Varien_Event_Observer $observer)
     {
         $skus = $observer->getEntities();
-        $this->addProductIntoExportQueueBySkus($skus);
+        $this->addProductToExportQueueBySkus($skus);
     }
 
     public function magmiStockWasUpdated(Varien_Event_Observer $observer)
     {
         $skus = $observer->getSkus();
-        $this->addProductIntoExportQueueBySkus($skus);
+        $this->addProductToExportQueueBySkus($skus);
     }
 
     public function magmiProductsWereUpdated(Varien_Event_Observer $observer)
     {
         $skus = $observer->getSkus();
-        $this->addProductIntoExportQueueBySkus($skus);
+        $this->addProductToExportQueueBySkus($skus);
     }
 
     public function controllerActionPredispatchCheckoutCartAdd(Varien_Event_Observer $observer)
@@ -114,20 +114,20 @@ class LizardsAndPumpkins_MagentoConnector_Model_Observer
     /**
      * @param string[] $skus
      */
-    private function addProductIntoExportQueueBySkus(array $skus)
+    private function addProductToExportQueueBySkus(array $skus)
     {
         /** @var Mage_Catalog_Model_Resource_Product_Collection $collection */
         $collection = Mage::getResourceModel('catalog/product_collection')
             ->addAttributeToFilter('sku', ['in' => $skus])
             ->load();
 
-        $this->addProductIntoExportQueueByIds($collection->getLoadedIds());
+        $this->addProductToExportQueueByIds($collection->getLoadedIds());
     }
 
     /**
      * @param int[] $ids
      */
-    private function addProductIntoExportQueueByIds(array $ids)
+    private function addProductToExportQueueByIds(array $ids)
     {
         $visibleProductIds = $this->replaceChildProductIdsWithParentProductIds($ids);
         $this->getExportHelper()->addProductUpdatesToQueue($visibleProductIds);
