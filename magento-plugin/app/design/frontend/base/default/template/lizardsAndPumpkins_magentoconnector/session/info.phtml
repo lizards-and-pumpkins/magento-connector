@@ -1,12 +1,27 @@
 <?php
 /**
  * @var LizardsAndPumpkins_MagentoConnector_Block_Session_Info $this
+ * @var Mage_Sales_Model_Quote_Item $item
  */
 ?>
 <script>
 
+    var cartItems = [];
+
+    <?php foreach ($this->getItems() as $item) : ?>
+
+    cartItems.push({
+        "id": "<?= $item->getSku() ?>",
+        "name": "<?= $item->getName() ?>",
+        "item": "<?= $item->getSku() ?>",
+        "price": parseFloat(<?= $item->getPriceInclTax() ?>),
+        "quantity": parseInt(<?= $item->getQty() ?>)
+    });
+
+    <?php endforeach ?>
+
     var lizardsAndPumpkinsTransport = {
-        "cartNumItems": <?php echo (int) $this->getSummaryCount() ?>,
+        "cartItems": cartItems,
         "cartTotal": "<?php echo $this->getFormattedCartTotal() ?>",
         "isCustomerLoggedIn": <?php echo (int) $this->isCustomerLoggedIn() ?>
     };
