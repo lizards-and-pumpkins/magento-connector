@@ -204,11 +204,11 @@ SQL;
 
     /**
      * @param int $id
-     * @param string $queue
+     * @param string $queueName
      */
-    private function addToQueue($id, $queue)
+    private function addToQueue($id, $queueName)
     {
-        $queue = $this->getQueue($queue);
+        $queue = $this->getQueue($queueName);
         try {
             $queue->send($id);
         } catch (Zend_Queue_Exception $e) {
