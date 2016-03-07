@@ -160,10 +160,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Observer
                     FROM `catalog_product_super_link`
                    WHERE `product_id` IN (' . implode(',', $productIds) . ')';
 
-        return array_reduce($this->getReadConnection()->fetchAll($query), function (array $carry, $result) {
-            $carry[$result['product_id']] = $result['parent_id'];
-            return $carry;
-        }, []);
+        return $this->getReadConnection()->fetchPairs($query);
     }
 
     /**
