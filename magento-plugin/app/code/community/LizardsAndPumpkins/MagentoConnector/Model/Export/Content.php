@@ -11,20 +11,23 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
     /**
      * @var Api
      */
-    private $api;
+    private $memoizedApi;
 
     public function export()
     {
-        $cmsBlocks = $this->getAllCmsBlocksWithStoreId();
-        $this->api = $this->getApi();
+        $cmsBlocks = $this->getCmsBlocks();
         $this->exportCmsBlocks($cmsBlocks);
+
+        $inProductListingCmsBlocks = $this->getInProductListingCmsBlocks();
+        $this->exportInProductListingCmsBlocks($inProductListingCmsBlocks);
+
         $this->exportNonCmsBlocks();
     }
 
     /**
      * @return Mage_Cms_Model_Resource_Block_Collection
      */
-    private function getAllCmsBlocksWithStoreId()
+    private function getCmsBlocks()
     {
         /** @var Mage_Cms_Model_Resource_Block_Collection $cmsBlocks */
         $cmsBlocks = Mage::getResourceModel('cms/block_collection')
@@ -37,16 +40,29 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
                     'store_id' => 'store_id',
                 ]
             );
-        $cmsBlocks->addFieldToFilter(
-            [
-                'identifier',
-                'identifier',
-            ],
-            [
-                ['like' => 'product_listing_content_block_%'],
-                ['like' => 'content_block_%']
-            ]
-        );
+        $cmsBlocks->addFieldToFilter(['identifier'], [['like' => 'content_block_%']]);
+
+        return $cmsBlocks;
+    }
+
+    /**
+     * @return Mage_Cms_Model_Resource_Block_Collection
+     */
+    private function getInProductListingCmsBlocks()
+    {
+        /** @var Mage_Cms_Model_Resource_Block_Collection $cmsBlocks */
+        $cmsBlocks = Mage::getResourceModel('cms/block_collection')
+            ->join(['block_store' => 'cms/block_store'], 'main_table.block_id=block_store.block_id', 'store_id')
+            ->addExpressionFieldToSelect(
+                'block_id',
+                "CONCAT({{block_id}},'_', {{store_id}})",
+                [
+                    'block_id' => 'main_table.block_id',
+                    'store_id' => 'store_id',
+                ]
+            );
+        $cmsBlocks->addFieldToFilter(['identifier'], [['like' => 'product_listing_content_block_%']]);
+
         return $cmsBlocks;
     }
 
@@ -55,8 +71,12 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
      */
     private function getApi()
     {
-        $apiUrl = Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/api_url');
-        return new Api($apiUrl);
+        if (null === $this->memoizedApi) {
+            $apiUrl = Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/api_url');
+            $this->memoizedApi = new Api($apiUrl);
+        }
+
+        return $this->memoizedApi;
     }
 
     private function exportCmsBlocks(Mage_Cms_Model_Resource_Block_Collection $cmsBlocks)
@@ -67,7 +87,28 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
                 'locale'  => Mage::getStoreConfig('general/locale/code', $block->getData('store_id')),
                 'website' => Mage::app()->getStore($block->getData('store_id'))->getWebsite()->getCode(),
             ];
-            $this->api->triggerCmsBlockUpdate($blockId, $block->getContent(), $context);
+            $keyGeneratorParameters = [];
+            $this->getApi()->triggerCmsBlockUpdate($blockId, $block->getContent(), $context, $keyGeneratorParameters);
+        }, iterator_to_array($cmsBlocks));
+    }
+
+    private function exportInProductListingCmsBlocks(Mage_Cms_Model_Resource_Block_Collection $cmsBlocks)
+    {
+        array_map(function (Mage_Cms_Model_Block $block) {
+            $blockIdStringWithoutLastVariableToken = preg_replace('/_[^_]+$/', '', $block->getIdentifier());
+            $blockId = $this->normalizeIdentifier($blockIdStringWithoutLastVariableToken);
+
+            $categoryUrlSuffix = Mage::getStoreConfig(Mage_Catalog_Helper_Category::XML_PATH_CATEGORY_URL_SUFFIX);
+            $categorySlug = preg_replace('/.*_/', '', $block->getIdentifier()) . '.' . $categoryUrlSuffix;
+
+            $context = [
+                'locale'  => Mage::getStoreConfig('general/locale/code', $block->getData('store_id')),
+                'website' => Mage::app()->getStore($block->getData('store_id'))->getWebsite()->getCode(),
+            ];
+
+            $keyGeneratorParameters = ['url_key' => $categorySlug];
+
+            $this->getApi()->triggerCmsBlockUpdate($blockId, $block->getContent(), $context, $keyGeneratorParameters);
         }, iterator_to_array($cmsBlocks));
     }
 
@@ -102,10 +143,11 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
                     'locale'  => Mage::getStoreConfig('general/locale/code', $store->getId()),
                     'website' => $store->getWebsite()->getCode()
                 ];
+                $keyGeneratorParameters = [];
 
                 $appEmulation->stopEnvironmentEmulation($initialEnvironmentInfo);
 
-                $this->api->triggerCmsBlockUpdate($blockId, $content, $context);
+                $this->getApi()->triggerCmsBlockUpdate($blockId, $content, $context, $keyGeneratorParameters);
             }, Mage::app()->getStores(true));
         }, array_keys($specialBlocks));
     }

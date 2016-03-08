@@ -52,21 +52,17 @@ class Api
      * @param string $id
      * @param string $content
      * @param string[] $context
+     * @param string[] $keyGeneratorParameters
      */
-    public function triggerCmsBlockUpdate($id, $content, $context)
+    public function triggerCmsBlockUpdate($id, $content, array $context, array $keyGeneratorParameters)
     {
         if (!is_string($id)) {
             throw new InvalidUrlException();
         }
+
         $headers = ['Accept' => 'application/vnd.lizards-and-pumpkins.content_blocks.v1+json'];
         $url = $this->url . self::API_ENDPOINT_CONTENT_BLOCK_UPDATE . $id;
-
-        $body = json_encode(
-            [
-                'content' => $content,
-                'context' => $context,
-            ]
-        );
+        $body = json_encode(array_merge(['content' => $content, 'context' => $context], $keyGeneratorParameters));
 
         $this->sendApiRequest($url, $headers, $body);
     }
