@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<config>
+    <placeholders>
+        <lizards_and_pumpkins_transport>
+            <block>lizardsAndPumpkins_magentoconnector/session_info</block>
+            <placeholder>LIZARDS_AND_PUMPKINS_TRANSPORT</placeholder>
+            <container>LizardsAndPumpkins_MagentoConnector_Model_Container_Session_Info</container>
+            <cache_lifetime>86400</cache_lifetime>
+        </lizards_and_pumpkins_transport>
+    </placeholders>
+</config>
