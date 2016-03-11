@@ -163,7 +163,7 @@ EOX;
 
         $listingXml = $this->listingXml->buildXml($this->stubCategory);
         $attributes = $this->getListingAttributesAsArray($listingXml->getXml());
-        
+
         $this->assertArrayHasKey($attributeCode, $attributes);
         $this->assertSame($attributeValue, $attributes[$attributeCode]);
     }
@@ -176,6 +176,8 @@ EOX;
         return [
             ['meta_title', 'This would only work in a <CDATA> section'],
             ['description', 'Description with <strong>HTML</strong>'],
+            ['meta_description', 'this is a meta description'],
+            ['meta_keywords', 'meta keywords lap is cool'],
         ];
     }
 }
