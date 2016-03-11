@@ -65,7 +65,7 @@ class ListingXml
     {
         $xml->startElement('criteria');
         $xml->writeAttribute('type', 'or');
-        
+
         $xml->startElement('attribute');
         $xml->writeAttribute('name', 'stock_qty');
         $xml->writeAttribute('is', 'GreaterThan');
@@ -77,7 +77,7 @@ class ListingXml
         $xml->writeAttribute('is', 'Equal');
         $xml->text('true');
         $xml->endElement();
-        
+
         $xml->endElement();
     }
 
@@ -100,8 +100,13 @@ class ListingXml
      */
     private function writeCategoryAttributesXml(\XMLWriter $xml, Mage_Catalog_Model_Category $category)
     {
-        $attributeNames =
-            ['meta_title', 'description', 'meta_description', 'meta_keywords']; // TODO: Put into configuration
+        $attributeNames = [
+            'meta_title',
+            'description',
+            'meta_description',
+            'meta_keywords',
+        ]; // TODO: Put into configuration
+        
         $xml->startElement('attributes');
 
         array_map(function ($attributeName) use ($xml, $category) {
