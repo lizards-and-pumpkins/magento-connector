@@ -65,9 +65,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Observer
         $this->addProductToExportQueueByIds($productIds);
     }
 
-    public function cobbyAfterProductImport(Varien_Event_Observer $observer)
+    public function addCobbyProductsToExportQueue(Varien_Event_Observer $observer)
     {
-        $skus = $observer->getEntities();
+        $skus = array_keys($observer->getData('entities'));
         $this->addProductToExportQueueBySkus($skus);
     }
 

@@ -125,10 +125,55 @@
                     <lizardsAndPumpkins_magentoconnector>
                         <type>singleton</type>
                         <class>lizardsAndPumpkins_magentoconnector/observer</class>
-                        <method>cobbyAfterProductImport</method>
+                        <method>addCobbyProductsToExportQueue</method>
                     </lizardsAndPumpkins_magentoconnector>
                 </observers>
             </cobby_after_product_import>
+            <cobby_after_product_stock_import>
+                <observers>
+                    <lizardsAndPumpkins_magentoconnector>
+                        <type>singleton</type>
+                        <class>lizardsAndPumpkins_magentoconnector/observer</class>
+                        <method>addCobbyProductsToExportQueue</method>
+                    </lizardsAndPumpkins_magentoconnector>
+                </observers>
+            </cobby_after_product_stock_import>
+            <cobby_after_product_category_import>
+                <observers>
+                    <lizardsAndPumpkins_magentoconnector>
+                        <type>singleton</type>
+                        <class>lizardsAndPumpkins_magentoconnector/observer</class>
+                        <method>addCobbyProductsToExportQueue</method>
+                    </lizardsAndPumpkins_magentoconnector>
+                </observers>
+            </cobby_after_product_category_import>
+            <cobby_after_product_media_import>
+                <observers>
+                    <lizardsAndPumpkins_magentoconnector>
+                        <type>singleton</type>
+                        <class>lizardsAndPumpkins_magentoconnector/observer</class>
+                        <method>addCobbyProductsToExportQueue</method>
+                    </lizardsAndPumpkins_magentoconnector>
+                </observers>
+            </cobby_after_product_media_import>
+            <cobby_after_product_url_import>
+                <observers>
+                    <lizardsAndPumpkins_magentoconnector>
+                        <type>singleton</type>
+                        <class>lizardsAndPumpkins_magentoconnector/observer</class>
+                        <method>addCobbyProductsToExportQueue</method>
+                    </lizardsAndPumpkins_magentoconnector>
+                </observers>
+            </cobby_after_product_url_import>
+            <cobby_after_product_configurable_import>
+                <observers>
+                    <lizardsAndPumpkins_magentoconnector>
+                        <type>singleton</type>
+                        <class>lizardsAndPumpkins_magentoconnector/observer</class>
+                        <method>addCobbyProductsToExportQueue</method>
+                    </lizardsAndPumpkins_magentoconnector>
+                </observers>
+            </cobby_after_product_configurable_import>
             <magmi_stock_was_updated>
                 <observers>
                     <lizardsAndPumpkins_magentoconnector>
