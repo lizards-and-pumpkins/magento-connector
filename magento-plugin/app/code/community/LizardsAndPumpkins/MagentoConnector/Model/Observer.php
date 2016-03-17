@@ -65,10 +65,35 @@ class LizardsAndPumpkins_MagentoConnector_Model_Observer
         $this->addProductToExportQueueByIds($productIds);
     }
 
-    public function addCobbyProductsToExportQueue(Varien_Event_Observer $observer)
+    public function cobbyAfterProductImport(Varien_Event_Observer $observer)
     {
         $skus = array_keys($observer->getData('entities'));
         $this->addProductToExportQueueBySkus($skus);
+    }
+
+    public function cobbyAfterProductStockImport(Varien_Event_Observer $observer)
+    {
+        $this->addProductToExportQueueByIds($observer->getData('products'));
+    }
+
+    public function cobbyAfterProductCategoryImport(Varien_Event_Observer $observer)
+    {
+        $this->addProductToExportQueueByIds($observer->getData('products'));
+    }
+
+    public function cobbyAfterProductMediaImport(Varien_Event_Observer $observer)
+    {
+        $this->addProductToExportQueueByIds($observer->getData('products'));
+    }
+
+    public function cobbyAfterProductUrlImport(Varien_Event_Observer $observer)
+    {
+        $this->addProductToExportQueueByIds($observer->getData('products'));
+    }
+
+    public function cobbyAfterProductConfigurableImport(Varien_Event_Observer $observer)
+    {
+        $this->addProductToExportQueueByIds($observer->getData('products'));
     }
 
     public function magmiStockWasUpdated(Varien_Event_Observer $observer)

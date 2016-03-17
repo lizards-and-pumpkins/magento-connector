@@ -125,7 +125,7 @@
                     <lizardsAndPumpkins_magentoconnector>
                         <type>singleton</type>
                         <class>lizardsAndPumpkins_magentoconnector/observer</class>
-                        <method>addCobbyProductsToExportQueue</method>
+                        <method>cobbyAfterProductImport</method>
                     </lizardsAndPumpkins_magentoconnector>
                 </observers>
             </cobby_after_product_import>
@@ -134,7 +134,7 @@
                     <lizardsAndPumpkins_magentoconnector>
                         <type>singleton</type>
                         <class>lizardsAndPumpkins_magentoconnector/observer</class>
-                        <method>addCobbyProductsToExportQueue</method>
+                        <method>cobbyAfterProductStockImport</method>
                     </lizardsAndPumpkins_magentoconnector>
                 </observers>
             </cobby_after_product_stock_import>
@@ -143,7 +143,7 @@
                     <lizardsAndPumpkins_magentoconnector>
                         <type>singleton</type>
                         <class>lizardsAndPumpkins_magentoconnector/observer</class>
-                        <method>addCobbyProductsToExportQueue</method>
+                        <method>cobbyAfterProductCategoryImport</method>
                     </lizardsAndPumpkins_magentoconnector>
                 </observers>
             </cobby_after_product_category_import>
@@ -152,7 +152,7 @@
                     <lizardsAndPumpkins_magentoconnector>
                         <type>singleton</type>
                         <class>lizardsAndPumpkins_magentoconnector/observer</class>
-                        <method>addCobbyProductsToExportQueue</method>
+                        <method>cobbyAfterProductMediaImport</method>
                     </lizardsAndPumpkins_magentoconnector>
                 </observers>
             </cobby_after_product_media_import>
@@ -161,7 +161,7 @@
                     <lizardsAndPumpkins_magentoconnector>
                         <type>singleton</type>
                         <class>lizardsAndPumpkins_magentoconnector/observer</class>
-                        <method>addCobbyProductsToExportQueue</method>
+                        <method>cobbyAfterProductUrlImport</method>
                     </lizardsAndPumpkins_magentoconnector>
                 </observers>
             </cobby_after_product_url_import>
@@ -170,7 +170,7 @@
                     <lizardsAndPumpkins_magentoconnector>
                         <type>singleton</type>
                         <class>lizardsAndPumpkins_magentoconnector/observer</class>
-                        <method>addCobbyProductsToExportQueue</method>
+                        <method>cobbyAfterProductConfigurableImport</method>
                     </lizardsAndPumpkins_magentoconnector>
                 </observers>
             </cobby_after_product_configurable_import>
