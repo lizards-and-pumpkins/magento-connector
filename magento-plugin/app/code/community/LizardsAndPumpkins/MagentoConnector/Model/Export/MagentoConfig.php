@@ -25,6 +25,11 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig
     public function getLocalFilenameTemplate()
     {
         $filenameTemplate = Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/local_filename_template');
+
+        if (substr_count($filenameTemplate, '%s') !== 1) {
+            Mage::throwException('Export file template must have exact one "%s" placeholder.');
+        }
+
         return sprintf($filenameTemplate, time() . '-' . uniqid());
     }
 
