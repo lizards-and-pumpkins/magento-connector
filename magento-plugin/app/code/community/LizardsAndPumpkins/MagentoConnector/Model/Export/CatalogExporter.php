@@ -135,6 +135,10 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
      */
     public function exportProducts(LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector $collector)
     {
+        /** @var LizardsAndPumpkins_MagentoConnector_Helper_Factory $factoryHelper */
+        $factoryHelper = Mage::helper('lizardsAndPumpkins_magentoconnector/factory');
+        $factoryHelper->reset();
+
         $xmlBuilderAndUploader = $this->getFactory()->createPrepareProductDataForXmlBuilder();
         $filename = $this->getFactory()->getProductXmlFilename();
         $this->imageCollector = $this->getFactory()->createImageCollector();
@@ -195,8 +199,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
      */
     public function exportCategoriesInQueue()
     {
-        /** @var LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig $config */
-        $config = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_magentoConfig');
+        $config = $this->getMagentoConfig();
 
         $categoryCollector = new LizardsAndPumpkins_MagentoConnector_Model_Export_CategoriesInQueueCollector($config);
         $categoryCollector->setStoresToExport($config->getStoresToExport());
@@ -212,7 +215,8 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
         LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryCollector $categoryCollector
     ) {
         $xmlMerge = new CatalogMerge();
-        $config = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_magentoConfig');
+        $config = $this->getMagentoConfig();
+
         $uploader = new LizardsAndPumpkins_MagentoConnector_Model_ProductXmlUploader();
         $listingXml = new ListingXml($config);
 
@@ -315,5 +319,13 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
     public function wasSomethingExported()
     {
         return (bool)($this->numberOfProductsExported + $this->numberOfCategoriesExported);
+    }
+
+    /**
+     * @return LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig
+     */
+    private function getMagentoConfig()
+    {
+        return Mage::getModel('lizardsAndPumpkins_magentoconnector/export_magentoConfig');
     }
 }
