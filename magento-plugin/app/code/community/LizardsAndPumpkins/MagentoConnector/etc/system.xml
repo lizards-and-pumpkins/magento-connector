@@ -41,7 +41,7 @@
                         <local_filename_template>
                             <label>Filename Template</label>
                             <comment>
-                                <![CDATA[Filename template for product XML. The name is parsed by <a href="http://php.net/manual/en/function.strftime.php">strftime()</a>]]>
+                                <![CDATA[Filename template for product export XML.]]>
                             </comment>
                             <frontend_type>text</frontend_type>
                             <sort_order>20</sort_order>
