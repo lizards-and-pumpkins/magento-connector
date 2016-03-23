@@ -25,11 +25,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig
     public function getLocalFilenameTemplate()
     {
         $filenameTemplate = Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/local_filename_template');
-        if ('' !== $filenameTemplate) {
-            return strftime($filenameTemplate);
-        }
-
-        return '';
+        return sprintf($filenameTemplate, time() . '-' . uniqid());
     }
 
     /**
