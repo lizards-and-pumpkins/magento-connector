@@ -130,7 +130,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
             array_map(function (Mage_Core_Model_Store $store) use ($blockIdentifier, $appEmulation) {
                 $initialEnvironmentInfo = $appEmulation->startEnvironmentEmulation($store->getId());
 
-                $layout = $this->getLayout();
+                $layout = $this->getLayoutForStore($store);
                 $block = $layout->getBlock($blockIdentifier);
 
                 if (null === $block) {
@@ -179,13 +179,14 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
     }
 
     /**
+     * @param Mage_Core_Model_Store $store
      * @return Mage_Core_Model_Layout
      */
-    private function getLayout()
+    private function getLayoutForStore(Mage_Core_Model_Store $store)
     {
         /** @var Mage_Core_Model_Layout $layout */
         $layout = Mage::getModel('core/layout');
-        $layout->getUpdate()->load('default');
+        $layout->getUpdate()->load(['default', 'STORE_' . $store->getCode()]);
         $layout->generateXml();
         $layout->generateBlocks();
 
