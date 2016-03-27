@@ -148,7 +148,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
                 $appEmulation->stopEnvironmentEmulation($initialEnvironmentInfo);
 
                 $this->getApi()->triggerCmsBlockUpdate($blockId, $content, $context, $keyGeneratorParameters);
-            }, Mage::app()->getStores(true));
+            }, $this->getMagentoConfig()->getStoresToExport());
         }, array_keys($specialBlocks));
     }
 
@@ -190,5 +190,13 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
         $layout->generateBlocks();
 
         return $layout;
+    }
+    
+    /**
+     * @return LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig
+     */
+    private function getMagentoConfig()
+    {
+        return Mage::getModel('lizardsAndPumpkins_magentoconnector/export_magentoConfig');
     }
 }
