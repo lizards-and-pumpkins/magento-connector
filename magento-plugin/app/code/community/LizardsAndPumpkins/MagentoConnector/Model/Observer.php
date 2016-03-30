@@ -135,6 +135,10 @@ class LizardsAndPumpkins_MagentoConnector_Model_Observer
      */
     private function addProductToExportQueueBySkus(array $skus)
     {
+        if (count($skus) === 0) {
+            return;
+        }
+        
         /** @var Mage_Catalog_Model_Resource_Product_Collection $collection */
         $collection = Mage::getResourceModel('catalog/product_collection')
             ->addAttributeToFilter('sku', ['in' => $skus])
