@@ -189,6 +189,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
         $layout->getUpdate()->load(['default', 'STORE_' . $store->getCode()]);
         $layout->generateXml();
         $layout->generateBlocks();
+        $layout->setArea(Mage_Core_Model_App_Area::AREA_FRONTEND);
 
         return $layout;
     }
