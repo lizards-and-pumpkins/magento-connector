@@ -23,15 +23,6 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
         return null;
     }
 
-    /**
-     * @return Mage_Core_Model_Store
-     */
-    private function getFrontendStoreInstance()
-    {
-        $stores = Mage::app()->getStores();
-        return reset($stores);
-    }
-
     protected function setUp()
     {
         $this->collection = new \LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collection();
