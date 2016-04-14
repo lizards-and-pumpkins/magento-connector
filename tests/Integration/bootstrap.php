@@ -3,7 +3,7 @@
 error_reporting(E_ALL);
 
 require __DIR__ . '/../../vendor/autoload.php';
-require __DIR__ . '/../../../../app/Mage.php';
+require $_SERVER['MAGENTO_ROOT_PATH'] . '/app/Mage.php';
 require __DIR__ . '/util/lib/InitializableCatalogEntityExportTest.php';
 
 Mage::setIsDeveloperMode(true);
