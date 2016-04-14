@@ -10,18 +10,17 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
 
     /**
      * @param array[] $productsData
-     * @return mixed[]
+     * @return mixed[]|null
      */
-    private function findProductWithSeveralCategories($productsData)
+    private function findProductWithSeveralCategories(array $productsData)
     {
-        return array_reduce($productsData, function ($carry, array $productRecord) {
-            if ($carry) {
-                return $carry;
+        foreach ($productsData as $productData) {
+            if (isset($productData['categories']) && count($productData['categories']) > 1) {
+                return $productData;
             }
-            if (isset($productRecord['categories']) && count($productRecord['categories']) > 1) {
-                return $productRecord;
-            }
-        });
+        }
+        
+        return null;
     }
 
     /**
