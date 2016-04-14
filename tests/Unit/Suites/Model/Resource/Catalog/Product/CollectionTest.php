@@ -39,6 +39,11 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
         $this->collection->load();
     }
 
+    public function testFlatCatalogIsAlwaysDisabled()
+    {
+        $this->assertFalse($this->collection->isEnabledFlat());
+    }
+
     public function testItExtendsTheEavProductCollection()
     {
         $this->assertInstanceOf(Mage_Catalog_Model_Resource_Product_Collection::class, $this->collection);
