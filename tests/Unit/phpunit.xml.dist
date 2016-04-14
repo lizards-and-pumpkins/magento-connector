@@ -36,6 +36,7 @@
     <filter>
         <whitelist>
             <directory>../../lib/LizardsAndPumpkins/src</directory>
+            <directory>../../magento-plugin/app/code</directory>
         </whitelist>
     </filter>
 </phpunit>
