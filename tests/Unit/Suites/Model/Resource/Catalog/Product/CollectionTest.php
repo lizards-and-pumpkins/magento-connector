@@ -31,6 +31,14 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
         $this->collection = new \LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collection();
     }
 
+    public function testExceptionIsThrownDuringAttemptToLoadCollectionViaLoadMethod()
+    {
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage('This collection should only be used to load raw data via getData()');
+
+        $this->collection->load();
+    }
+
     public function testItExtendsTheEavProductCollection()
     {
         $this->assertInstanceOf(Mage_Catalog_Model_Resource_Product_Collection::class, $this->collection);
