@@ -1,8 +1,5 @@
 <?php
 
-/**
- * @covers LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collection
- */
 class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_CollectionTest
     extends \PHPUnit_Framework_TestCase
 {
@@ -29,19 +26,6 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
     protected function setUp()
     {
         $this->collection = new \LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collection();
-    }
-
-    public function testExceptionIsThrownDuringAttemptToLoadCollectionViaLoadMethod()
-    {
-        $this->expectException(\LogicException::class);
-        $this->expectExceptionMessage('This collection should only be used to load raw data via getData()');
-
-        $this->collection->load();
-    }
-
-    public function testFlatCatalogIsAlwaysDisabled()
-    {
-        $this->assertFalse($this->collection->isEnabledFlat());
     }
 
     public function testItExtendsTheEavProductCollection()
