@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @covers  LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collection
+ */
 class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_CollectionTest
     extends \PHPUnit_Framework_TestCase
 {
