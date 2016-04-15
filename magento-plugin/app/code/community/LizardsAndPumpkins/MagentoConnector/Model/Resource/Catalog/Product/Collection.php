@@ -310,14 +310,14 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
         $coreResource = $this->getCoreResource();
         $connection = $this->getConnection();
 
+        $configurableAttributes = $this->getConfigurableAttributeIdToCodeMap();
 
         /** @var LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collection $simpleProducts */
         $simpleProducts = Mage::getResourceModel('lizardsAndPumpkins_magentoconnector/catalog_product_collection');
         $simpleProducts->addAttributeToSelect('sku');
-        $simpleProducts->addAttributeToSelect('size_eu');
         $simpleProducts->addAttributeToFilter('type_id', Mage_Catalog_Model_Product_Type::TYPE_SIMPLE);
         $simpleProducts->addAttributeToFilter('status', Mage_Catalog_Model_Product_Status::STATUS_ENABLED);
-        $simpleProducts->addAttributeToSelect($this->getConfigurableAttributeIdToCodeMap());
+        $simpleProducts->addAttributeToSelect($configurableAttributes);
 
         $configValue = Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/associated_product_attributes');
         $additionalAttributes = array_filter(preg_split('/\s*,\s*/', trim($configValue), -1, PREG_SPLIT_NO_EMPTY));
@@ -332,16 +332,28 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
             ['parent_id' => 'link.parent_id']
         );
 
-        $simpleProductData = [];
-        $attributesToCopy = array_merge(
+        $requiredAttributes = array_merge(
             ['sku', 'stock_qty', 'tax_class', 'tax_class_id', 'type_id', 'backorders'],
-            $additionalAttributes,
-            $this->getConfigurableAttributeIdToCodeMap()
+            $configurableAttributes
         );
+        $attributesToCopy = array_merge($requiredAttributes, $additionalAttributes);
+
+        $simpleProductData = [];
+
         foreach ($simpleProducts->getData() as $row) {
             $simpleProductData[$row['parent_id']][] = array_reduce(
                 $attributesToCopy,
-                function ($carry, $attribute) use ($row) {
+                function ($carry, $attribute) use ($row, $requiredAttributes) {
+                    if (!isset($row[$attribute])) {
+                        if (in_array($attribute, $requiredAttributes)) {
+                            Mage::throwException(sprintf(
+                                'Attribute "%s" is not set. Product ID: %s',
+                                $attribute,
+                                $row['entity_id']
+                            ));
+                        }
+                        return array_merge($carry, [$attribute => '']);
+                    }
                     return array_merge($carry, [$attribute => $row[$attribute]]);
                 },
                 []
