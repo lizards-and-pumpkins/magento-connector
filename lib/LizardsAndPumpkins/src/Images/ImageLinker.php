@@ -28,7 +28,7 @@ class ImageLinker implements ImageExporter
             throw new \InvalidArgumentException('Directory must be string.');
         }
         if (!is_dir($targetDir)) {
-            throw new \InvalidArgumentException(sprintf('Directory "%" does not exist.', $targetDir));
+            throw new \InvalidArgumentException(sprintf('Directory "%s" does not exist.', $targetDir));
         }
     }
 
