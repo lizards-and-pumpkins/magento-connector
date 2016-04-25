@@ -47,7 +47,7 @@ class ImageLinkerTest extends \PHPUnit_Framework_TestCase
     {
         $targetDirectory = '/this/directory/does/not/exist/';
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage(sprintf('Directory "%" does not exist.', $targetDirectory));
+        $this->expectExceptionMessage(sprintf('Directory "%s" does not exist.', $targetDirectory));
         new ImageLinker($targetDirectory);
     }
 
