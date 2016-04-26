@@ -332,8 +332,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
             ['parent_id' => 'link.parent_id']
         );
 
-        $requiredAttributes = $this->getRequiredAttributeCodes();
-        $attributesToCopy = array_merge($requiredAttributes, $additionalAttributes);
+        $attributesToCopy = array_merge($this->getRequiredAttributeCodes(), $additionalAttributes);
 
         $data = [];
 
@@ -409,9 +408,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
             return $row[$attribute];
         }
 
-        $requiredAttributes = $this->getRequiredAttributeCodes();
-        
-        if (in_array($attribute, $requiredAttributes)) {
+        if (in_array($attribute, $this->getRequiredAttributeCodes())) {
             Mage::throwException(sprintf('Attribute "%s" is not set. Product ID: %s', $attribute, $row['entity_id']));
         }
 
