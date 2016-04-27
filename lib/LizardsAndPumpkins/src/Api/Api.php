@@ -125,7 +125,7 @@ class Api
         $request = $this->createHttpRequest('PUT', $url, $headers, $body);
         $client = new Client();
         $response = $client->send($request);
-        if (json_decode($response->getBody()) != 'OK') {
+        if ($response->getStatusCode() !== 202) {
             throw new RequestFailedException("Unexpected response body from $url:\n" . $response->getBody());
         }
     }
