@@ -310,14 +310,14 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
         $coreResource = $this->getCoreResource();
         $connection = $this->getConnection();
 
+        $configurableAttributes = $this->getConfigurableAttributeIdToCodeMap();
 
         /** @var LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collection $simpleProducts */
         $simpleProducts = Mage::getResourceModel('lizardsAndPumpkins_magentoconnector/catalog_product_collection');
         $simpleProducts->addAttributeToSelect('sku');
-        $simpleProducts->addAttributeToSelect('size_eu');
         $simpleProducts->addAttributeToFilter('type_id', Mage_Catalog_Model_Product_Type::TYPE_SIMPLE);
         $simpleProducts->addAttributeToFilter('status', Mage_Catalog_Model_Product_Status::STATUS_ENABLED);
-        $simpleProducts->addAttributeToSelect($this->getConfigurableAttributeIdToCodeMap());
+        $simpleProducts->addAttributeToSelect($configurableAttributes);
 
         $configValue = Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/associated_product_attributes');
         $additionalAttributes = array_filter(preg_split('/\s*,\s*/', trim($configValue), -1, PREG_SPLIT_NO_EMPTY));
@@ -332,23 +332,15 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
             ['parent_id' => 'link.parent_id']
         );
 
-        $simpleProductData = [];
-        $attributesToCopy = array_merge(
-            ['sku', 'stock_qty', 'tax_class', 'tax_class_id', 'type_id', 'backorders'],
-            $additionalAttributes,
-            $this->getConfigurableAttributeIdToCodeMap()
-        );
+        $attributesToCopy = array_merge($this->getRequiredAttributeCodes(), $additionalAttributes);
+
+        $data = [];
+
         foreach ($simpleProducts->getData() as $row) {
-            $simpleProductData[$row['parent_id']][] = array_reduce(
-                $attributesToCopy,
-                function ($carry, $attribute) use ($row) {
-                    return array_merge($carry, [$attribute => $row[$attribute]]);
-                },
-                []
-            );
+            $data[$row['parent_id']][] = $this->getProductAttributes($attributesToCopy, $row);
         }
 
-        return $simpleProductData;
+        return $data;
     }
 
     /**
@@ -391,6 +383,36 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
             $mediaGalleryData[$row['entity_id']]['images'][] = $row;
         }
         return $mediaGalleryData;
+    }
+
+    /**
+     * @param string[] $attributeCodes
+     * @param string[] $productData
+     * @return string[]
+     */
+    private function getProductAttributes($attributeCodes, $productData)
+    {
+        return array_reduce($attributeCodes, function ($carry, $attribute) use ($productData) {
+            return array_merge($carry, [$attribute => $this->getAttributeValueToExport($attribute, $productData)]);
+        }, []);
+    }
+
+    /**
+     * @param string $attribute
+     * @param string[] $row
+     * @return string
+     */
+    function getAttributeValueToExport($attribute, array $row)
+    {
+        if (isset($row[$attribute])) {
+            return $row[$attribute];
+        }
+
+        if (in_array($attribute, $this->getRequiredAttributeCodes())) {
+            Mage::throwException(sprintf('Attribute "%s" is not set. Product ID: %s', $attribute, $row['entity_id']));
+        }
+
+        return '';
     }
 
     /**
@@ -692,5 +714,16 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
     private function getEavConfig()
     {
         return Mage::getSingleton('eav/config');
+    }
+
+    /**
+     * @return string[]
+     */
+    private function getRequiredAttributeCodes()
+    {
+        return array_merge(
+            ['sku', 'stock_qty', 'tax_class', 'tax_class_id', 'type_id', 'backorders'],
+            $this->getConfigurableAttributeIdToCodeMap()
+        );
     }
 }
