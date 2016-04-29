@@ -53,16 +53,14 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
      */
     protected function _afterLoadData()
     {
-        $websiteCode = $this->getStore()->getWebsite()->getCode();
-        $localeCode = Mage::getStoreConfig('general/locale/code', $this->getStore());
         $indexedProductData = [];
         foreach ($this->_data as $row) {
             $indexedProductData[$row['entity_id']] = array_merge(
                 $row,
                 ['categories' => isset($row['category_ids']) ? $this->addCategoryUrlKeys($row['category_ids']) : []],
                 ['configurable_attributes' => $this->configAttributeIdsToCodes($row['configurable_attributes'])],
-                ['website' => $websiteCode],
-                ['locale' => $localeCode]
+                ['website' => $this->getStore()->getCode()],
+                ['locale' => Mage::getStoreConfig('general/locale/code', $this->getStore())]
             );
         }
         $this->_data = $indexedProductData;
@@ -118,6 +116,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
      */
     private function getPriceExcludingTax(array $productData, $priceAttribute)
     {
+        /** @var Mage_Tax_Model_Config $taxConfig */
         $taxConfig = Mage::getSingleton('tax/config');
         return $taxConfig->priceIncludesTax($this->getStore()) ?
             $this->calculatePriceExcludingTax($productData['tax_class_id'], $productData[$priceAttribute]) :
@@ -131,6 +130,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
      */
     private function calculatePriceExcludingTax($taxClassId, $price)
     {
+        /** @var Mage_Catalog_Model_Product $product */
         static $product;
         static $taxRatePercentCache;
         if (null === $product) {
@@ -142,6 +142,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
             $product->setData('tax_percent', $taxRatePercentCache[$this->getStoreId()][$taxClassId]['tax_percent']);
             $product->setData('applied_rates', $taxRatePercentCache[$this->getStoreId()][$taxClassId]['applied_rates']);
         }
+        /** @var Mage_Tax_Helper_Data $helper */
         $helper = Mage::helper('tax');
         $priceExclTax = $helper->getPrice(
             $product,
@@ -446,6 +447,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
      */
     private function getCategoryUrlKeysForId($categoryId)
     {
+        /** @var LizardsAndPumpkins_MagentoConnector_Helper_Factory $factory */
         $factory = Mage::helper('lizardsAndPumpkins_magentoconnector/factory');
         $categoryUrlKeyService = $factory->createCategoryUrlKeyService();
         return $categoryUrlKeyService->getCategoryUrlKeysByIdAndStore($categoryId, $this->getStoreId());

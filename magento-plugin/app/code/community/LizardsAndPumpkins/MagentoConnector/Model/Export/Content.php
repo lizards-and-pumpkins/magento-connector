@@ -85,7 +85,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
             $blockId = $this->normalizeIdentifier($block->getIdentifier());
             $context = [
                 'locale'  => Mage::getStoreConfig('general/locale/code', $block->getData('store_id')),
-                'website' => Mage::app()->getStore($block->getData('store_id'))->getWebsite()->getCode(),
+                'website' => Mage::app()->getStore($block->getData('store_id'))->getCode(),
             ];
             $keyGeneratorParameters = [];
             $this->getApi()->triggerCmsBlockUpdate($blockId, $block->getContent(), $context, $keyGeneratorParameters);
@@ -103,7 +103,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
 
             $context = [
                 'locale'  => Mage::getStoreConfig('general/locale/code', $block->getData('store_id')),
-                'website' => Mage::app()->getStore($block->getData('store_id'))->getWebsite()->getCode(),
+                'website' => Mage::app()->getStore($block->getData('store_id'))->getCode(),
             ];
 
             $keyGeneratorParameters = ['url_key' => $categorySlug];
@@ -142,7 +142,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
                 $content = $block->toHtml();
                 $context = [
                     'locale'  => Mage::getStoreConfig('general/locale/code', $store->getId()),
-                    'website' => $store->getWebsite()->getCode()
+                    'website' => $store->getCode()
                 ];
                 $keyGeneratorParameters = [];
 

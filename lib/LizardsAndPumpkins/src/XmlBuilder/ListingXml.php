@@ -33,9 +33,6 @@ class ListingXml
         }
 
         $urlPath = $this->normalizeUrl($category->getUrlPath());
-        $website = $category->getStore()->getWebsite()->getCode();
-        $locale = $this->config->getLocaleFrom($category->getStore());
-
         $xml = new \XMLWriter();
         $xml->openMemory();
         $xml->setIndent(true);
@@ -43,8 +40,8 @@ class ListingXml
         $xml->startElement('listing');
 
         $xml->writeAttribute('url_key', $urlPath);
-        $xml->writeAttribute('locale', $locale);
-        $xml->writeAttribute('website', $website);
+        $xml->writeAttribute('locale', $this->config->getLocaleFrom($category->getStore()));
+        $xml->writeAttribute('website', $category->getStore()->getCode());
 
         $xml->startElement('criteria');
         $xml->writeAttribute('type', self::CONDITION_AND);
