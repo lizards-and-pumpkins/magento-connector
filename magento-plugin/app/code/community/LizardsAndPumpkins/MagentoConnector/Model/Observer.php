@@ -98,13 +98,13 @@ class LizardsAndPumpkins_MagentoConnector_Model_Observer
 
     public function magmiStockWasUpdated(Varien_Event_Observer $observer)
     {
-        $skus = $observer->getSkus();
+        $skus = $observer->getData('skus');
         $this->addProductToExportQueueBySkus($skus);
     }
 
     public function magmiProductsWereUpdated(Varien_Event_Observer $observer)
     {
-        $skus = $observer->getSkus();
+        $skus = $observer->getData('skus');
         $this->addProductToExportQueueBySkus($skus);
     }
 
@@ -135,10 +135,6 @@ class LizardsAndPumpkins_MagentoConnector_Model_Observer
      */
     private function addProductToExportQueueBySkus(array $skus)
     {
-        if (count($skus) === 0) {
-            return;
-        }
-
         $entityIds = array_reduce(array_chunk($skus, 10000), function (array $carry, array $skusPart) {
             /** @var Mage_Catalog_Model_Resource_Product_Collection $collection */
             $collection = Mage::getResourceModel('catalog/product_collection')
@@ -146,6 +142,10 @@ class LizardsAndPumpkins_MagentoConnector_Model_Observer
                 ->load();
             return array_merge($carry, $collection->getLoadedIds());
         }, []);
+
+        if (count($entityIds) === 0) {
+            return;
+        }
         
         $this->addProductToExportQueueByIds($entityIds);
     }
