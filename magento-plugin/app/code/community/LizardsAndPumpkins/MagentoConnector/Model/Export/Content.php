@@ -118,11 +118,6 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
         $this->disableCollectionCache();
         $this->replaceCatalogCategoryHelperToAvoidWrongTranslations();
 
-        $specialBlocks = Mage::getStoreConfig(self::XML_SPECIAL_BLOCKS);
-        if (!is_array($specialBlocks)) {
-            return;
-        }
-
         /** @var Mage_Core_Model_App_Emulation $appEmulation */
         $appEmulation = Mage::getSingleton('core/app_emulation');
 
@@ -132,9 +127,10 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
 
                 $layout = $this->getLayoutForStore($store);
                 Mage::app()->loadArea(Mage_Core_Model_App_Area::AREA_FRONTEND);
-                $block = $layout->getBlock($blockIdentifier);
+                $block = $layout->getBlock(trim($blockIdentifier));
 
-                if (null === $block) {
+                if (false === $block) {
+                    // TODO: Throw an exception
                     return;
                 }
 
@@ -150,7 +146,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
 
                 $this->getApi()->triggerCmsBlockUpdate($blockId, $content, $context, $keyGeneratorParameters);
             }, $this->getMagentoConfig()->getStoresToExport());
-        }, array_keys($specialBlocks));
+        }, explode(',', Mage::getStoreConfig(self::XML_SPECIAL_BLOCKS)));
     }
 
     /**
