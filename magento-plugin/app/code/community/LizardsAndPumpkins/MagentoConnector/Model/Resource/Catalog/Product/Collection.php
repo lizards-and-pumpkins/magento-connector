@@ -333,7 +333,11 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
             ['parent_id' => 'link.parent_id']
         );
 
-        $attributesToCopy = array_merge($this->getRequiredAttributeCodes(), $additionalAttributes);
+        $attributesToCopy = array_merge(
+            $this->getRequiredAttributeCodes(),
+            $this->getConfigurableAttributeIdToCodeMap(),
+            $additionalAttributes
+        );
 
         $data = [];
 
@@ -403,7 +407,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
      * @param string[] $row
      * @return string
      */
-    function getAttributeValueToExport($attribute, array $row)
+    private function getAttributeValueToExport($attribute, array $row)
     {
         if (isset($row[$attribute])) {
             return $row[$attribute];
@@ -723,9 +727,6 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
      */
     private function getRequiredAttributeCodes()
     {
-        return array_merge(
-            ['sku', 'stock_qty', 'tax_class', 'tax_class_id', 'type_id', 'backorders'],
-            $this->getConfigurableAttributeIdToCodeMap()
-        );
+        return ['sku', 'stock_qty', 'tax_class', 'tax_class_id', 'type_id', 'backorders'];
     }
 }
