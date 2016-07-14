@@ -19,6 +19,11 @@
             <lizardsAndPumpkins_magentoconnector_resource>
                 <class>LizardsAndPumpkins_MagentoConnector_Model_Resource</class>
             </lizardsAndPumpkins_magentoconnector_resource>
+            <cms>
+                <rewrite>
+                    <block>LizardsAndPumpkins_MagentoConnector_Model_Block</block>
+                </rewrite>
+            </cms>
         </models>
         <helpers>
             <lizardsAndPumpkins_magentoconnector>
@@ -192,6 +197,15 @@
                     </lizardsAndPumpkins_magentoconnector>
                 </observers>
             </magmi_products_were_updated>
+            <cms_block_save_commit_after>
+                <observers>
+                    <lizardsAndPumpkins_magentoconnector>
+                        <type>singleton</type>
+                        <class>lizardsAndPumpkins_magentoconnector/observer_cmsBlockSaveCommitAfter</class>
+                        <method>observe</method>
+                    </lizardsAndPumpkins_magentoconnector>
+                </observers>
+            </cms_block_save_commit_after>
         </events>
     </global>
     <frontend>

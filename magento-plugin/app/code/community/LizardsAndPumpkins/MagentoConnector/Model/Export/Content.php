@@ -24,6 +24,19 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
         $this->exportNonCmsBlocks();
     }
 
+    public function exportBlock(Mage_Cms_Model_Block $block)
+    {
+        if (preg_match('/^content_block_.+/', $block->getIdentifier())) {
+            $this->exportCmsBlock($block);
+            return;
+        }
+
+        if (preg_match('/^product_listing_content_block_.+/', $block->getIdentifier())) {
+            $this->exportProductListingCmsBlock($block);
+            return;
+        }
+    }
+
     /**
      * @return Mage_Cms_Model_Resource_Block_Collection
      */
@@ -81,35 +94,47 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
 
     private function exportCmsBlocks(Mage_Cms_Model_Resource_Block_Collection $cmsBlocks)
     {
-        array_map(function (Mage_Cms_Model_Block $block) {
-            $blockId = $this->normalizeIdentifier($block->getIdentifier());
-            $context = [
-                'locale'  => Mage::getStoreConfig('general/locale/code', $block->getData('store_id')),
-                'website' => Mage::app()->getStore($block->getData('store_id'))->getCode(),
-            ];
-            $keyGeneratorParameters = [];
-            $this->getApi()->triggerCmsBlockUpdate($blockId, $block->getContent(), $context, $keyGeneratorParameters);
-        }, iterator_to_array($cmsBlocks));
+        array_map([$this, 'exportCmsBlock'], iterator_to_array($cmsBlocks));
     }
 
     private function exportInProductListingCmsBlocks(Mage_Cms_Model_Resource_Block_Collection $cmsBlocks)
     {
-        array_map(function (Mage_Cms_Model_Block $block) {
-            $blockIdStringWithoutLastVariableToken = preg_replace('/_[^_]+$/', '', $block->getIdentifier());
-            $blockId = $this->normalizeIdentifier($blockIdStringWithoutLastVariableToken);
+        array_map([$this, 'exportProductListingCmsBlock'], iterator_to_array($cmsBlocks));
+    }
 
-            $categoryUrlSuffix = Mage::getStoreConfig(Mage_Catalog_Helper_Category::XML_PATH_CATEGORY_URL_SUFFIX);
-            $categorySlug = preg_replace('/.*_/', '', $block->getIdentifier()) . '.' . $categoryUrlSuffix;
+    private function exportCmsBlock(Mage_Cms_Model_Block $block)
+    {
+        $blockId = $this->normalizeIdentifier($block->getIdentifier());
+        $context = $this->getBlockContext($block);
+        $keyGeneratorParameters = [];
 
-            $context = [
-                'locale'  => Mage::getStoreConfig('general/locale/code', $block->getData('store_id')),
-                'website' => Mage::app()->getStore($block->getData('store_id'))->getCode(),
-            ];
+        $this->getApi()->triggerCmsBlockUpdate($blockId, $block->getContent(), $context, $keyGeneratorParameters);
+    }
 
-            $keyGeneratorParameters = ['url_key' => $categorySlug];
+    private function exportProductListingCmsBlock(Mage_Cms_Model_Block $block)
+    {
+        $blockIdStringWithoutLastVariableToken = preg_replace('/_[^_]+$/', '', $block->getIdentifier());
 
-            $this->getApi()->triggerCmsBlockUpdate($blockId, $block->getContent(), $context, $keyGeneratorParameters);
-        }, iterator_to_array($cmsBlocks));
+        $categoryUrlSuffix = Mage::getStoreConfig(Mage_Catalog_Helper_Category::XML_PATH_CATEGORY_URL_SUFFIX);
+        $categorySlug = preg_replace('/.*_/', '', $block->getIdentifier()) . '.' . $categoryUrlSuffix;
+        $keyGeneratorParameters = ['url_key' => $categorySlug];
+
+        $blockId = $this->normalizeIdentifier($blockIdStringWithoutLastVariableToken);
+        $context = $this->getBlockContext($block);
+
+        $this->getApi()->triggerCmsBlockUpdate($blockId, $block->getContent(), $context, $keyGeneratorParameters);
+    }
+
+    /**
+     * @param Mage_Cms_Model_Block $block
+     * @return string[]
+     */
+    private function getBlockContext(Mage_Cms_Model_Block $block)
+    {
+        return [
+            'locale'  => Mage::getStoreConfig('general/locale/code', $block->getData('store_id')),
+            'website' => Mage::app()->getStore($block->getData('store_id'))->getCode(),
+        ];
     }
 
     private function exportNonCmsBlocks()
