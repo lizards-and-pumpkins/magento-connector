@@ -106,10 +106,11 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
     {
         if ($block->getData('store_id') !== '0') {
             $blockId = $this->normalizeIdentifier($block->getIdentifier());
+            $content = $this->getBlockContent($block);
             $context = $this->getBlockContext($block);
             $keyGeneratorParameters = [];
 
-            $this->getApi()->triggerCmsBlockUpdate($blockId, $block->getContent(), $context, $keyGeneratorParameters);
+            $this->getApi()->triggerCmsBlockUpdate($blockId, $content, $context, $keyGeneratorParameters);
             return;
         }
 
@@ -129,9 +130,10 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
             $keyGeneratorParameters = ['url_key' => $categorySlug];
 
             $blockId = $this->normalizeIdentifier($blockIdStringWithoutLastVariableToken);
+            $content = $this->getBlockContent($block);
             $context = $this->getBlockContext($block);
 
-            $this->getApi()->triggerCmsBlockUpdate($blockId, $block->getContent(), $context, $keyGeneratorParameters);
+            $this->getApi()->triggerCmsBlockUpdate($blockId, $content, $context, $keyGeneratorParameters);
             return;
         }
 
@@ -237,5 +239,18 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
     private function getMagentoConfig()
     {
         return Mage::getModel('lizardsAndPumpkins_magentoconnector/export_magentoConfig');
+    }
+
+    /**
+     * @param Mage_Cms_Model_Block $block
+     * @return string
+     */
+    private function getBlockContent(Mage_Cms_Model_Block $block)
+    {
+        if (!$block->getIsActive()) {
+            return '';
+        }
+
+        return $block->getContent();
     }
 }
