@@ -12,7 +12,10 @@ class LizardsAndPumpkins_MagentoConnector_Model_Observer_CmsBlockSaveCommitAfter
 
     private function exportBlock(Mage_Cms_Model_Block $block)
     {
-        $this->getCmsBlockExporter()->exportBlock($block);
+        array_map(function($storeId) use ($block) {
+            $block->setData('store_id', $storeId);
+            $this->getCmsBlockExporter()->exportBlock($block);
+        }, $block->getData('stores'));
     }
 
     /**

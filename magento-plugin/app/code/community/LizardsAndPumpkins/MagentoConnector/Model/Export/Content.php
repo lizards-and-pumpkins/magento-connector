@@ -104,27 +104,43 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
 
     private function exportCmsBlock(Mage_Cms_Model_Block $block)
     {
-        $blockId = $this->normalizeIdentifier($block->getIdentifier());
-        $content = $this->getBlockContent($block);
-        $context = $this->getBlockContext($block);
-        $keyGeneratorParameters = [];
+        if ($block->getData('store_id') !== '0') {
+            $blockId = $this->normalizeIdentifier($block->getIdentifier());
+            $content = $this->getBlockContent($block);
+            $context = $this->getBlockContext($block);
+            $keyGeneratorParameters = [];
 
-        $this->getApi()->triggerCmsBlockUpdate($blockId, $content, $context, $keyGeneratorParameters);
+            $this->getApi()->triggerCmsBlockUpdate($blockId, $content, $context, $keyGeneratorParameters);
+            return;
+        }
+
+        array_map(function(Mage_Core_Model_Store $store) use ($block) {
+            $block->setData('store_id', $store->getId());
+            $this->exportCmsBlock($block);
+        }, Mage::app()->getStores());
     }
 
     private function exportProductListingCmsBlock(Mage_Cms_Model_Block $block)
     {
-        $blockIdStringWithoutLastVariableToken = preg_replace('/_[^_]+$/', '', $block->getIdentifier());
+        if ($block->getData('store_id') !== '0') {
+            $blockIdStringWithoutLastVariableToken = preg_replace('/_[^_]+$/', '', $block->getIdentifier());
 
-        $categoryUrlSuffix = Mage::getStoreConfig(Mage_Catalog_Helper_Category::XML_PATH_CATEGORY_URL_SUFFIX);
-        $categorySlug = preg_replace('/.*_/', '', $block->getIdentifier()) . '.' . $categoryUrlSuffix;
-        $keyGeneratorParameters = ['url_key' => $categorySlug];
+            $categoryUrlSuffix = Mage::getStoreConfig(Mage_Catalog_Helper_Category::XML_PATH_CATEGORY_URL_SUFFIX);
+            $categorySlug = preg_replace('/.*_/', '', $block->getIdentifier()) . '.' . $categoryUrlSuffix;
+            $keyGeneratorParameters = ['url_key' => $categorySlug];
 
-        $blockId = $this->normalizeIdentifier($blockIdStringWithoutLastVariableToken);
-        $content = $this->getBlockContent($block);
-        $context = $this->getBlockContext($block);
+            $blockId = $this->normalizeIdentifier($blockIdStringWithoutLastVariableToken);
+            $content = $this->getBlockContent($block);
+            $context = $this->getBlockContext($block);
 
-        $this->getApi()->triggerCmsBlockUpdate($blockId, $content, $context, $keyGeneratorParameters);
+            $this->getApi()->triggerCmsBlockUpdate($blockId, $content, $context, $keyGeneratorParameters);
+            return;
+        }
+
+        array_map(function(Mage_Core_Model_Store $store) use ($block) {
+            $block->setData('store_id', $store->getId());
+            $this->exportProductListingCmsBlock($block);
+        }, Mage::app()->getStores());
     }
 
     /**
