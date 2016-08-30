@@ -1,6 +1,8 @@
 <?php
 
-class LizardsAndPumpkins_MagentoConnector_CartController extends Mage_Core_Controller_Front_Action
+require_once 'Mage/Checkout/controllers/CartController.php';
+
+class LizardsAndPumpkins_MagentoConnector_CartController extends Mage_Checkout_CartController
 {
     public function addAction()
     {
