@@ -109,6 +109,7 @@ class LizardsAndPumpkins_MagentoConnector_CartController extends Mage_Checkout_C
             ->getFirstItem();
 
         if ($configProduct->isObjectNew()) {
+            Mage::dispatchEvent('add_to_cart_failed', ['product' => $product]);
             Mage::throwException('Product was not found.');
         }
 
