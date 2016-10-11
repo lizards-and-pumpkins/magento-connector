@@ -253,7 +253,6 @@
         <lizardsAndPumpkins>
             <magentoconnector>
                 <local_filename_template><![CDATA[magento-%s.xml]]></local_filename_template>
-                <cms_special_blocks>top.menu</cms_special_blocks>
             </magentoconnector>
         </lizardsAndPumpkins>
     </default>
