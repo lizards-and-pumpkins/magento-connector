@@ -152,6 +152,30 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
         return preg_replace(self::SNIPPET_KEY_REPLACE_PATTERN, '-', $identifier);
     }
 
+    private function disableCaches()
+    {
+        $this->disableBlockCache();
+        $this->disableCollectionCache();
+        $this->replaceCatalogCategoryHelperToAvoidWrongTranslations();
+    }
+
+    private function disableBlockCache()
+    {
+        Mage::app()->getCacheInstance()->banUse(Mage_Core_Block_Abstract::CACHE_GROUP);
+    }
+
+    private function disableCollectionCache()
+    {
+        Mage::app()->getCacheInstance()->banUse('collections');
+    }
+
+    private function replaceCatalogCategoryHelperToAvoidWrongTranslations()
+    {
+        $registryKey = '_helper/catalog/category';
+        Mage::unregister($registryKey);
+        Mage::register($registryKey, new LizardsAndPumpkins_MagentoConnector_Helper_Catalog_Category());
+    }
+
     /**
      * @param Mage_Cms_Model_Block $block
      * @return string
@@ -161,6 +185,8 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
         if (!$block->getIsActive()) {
             return '';
         }
+
+        $this->disableCaches();
 
         $appEmulation = $this->getEmulationSingleton();
         $processor = $this->getCmsContentProcessor();
