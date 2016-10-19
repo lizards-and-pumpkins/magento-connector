@@ -6,6 +6,8 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
 {
     const SNIPPET_KEY_REPLACE_PATTERN = '#[^a-zA-Z0-9:_\-]#';
 
+    const XML_SPECIAL_BLOCKS = 'lizardsAndPumpkins/magentoconnector/cms_special_blocks';
+
     /**
      * @var Api
      */
@@ -18,6 +20,8 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
 
         $inProductListingCmsBlocks = $this->getInProductListingCmsBlocks();
         $this->exportInProductListingCmsBlocks($inProductListingCmsBlocks);
+
+        $this->exportNonCmsBlocks();
     }
 
     public function exportBlock(Mage_Cms_Model_Block $block)
@@ -41,10 +45,14 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
         /** @var Mage_Cms_Model_Resource_Block_Collection $cmsBlocks */
         $cmsBlocks = Mage::getResourceModel('cms/block_collection')
             ->join(['block_store' => 'cms/block_store'], 'main_table.block_id=block_store.block_id', 'store_id')
-            ->addExpressionFieldToSelect('block_id', "CONCAT({{block_id}},'_', {{store_id}})", [
-                'block_id' => 'main_table.block_id',
-                'store_id' => 'store_id',
-            ]);
+            ->addExpressionFieldToSelect(
+                'block_id',
+                "CONCAT({{block_id}},'_', {{store_id}})",
+                [
+                    'block_id' => 'main_table.block_id',
+                    'store_id' => 'store_id',
+                ]
+            );
         $cmsBlocks->addFieldToFilter(['identifier'], [['like' => 'content_block_%']]);
 
         return $cmsBlocks;
@@ -58,10 +66,14 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
         /** @var Mage_Cms_Model_Resource_Block_Collection $cmsBlocks */
         $cmsBlocks = Mage::getResourceModel('cms/block_collection')
             ->join(['block_store' => 'cms/block_store'], 'main_table.block_id=block_store.block_id', 'store_id')
-            ->addExpressionFieldToSelect('block_id', "CONCAT({{block_id}},'_', {{store_id}})", [
-                'block_id' => 'main_table.block_id',
-                'store_id' => 'store_id',
-            ]);
+            ->addExpressionFieldToSelect(
+                'block_id',
+                "CONCAT({{block_id}},'_', {{store_id}})",
+                [
+                    'block_id' => 'main_table.block_id',
+                    'store_id' => 'store_id',
+                ]
+            );
         $cmsBlocks->addFieldToFilter(['identifier'], [['like' => 'product_listing_content_block_%']]);
 
         return $cmsBlocks;
@@ -143,6 +155,42 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
         ];
     }
 
+    private function exportNonCmsBlocks()
+    {
+        $this->disableBlockCache();
+        $this->disableCollectionCache();
+        $this->replaceCatalogCategoryHelperToAvoidWrongTranslations();
+
+        $appEmulation = $this->getEmulationSingleton();
+
+        array_map(function ($blockIdentifier) use ($appEmulation) {
+            array_map(function (Mage_Core_Model_Store $store) use ($blockIdentifier, $appEmulation) {
+                $initialEnvironmentInfo = $appEmulation->startEnvironmentEmulation($store->getId());
+
+                $layout = $this->getLayoutForStore($store);
+                Mage::app()->loadArea(Mage_Core_Model_App_Area::AREA_FRONTEND);
+                $block = $layout->getBlock(trim($blockIdentifier));
+
+                if (false === $block) {
+                    // TODO: Throw an exception
+                    return;
+                }
+
+                $blockId = 'content_block_' . $this->normalizeIdentifier($block->getNameInLayout());
+                $content = $block->toHtml();
+                $context = [
+                    'locale'  => Mage::getStoreConfig('general/locale/code', $store->getId()),
+                    'website' => $store->getCode()
+                ];
+                $keyGeneratorParameters = [];
+
+                $appEmulation->stopEnvironmentEmulation($initialEnvironmentInfo);
+
+                $this->getApi()->triggerCmsBlockUpdate($blockId, $content, $context, $keyGeneratorParameters);
+            }, $this->getMagentoConfig()->getStoresToExport());
+        }, explode(',', Mage::getStoreConfig(self::XML_SPECIAL_BLOCKS)));
+    }
+
     /**
      * @param string $identifier
      * @return string
@@ -150,13 +198,6 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
     private function normalizeIdentifier($identifier)
     {
         return preg_replace(self::SNIPPET_KEY_REPLACE_PATTERN, '-', $identifier);
-    }
-
-    private function disableCaches()
-    {
-        $this->disableBlockCache();
-        $this->disableCollectionCache();
-        $this->replaceCatalogCategoryHelperToAvoidWrongTranslations();
     }
 
     private function disableBlockCache()
@@ -177,6 +218,29 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
     }
 
     /**
+     * @param Mage_Core_Model_Store $store
+     * @return Mage_Core_Model_Layout
+     */
+    private function getLayoutForStore(Mage_Core_Model_Store $store)
+    {
+        /** @var Mage_Core_Model_Layout $layout */
+        $layout = Mage::getModel('core/layout');
+        $layout->getUpdate()->load(['default', 'STORE_' . $store->getCode()]);
+        $layout->generateXml();
+        $layout->generateBlocks();
+
+        return $layout;
+    }
+    
+    /**
+     * @return LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig
+     */
+    private function getMagentoConfig()
+    {
+        return Mage::getModel('lizardsAndPumpkins_magentoconnector/export_magentoConfig');
+    }
+
+    /**
      * @param Mage_Cms_Model_Block $block
      * @return string
      */
@@ -185,8 +249,6 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
         if (!$block->getIsActive()) {
             return '';
         }
-
-        $this->disableCaches();
 
         $appEmulation = $this->getEmulationSingleton();
         $processor = $this->getCmsContentProcessor();
