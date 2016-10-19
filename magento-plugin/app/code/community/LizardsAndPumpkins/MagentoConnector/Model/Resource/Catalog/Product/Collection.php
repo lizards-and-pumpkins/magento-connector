@@ -220,7 +220,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
             $productUrlKeySuffix[$storeId] = Mage::getStoreConfig('catalog/seo/product_url_suffix', $storeId);
         }
         return isset($productData['url_key']) && $productUrlKeySuffix[$storeId] ?
-            $productData['url_key'] . '.' . $productUrlKeySuffix[$storeId] :
+            $productData['url_key'] . $productUrlKeySuffix[$storeId] :
             'catalog/product/view/id/' . $productData['entity_id'];
     }
 
@@ -441,7 +441,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
         $categoryUrlKeys = $this->getCategoryUrlKeysForId($categoryId);
         $suffix = Mage::getStoreConfig('catalog/seo/category_url_suffix', $this->getStoreId());
         return array_map(function ($urlKey) use ($suffix) {
-            return $urlKey . '.' . $suffix;
+            return $urlKey . $suffix;
         }, $categoryUrlKeys);
     }
 
