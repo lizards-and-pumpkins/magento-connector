@@ -126,7 +126,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
             $blockIdStringWithoutLastVariableToken = preg_replace('/_[^_]+$/', '', $block->getIdentifier());
 
             $categoryUrlSuffix = Mage::getStoreConfig(Mage_Catalog_Helper_Category::XML_PATH_CATEGORY_URL_SUFFIX);
-            $categorySlug = preg_replace('/.*_/', '', $block->getIdentifier()) . '.' . $categoryUrlSuffix;
+            $categorySlug = preg_replace('/.*_/', '', $block->getIdentifier()) . $categoryUrlSuffix;
             $keyGeneratorParameters = ['url_key' => $categorySlug];
 
             $blockId = $this->normalizeIdentifier($blockIdStringWithoutLastVariableToken);
