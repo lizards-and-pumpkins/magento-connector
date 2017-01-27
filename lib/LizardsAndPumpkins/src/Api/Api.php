@@ -17,19 +17,23 @@ class Api
     private $url;
 
     /**
-     * @param string $url
+     * @var Client
      */
-    public function __construct($url)
+    private $client;
+
+    public function __construct(string $url)
     {
         $this->checkHost($url);
 
         $this->url = rtrim($url, '/') . '/';
     }
 
-    /**
-     * @param string $filename
-     */
-    public function triggerProductImport($filename)
+    public function setClient(Client $client)
+    {
+        $this->client = $client;
+    }
+
+    public function triggerProductImport(string $filename)
     {
         $headers = ['Accept' => 'application/vnd.lizards-and-pumpkins.catalog_import.v1+json'];
 
@@ -37,10 +41,7 @@ class Api
         $this->sendApiRequestWithFilename($filename, $url, $headers);
     }
 
-    /**
-     * @param string $filename
-     */
-    public function triggerProductStockImport($filename)
+    public function triggerProductStockImport(string $filename)
     {
         $headers = ['Accept' => 'application/vnd.lizards-and-pumpkins.multiple_product_stock_quantity.v1+json'];
 
@@ -49,12 +50,12 @@ class Api
     }
 
     /**
-     * @param string $id
-     * @param string $content
+     * @param string   $id
+     * @param string   $content
      * @param string[] $context
      * @param string[] $keyGeneratorParameters
      */
-    public function triggerCmsBlockUpdate($id, $content, array $context, array $keyGeneratorParameters)
+    public function triggerCmsBlockUpdate(string $id, string $content, array $context, array $keyGeneratorParameters)
     {
         if (!is_string($id)) {
             throw new InvalidUrlException();
@@ -67,10 +68,7 @@ class Api
         $this->sendApiRequest($url, $headers, $body);
     }
 
-    /**
-     * @param string $url
-     */
-    private function checkHost($url)
+    private function checkHost(string $url)
     {
         if (!is_string($url)) {
             throw new InvalidHostException('Host must be of type string.');
@@ -92,23 +90,23 @@ class Api
     }
 
     /**
-     * @param string $method
-     * @param string $url
+     * @param string   $method
+     * @param string   $url
      * @param string[] $headers
-     * @param string $body
+     * @param string   $body
      * @return Request
      */
-    private function createHttpRequest($method, $url, $headers, $body)
+    private function createHttpRequest(string $method, string $url, array $headers, string $body)
     {
         return new Request($method, $url, $headers, $body);
     }
 
     /**
-     * @param string $filename
-     * @param string $url
+     * @param string   $filename
+     * @param string   $url
      * @param string[] $headers
      */
-    private function sendApiRequestWithFilename($filename, $url, $headers)
+    private function sendApiRequestWithFilename(string $filename, string $url, array $headers)
     {
         $this->validateFilename($filename);
         $body = json_encode(['fileName' => $filename]);
@@ -116,11 +114,11 @@ class Api
     }
 
     /**
-     * @param string $url
+     * @param string   $url
      * @param string[] $headers
-     * @param string $body
+     * @param string   $body
      */
-    private function sendApiRequest($url, $headers, $body)
+    private function sendApiRequest(string $url, array $headers, string $body)
     {
         $request = $this->createHttpRequest('PUT', $url, $headers, $body);
         $client = new Client();
@@ -133,7 +131,7 @@ class Api
     /**
      * @param string $filename
      */
-    private function validateFilename($filename)
+    private function validateFilename(string $filename)
     {
         $dir = dirname($filename);
         if ($dir != '.') {
