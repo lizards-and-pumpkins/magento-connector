@@ -112,12 +112,12 @@ class ListingXmlTest extends \PHPUnit_Framework_TestCase
 
     public function testListingNodeContainsWebsiteAttribute()
     {
-        $websiteCode = 'foo';
-        $this->stubStore->method('getCode')->willReturn($websiteCode);
+        $storeCode = 'foo';
+        $this->stubStore->method('getCode')->willReturn($storeCode);
 
         $result = $this->listingXml->buildXml($this->stubCategory);
 
-        $this->assertRegExp(sprintf('/<listing [^>]*website="%s"/', $websiteCode), $result->getXml());
+        $this->assertRegExp(sprintf('/<listing [^>]*website="%s"/', $storeCode), $result->getXml());
     }
 
     public function testListingNodeContainsAndCriteriaNode()
