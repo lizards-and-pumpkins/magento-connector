@@ -24,7 +24,7 @@ class ApiTest extends \PHPUnit_Framework_TestCase
     /**
      * @var string
      */
-    private $host = 'https://api.lizardsandpumpkins.io/api';
+    private $host = 'https://example.com/api';
 
     /**
      * @var MockHandler
@@ -64,7 +64,6 @@ class ApiTest extends \PHPUnit_Framework_TestCase
 
     public function testValidHost()
     {
-        $this->setUp();
         $this->assertInstanceOf(Api::class, $this->api);
     }
 

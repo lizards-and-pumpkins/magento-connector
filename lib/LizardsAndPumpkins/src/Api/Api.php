@@ -4,7 +4,6 @@ namespace LizardsAndPumpkins\MagentoConnector\Api;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
-use function GuzzleHttp\json_decode;
 
 class Api
 {
@@ -32,10 +31,6 @@ class Api
 
     private function checkHost(string $url)
     {
-        if (!is_string($url)) {
-            throw new InvalidHostException('Host must be of type string.');
-        }
-
         $urlParts = parse_url($url);
         if ($urlParts === false) {
             throw new InvalidHostException('URL seems to be  seriously malformed.');
