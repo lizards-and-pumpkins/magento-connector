@@ -34,6 +34,11 @@ class ListingXmlTest extends \PHPUnit_Framework_TestCase
     private $stubWebsite;
 
     /**
+     * @var Mage_Core_Model_Store|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $stubStore;
+
+    /**
      * @param string $string
      * @return string
      */
@@ -65,15 +70,16 @@ class ListingXmlTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $stubStore = $this->getMockBuilder(Mage_Core_Model_Store::class)
+        $this->stubStore = $this->getMockBuilder(Mage_Core_Model_Store::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $stubStore->method('getWebsite')->willReturn($this->stubWebsite);
+
+        $this->stubStore->method('getWebsite')->willReturn($this->stubWebsite);
 
         $this->stubCategory = $this->getMockBuilder(Mage_Catalog_Model_Category::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->stubCategory->method('getStore')->willReturn($stubStore);
+        $this->stubCategory->method('getStore')->willReturn($this->stubStore);
     }
 
     public function testExceptionIsThrownIfStoreIsNotSetOnACategory()
@@ -115,7 +121,7 @@ class ListingXmlTest extends \PHPUnit_Framework_TestCase
     public function testListingNodeContainsWebsiteAttribute()
     {
         $websiteCode = 'foo';
-        $this->stubWebsite->method('getCode')->willReturn($websiteCode);
+        $this->stubStore->method('getCode')->willReturn($websiteCode);
 
         $result = $this->listingXml->buildXml($this->stubCategory);
 
