@@ -66,19 +66,13 @@ class ListingXmlTest extends \PHPUnit_Framework_TestCase
         $this->stubConfig = $this->createMock(LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig::class);
         $this->listingXml = new ListingXml($this->stubConfig);
 
-        $this->stubWebsite = $this->getMockBuilder(Mage_Core_Model_Website::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->stubWebsite = $this->createMock(Mage_Core_Model_Website::class);
 
-        $this->stubStore = $this->getMockBuilder(Mage_Core_Model_Store::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->stubStore = $this->createMock(Mage_Core_Model_Store::class);
 
         $this->stubStore->method('getWebsite')->willReturn($this->stubWebsite);
 
-        $this->stubCategory = $this->getMockBuilder(Mage_Catalog_Model_Category::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->stubCategory = $this->createMock(Mage_Catalog_Model_Category::class);
         $this->stubCategory->method('getStore')->willReturn($this->stubStore);
     }
 
@@ -87,9 +81,7 @@ class ListingXmlTest extends \PHPUnit_Framework_TestCase
         $this->expectException(StoreNotSetOnCategoryException::class);
 
         /** @var Mage_Catalog_Model_Category|\PHPUnit_Framework_MockObject_MockObject $stubCategory */
-        $stubCategory = $this->getMockBuilder(Mage_Catalog_Model_Category::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $stubCategory = $this->createMock(Mage_Catalog_Model_Category::class);
         $this->listingXml->buildXml($stubCategory);
     }
 
