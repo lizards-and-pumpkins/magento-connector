@@ -141,8 +141,7 @@ class ListingXmlTest extends \PHPUnit_Framework_TestCase
     {
         $result = $this->listingXml->buildXml($this->stubCategory);
 
-        $expectedXml
-            = <<<EOX
+        $expectedXml = <<<EOX
 <criteria type="or">
     <attribute name="stock_qty" is="GreaterThan">0</attribute>
     <attribute name="backorders" is="Equal">true</attribute>
