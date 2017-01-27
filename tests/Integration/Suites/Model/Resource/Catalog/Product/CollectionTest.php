@@ -49,7 +49,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
         $this->assertArrayHasKey('non_canonical_url_key', $productData, $missingKeyMessage);
 
         $nonCanonicalUrlKeys = $productData['non_canonical_url_key'];
-        $categoryUrlSuffixLength = strlen(Mage::getStoreConfig('catalog/seo/category_url_suffix')) + 1;
+        $categoryUrlSuffixLength = strlen(Mage::getStoreConfig('catalog/seo/category_url_suffix'));
         
         foreach ($productData['categories'] as $categoryUrlPath) {
             $categoryUrlKey = substr($categoryUrlPath, 0, -1 * $categoryUrlSuffixLength);
