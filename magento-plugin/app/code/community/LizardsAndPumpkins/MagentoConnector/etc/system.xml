@@ -2,7 +2,7 @@
 <config>
     <sections>
         <lizardsAndPumpkins translate="label" module="lizardsAndPumpkins_magentoconnector">
-            <label><![CDATA[🐉&amp;🎃]]></label>
+            <label><![CDATA[Lizards &amp; Pumpkins]]></label>
             <tab>catalog</tab>
             <sort_order>1000</sort_order>
             <show_in_default>1</show_in_default>
