@@ -46,7 +46,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Catalog_CategoryUrlKeyServiceTes
     private function createMockCategoryCollectionWithData(array $categoriesData)
     {
         $class = \LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collection::class;
-        $this->stubCategoryCollection = $this->getMock($class, [], [], '', false);
+        $this->stubCategoryCollection = $this->getMockBuilder($class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $this->stubCategoryCollection->method('getDataForStore')->willReturn($categoriesData);
     }
 

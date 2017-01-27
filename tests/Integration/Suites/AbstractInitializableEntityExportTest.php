@@ -73,7 +73,7 @@ abstract class AbstractInitializableEntityExportTest
     protected function createProductQueueReaderForTestProducts(array $productIds)
     {
         /** @var \PHPUnit_Framework_MockObject_MockObject $reader */
-        $reader = $this->getMock(LizardsAndPumpkins_MagentoConnector_Helper_ProductsToUpdateQueueReader::class);
+        $reader = $this->createMock(LizardsAndPumpkins_MagentoConnector_Helper_ProductsToUpdateQueueReader::class);
         $reader->method('getQueuedProductIds')->willReturnOnConsecutiveCalls(
             $productIds,
             []

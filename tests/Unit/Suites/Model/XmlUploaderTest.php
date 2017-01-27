@@ -75,7 +75,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_XmlUploaderTest extends PHPUnit_
      */
     private function getConfigStub($target)
     {
-        $config = $this->getMock(LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig::class);
+        $config = $this->createMock(LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig::class);
         $config->method('getLocalPathForProductExport')->willReturn($target);
         $config->method('getLocalFilenameTemplate')->willReturn('magento.xml');
         return $config;

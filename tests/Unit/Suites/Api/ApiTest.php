@@ -53,10 +53,10 @@ class ApiTest extends \PHPUnit_Framework_TestCase
         $headers = ['Accept' => 'application/vnd.lizardsAndPumpkins.catalog_import.v1+json'];
         $body = json_encode(['file' => $file]);
 
-        $httpRequestMock = $this->getMock(\GuzzleHttp\Psr7\Request::class);
+        $httpRequestMock = $this->createMock(\GuzzleHttp\Psr7\Request::class);
 
         /** @var $api \PHPUnit_Framework_MockObject_MockObject|Api */
-        $api = $this->getMock(Api::class, ['createHttpRequest'], [$host]);
+        $api = $this->createMock(Api::class, ['createHttpRequest'], [$host]);
         $completeApiUrl = $host . '/' . 'catalog_import';
         $api->method('createHttpRequest')->with(
             'PUT', $completeApiUrl, $headers, $body

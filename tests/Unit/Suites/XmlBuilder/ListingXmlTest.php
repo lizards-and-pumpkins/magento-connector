@@ -51,22 +51,28 @@ class ListingXmlTest extends \PHPUnit_Framework_TestCase
         $listingAttributes = [];
         $listing = new \SimpleXMLElement($listingXmlString);
         foreach ($listing->attributes->attribute as $attribute) {
-            $listingAttributes[(string) $attribute['name']] = (string) $attribute;
+            $listingAttributes[(string)$attribute['name']] = (string)$attribute;
         }
         return $listingAttributes;
     }
 
     protected function setUp()
     {
-        $this->stubConfig = $this->getMock(LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig::class);
+        $this->stubConfig = $this->createMock(LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig::class);
         $this->listingXml = new ListingXml($this->stubConfig);
 
-        $this->stubWebsite = $this->getMock(Mage_Core_Model_Website::class, [], [], '', false);
+        $this->stubWebsite = $this->getMockBuilder(Mage_Core_Model_Website::class)
+            ->disableOriginalConstructor()
+            ->getMock();
 
-        $stubStore = $this->getMock(Mage_Core_Model_Store::class, [], [], '', false);
+        $stubStore = $this->getMockBuilder(Mage_Core_Model_Store::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $stubStore->method('getWebsite')->willReturn($this->stubWebsite);
 
-        $this->stubCategory = $this->getMock(Mage_Catalog_Model_Category::class, [], [], '', false);
+        $this->stubCategory = $this->getMockBuilder(Mage_Catalog_Model_Category::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $this->stubCategory->method('getStore')->willReturn($stubStore);
     }
 
@@ -75,7 +81,9 @@ class ListingXmlTest extends \PHPUnit_Framework_TestCase
         $this->expectException(StoreNotSetOnCategoryException::class);
 
         /** @var Mage_Catalog_Model_Category|\PHPUnit_Framework_MockObject_MockObject $stubCategory */
-        $stubCategory = $this->getMock(Mage_Catalog_Model_Category::class, [], [], '', false);
+        $stubCategory = $this->getMockBuilder(Mage_Catalog_Model_Category::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $this->listingXml->buildXml($stubCategory);
     }
 
@@ -135,7 +143,8 @@ class ListingXmlTest extends \PHPUnit_Framework_TestCase
     {
         $result = $this->listingXml->buildXml($this->stubCategory);
 
-        $expectedXml = <<<EOX
+        $expectedXml
+            = <<<EOX
 <criteria type="or">
     <attribute name="stock_qty" is="GreaterThan">0</attribute>
     <attribute name="backorders" is="Equal">true</attribute>
