@@ -70,8 +70,6 @@ class ListingXmlTest extends \PHPUnit_Framework_TestCase
 
         $this->stubStore = $this->createMock(Mage_Core_Model_Store::class);
 
-        $this->stubStore->method('getWebsite')->willReturn($this->stubWebsite);
-
         $this->stubCategory = $this->createMock(Mage_Catalog_Model_Category::class);
         $this->stubCategory->method('getStore')->willReturn($this->stubStore);
     }
