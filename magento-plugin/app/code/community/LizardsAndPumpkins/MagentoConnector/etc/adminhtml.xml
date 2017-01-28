@@ -29,6 +29,11 @@
                                     <action>adminhtml/lizardsAndPumpkins/exportAllCmsBlocks</action>
                                     <sort_order>400</sort_order>
                                 </export_all_cms_blocks>
+                                <current_version>
+                                    <title>Set/Get Current Version</title>
+                                    <action>adminhtml/lizardsAndPumpkins_version/index</action>
+                                    <sort_order>200</sort_order>
+                                </current_version>
                             </children>
                         </lizardsAndPumpkins>
                     </children>
@@ -65,6 +70,9 @@
                                             <lizardsAndPumpkins_export_all_cms_blocks translate="title">
                                                 <title>LizardsAndPumpkins Export All CMS Blocks</title>
                                             </lizardsAndPumpkins_export_all_cms_blocks>
+                                            <current_version>
+                                                <title>Set/Get Current Version</title>
+                                            </current_version>
                                         </children>
                                     </lizardsAndPumpkins>
                                 </children>

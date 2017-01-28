@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<layout>
+    <adminhtml_lizardsandpumpkins_version_index>
+        <reference name="content">
+            <block type="lizardsAndPumpkins_magentoconnector/adminhtml_version"/>
+        </reference>
+    </adminhtml_lizardsandpumpkins_version_index>
+</layout>
