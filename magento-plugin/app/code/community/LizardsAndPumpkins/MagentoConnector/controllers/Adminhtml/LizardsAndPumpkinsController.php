@@ -58,20 +58,6 @@ class LizardsAndPumpkins_MagentoConnector_Adminhtml_LizardsAndPumpkinsController
         $this->_redirect('/');
     }
 
-    public function exportAllStocksAction()
-    {
-        try {
-            Mage::helper('lizardsAndPumpkins_magentoconnector/export')->addAllProductIdsToStockExport();
-            $filename = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_stock')->export();
-            $apiUrl = Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/api_url');
-            (new Api($apiUrl))->triggerProductStockImport($filename);
-            Mage::getSingleton('core/session')->addSuccess('All stocks exported');
-        } catch (Mage_Core_Exception $e) {
-            Mage::getSingleton('core/session')->addError($e->getMessage());
-        }
-        $this->_redirect('/');
-    }
-
     public function exportAllCmsBlocksAction()
     {
         try {

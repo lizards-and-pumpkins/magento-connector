@@ -24,11 +24,6 @@
                                     <action>adminhtml/lizardsAndPumpkins/exportQueuedProductUpdates</action>
                                     <sort_order>800</sort_order>
                                 </export_product_updates>
-                                <export_all_product_stocks translate="title">
-                                    <title>Export All Product Stock Updates</title>
-                                    <action>adminhtml/lizardsAndPumpkins/exportAllStocks</action>
-                                    <sort_order>600</sort_order>
-                                </export_all_product_stocks>
                                 <export_all_cms_blocks translate="title">
                                     <title>Export All CMS Blocks</title>
                                     <action>adminhtml/lizardsAndPumpkins/exportAllCmsBlocks</action>
