@@ -90,4 +90,30 @@ class ApiTest extends \PHPUnit_Framework_TestCase
 
         $this->api->triggerCmsBlockUpdate('123', $content, $context, $keyGeneratorParameters);
     }
+
+    public function testTriggerProductImport()
+    {
+        $responseBody = '';
+
+        $headers = ['Accept' => 'application/vnd.lizards-and-pumpkins.catalog_import.v1+json'];
+        $url = $this->host . '/catalog_import/';
+        $body = json_encode(
+            [
+                'fileName' => 'catalog.xml',
+            ]
+        );
+
+        $this->httpClient->expects($this->once())
+            ->method('putRequest')
+            ->with(
+                $this->equalTo($url),
+                $this->equalTo($body),
+                $this->equalTo($headers)
+            )->willReturn($responseBody);
+
+
+        $this->api->triggerProductImport('catalog.xml');
+
+
+    }
 }

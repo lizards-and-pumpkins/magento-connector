@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace LizardsAndPumpkins\MagentoConnector\Api;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\Psr7\Request;
-
 class Api
 {
     const API_ENDPOINT_CATALOG_IMPORT = 'catalog_import/';
@@ -47,7 +44,7 @@ class Api
     {
         $this->validateFilename($filename);
         $body = json_encode(['fileName' => $filename]);
-        $this->sendApiRequest($url, $headers, $body);
+        $this->client->putRequest($url, $body, $headers);
     }
 
     /**
@@ -56,45 +53,9 @@ class Api
     private function validateFilename(string $filename)
     {
         $dir = dirname($filename);
-        if ($dir != '.') {
-            throw new \UnexpectedValueException(
-                sprintf('Filename "%s" should be a filename, no path.', $filename)
-            );
+        if ($dir !== '.') {
+            throw new \UnexpectedValueException(sprintf('Filename "%s" should be a filename, no path.', $filename));
         }
-    }
-
-    /**
-     * @param string   $url
-     * @param string[] $headers
-     * @param string   $body
-     */
-    private function sendApiRequest(string $url, array $headers, string $body)
-    {
-        $request = $this->createHttpRequest('PUT', $url, $headers, $body);
-        $response = $this->getClient()->send($request);
-        if (!in_array($response->getStatusCode(), [200, 202], false)) {
-            throw new RequestFailedException("Unexpected response body from $url:\n" . $response->getBody());
-        }
-    }
-
-    /**
-     * @param string   $method
-     * @param string   $url
-     * @param string[] $headers
-     * @param string   $body
-     * @return Request
-     */
-    private function createHttpRequest(string $method, string $url, array $headers, string $body)
-    {
-        return new Request($method, $url, $headers, $body);
-    }
-
-    private function getClient()
-    {
-        if (!$this->client) {
-            $this->client = new Client();
-        }
-        return $this->client;
     }
 
     public function triggerProductStockImport(string $filename)
