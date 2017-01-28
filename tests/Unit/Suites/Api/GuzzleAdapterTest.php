@@ -115,13 +115,15 @@ class GuzzleAdapterTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    public function testInvalidDomain()
+    public function testInvalidDomainOnGetRequest()
     {
         $this->expectException(InvalidHostException::class);
-        $this->mockHandler->append(new Response(200, [], '$responseBody'));
         $this->client->getRequest('', '', []);
-
-
     }
 
+    public function testInvalidDomainOnPutRequest()
+    {
+        $this->expectException(InvalidHostException::class);
+        $this->client->putRequest('', '', []);
+    }
 }
