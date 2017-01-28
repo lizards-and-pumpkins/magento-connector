@@ -4,12 +4,7 @@ declare(strict_types=1);
 
 namespace LizardsAndPumpkins\MagentoConnector\Api;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Middleware;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Response;
+use function GuzzleHttp\json_encode;
 
 /**
  * @covers \LizardsAndPumpkins\MagentoConnector\Api\Api
@@ -17,104 +12,82 @@ use GuzzleHttp\Psr7\Response;
 class ApiTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var Request[]
-     */
-    private $requests;
-
-    /**
      * @var string
      */
     private $host = 'https://example.com/api';
 
     /**
-     * @var MockHandler
+     * @var HttpApiClient|\PHPUnit_Framework_MockObject_MockObject
      */
-    private $mockHandler;
-
-    /**
-     * @var Middleware
-     */
-    private $history;
+    private $httpClient;
 
     /**
      * @var Api
      */
     private $api;
 
-    /**
-     * @param string $url
-     * @dataProvider getInvalidHosts
-     */
-    public function testWrongHost($url)
-    {
-        $this->expectException(InvalidHostException::class);
-        new Api($url);
-    }
-
-    /**
-     * @return array[]
-     */
-    public function getInvalidHosts()
-    {
-        return [
-            [''],
-            ['some-string'],
-        ];
-    }
-
-    public function testValidHost()
-    {
-        $this->assertInstanceOf(Api::class, $this->api);
-    }
-
-    /**
-     * @see http://docs.guzzlephp.org/en/latest/testing.html
-     */
     public function setUp()
     {
-        $this->api = new Api($this->host);
-
-        $this->mockHandler = new MockHandler();
-
-        $stack = HandlerStack::create($this->mockHandler);
-
-        $this->requests = [];
-        $this->history = Middleware::history($this->requests);
-
-        $stack->push($this->history);
-
-
-        $client = new Client(['handler' => $stack]);
-        $this->api->setClient($client);
+        $this->httpClient = $this->createMock(HttpApiClient::class);
+        $this->api = new Api($this->host, $this->httpClient);
     }
 
     public function testApiGetCurrentVersion()
     {
         $current = uniqid('current-', true);
         $previous = uniqid('previous-', true);
-        $body = [
+        $responseBody = json_encode([
             'data' => [
                 'current_version'  => $current,
                 'previous_version' => $previous,
             ],
-        ];
+        ]);
 
-        $response = new Response(200, [], json_encode($body));
-        $this->mockHandler->append($response);
+        $headers = ['Accept' => 'application/vnd.lizards-and-pumpkins.current_version.v1+json'];
+        $url = $this->host . '/current_version/';
+        $body = '';
+
+        $this->httpClient->expects($this->once())
+            ->method('getRequest')
+            ->with(
+                $this->equalTo($url),
+                $this->equalTo($body),
+                $this->equalTo($headers)
+            )->willReturn($responseBody);
 
         $response = $this->api->getCurrentVersion();
 
-        $this->assertEquals($body, $response);
+        $this->assertEquals(json_decode($responseBody, true), $response);
+    }
 
-        $this->assertCount(1, $this->requests);
-        /** @var Request $request */
-        $request = $this->requests[0]['request'];
-        $this->assertInstanceOf(Request::class, $request);
-        $this->assertEquals('GET', $request->getMethod());
-        $this->assertEquals(
-            'application/vnd.lizards-and-pumpkins.current_version.v1+json',
-            $request->getHeader('Accept')[0]
+    public function testTriggerCmsBlockUpdate()
+    {
+        $responseBody = '';
+
+        $context = ['locale' => 'de_DE', 'website' => 'WEBSITE'];
+        $content = 'content';
+        $keyGeneratorParameters = ['url_key' => 'super-url'];
+
+        $headers = ['Accept' => 'application/vnd.lizards-and-pumpkins.content_blocks.v1+json'];
+        $url = $this->host . '/content_blocks/123';
+        $body = json_encode(
+            array_merge(
+                [
+                    'content' => $content,
+                    'context' => $context,
+                ],
+                $keyGeneratorParameters
+            )
         );
-        $this->assertEquals($this->host . '/current_version/', (string)$request->getUri());
+
+        $this->httpClient->expects($this->once())
+            ->method('putRequest')
+            ->with(
+                $this->equalTo($url),
+                $this->equalTo($body),
+                $this->equalTo($headers)
+            )->willReturn($responseBody);
+
+        $this->api->triggerCmsBlockUpdate('123', $content, $context, $keyGeneratorParameters);
     }
 }

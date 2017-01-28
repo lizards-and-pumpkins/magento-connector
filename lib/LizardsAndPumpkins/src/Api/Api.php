@@ -20,31 +20,13 @@ class Api
     private $url;
 
     /**
-     * @var Client
+     * @var HttpApiClient
      */
     private $client;
 
-    public function __construct(string $url)
+    public function __construct(string $url, HttpApiClient $client)
     {
-        $this->checkHost($url);
-
         $this->url = rtrim($url, '/') . '/';
-    }
-
-    private function checkHost(string $url)
-    {
-        $urlParts = parse_url($url);
-        if ($urlParts === false) {
-            throw new InvalidHostException('URL seems to be  seriously malformed.');
-        }
-
-        if (empty($urlParts['host'])) {
-            throw new InvalidHostException('Domain must be specified.');
-        }
-    }
-
-    public function setClient(Client $client)
-    {
         $this->client = $client;
     }
 
@@ -139,16 +121,15 @@ class Api
         $url = $this->url . self::API_ENDPOINT_CONTENT_BLOCK_UPDATE . $id;
         $body = json_encode(array_merge(['content' => $content, 'context' => $context], $keyGeneratorParameters));
 
-        $this->sendApiRequest($url, $headers, $body);
+        $this->client->putRequest($url, $body, $headers);
     }
 
     public function getCurrentVersion()
     {
         $headers = ['Accept' => 'application/vnd.lizards-and-pumpkins.current_version.v1+json'];
         $url = $this->url . self::API_ENDPOINT_CURRENT_VERSION;
-        $request = $this->createHttpRequest('GET', $url, $headers, '');
-        $response = $this->getClient()->send($request);
+        $response = $this->client->getRequest($url, '', $headers);
 
-        return json_decode($response->getBody(), true);
+        return json_decode($response, true);
     }
 }
