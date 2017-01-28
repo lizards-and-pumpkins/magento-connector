@@ -119,7 +119,7 @@ abstract class AbstractInitializableEntityExportTest
     protected function checkTestIsInitialized()
     {
         if (!file_exists($this->getExpectationFileName())) {
-            $this->markTestSkipped('Run tests/integration/util/initExpectedXml.php first');
+            $this->markTestSkipped('Run tests/Integration/util/initExpectedXml.php first');
         }
     }
 
