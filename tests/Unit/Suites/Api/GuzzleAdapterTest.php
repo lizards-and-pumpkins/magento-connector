@@ -115,15 +115,32 @@ class GuzzleAdapterTest extends \PHPUnit_Framework_TestCase
         }
     }
 
-    public function testInvalidDomainOnGetRequest()
+    /**
+     * @param string $url
+     * @dataProvider provideInvalidUrls
+     */
+    public function testInvalidDomainOnGetRequest(string $url)
     {
         $this->expectException(InvalidHostException::class);
-        $this->client->getRequest('', '', []);
+        $this->client->getRequest($url, '', []);
     }
 
-    public function testInvalidDomainOnPutRequest()
+    /**
+     * @param string $url
+     * @dataProvider provideInvalidUrls
+     */
+    public function testInvalidDomainOnPutRequest(string $url)
     {
         $this->expectException(InvalidHostException::class);
-        $this->client->putRequest('', '', []);
+        $this->client->putRequest($url, '', []);
+    }
+
+    public function provideInvalidUrls()
+    {
+        return [
+            'empty-url'       => [''],
+            'non-http(s)-url' => ['ftp://example.com'],
+            'no-host'         => ['/directory'],
+        ];
     }
 }
