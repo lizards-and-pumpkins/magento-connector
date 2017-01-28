@@ -2,7 +2,7 @@
 <layout>
     <adminhtml_lizardsandpumpkins_version_index>
         <reference name="content">
-            <block type="lizardsAndPumpkins_magentoconnector/adminhtml_version"/>
+            <block type="lizardsAndPumpkins_magentoconnector/adminhtml_version" name="version.container"/>
         </reference>
     </adminhtml_lizardsandpumpkins_version_index>
 </layout>
