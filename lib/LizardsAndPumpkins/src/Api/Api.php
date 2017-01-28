@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LizardsAndPumpkins\MagentoConnector\Api;
 
 use GuzzleHttp\Client;
@@ -34,11 +36,6 @@ class Api
         $urlParts = parse_url($url);
         if ($urlParts === false) {
             throw new InvalidHostException('URL seems to be  seriously malformed.');
-        }
-
-        if (empty($urlParts['scheme']) || $urlParts['scheme'] !== 'https') {
-            // TODO comment
-            #throw new InvalidHostException('Host should be called via HTTPS!');
         }
 
         if (empty($urlParts['host'])) {
