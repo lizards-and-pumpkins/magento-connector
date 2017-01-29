@@ -55,7 +55,7 @@ class LizardsAndPumpkins_MagentoConnector_VersionControllerTest extends PHPUnit_
             ->getMock();
 
         Mage::unregister('_singleton/adminhtml/session');
-        Mage::register('_singleton/adminhtml/session', $this->adminhtmlSessionMoc);
+        Mage::register('_singleton/adminhtml/session', $this->adminhtmlSessionMock);
 
         $this->api = $this->createMock(Api::class);
         $this->request = $this->getMockBuilder(Zend_Controller_Request_Http::class)

@@ -21,7 +21,7 @@ class LizardsAndPumpkins_MagentoConnector_Block_Adminhtml_Version_Form extends M
             'label'    => Mage::helper('lizardsAndPumpkins_magentoconnector')->__('Current Version'),
             'name'     => 'current_version',
             'required' => true,
-            'value'    => 1,
+            'value'    => $this->getVersion()['data']['current_version'],
         ]);
 
         $fieldset->addField('previous_version', 'text', [
@@ -29,7 +29,7 @@ class LizardsAndPumpkins_MagentoConnector_Block_Adminhtml_Version_Form extends M
             'name'     => 'previous_version',
             'required' => true,
             'readonly' => true,
-            'value'    => 1,
+            'value'    => $this->getVersion()['data']['previous_version'],
         ]);
 
         $form->setUseContainer(true);
