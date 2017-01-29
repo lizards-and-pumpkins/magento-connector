@@ -8,7 +8,7 @@ use LizardsAndPumpkins\MagentoConnector\Api\RequestFailedException;
 require Mage::getBaseDir('app')
     . '/code/community/LizardsAndPumpkins/MagentoConnector/controllers/Adminhtml/LizardsAndPumpkins/VersionController.php';
 
-class VersionControllerTest extends PHPUnit_Framework_TestCase
+class LizardsAndPumpkins_MagentoConnector_VersionControllerTest extends PHPUnit_Framework_TestCase
 {
     /**
      * @var Mage_Adminhtml_Model_Session|PHPUnit_Framework_MockObject_MockObject
