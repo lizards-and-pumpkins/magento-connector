@@ -10,6 +10,10 @@ require Mage::getBaseDir('app')
 class VersionControllerTest extends PHPUnit_Framework_TestCase
 {
     /**
+     * @var Zend_Controller_Request_Http|PHPUnit_Framework_MockObject_MockObject
+     */
+    private $request;
+    /**
      * @var Api|PHPUnit_Framework_MockObject_MockObject
      */
     private $api;
@@ -31,7 +35,7 @@ class VersionControllerTest extends PHPUnit_Framework_TestCase
         Mage::register('_singleton/admin/session', $sessionMock);
 
         $this->api = $this->createMock(Api::class);
-        $request = $this->getMockBuilder(Zend_Controller_Request_Http::class)
+        $this->request = $this->getMockBuilder(Zend_Controller_Request_Http::class)
             ->disableOriginalConstructor()
             ->setMethods(
                 [
@@ -46,22 +50,23 @@ class VersionControllerTest extends PHPUnit_Framework_TestCase
             )
             ->getMock();
 
-        $request->method('getRouteName')->willReturn('adminhtml');
-        $request->method('getControllerName')->willReturn('lizardsandpumpkins_version');
-        $request->method('getActionName')->willReturn('index');
-        $request->method('getRequestedRouteName')->willReturn('adminhtml');
-        $request->method('getRequestedControllerName')->willReturn('lizardsandpumpkins_version');
-        $request->method('getRequestedActionName')->willReturn('index');
-        $request->method('isDispatched')->willReturn(true);
+        $this->request->method('getRouteName')->willReturn('adminhtml');
+        $this->request->method('getControllerName')->willReturn('lizardsandpumpkins_version');
+        $this->request->method('getRequestedRouteName')->willReturn('adminhtml');
+        $this->request->method('getRequestedControllerName')->willReturn('lizardsandpumpkins_version');
+        $this->request->method('isDispatched')->willReturn(true);
 
         $response = $this->createMock(Zend_Controller_Response_Http::class);
         $this->controller = new LizardsAndPumpkins_MagentoConnector_Adminhtml_LizardsAndPumpkins_VersionController(
-            $request, $response, [], $this->api
+            $this->request, $response, [], $this->api
         );
     }
 
     public function testGetCurrentVersionAndSetOnBlock()
     {
+        $this->request->method('getRequestedActionName')->willReturn('index');
+        $this->request->method('getActionName')->willReturn('index');
+
         $version = [
             'data' => [
                 'current_version'  => '1',
