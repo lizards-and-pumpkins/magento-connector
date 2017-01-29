@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use LizardsAndPumpkins\MagentoConnector\Api\Api;
+use LizardsAndPumpkins\MagentoConnector\Api\RequestFailedException;
 
 require Mage::getBaseDir('app')
     . '/code/community/LizardsAndPumpkins/MagentoConnector/controllers/Adminhtml/LizardsAndPumpkins/VersionController.php';
@@ -106,6 +107,14 @@ class VersionControllerTest extends PHPUnit_Framework_TestCase
         $this->api->expects($this->once())->method('setCurrentVersion')->with($this->equalTo($newVersion));
 
         $this->dispatchUpdate($newVersion);
+    }
+
+    public function testSetVersionThrowsException()
+    {
+        $this->api->method('setCurrentVersion')->willThrowException(new RequestFailedException());
+        $this->sessionMock->expects($this->once())->method('addWarning');
+
+        $this->dispatchUpdate('123');
     }
 
     public function testRedirectAfterSetVersion()
