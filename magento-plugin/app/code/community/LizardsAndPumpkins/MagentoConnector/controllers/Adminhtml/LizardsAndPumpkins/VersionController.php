@@ -33,4 +33,12 @@ class LizardsAndPumpkins_MagentoConnector_Adminhtml_LizardsAndPumpkins_VersionCo
         $this->getLayout()->getBlock('version.container')->getChild('form')->setVersion($version);
         $this->renderLayout();
     }
+
+    public function updateAction()
+    {
+        $version = $this->getRequest()->getParam('current_version');
+        $this->api->setCurrentVersion($version);
+
+        $this->_redirect('*/lizardsandpumpkins_version/index');
+    }
 }

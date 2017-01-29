@@ -60,6 +60,25 @@ class ApiTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(json_decode($responseBody, true), $response);
     }
 
+    public function testApiSetCurrentVersion()
+    {
+        $newVersion = uniqid('lap', true);
+
+        $headers = ['Accept' => 'application/vnd.lizards-and-pumpkins.current_version.v1+json'];
+        $url = $this->host . '/current_version/';
+        $body = ['current_version' => $newVersion];
+
+        $this->httpClient->expects($this->once())
+            ->method('putRequest')
+            ->with(
+                $this->equalTo($url),
+                $this->equalTo(json_encode($body)),
+                $this->equalTo($headers)
+            )->willReturn('');
+
+        $this->api->setCurrentVersion($newVersion);
+    }
+
     public function testTriggerCmsBlockUpdate()
     {
         $responseBody = '';

@@ -84,12 +84,21 @@ class Api
         $this->client->putRequest($url, $body, $headers);
     }
 
-    public function getCurrentVersion()
+    public function getCurrentVersion(): array
     {
         $headers = ['Accept' => 'application/vnd.lizards-and-pumpkins.current_version.v1+json'];
         $url = $this->url . self::API_ENDPOINT_CURRENT_VERSION;
         $response = $this->client->getRequest($url, '', $headers);
 
         return json_decode($response, true);
+    }
+
+    public function setCurrentVersion(string $newVersion)
+    {
+        $headers = ['Accept' => 'application/vnd.lizards-and-pumpkins.current_version.v1+json'];
+        $url = $this->url . self::API_ENDPOINT_CURRENT_VERSION;
+        $body = json_encode(['current_version' => $newVersion]);
+
+        $this->client->putRequest($url, $body, $headers);
     }
 }

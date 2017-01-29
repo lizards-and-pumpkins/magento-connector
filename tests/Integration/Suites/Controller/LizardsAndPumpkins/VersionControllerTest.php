@@ -10,6 +10,10 @@ require Mage::getBaseDir('app')
 class VersionControllerTest extends PHPUnit_Framework_TestCase
 {
     /**
+     * @var Zend_Controller_Response_Http|PHPUnit_Framework_MockObject_MockObject
+     */
+    private $response;
+    /**
      * @var Zend_Controller_Request_Http|PHPUnit_Framework_MockObject_MockObject
      */
     private $request;
@@ -32,6 +36,7 @@ class VersionControllerTest extends PHPUnit_Framework_TestCase
         $sessionMock->method('isAllowed')->willReturn(true);
         $sessionMock->method('getUser')->willReturn($this->createMock(Mage_Admin_Model_User::class));
 
+        Mage::unregister('_singleton/admin/session');
         Mage::register('_singleton/admin/session', $sessionMock);
 
         $this->api = $this->createMock(Api::class);
@@ -46,6 +51,7 @@ class VersionControllerTest extends PHPUnit_Framework_TestCase
                     'getControllerName',
                     'getActionName',
                     'isDispatched',
+                    'getParam',
                 ]
             )
             ->getMock();
@@ -56,9 +62,9 @@ class VersionControllerTest extends PHPUnit_Framework_TestCase
         $this->request->method('getRequestedControllerName')->willReturn('lizardsandpumpkins_version');
         $this->request->method('isDispatched')->willReturn(true);
 
-        $response = $this->createMock(Zend_Controller_Response_Http::class);
+        $this->response = $this->createMock(Zend_Controller_Response_Http::class);
         $this->controller = new LizardsAndPumpkins_MagentoConnector_Adminhtml_LizardsAndPumpkins_VersionController(
-            $this->request, $response, [], $this->api
+            $this->request, $this->response, [], $this->api
         );
     }
 
@@ -81,5 +87,36 @@ class VersionControllerTest extends PHPUnit_Framework_TestCase
             $version,
             $this->controller->getLayout()->getBlock('version.container')->getChild('form')->getVersion()
         );
+    }
+
+    public function testSetVersion()
+    {
+        $newVersion = uniqid('lap', true);
+        $this->api->expects($this->once())->method('setCurrentVersion')->with($this->equalTo($newVersion));
+
+        $this->dispatchUpdate($newVersion);
+    }
+
+    public function testRedirectAfterSetVersion()
+    {
+        $newVersion = uniqid('lap', true);
+        $this->response->expects($this->once())->method('setRedirect')->with($this->stringContains('admin/lizardsandpumpkins_version/index'));
+
+        $this->dispatchUpdate($newVersion);
+    }
+
+    private function dispatchUpdate(string $newVersion)
+    {
+        $this->request->method('getRequestedActionName')->willReturn('update');
+        $this->request->method('getActionName')->willReturn('update');
+
+        $this->request->method('getParam')->willReturnCallback(function ($param) use ($newVersion) {
+            if ($param === 'current_version') {
+                return $newVersion;
+            }
+            return null;
+        });
+
+        $this->controller->dispatch('update');
     }
 }
