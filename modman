@@ -13,3 +13,4 @@ lib/LizardsAndPumpkins/src/*                                                    
 magento-plugin/shell/*                                                                              shell/
 pollExportQueue.php                                                                                 pollExportQueue.php
 
+vendor/autoload.php                                                                                 lib/LizardsAndPumpkins/MagentoConnector/autoload.php
