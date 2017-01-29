@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 interface InitializableCatalogEntityExportTest extends \PHPUnit_Framework_Test
 {

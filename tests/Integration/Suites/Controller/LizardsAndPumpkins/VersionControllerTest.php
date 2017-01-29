@@ -11,9 +11,9 @@ require Mage::getBaseDir('app')
 class VersionControllerTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @var Mage_Admin_Model_Session|PHPUnit_Framework_MockObject_MockObject
+     * @var Mage_Adminhtml_Model_Session|PHPUnit_Framework_MockObject_MockObject
      */
-    private $sessionMock;
+    private $adminhtmlSessionMock;
     /**
      * @var Zend_Controller_Response_Http|PHPUnit_Framework_MockObject_MockObject
      */
@@ -34,15 +34,28 @@ class VersionControllerTest extends PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->sessionMock = $this->getMockBuilder(Mage_Admin_Model_Session::class)
+        $adminSession = $this->getMockBuilder(Mage_Admin_Model_Session::class)
             ->disableOriginalConstructor()
-            ->setMethods(['isAllowed', 'getUser', 'addWarning'])
+            ->setMethods(['isAllowed', 'getUser'])
             ->getMock();
-        $this->sessionMock->method('isAllowed')->willReturn(true);
-        $this->sessionMock->method('getUser')->willReturn($this->createMock(Mage_Admin_Model_User::class));
+        $adminSession->method('isAllowed')->willReturnCallback(function ($acl) {
+            if ($acl === 'system/index') {
+                return false;
+            }
+            return true;
+        });
+        $adminSession->method('getUser')->willReturn($this->createMock(Mage_Admin_Model_User::class));
 
         Mage::unregister('_singleton/admin/session');
-        Mage::register('_singleton/admin/session', $this->sessionMock);
+        Mage::register('_singleton/admin/session', $adminSession);
+
+        $this->adminhtmlSessionMock = $this->getMockBuilder(Mage_Adminhtml_Model_Session::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['addError'])
+            ->getMock();
+
+        Mage::unregister('_singleton/adminhtml/session');
+        Mage::register('_singleton/adminhtml/session', $this->adminhtmlSessionMoc);
 
         $this->api = $this->createMock(Api::class);
         $this->request = $this->getMockBuilder(Zend_Controller_Request_Http::class)
@@ -94,6 +107,17 @@ class VersionControllerTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    public function testGetCurrentVersionThrowsException()
+    {
+        $exceptionMessage = 'Request Failed was not catched!';
+        $this->api->method('getCurrentVersion')->willThrowException(new RequestFailedException($exceptionMessage));
+        $this->adminhtmlSessionMock->expects($this->once())->method('addError')
+            ->with($this->equalTo($exceptionMessage));
+
+        $this->controller->dispatch('index');
+
+    }
+
     public function testFormAction()
     {
         $html = $this->controller->getLayout()->getBlock('version.container')->getChild('form')->toHtml();
@@ -111,8 +135,10 @@ class VersionControllerTest extends PHPUnit_Framework_TestCase
 
     public function testSetVersionThrowsException()
     {
-        $this->api->method('setCurrentVersion')->willThrowException(new RequestFailedException());
-        $this->sessionMock->expects($this->once())->method('addWarning');
+        $exceptionMessage = 'Request Failed was not catched!';
+        $this->api->method('setCurrentVersion')->willThrowException(new RequestFailedException($exceptionMessage));
+        $this->adminhtmlSessionMock->expects($this->once())->method('addError')
+            ->with($this->equalTo($exceptionMessage));
 
         $this->dispatchUpdate('123');
     }
@@ -131,7 +157,7 @@ class VersionControllerTest extends PHPUnit_Framework_TestCase
         $this->request->method('getRequestedActionName')->willReturn('save');
         $this->request->method('getActionName')->willReturn('save');
 
-        $this->sessionMock->expects($this->once())->method('addWarning');
+        $this->adminhtmlSessionMock->expects($this->once())->method('addError');
 
         $this->controller->dispatch('save');
     }

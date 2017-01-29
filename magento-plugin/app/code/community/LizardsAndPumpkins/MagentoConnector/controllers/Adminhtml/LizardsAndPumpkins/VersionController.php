@@ -29,26 +29,34 @@ class LizardsAndPumpkins_MagentoConnector_Adminhtml_LizardsAndPumpkins_VersionCo
 
     public function indexAction()
     {
-        $version = $this->api->getCurrentVersion();
+        /** @var Mage_Admin_Model_Session $session */
+        $session = Mage::getSingleton('adminhtml/session');
         $this->loadLayout();
-        $this->getLayout()->getBlock('version.container')->getChild('form')->setVersion($version);
+
+        try {
+            $version = $this->api->getCurrentVersion();
+            $this->getLayout()->getBlock('version.container')->getChild('form')->setVersion($version);
+        } catch (RequestFailedException $e) {
+            $session->addError($e->getMessage());
+        }
+
         $this->renderLayout();
     }
 
     public function saveAction()
     {
         /** @var Mage_Admin_Model_Session $session */
-        $session = Mage::getSingleton('admin/session');
+        $session = Mage::getSingleton('adminhtml/session');
 
         $version = $this->getRequest()->getParam('current_version');
         if (!is_string($version) || $version === '') {
-            $session->addWarning('Current version must not be empty!');
+            $session->addError('Current version must not be empty!');
             return $this->_redirect('*/lizardsandpumpkins_version/index');
         }
         try {
             $this->api->setCurrentVersion($version);
         } catch (RequestFailedException $e) {
-            $session->addWarning($e->getMessage());
+            $session->addError($e->getMessage());
         }
 
         $this->_redirect('*/lizardsandpumpkins_version/index');

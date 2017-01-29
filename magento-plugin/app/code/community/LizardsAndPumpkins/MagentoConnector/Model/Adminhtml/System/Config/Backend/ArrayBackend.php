@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 class LizardsAndPumpkins_MagentoConnector_Model_Adminhtml_System_Config_Backend_ArrayBackend
     extends Mage_Core_Model_Config_Data
