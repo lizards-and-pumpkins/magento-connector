@@ -8,4 +8,9 @@ class LizardsAndPumpkins_MagentoConnector_Block_Adminhtml_Version extends Mage_A
     protected $_controller = 'adminhtml';
     protected $_mode = 'version';
     protected $_headerText = 'Lizards & Pumpkins Version';
+
+    public function getFormActionUrl()
+    {
+        return $this->getUrl('*/lizardsandpumpkins_version/save');
+    }
 }

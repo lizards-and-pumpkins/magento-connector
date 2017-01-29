@@ -34,7 +34,7 @@ class LizardsAndPumpkins_MagentoConnector_Adminhtml_LizardsAndPumpkins_VersionCo
         $this->renderLayout();
     }
 
-    public function updateAction()
+    public function saveAction()
     {
         $version = $this->getRequest()->getParam('current_version');
         if (!is_string($version) || $version === '') {

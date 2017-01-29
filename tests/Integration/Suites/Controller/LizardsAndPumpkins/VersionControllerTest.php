@@ -93,6 +93,13 @@ class VersionControllerTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    public function testFormAction()
+    {
+        $html = $this->controller->getLayout()->getBlock('version.container')->getChild('form')->toHtml();
+        $this->assertRegExp('#action=".*admin/lizardsandpumpkins_version/save.*"#', $html);
+        $this->assertGreaterThan(0, strlen($html));
+    }
+
     public function testSetVersion()
     {
         $newVersion = uniqid('lap', true);
@@ -112,18 +119,18 @@ class VersionControllerTest extends PHPUnit_Framework_TestCase
 
     public function testErrorOnEmptyVersion()
     {
-        $this->request->method('getRequestedActionName')->willReturn('update');
-        $this->request->method('getActionName')->willReturn('update');
+        $this->request->method('getRequestedActionName')->willReturn('save');
+        $this->request->method('getActionName')->willReturn('save');
 
         $this->sessionMock->expects($this->once())->method('addWarning');
 
-        $this->controller->dispatch('update');
+        $this->controller->dispatch('save');
     }
 
     private function dispatchUpdate(string $newVersion)
     {
-        $this->request->method('getRequestedActionName')->willReturn('update');
-        $this->request->method('getActionName')->willReturn('update');
+        $this->request->method('getRequestedActionName')->willReturn('save');
+        $this->request->method('getActionName')->willReturn('save');
 
         $this->request->method('getParam')->willReturnCallback(function ($param) use ($newVersion) {
             if ($param === 'current_version') {
@@ -132,6 +139,6 @@ class VersionControllerTest extends PHPUnit_Framework_TestCase
             return null;
         });
 
-        $this->controller->dispatch('update');
+        $this->controller->dispatch('save');
     }
 }
