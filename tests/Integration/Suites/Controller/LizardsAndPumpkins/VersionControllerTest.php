@@ -10,6 +10,10 @@ require Mage::getBaseDir('app')
 class VersionControllerTest extends PHPUnit_Framework_TestCase
 {
     /**
+     * @var Mage_Admin_Model_Session|PHPUnit_Framework_MockObject_MockObject
+     */
+    private $sessionMock;
+    /**
      * @var Zend_Controller_Response_Http|PHPUnit_Framework_MockObject_MockObject
      */
     private $response;
@@ -29,15 +33,15 @@ class VersionControllerTest extends PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $sessionMock = $this->getMockBuilder(Mage_Admin_Model_Session::class)
+        $this->sessionMock = $this->getMockBuilder(Mage_Admin_Model_Session::class)
             ->disableOriginalConstructor()
-            ->setMethods(['isAllowed', 'getUser'])
+            ->setMethods(['isAllowed', 'getUser', 'addWarning'])
             ->getMock();
-        $sessionMock->method('isAllowed')->willReturn(true);
-        $sessionMock->method('getUser')->willReturn($this->createMock(Mage_Admin_Model_User::class));
+        $this->sessionMock->method('isAllowed')->willReturn(true);
+        $this->sessionMock->method('getUser')->willReturn($this->createMock(Mage_Admin_Model_User::class));
 
         Mage::unregister('_singleton/admin/session');
-        Mage::register('_singleton/admin/session', $sessionMock);
+        Mage::register('_singleton/admin/session', $this->sessionMock);
 
         $this->api = $this->createMock(Api::class);
         $this->request = $this->getMockBuilder(Zend_Controller_Request_Http::class)
@@ -100,9 +104,20 @@ class VersionControllerTest extends PHPUnit_Framework_TestCase
     public function testRedirectAfterSetVersion()
     {
         $newVersion = uniqid('lap', true);
-        $this->response->expects($this->once())->method('setRedirect')->with($this->stringContains('admin/lizardsandpumpkins_version/index'));
+        $this->response->expects($this->once())->method('setRedirect')
+            ->with($this->stringContains('admin/lizardsandpumpkins_version/index'));
 
         $this->dispatchUpdate($newVersion);
+    }
+
+    public function testErrorOnEmptyVersion()
+    {
+        $this->request->method('getRequestedActionName')->willReturn('update');
+        $this->request->method('getActionName')->willReturn('update');
+
+        $this->sessionMock->expects($this->once())->method('addWarning');
+
+        $this->controller->dispatch('update');
     }
 
     private function dispatchUpdate(string $newVersion)

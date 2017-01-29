@@ -37,6 +37,13 @@ class LizardsAndPumpkins_MagentoConnector_Adminhtml_LizardsAndPumpkins_VersionCo
     public function updateAction()
     {
         $version = $this->getRequest()->getParam('current_version');
+        if (!is_string($version) || $version === '') {
+            /** @var Mage_Admin_Model_Session $session */
+            $session = Mage::getSingleton('admin/session');
+            $session->addWarning('Current version must not be empty!');
+            return $this->_redirect('*/lizardsandpumpkins_version/index');
+        }
+
         $this->api->setCurrentVersion($version);
 
         $this->_redirect('*/lizardsandpumpkins_version/index');
