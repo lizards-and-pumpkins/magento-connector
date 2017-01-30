@@ -51,7 +51,7 @@ class LizardsAndPumpkins_MagentoConnector_Adminhtml_LizardsAndPumpkins_VersionCo
         $version = $this->getRequest()->getParam('current_version');
         if (!is_string($version) || $version === '') {
             $session->addError('Current version must not be empty!');
-            return $this->_redirect('*/lizardsandpumpkins_version/index');
+            return $this->_redirect('*/lizardsAndPumpkins_version/index');
         }
         try {
             $this->api->setCurrentVersion($version);
@@ -59,6 +59,6 @@ class LizardsAndPumpkins_MagentoConnector_Adminhtml_LizardsAndPumpkins_VersionCo
             $session->addError($e->getMessage());
         }
 
-        $this->_redirect('*/lizardsandpumpkins_version/index');
+        $this->_redirect('*/lizardsAndPumpkins_version/index');
     }
 }

@@ -121,7 +121,7 @@ class LizardsAndPumpkins_MagentoConnector_VersionControllerTest extends PHPUnit_
     public function testFormAction()
     {
         $html = $this->controller->getLayout()->getBlock('version.container')->getChild('form')->toHtml();
-        $this->assertRegExp('#action=".*admin/lizardsandpumpkins_version/save.*"#', $html);
+        $this->assertRegExp('#action=".*admin/lizardsAndPumpkins_version/save.*"#', $html);
         $this->assertGreaterThan(0, strlen($html));
     }
 
@@ -147,7 +147,7 @@ class LizardsAndPumpkins_MagentoConnector_VersionControllerTest extends PHPUnit_
     {
         $newVersion = uniqid('lap', true);
         $this->response->expects($this->once())->method('setRedirect')
-            ->with($this->stringContains('admin/lizardsandpumpkins_version/index'));
+            ->with($this->stringContains('admin/lizardsAndPumpkins_version/index'));
 
         $this->dispatchUpdate($newVersion);
     }

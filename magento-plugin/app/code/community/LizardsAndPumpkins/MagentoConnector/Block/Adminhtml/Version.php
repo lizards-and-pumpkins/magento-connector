@@ -11,6 +11,6 @@ class LizardsAndPumpkins_MagentoConnector_Block_Adminhtml_Version extends Mage_A
 
     public function getFormActionUrl()
     {
-        return $this->getUrl('*/lizardsandpumpkins_version/save');
+        return $this->getUrl('*/lizardsAndPumpkins_version/save');
     }
 }
