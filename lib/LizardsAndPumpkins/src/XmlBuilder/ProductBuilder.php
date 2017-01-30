@@ -22,7 +22,7 @@ class ProductBuilder
     private $context;
 
     /**
-     * @param mixed[] $productData
+     * @param mixed[]  $productData
      * @param string[] $context
      */
     public function __construct(array $productData, array $context)
@@ -32,7 +32,7 @@ class ProductBuilder
         $this->xml = new \XMLWriter();
         $this->xml->openMemory();
         $this->xml->setIndent(true);
-        
+
         $this->xml->startDocument('1.0', 'UTF-8');
         $this->buildProductXml($productData);
     }
@@ -67,8 +67,10 @@ class ProductBuilder
                     continue;
                 }
 
-                $attributeNodeName = 'categories' == $attributeName ?
-                    'category' :
+                $attributeNodeName = 'categories' == $attributeName
+                    ?
+                    'category'
+                    :
                     $attributeName;
                 $this->createAttributeNode($attributeNodeName, $value);
             }
@@ -119,16 +121,15 @@ class ProductBuilder
     }
 
     /**
-     * @param string $attributeName
-     * @param string|string[] $value
+     * @param string          $attributeName
+     * @param string|string[] $attributeValue
      */
-    private function createAttributeNode($attributeName, $value)
+    private function createAttributeNode(string $attributeName, $attributeValue)
     {
-        $values = !is_array($value) ?
-            [$value] :
-            $value;
+        $values = !is_array($attributeValue) ? [$attributeValue] : $attributeValue;
 
         foreach ($values as $value) {
+            $value = (string)$value;
             $this->xml->startElement('attribute');
             $this->xml->writeAttribute('name', $attributeName);
             $this->addContextAttributes();
@@ -142,11 +143,7 @@ class ProductBuilder
         }
     }
 
-    /**
-     * @param string $value
-     * @return bool
-     */
-    private function isCDataNeeded($value)
+    private function isCDataNeeded(string $value): bool
     {
         $xmlUnsafeCharacters = ['&', '<', '"', "'", '>'];
 
@@ -224,7 +221,7 @@ class ProductBuilder
     {
         foreach (self::$productNodeAttributesMap as $magentoAttribute => $xmlNodeAttribute) {
             if (isset($productData[$magentoAttribute])) {
-                $this->xml->writeAttribute($xmlNodeAttribute, $productData[$magentoAttribute]);
+                $this->xml->writeAttribute($xmlNodeAttribute, (string)$productData[$magentoAttribute]);
             }
         }
     }

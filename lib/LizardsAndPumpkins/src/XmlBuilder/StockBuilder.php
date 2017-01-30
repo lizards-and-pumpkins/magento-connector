@@ -24,7 +24,7 @@ class StockBuilder
     {
         $this->xml->startElement('stock');
         $this->xml->writeElement('sku', $sku);
-        $this->xml->writeElement('quantity', $qty);
+        $this->xml->writeElement('quantity', (string)$qty);
         $this->xml->endElement(); // stock
     }
 

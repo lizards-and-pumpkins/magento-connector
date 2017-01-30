@@ -77,8 +77,7 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
 
     public function testXmlWithEmptyNodeName()
     {
-        $this->expectException(\DOMException::class);
-        $this->expectExceptionMessage('Invalid Character Error');
+        $this->expectException(\TypeError::class);
         $productData = [
             'attributes' => [
                 'url_key',
@@ -144,7 +143,7 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param string[] $productData
-     * @param string $exceptionMessage
+     * @param string   $exceptionMessage
      * @dataProvider getInvalidImageData
      */
     public function testInvalidImageArgument($productData, $exceptionMessage)
@@ -411,8 +410,8 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param string $expectedValue
-     * @param string $attributeName
+     * @param string            $expectedValue
+     * @param string            $attributeName
      * @param \SimpleXMLElement $simpleXMLElement
      */
     private function assertXmlAttribute($expectedValue, $attributeName, \SimpleXMLElement $simpleXMLElement)

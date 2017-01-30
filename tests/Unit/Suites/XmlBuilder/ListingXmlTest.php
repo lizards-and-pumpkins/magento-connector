@@ -65,14 +65,30 @@ class ListingXmlTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->stubConfig = $this->createMock(LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig::class);
+        $this->stubConfig->method('getLocaleFrom')->willReturn('de_DE');
         $this->listingXml = new ListingXml($this->stubConfig);
 
         $this->stubWebsite = $this->createMock(Mage_Core_Model_Website::class);
 
         $this->stubStore = $this->createMock(Mage_Core_Model_Store::class);
+        $this->stubStore->method('getCode')->willReturn('foo');
 
         $this->stubCategory = $this->createMock(Mage_Catalog_Model_Category::class);
         $this->stubCategory->method('getStore')->willReturn($this->stubStore);
+        $this->stubCategory->method('getData')->willReturnCallback(function ($attribute) {
+            if ($attribute === 'meta_title') {
+                return 'This would only work in a <CDATA> section';
+            }
+            if ($attribute === 'description') {
+                return 'Description with <strong>HTML</strong>';
+            }
+            if ($attribute === 'meta_description') {
+                return 'this is a meta description';
+            }
+            if ($attribute === 'meta_keywords') {
+                return 'meta keywords lap is cool';
+            }
+        });
     }
 
     public function testExceptionIsThrownIfStoreIsNotSetOnACategory()
