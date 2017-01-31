@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use LizardsAndPumpkins\MagentoConnector\Api\Api;
-use LizardsAndPumpkins\MagentoConnector\Api\GuzzleAdapter;
+use LizardsAndPumpkins\MagentoConnector\Api\GuzzleHttpApiClient;
 use LizardsAndPumpkins\MagentoConnector\Api\RequestFailedException;
 
 class LizardsAndPumpkins_MagentoConnector_Adminhtml_LizardsAndPumpkins_VersionController
@@ -23,7 +23,7 @@ class LizardsAndPumpkins_MagentoConnector_Adminhtml_LizardsAndPumpkins_VersionCo
         parent::__construct($request, $response, $invokeArgs);
         $this->api = $api ?? new Api(
                 Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/api_url'),
-                new GuzzleAdapter()
+                new GuzzleHttpApiClient()
             );
     }
 

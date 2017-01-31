@@ -4,21 +4,21 @@ declare(strict_types=1);
 
 namespace LizardsAndPumpkins\MagentoConnector\Api;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Exception\ServerException;
-use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Exception\ClientException as GuzzleClientException;
+use GuzzleHttp\Exception\ServerException as GuzzleServerException;
+use GuzzleHttp\Psr7\Request as Psr7Request;
 
-class GuzzleAdapter implements HttpApiClient
+class GuzzleHttpApiClient implements HttpApiClient
 {
     /**
-     * @var Client
+     * @var GuzzleClient
      */
     private $client;
 
-    public function __construct(Client $client = null)
+    public function __construct(GuzzleClient $client = null)
     {
-        $this->client = $client ?: new Client();
+        $this->client = $client ?: new GuzzleClient();
     }
 
     public function putRequest(string $url, string $body, array $headers): string
@@ -27,11 +27,12 @@ class GuzzleAdapter implements HttpApiClient
         $method = 'PUT';
         $response = $this->sendRequest($url, $method, $body, $headers);
 
-        if ($response->getStatusCode() !== 202) {
+        if (((string)$response->getStatusCode())[0] !== '2') {
             throw new RequestFailedException(
-                sprintf('Status code %s does not match expected 202.', $response->getStatusCode())
+                sprintf('Status code %s does not match expected 200.', $response->getStatusCode())
             );
         }
+
         return (string)$response->getBody();
     }
 
@@ -41,9 +42,9 @@ class GuzzleAdapter implements HttpApiClient
         $method = 'GET';
         $response = $this->sendRequest($url, $method, $body, $headers);
 
-        if ($response->getStatusCode() !== 200) {
+        if (((string)$response->getStatusCode())[0] !== '2') {
             throw new RequestFailedException(
-                sprintf('Status code %s does not match expected 200.', $response->getStatusCode())
+                sprintf('Status code %s does not match expected 2xx.', $response->getStatusCode())
             );
         }
         return (string)$response->getBody();
@@ -79,10 +80,10 @@ class GuzzleAdapter implements HttpApiClient
     private function sendRequest(string $url, $method, string $body, array $headers)
     {
         try {
-            $response = $this->client->send(new Request($method, $url, $headers, $body));
-        } catch (ClientException $e) {
+            $response = $this->client->send(new Psr7Request($method, $url, $headers, $body));
+        } catch (GuzzleClientException $e) {
             throw new RequestFailedException($e->getMessage(), $e->getCode(), $e);
-        } catch (ServerException $e) {
+        } catch (GuzzleServerException $e) {
             throw new RequestFailedException($e->getMessage(), $e->getCode(), $e);
         }
         return $response;

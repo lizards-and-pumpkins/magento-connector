@@ -8,7 +8,7 @@ class Api
 {
     const API_ENDPOINT_CATALOG_IMPORT = 'catalog_import/';
     const API_ENDPOINT_CONTENT_BLOCK_UPDATE = 'content_blocks/';
-    const API_ENDPOINT_CURRENT_VERSION = 'current_version/';
+    const API_ENDPOINT_CURRENT_VERSION = 'current_version';
 
     /**
      * @var string

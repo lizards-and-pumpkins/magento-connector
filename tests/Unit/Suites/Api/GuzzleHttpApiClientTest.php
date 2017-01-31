@@ -11,7 +11,7 @@ use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 
-class GuzzleAdapterTest extends \PHPUnit_Framework_TestCase
+class GuzzleHttpApiClientTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
@@ -52,7 +52,7 @@ class GuzzleAdapterTest extends \PHPUnit_Framework_TestCase
 
         $this->guzzle = new Client(['handler' => $stack]);
 
-        $this->client = new GuzzleAdapter($this->guzzle);
+        $this->client = new GuzzleHttpApiClient($this->guzzle);
     }
 
     public function testGetRequest()
@@ -86,7 +86,7 @@ class GuzzleAdapterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider provideNon200StatusCodes
+     * @dataProvider provideNon2xxStatusCodes
      * @param int $statusCode
      */
     public function testThrowsExceptionOnNon200GetResponse(int $statusCode)
@@ -102,13 +102,8 @@ class GuzzleAdapterTest extends \PHPUnit_Framework_TestCase
         $this->client->getRequest($url, $body, $headers);
     }
 
-    public function provideNon200StatusCodes(): array
-    {
-        return $this->provideStatusCodes([200]);
-    }
-
     /**
-     * @dataProvider provideNon202StatusCodes
+     * @dataProvider provideNon2xxStatusCodes
      * @param int $statusCode
      */
     public function testThrowsExceptionOnNon202PutResponse(int $statusCode)
@@ -124,9 +119,9 @@ class GuzzleAdapterTest extends \PHPUnit_Framework_TestCase
         $this->client->putRequest($url, $body, $headers);
     }
 
-    public function provideNon202StatusCodes(): array
+    public function provideNon2xxStatusCodes(): array
     {
-        return $this->provideStatusCodes([202]);
+        return $this->provideStatusCodes([200, 201, 202, 203, 204, 205, 206, 207, 208, 226]);
     }
 
     private function provideStatusCodes(array $except = []): array

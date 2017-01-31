@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace LizardsAndPumpkins\MagentoConnector\Api;
 
-use function GuzzleHttp\json_encode;
-
 /**
  * @covers \LizardsAndPumpkins\MagentoConnector\Api\Api
  */
@@ -44,7 +42,7 @@ class ApiTest extends \PHPUnit_Framework_TestCase
         ]);
 
         $headers = ['Accept' => 'application/vnd.lizards-and-pumpkins.current_version.v1+json'];
-        $url = $this->host . '/current_version/';
+        $url = $this->host . '/current_version';
         $body = '';
 
         $this->httpClient->expects($this->once())
@@ -65,7 +63,7 @@ class ApiTest extends \PHPUnit_Framework_TestCase
         $newVersion = uniqid('lap', true);
 
         $headers = ['Accept' => 'application/vnd.lizards-and-pumpkins.current_version.v1+json'];
-        $url = $this->host . '/current_version/';
+        $url = $this->host . '/current_version';
         $body = ['current_version' => $newVersion];
 
         $this->httpClient->expects($this->once())
