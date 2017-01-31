@@ -52,12 +52,12 @@ class GuzzleHttpApiClient implements HttpApiClient
 
     private function validateUrl(string $url)
     {
-        if ($url === '') {
+        if ('' === $url) {
             throw new InvalidHostException('URL must not be empty.');
         }
 
         $parts = parse_url($url);
-        if ($parts === false) {
+        if (false === $parts) {
             throw new InvalidHostException('URL seems to be  seriously malformed.');
         }
 

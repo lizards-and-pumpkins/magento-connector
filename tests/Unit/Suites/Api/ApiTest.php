@@ -48,9 +48,9 @@ class ApiTest extends \PHPUnit_Framework_TestCase
         $this->httpClient->expects($this->once())
             ->method('getRequest')
             ->with(
-                $this->equalTo($url),
-                $this->equalTo($body),
-                $this->equalTo($headers)
+                $url,
+                $body,
+                $headers
             )->willReturn($responseBody);
 
         $response = $this->api->getCurrentVersion();
@@ -69,9 +69,9 @@ class ApiTest extends \PHPUnit_Framework_TestCase
         $this->httpClient->expects($this->once())
             ->method('putRequest')
             ->with(
-                $this->equalTo($url),
-                $this->equalTo(json_encode($body)),
-                $this->equalTo($headers)
+                $url,
+                json_encode($body),
+                $headers
             )->willReturn('');
 
         $this->api->setCurrentVersion($newVersion);
@@ -100,9 +100,9 @@ class ApiTest extends \PHPUnit_Framework_TestCase
         $this->httpClient->expects($this->once())
             ->method('putRequest')
             ->with(
-                $this->equalTo($url),
-                $this->equalTo($body),
-                $this->equalTo($headers)
+                $url,
+                $body,
+                $headers
             )->willReturn($responseBody);
 
         $this->api->triggerCmsBlockUpdate('123', $content, $context, $keyGeneratorParameters);
@@ -114,23 +114,17 @@ class ApiTest extends \PHPUnit_Framework_TestCase
 
         $headers = ['Accept' => 'application/vnd.lizards-and-pumpkins.catalog_import.v1+json'];
         $url = $this->host . '/catalog_import/';
-        $body = json_encode(
-            [
-                'fileName' => 'catalog.xml',
-            ]
-        );
+        $body = json_encode(['fileName' => 'catalog.xml']);
 
         $this->httpClient->expects($this->once())
             ->method('putRequest')
             ->with(
-                $this->equalTo($url),
-                $this->equalTo($body),
-                $this->equalTo($headers)
+                $url,
+                $body,
+                $headers
             )->willReturn($responseBody);
 
 
         $this->api->triggerProductImport('catalog.xml');
-
-
     }
 }

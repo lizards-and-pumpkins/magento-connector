@@ -75,20 +75,12 @@ class ListingXmlTest extends \PHPUnit_Framework_TestCase
 
         $this->stubCategory = $this->createMock(Mage_Catalog_Model_Category::class);
         $this->stubCategory->method('getStore')->willReturn($this->stubStore);
-        $this->stubCategory->method('getData')->willReturnCallback(function ($attribute) {
-            if ($attribute === 'meta_title') {
-                return 'This would only work in a <CDATA> section';
-            }
-            if ($attribute === 'description') {
-                return 'Description with <strong>HTML</strong>';
-            }
-            if ($attribute === 'meta_description') {
-                return 'this is a meta description';
-            }
-            if ($attribute === 'meta_keywords') {
-                return 'meta keywords lap is cool';
-            }
-        });
+        $this->stubCategory->method('getData')->willReturnMap([
+            ['meta_title', null, 'This would only work in a <CDATA> section'],
+            ['description', null, 'Description with <strong>HTML</strong>'],
+            ['meta_description', null, 'this is a meta description'],
+            ['meta_keywords', null, 'meta keywords lap is cool'],
+        ]);
     }
 
     public function testExceptionIsThrownIfStoreIsNotSetOnACategory()

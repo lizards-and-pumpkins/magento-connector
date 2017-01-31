@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace LizardsAndPumpkins\MagentoConnector\Api;
 
-use GuzzleHttp\Client;
+use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
@@ -15,7 +15,7 @@ class GuzzleHttpApiClientTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
-     * @var Client
+     * @var GuzzleClient
      */
     private $guzzle;
 
@@ -50,7 +50,7 @@ class GuzzleHttpApiClientTest extends \PHPUnit_Framework_TestCase
 
         $stack->push($this->history);
 
-        $this->guzzle = new Client(['handler' => $stack]);
+        $this->guzzle = new GuzzleClient(['handler' => $stack]);
 
         $this->client = new GuzzleHttpApiClient($this->guzzle);
     }

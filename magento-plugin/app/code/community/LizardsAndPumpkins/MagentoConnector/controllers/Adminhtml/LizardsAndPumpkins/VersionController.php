@@ -49,7 +49,7 @@ class LizardsAndPumpkins_MagentoConnector_Adminhtml_LizardsAndPumpkins_VersionCo
         $session = Mage::getSingleton('adminhtml/session');
 
         $version = $this->getRequest()->getParam('current_version');
-        if (!is_string($version) || $version === '') {
+        if (!is_string($version) || '' === $version) {
             $session->addError('Current data version must not be empty!');
             return $this->_redirect('*/lizardsAndPumpkins_version/index');
         }

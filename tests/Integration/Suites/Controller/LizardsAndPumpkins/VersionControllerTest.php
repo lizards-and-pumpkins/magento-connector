@@ -86,7 +86,7 @@ class LizardsAndPumpkins_MagentoConnector_VersionControllerTest extends PHPUnit_
         );
     }
 
-    public function testGetCurrentVersionAndSetOnBlock()
+    public function testGetCurrentVersionFromApiAndSetOnBlock()
     {
         $this->request->method('getRequestedActionName')->willReturn('index');
         $this->request->method('getActionName')->willReturn('index');
@@ -135,7 +135,7 @@ class LizardsAndPumpkins_MagentoConnector_VersionControllerTest extends PHPUnit_
 
     public function testSetVersionThrowsException()
     {
-        $exceptionMessage = 'Request Failed was not catched!';
+        $exceptionMessage = 'Request Failed was not caught!';
         $this->api->method('setCurrentVersion')->willThrowException(new RequestFailedException($exceptionMessage));
         $this->adminhtmlSessionMock->expects($this->once())->method('addError')
             ->with($this->equalTo($exceptionMessage));
@@ -168,7 +168,7 @@ class LizardsAndPumpkins_MagentoConnector_VersionControllerTest extends PHPUnit_
         $this->request->method('getActionName')->willReturn('save');
 
         $this->request->method('getParam')->willReturnCallback(function ($param) use ($newVersion) {
-            if ($param === 'current_version') {
+            if ('current_version' === $param) {
                 return $newVersion;
             }
             return null;
