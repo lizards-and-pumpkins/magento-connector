@@ -47,11 +47,8 @@ class ApiTest extends \PHPUnit_Framework_TestCase
 
         $this->httpClient->expects($this->once())
             ->method('getRequest')
-            ->with(
-                $url,
-                $body,
-                $headers
-            )->willReturn($responseBody);
+            ->with($url, $body, $headers)
+            ->willReturn($responseBody);
 
         $response = $this->api->getCurrentVersion();
 
@@ -68,11 +65,8 @@ class ApiTest extends \PHPUnit_Framework_TestCase
 
         $this->httpClient->expects($this->once())
             ->method('putRequest')
-            ->with(
-                $url,
-                json_encode($body),
-                $headers
-            )->willReturn('');
+            ->with($url, $body, $headers)
+            ->willReturn('');
 
         $this->api->setCurrentVersion($newVersion);
     }
@@ -99,11 +93,8 @@ class ApiTest extends \PHPUnit_Framework_TestCase
 
         $this->httpClient->expects($this->once())
             ->method('putRequest')
-            ->with(
-                $url,
-                $body,
-                $headers
-            )->willReturn($responseBody);
+            ->with($url, $body, $headers)
+            ->willReturn($responseBody);
 
         $this->api->triggerCmsBlockUpdate('123', $content, $context, $keyGeneratorParameters);
     }
@@ -118,11 +109,8 @@ class ApiTest extends \PHPUnit_Framework_TestCase
 
         $this->httpClient->expects($this->once())
             ->method('putRequest')
-            ->with(
-                $url,
-                $body,
-                $headers
-            )->willReturn($responseBody);
+            ->with($url, $body, $headers)
+            ->willReturn($responseBody);
 
 
         $this->api->triggerProductImport('catalog.xml');

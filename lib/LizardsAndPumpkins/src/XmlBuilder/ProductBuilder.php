@@ -67,7 +67,7 @@ class ProductBuilder
                     continue;
                 }
 
-                $attributeNodeName = 'categories' == $attributeName ? 'category' : $attributeName;
+                $attributeNodeName = 'categories' === $attributeName ? 'category' : $attributeName;
                 $this->createAttributeNode($attributeNodeName, $value);
             }
         }

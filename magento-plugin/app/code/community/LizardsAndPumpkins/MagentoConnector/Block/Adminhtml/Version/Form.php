@@ -22,14 +22,14 @@ class LizardsAndPumpkins_MagentoConnector_Block_Adminhtml_Version_Form extends M
             'label'    => Mage::helper('lizardsAndPumpkins_magentoconnector')->__('Current Data Version from API'),
             'name'     => 'current_version',
             'required' => true,
-            'value'    => isset($versions['current_version']) ? $versions['current_version'] : '',
+            'value'    => $versions['current_version'] ?? '',
         ]);
 
         $fieldset->addField('previous_version', 'text', [
             'label'    => Mage::helper('lizardsAndPumpkins_magentoconnector')->__('Previous Data Version'),
             'name'     => 'previous_version',
             'readonly' => true,
-            'value'    => isset($versions['previous_version']) ? $versions['previous_version'] : '',
+            'value'    => $versions['previous_version'] ?? '',
         ]);
 
         $form->setUseContainer(true);

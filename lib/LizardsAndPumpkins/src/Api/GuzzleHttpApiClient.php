@@ -8,6 +8,7 @@ use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ClientException as GuzzleClientException;
 use GuzzleHttp\Exception\ServerException as GuzzleServerException;
 use GuzzleHttp\Psr7\Request as Psr7Request;
+use GuzzleHttp\Psr7\Response as Psr7Response;
 
 class GuzzleHttpApiClient implements HttpApiClient
 {
@@ -27,11 +28,7 @@ class GuzzleHttpApiClient implements HttpApiClient
         $method = 'PUT';
         $response = $this->sendRequest($url, $method, $body, $headers);
 
-        if (((string)$response->getStatusCode())[0] !== '2') {
-            throw new RequestFailedException(
-                sprintf('Status code %s does not match expected 200.', $response->getStatusCode())
-            );
-        }
+        $this->validateStatusCode($response);
 
         return (string)$response->getBody();
     }
@@ -42,11 +39,8 @@ class GuzzleHttpApiClient implements HttpApiClient
         $method = 'GET';
         $response = $this->sendRequest($url, $method, $body, $headers);
 
-        if (((string)$response->getStatusCode())[0] !== '2') {
-            throw new RequestFailedException(
-                sprintf('Status code %s does not match expected 2xx.', $response->getStatusCode())
-            );
-        }
+        $this->validateStatusCode($response);
+
         return (string)$response->getBody();
     }
 
@@ -87,5 +81,21 @@ class GuzzleHttpApiClient implements HttpApiClient
             throw new RequestFailedException($e->getMessage(), $e->getCode(), $e);
         }
         return $response;
+    }
+
+    /**
+     * @param Psr7Response $response
+     */
+    private function validateStatusCode($response)
+    {
+        $statusCode = $response->getStatusCode();
+        if ($statusCode < 200 || $statusCode > 300) {
+            throw new RequestFailedException(
+                sprintf(
+                    'The HTTP response status code of the API is not within the expected 200-299 range, got %d',
+                    $statusCode
+                )
+            );
+        }
     }
 }
