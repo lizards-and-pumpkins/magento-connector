@@ -53,7 +53,7 @@ class GuzzleHttpApiClient implements HttpApiClient
     private function validateUrl(string $url)
     {
         if ($url === '') {
-            throw new InvalidHostException('Url must not be empty.');
+            throw new InvalidHostException('URL must not be empty.');
         }
 
         $parts = parse_url($url);
@@ -66,7 +66,7 @@ class GuzzleHttpApiClient implements HttpApiClient
         }
 
         if ($parts['scheme'] !== 'http' && $parts['scheme'] !== 'https') {
-            throw new InvalidHostException('Url must either be http or https.');
+            throw new InvalidHostException('URL must either be http or https.');
         }
     }
 
