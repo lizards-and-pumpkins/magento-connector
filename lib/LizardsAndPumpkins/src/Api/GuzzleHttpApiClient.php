@@ -89,7 +89,7 @@ class GuzzleHttpApiClient implements HttpApiClient
     private function validateStatusCode($response)
     {
         $statusCode = $response->getStatusCode();
-        if ($statusCode < 200 || $statusCode > 300) {
+        if ($statusCode < 200 || $statusCode >= 300) {
             throw new RequestFailedException(
                 sprintf(
                     'The HTTP response status code of the API is not within the expected 200-299 range, got %d',

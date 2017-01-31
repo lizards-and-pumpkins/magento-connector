@@ -65,7 +65,7 @@ class ApiTest extends \PHPUnit_Framework_TestCase
 
         $this->httpClient->expects($this->once())
             ->method('putRequest')
-            ->with($url, $body, $headers)
+            ->with($url, json_encode($body), $headers)
             ->willReturn('');
 
         $this->api->setCurrentVersion($newVersion);

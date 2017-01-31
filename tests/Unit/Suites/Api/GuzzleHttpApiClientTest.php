@@ -89,7 +89,7 @@ class GuzzleHttpApiClientTest extends \PHPUnit_Framework_TestCase
      * @dataProvider provideNon2xxStatusCodes
      * @param int $statusCode
      */
-    public function testThrowsExceptionOnNon200GetResponse(int $statusCode)
+    public function testThrowsExceptionOnNon2xxGetResponse(int $statusCode)
     {
         $this->expectException(RequestFailedException::class);
         $url = 'http://example.com/123';
@@ -106,7 +106,7 @@ class GuzzleHttpApiClientTest extends \PHPUnit_Framework_TestCase
      * @dataProvider provideNon2xxStatusCodes
      * @param int $statusCode
      */
-    public function testThrowsExceptionOnNon202PutResponse(int $statusCode)
+    public function testThrowsExceptionOnNon2xxPutResponse(int $statusCode)
     {
         $this->expectException(RequestFailedException::class);
         $url = 'http://example.com/123';
