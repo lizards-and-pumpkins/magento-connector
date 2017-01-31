@@ -121,10 +121,10 @@ class GuzzleHttpApiClientTest extends \PHPUnit_Framework_TestCase
 
     public function provideNon2xxStatusCodes(): array
     {
-        return $this->provideStatusCodes([200, 201, 202, 203, 204, 205, 206, 207, 208, 226]);
+        return $this->provideStatusCodes(200, 201, 202, 203, 204, 205, 206, 207, 208, 226);
     }
 
-    private function provideStatusCodes(array $except = []): array
+    private function provideStatusCodes(int ...$except): array
     {
         $statusCodes = [
             'Continue'                           => [100],
