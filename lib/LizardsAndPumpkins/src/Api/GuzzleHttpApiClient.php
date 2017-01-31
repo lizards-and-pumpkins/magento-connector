@@ -66,18 +66,18 @@ class GuzzleHttpApiClient implements HttpApiClient
         }
 
         if ($parts['scheme'] !== 'http' && $parts['scheme'] !== 'https') {
-            throw new InvalidHostException('URL must either be http or https.');
+            throw new InvalidHostException('URL must start with either http or https.');
         }
     }
 
     /**
      * @param string $url
-     * @param        $method
+     * @param string $method
      * @param string $body
      * @param array  $headers
      * @return mixed|\Psr\Http\Message\ResponseInterface
      */
-    private function sendRequest(string $url, $method, string $body, array $headers)
+    private function sendRequest(string $url, string $method, string $body, array $headers)
     {
         try {
             $response = $this->client->send(new Psr7Request($method, $url, $headers, $body));
