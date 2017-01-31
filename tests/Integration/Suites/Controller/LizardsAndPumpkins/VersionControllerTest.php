@@ -5,8 +5,8 @@ declare(strict_types=1);
 use LizardsAndPumpkins\MagentoConnector\Api\Api;
 use LizardsAndPumpkins\MagentoConnector\Api\RequestFailedException;
 
-require Mage::getBaseDir('app')
-    . '/code/community/LizardsAndPumpkins/MagentoConnector/controllers/Adminhtml/LizardsAndPumpkins/VersionController.php';
+require Mage::getModuleDir('controllers', 'LizardsAndPumpkins_MagentoConnector')
+    . '/Adminhtml/LizardsAndPumpkins/VersionController.php';
 
 class LizardsAndPumpkins_MagentoConnector_VersionControllerTest extends PHPUnit_Framework_TestCase
 {
@@ -39,10 +39,7 @@ class LizardsAndPumpkins_MagentoConnector_VersionControllerTest extends PHPUnit_
             ->setMethods(['isAllowed', 'getUser'])
             ->getMock();
         $adminSession->method('isAllowed')->willReturnCallback(function ($acl) {
-            if ($acl === 'system/index') {
-                return false;
-            }
-            return true;
+            return $acl !== 'system/index';
         });
         $adminSession->method('getUser')->willReturn($this->createMock(Mage_Admin_Model_User::class));
 
@@ -82,7 +79,10 @@ class LizardsAndPumpkins_MagentoConnector_VersionControllerTest extends PHPUnit_
 
         $this->response = $this->createMock(Zend_Controller_Response_Http::class);
         $this->controller = new LizardsAndPumpkins_MagentoConnector_Adminhtml_LizardsAndPumpkins_VersionController(
-            $this->request, $this->response, [], $this->api
+            $this->request,
+            $this->response,
+            [],
+            $this->api
         );
     }
 

@@ -17,19 +17,19 @@ class LizardsAndPumpkins_MagentoConnector_Block_Adminhtml_Version_Form extends M
             ['legend' => Mage::helper('lizardsAndPumpkins_magentoconnector')->__('Current Version from API')]
         );
 
+        $versions = $this->getVersion()['data'];
         $fieldset->addField('current_version', 'text', [
-            'label'    => Mage::helper('lizardsAndPumpkins_magentoconnector')->__('Current Version'),
+            'label'    => Mage::helper('lizardsAndPumpkins_magentoconnector')->__('Current Data Version from API'),
             'name'     => 'current_version',
             'required' => true,
-            'value'    => $this->getVersion()['data']['current_version'],
+            'value'    => isset($versions['current_version']) ? $versions['current_version'] : '',
         ]);
 
         $fieldset->addField('previous_version', 'text', [
-            'label'    => Mage::helper('lizardsAndPumpkins_magentoconnector')->__('Previous Version'),
+            'label'    => Mage::helper('lizardsAndPumpkins_magentoconnector')->__('Previous Data Version'),
             'name'     => 'previous_version',
-            'required' => true,
             'readonly' => true,
-            'value'    => $this->getVersion()['data']['previous_version'],
+            'value'    => isset($versions['previous_version']) ? $versions['previous_version'] : '',
         ]);
 
         $form->setUseContainer(true);
