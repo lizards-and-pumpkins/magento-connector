@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace LizardsAndPumpkins\MagentoConnector\Api;
 
 /**
@@ -8,60 +10,109 @@ namespace LizardsAndPumpkins\MagentoConnector\Api;
 class ApiTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @param string $url
-     * @dataProvider getInvalidHosts
+     * @var string
      */
-    public function testWrongHost($url)
-    {
-        $this->expectException(InvalidHostException::class);
-        new Api($url);
-    }
+    private $host = 'https://example.com/api';
 
     /**
-     * @return array[]
+     * @var HttpApiClient|\PHPUnit_Framework_MockObject_MockObject
      */
-    public function getInvalidHosts()
+    private $httpClient;
+
+    /**
+     * @var Api
+     */
+    private $api;
+
+    public function setUp()
     {
-        return [
-            [new \stdClass()],
-            [''],
-            ['some-string'],
-            [0],
-            [1.1],
-            [null],
-        ];
+        $this->httpClient = $this->createMock(HttpApiClient::class);
+        $this->api = new Api($this->host, $this->httpClient);
     }
 
-    public function testValidHost()
+    public function testApiGetCurrentVersion()
     {
-        $host = 'https://api.lizardsAndPumpkins.io/api';
-        $api = new Api($host);
-        $this->assertInstanceOf(Api::class, $api);
+        $current = uniqid('current-', true);
+        $previous = uniqid('previous-', true);
+        $responseBody = json_encode([
+            'data' => [
+                'current_version'  => $current,
+                'previous_version' => $previous,
+            ],
+        ]);
+
+        $headers = ['Accept' => 'application/vnd.lizards-and-pumpkins.current_version.v1+json'];
+        $url = $this->host . '/current_version';
+        $body = '';
+
+        $this->httpClient->expects($this->once())
+            ->method('getRequest')
+            ->with($url, $body, $headers)
+            ->willReturn($responseBody);
+
+        $response = $this->api->getCurrentVersion();
+
+        $this->assertEquals(json_decode($responseBody, true), $response);
     }
 
-    public function testApiIsTriggered()
+    public function testApiSetCurrentVersion()
     {
-        $this->markTestSkipped(
-            'No clue how to test this - but I\' pretty sure it is an implementation and not test problem'
+        $newVersion = uniqid('lap', true);
+
+        $headers = ['Accept' => 'application/vnd.lizards-and-pumpkins.current_version.v1+json'];
+        $url = $this->host . '/current_version';
+        $body = ['current_version' => $newVersion];
+
+        $this->httpClient->expects($this->once())
+            ->method('putRequest')
+            ->with($url, json_encode($body), $headers)
+            ->willReturn('');
+
+        $this->api->setCurrentVersion($newVersion);
+    }
+
+    public function testTriggerCmsBlockUpdate()
+    {
+        $responseBody = '';
+
+        $context = ['locale' => 'de_DE', 'website' => 'WEBSITE'];
+        $content = 'content';
+        $keyGeneratorParameters = ['url_key' => 'super-url'];
+
+        $headers = ['Accept' => 'application/vnd.lizards-and-pumpkins.content_blocks.v1+json'];
+        $url = $this->host . '/content_blocks/123';
+        $body = json_encode(
+            array_merge(
+                [
+                    'content' => $content,
+                    'context' => $context,
+                ],
+                $keyGeneratorParameters
+            )
         );
 
-        return;
+        $this->httpClient->expects($this->once())
+            ->method('putRequest')
+            ->with($url, $body, $headers)
+            ->willReturn($responseBody);
 
-        $file = 'catalog.xml';
+        $this->api->triggerCmsBlockUpdate('123', $content, $context, $keyGeneratorParameters);
+    }
 
-        $host = 'https://api.lizardsAndPumpkins.io/api';
-        $headers = ['Accept' => 'application/vnd.lizardsAndPumpkins.catalog_import.v1+json'];
-        $body = json_encode(['file' => $file]);
+    public function testTriggerProductImport()
+    {
+        $responseBody = '';
 
-        $httpRequestMock = $this->getMock(\GuzzleHttp\Psr7\Request::class);
+        $headers = ['Accept' => 'application/vnd.lizards-and-pumpkins.catalog_import.v1+json'];
+        $url = $this->host . '/catalog_import/';
+        $body = json_encode(['fileName' => 'catalog.xml']);
 
-        /** @var $api \PHPUnit_Framework_MockObject_MockObject|Api */
-        $api = $this->getMock(Api::class, ['createHttpRequest'], [$host]);
-        $completeApiUrl = $host . '/' . 'catalog_import';
-        $api->method('createHttpRequest')->with(
-            'PUT', $completeApiUrl, $headers, $body
-        )->willReturn($httpRequestMock);
+        $this->httpClient->expects($this->once())
+            ->method('putRequest')
+            ->with($url, $body, $headers)
+            ->willReturn($responseBody);
 
-        $api->triggerProductImport($file);
+
+        $this->api->triggerProductImport('catalog.xml');
     }
 }

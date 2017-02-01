@@ -249,6 +249,15 @@
             </adminhtml>
         </routers>
     </admin>
+    <adminhtml>
+        <layout>
+            <updates>
+                <lizardsandpumpkins_magentoconnector>
+                    <file>lizardsandpumpkins_magentoconnector.xml</file>
+                </lizardsandpumpkins_magentoconnector>
+            </updates>
+        </layout>
+    </adminhtml>
     <default>
         <lizardsAndPumpkins>
             <magentoconnector>

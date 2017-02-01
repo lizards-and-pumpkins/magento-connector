@@ -24,16 +24,16 @@
                                     <action>adminhtml/lizardsAndPumpkins/exportQueuedProductUpdates</action>
                                     <sort_order>800</sort_order>
                                 </export_product_updates>
-                                <export_all_product_stocks translate="title">
-                                    <title>Export All Product Stock Updates</title>
-                                    <action>adminhtml/lizardsAndPumpkins/exportAllStocks</action>
-                                    <sort_order>600</sort_order>
-                                </export_all_product_stocks>
                                 <export_all_cms_blocks translate="title">
                                     <title>Export All CMS Blocks</title>
                                     <action>adminhtml/lizardsAndPumpkins/exportAllCmsBlocks</action>
                                     <sort_order>400</sort_order>
                                 </export_all_cms_blocks>
+                                <current_version>
+                                    <title>Set/Get Current Data Version</title>
+                                    <action>adminhtml/lizardsAndPumpkins_version/index</action>
+                                    <sort_order>200</sort_order>
+                                </current_version>
                             </children>
                         </lizardsAndPumpkins>
                     </children>
@@ -70,6 +70,9 @@
                                             <lizardsAndPumpkins_export_all_cms_blocks translate="title">
                                                 <title>LizardsAndPumpkins Export All CMS Blocks</title>
                                             </lizardsAndPumpkins_export_all_cms_blocks>
+                                            <current_version>
+                                                <title>Set/Get Current Data Version</title>
+                                            </current_version>
                                         </children>
                                     </lizardsAndPumpkins>
                                 </children>

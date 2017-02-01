@@ -1,13 +1,16 @@
-magento-plugin/app/code/community/LizardsAndPumpkins/MagentoConnector                           app/code/community/LizardsAndPumpkins/MagentoConnector
-magento-plugin/app/etc/modules/LizardsAndPumpkins_MagentoConnector.xml                          app/etc/modules/LizardsAndPumpkins_MagentoConnector.xml
+magento-plugin/app/code/community/LizardsAndPumpkins/MagentoConnector                               app/code/community/LizardsAndPumpkins/MagentoConnector
+magento-plugin/app/etc/modules/LizardsAndPumpkins_MagentoConnector.xml                              app/etc/modules/LizardsAndPumpkins_MagentoConnector.xml
 
-magento-plugin/app/design/frontend/base/default/layout/lizardsAndPumpkins_magentoconnector.xml  app/design/frontend/base/default/layout/lizardsAndPumpkins_magentoconnector.xml
-magento-plugin/app/design/frontend/base/default/template/lizardsAndPumpkins_magentoconnector    app/design/frontend/base/default/template/lizardsAndPumpkins_magentoconnector
+magento-plugin/app/design/frontend/base/default/layout/lizardsAndPumpkins_magentoconnector.xml      app/design/frontend/base/default/layout/lizardsAndPumpkins_magentoconnector.xml
+magento-plugin/app/design/frontend/base/default/template/lizardsAndPumpkins_magentoconnector        app/design/frontend/base/default/template/lizardsAndPumpkins_magentoconnector
 
-magento-plugin/skin/frontend/base/default/js/lizardsAndPumpkins_magentoconnector                skin/frontend/base/default/js/lizardsAndPumpkins_magentoconnector
+magento-plugin/app/design/adminhtml/default/default/layout/lizardsandpumpkins_magentoconnector.xml  app/design/adminhtml/default/default/layout/lizardsandpumpkins_magentoconnector.xml
 
-lib/LizardsAndPumpkins/src/*                                                                    lib/LizardsAndPumpkins/MagentoConnector/
+magento-plugin/skin/frontend/base/default/js/lizardsAndPumpkins_magentoconnector                    skin/frontend/base/default/js/lizardsAndPumpkins_magentoconnector
 
-magento-plugin/shell/*                                                                          shell/
-pollExportQueue.php                                                                             pollExportQueue.php
+lib/LizardsAndPumpkins/src/*                                                                        lib/LizardsAndPumpkins/MagentoConnector/
 
+magento-plugin/shell/*                                                                              shell/
+pollExportQueue.php                                                                                 pollExportQueue.php
+
+vendor/autoload.php                                                                                 lib/LizardsAndPumpkins/MagentoConnector/autoload.php

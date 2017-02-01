@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 class LizardsAndPumpkins_MagentoConnector_Helper_Catalog_Category extends Mage_Catalog_Helper_Category
 {

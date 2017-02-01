@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 abstract class AbstractInitializableEntityExportTest
     extends \PHPUnit_Framework_TestCase
@@ -73,7 +74,7 @@ abstract class AbstractInitializableEntityExportTest
     protected function createProductQueueReaderForTestProducts(array $productIds)
     {
         /** @var \PHPUnit_Framework_MockObject_MockObject $reader */
-        $reader = $this->getMock(LizardsAndPumpkins_MagentoConnector_Helper_ProductsToUpdateQueueReader::class);
+        $reader = $this->createMock(LizardsAndPumpkins_MagentoConnector_Helper_ProductsToUpdateQueueReader::class);
         $reader->method('getQueuedProductIds')->willReturnOnConsecutiveCalls(
             $productIds,
             []
@@ -119,7 +120,7 @@ abstract class AbstractInitializableEntityExportTest
     protected function checkTestIsInitialized()
     {
         if (!file_exists($this->getExpectationFileName())) {
-            $this->markTestSkipped('Run tests/integration/util/initExpectedXml.php first');
+            $this->markTestSkipped('Run tests/Integration/util/initExpectedXml.php first');
         }
     }
 

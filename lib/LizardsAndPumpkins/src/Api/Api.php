@@ -1,15 +1,14 @@
 <?php
 
-namespace LizardsAndPumpkins\MagentoConnector\Api;
+declare(strict_types=1);
 
-use GuzzleHttp\Client;
-use GuzzleHttp\Psr7\Request;
+namespace LizardsAndPumpkins\MagentoConnector\Api;
 
 class Api
 {
     const API_ENDPOINT_CATALOG_IMPORT = 'catalog_import/';
-    const API_ENDPOINT_STOCK_UPDATE = 'multiple_product_stock_quantity/';
     const API_ENDPOINT_CONTENT_BLOCK_UPDATE = 'content_blocks/';
+    const API_ENDPOINT_CURRENT_VERSION = 'current_version';
 
     /**
      * @var string
@@ -17,19 +16,17 @@ class Api
     private $url;
 
     /**
-     * @param string $url
+     * @var HttpApiClient
      */
-    public function __construct($url)
-    {
-        $this->checkHost($url);
+    private $client;
 
+    public function __construct(string $url, HttpApiClient $client)
+    {
         $this->url = rtrim($url, '/') . '/';
+        $this->client = $client;
     }
 
-    /**
-     * @param string $filename
-     */
-    public function triggerProductImport($filename)
+    public function triggerProductImport(string $filename)
     {
         $headers = ['Accept' => 'application/vnd.lizards-and-pumpkins.catalog_import.v1+json'];
 
@@ -38,9 +35,29 @@ class Api
     }
 
     /**
+     * @param string   $filename
+     * @param string   $url
+     * @param string[] $headers
+     */
+    private function sendApiRequestWithFilename(string $filename, string $url, array $headers)
+    {
+        $this->validateFilename($filename);
+        $body = json_encode(['fileName' => $filename]);
+        $this->client->putRequest($url, $body, $headers);
+    }
+
+    /**
      * @param string $filename
      */
-    public function triggerProductStockImport($filename)
+    private function validateFilename(string $filename)
+    {
+        $dir = dirname($filename);
+        if ($dir !== '.') {
+            throw new \UnexpectedValueException(sprintf('Filename "%s" should be a filename, no path.', $filename));
+        }
+    }
+
+    public function triggerProductStockImport(string $filename)
     {
         $headers = ['Accept' => 'application/vnd.lizards-and-pumpkins.multiple_product_stock_quantity.v1+json'];
 
@@ -49,12 +66,12 @@ class Api
     }
 
     /**
-     * @param string $id
-     * @param string $content
+     * @param string   $id
+     * @param string   $content
      * @param string[] $context
      * @param string[] $keyGeneratorParameters
      */
-    public function triggerCmsBlockUpdate($id, $content, array $context, array $keyGeneratorParameters)
+    public function triggerCmsBlockUpdate(string $id, string $content, array $context, array $keyGeneratorParameters)
     {
         if (!is_string($id)) {
             throw new InvalidUrlException();
@@ -64,82 +81,24 @@ class Api
         $url = $this->url . self::API_ENDPOINT_CONTENT_BLOCK_UPDATE . $id;
         $body = json_encode(array_merge(['content' => $content, 'context' => $context], $keyGeneratorParameters));
 
-        $this->sendApiRequest($url, $headers, $body);
+        $this->client->putRequest($url, $body, $headers);
     }
 
-    /**
-     * @param string $url
-     */
-    private function checkHost($url)
+    public function getCurrentVersion(): array
     {
-        if (!is_string($url)) {
-            throw new InvalidHostException('Host must be of type string.');
-        }
+        $headers = ['Accept' => 'application/vnd.lizards-and-pumpkins.current_version.v1+json'];
+        $url = $this->url . self::API_ENDPOINT_CURRENT_VERSION;
+        $response = $this->client->getRequest($url, '', $headers);
 
-        $urlParts = parse_url($url);
-        if ($urlParts === false) {
-            throw new InvalidHostException('URL seems to be  seriously malformed.');
-        }
-
-        if (empty($urlParts['scheme']) || $urlParts['scheme'] !== 'https') {
-            // TODO comment
-            #throw new InvalidHostException('Host should be called via HTTPS!');
-        }
-
-        if (empty($urlParts['host'])) {
-            throw new InvalidHostException('Domain must be specified.');
-        }
+        return json_decode($response, true);
     }
 
-    /**
-     * @param string $method
-     * @param string $url
-     * @param string[] $headers
-     * @param string $body
-     * @return Request
-     */
-    private function createHttpRequest($method, $url, $headers, $body)
+    public function setCurrentVersion(string $newVersion)
     {
-        return new Request($method, $url, $headers, $body);
-    }
+        $headers = ['Accept' => 'application/vnd.lizards-and-pumpkins.current_version.v1+json'];
+        $url = $this->url . self::API_ENDPOINT_CURRENT_VERSION;
+        $body = json_encode(['current_version' => $newVersion]);
 
-    /**
-     * @param string $filename
-     * @param string $url
-     * @param string[] $headers
-     */
-    private function sendApiRequestWithFilename($filename, $url, $headers)
-    {
-        $this->validateFilename($filename);
-        $body = json_encode(['fileName' => $filename]);
-        $this->sendApiRequest($url, $headers, $body);
-    }
-
-    /**
-     * @param string $url
-     * @param string[] $headers
-     * @param string $body
-     */
-    private function sendApiRequest($url, $headers, $body)
-    {
-        $request = $this->createHttpRequest('PUT', $url, $headers, $body);
-        $client = new Client();
-        $response = $client->send($request);
-        if ($response->getStatusCode() !== 202) {
-            throw new RequestFailedException("Unexpected response body from $url:\n" . $response->getBody());
-        }
-    }
-
-    /**
-     * @param string $filename
-     */
-    private function validateFilename($filename)
-    {
-        $dir = dirname($filename);
-        if ($dir != '.') {
-            throw new \UnexpectedValueException(
-                sprintf('Filename "%s" should be a filename, no path.', $filename)
-            );
-        }
+        $this->client->putRequest($url, $body, $headers);
     }
 }

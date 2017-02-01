@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 use LizardsAndPumpkins\MagentoConnector\XmlBuilder\CatalogMerge;
 use LizardsAndPumpkins\MagentoConnector\XmlBuilder\ProductBuilder;

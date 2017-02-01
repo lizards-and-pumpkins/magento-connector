@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 use LizardsAndPumpkins\MagentoConnector\Api\Api;
 
@@ -52,20 +53,6 @@ class LizardsAndPumpkins_MagentoConnector_Adminhtml_LizardsAndPumpkinsController
             Mage::getSingleton('core/session')->addSuccess(
                 sprintf('%s product(s) and %s categorie(s) from queue exported.', $productsExported, $categoriesExported)
             );
-        } catch (Mage_Core_Exception $e) {
-            Mage::getSingleton('core/session')->addError($e->getMessage());
-        }
-        $this->_redirect('/');
-    }
-
-    public function exportAllStocksAction()
-    {
-        try {
-            Mage::helper('lizardsAndPumpkins_magentoconnector/export')->addAllProductIdsToStockExport();
-            $filename = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_stock')->export();
-            $apiUrl = Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/api_url');
-            (new Api($apiUrl))->triggerProductStockImport($filename);
-            Mage::getSingleton('core/session')->addSuccess('All stocks exported');
         } catch (Mage_Core_Exception $e) {
             Mage::getSingleton('core/session')->addError($e->getMessage());
         }

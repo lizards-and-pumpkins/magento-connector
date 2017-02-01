@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 interface LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryCollector
 {

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace LizardsAndPumpkins\MagentoConnector\XmlBuilder;
 
@@ -34,6 +35,11 @@ class ListingXmlTest extends \PHPUnit_Framework_TestCase
     private $stubWebsite;
 
     /**
+     * @var Mage_Core_Model_Store|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $stubStore;
+
+    /**
      * @param string $string
      * @return string
      */
@@ -51,23 +57,30 @@ class ListingXmlTest extends \PHPUnit_Framework_TestCase
         $listingAttributes = [];
         $listing = new \SimpleXMLElement($listingXmlString);
         foreach ($listing->attributes->attribute as $attribute) {
-            $listingAttributes[(string) $attribute['name']] = (string) $attribute;
+            $listingAttributes[(string)$attribute['name']] = (string)$attribute;
         }
         return $listingAttributes;
     }
 
     protected function setUp()
     {
-        $this->stubConfig = $this->getMock(LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig::class);
+        $this->stubConfig = $this->createMock(LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig::class);
+        $this->stubConfig->method('getLocaleFrom')->willReturn('de_DE');
         $this->listingXml = new ListingXml($this->stubConfig);
 
-        $this->stubWebsite = $this->getMock(Mage_Core_Model_Website::class, [], [], '', false);
+        $this->stubWebsite = $this->createMock(Mage_Core_Model_Website::class);
 
-        $stubStore = $this->getMock(Mage_Core_Model_Store::class, [], [], '', false);
-        $stubStore->method('getWebsite')->willReturn($this->stubWebsite);
+        $this->stubStore = $this->createMock(Mage_Core_Model_Store::class);
+        $this->stubStore->method('getCode')->willReturn('foo');
 
-        $this->stubCategory = $this->getMock(Mage_Catalog_Model_Category::class, [], [], '', false);
-        $this->stubCategory->method('getStore')->willReturn($stubStore);
+        $this->stubCategory = $this->createMock(Mage_Catalog_Model_Category::class);
+        $this->stubCategory->method('getStore')->willReturn($this->stubStore);
+        $this->stubCategory->method('getData')->willReturnMap([
+            ['meta_title', null, 'This would only work in a <CDATA> section'],
+            ['description', null, 'Description with <strong>HTML</strong>'],
+            ['meta_description', null, 'this is a meta description'],
+            ['meta_keywords', null, 'meta keywords lap is cool'],
+        ]);
     }
 
     public function testExceptionIsThrownIfStoreIsNotSetOnACategory()
@@ -75,7 +88,7 @@ class ListingXmlTest extends \PHPUnit_Framework_TestCase
         $this->expectException(StoreNotSetOnCategoryException::class);
 
         /** @var Mage_Catalog_Model_Category|\PHPUnit_Framework_MockObject_MockObject $stubCategory */
-        $stubCategory = $this->getMock(Mage_Catalog_Model_Category::class, [], [], '', false);
+        $stubCategory = $this->createMock(Mage_Catalog_Model_Category::class);
         $this->listingXml->buildXml($stubCategory);
     }
 
@@ -106,12 +119,12 @@ class ListingXmlTest extends \PHPUnit_Framework_TestCase
 
     public function testListingNodeContainsWebsiteAttribute()
     {
-        $websiteCode = 'foo';
-        $this->stubWebsite->method('getCode')->willReturn($websiteCode);
+        $storeCode = 'foo';
+        $this->stubStore->method('getCode')->willReturn($storeCode);
 
         $result = $this->listingXml->buildXml($this->stubCategory);
 
-        $this->assertRegExp(sprintf('/<listing [^>]*website="%s"/', $websiteCode), $result->getXml());
+        $this->assertRegExp(sprintf('/<listing [^>]*website="%s"/', $storeCode), $result->getXml());
     }
 
     public function testListingNodeContainsAndCriteriaNode()
