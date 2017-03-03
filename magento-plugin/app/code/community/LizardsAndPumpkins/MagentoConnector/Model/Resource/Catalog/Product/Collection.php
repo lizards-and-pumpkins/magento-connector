@@ -323,7 +323,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
         $simpleProducts->addAttributeToSelect($configurableAttributes);
 
         $configValue = Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/associated_product_attributes');
-        $additionalAttributes = array_filter(preg_split('/\s*,\s*/', trim($configValue), -1, PREG_SPLIT_NO_EMPTY));
+        $additionalAttributes = array_filter(preg_split('/\s*,\s*/', trim((string) $configValue), -1, PREG_SPLIT_NO_EMPTY));
         if (count($additionalAttributes) > 0) {
             $simpleProducts->addAttributeToSelect($additionalAttributes);
         }

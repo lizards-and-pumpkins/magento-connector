@@ -25,10 +25,14 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig
      */
     public function getLocalFilenameTemplate()
     {
+        if ($filename = Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/local_filename_template_override')) {
+            return $filename;
+        }
         $filenameTemplate = Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/local_filename_template');
 
         if (substr_count($filenameTemplate, '%s') !== 1) {
-            Mage::throwException('Export file template must have exact one "%s" placeholder.');
+            $msg = sprintf('Export file template must have exact one "%%s" placeholder, got "%s"', $filenameTemplate);
+            Mage::throwException($msg);
         }
 
         return sprintf($filenameTemplate, time() . '-' . uniqid());
