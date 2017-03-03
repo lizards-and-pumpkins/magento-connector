@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_CollectionTest
     extends \PHPUnit_Framework_TestCase
@@ -21,7 +21,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
                 return $productData;
             }
         }
-        
+
         return null;
     }
 
@@ -52,13 +52,34 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
 
         $nonCanonicalUrlKeys = $productData['non_canonical_url_key'];
         $categoryUrlSuffixLength = strlen(Mage::getStoreConfig('catalog/seo/category_url_suffix'));
-        
+
         foreach ($productData['categories'] as $categoryUrlPath) {
             $categoryUrlKey = substr($categoryUrlPath, 0, -1 * $categoryUrlSuffixLength);
             $productInCategoryUrl = $categoryUrlKey . '/' . $productData['url_key'];
             $missingNonCanonicalUrlMessage = sprintf('Missing non_canonical_url_key %s', $productInCategoryUrl);
             $this->assertContains($productInCategoryUrl, $nonCanonicalUrlKeys, $missingNonCanonicalUrlMessage);
-            
         }
+    }
+
+    public function testAttributeNullValuesAreSetAsEmptyStrings()
+    {
+        $testCollection = new class
+            extends LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collection
+        {
+            protected $_selectAttributes = ['foo' => 123];
+            
+            public function publicSetItemAttributeValue(array $valueInfo)
+            {
+                return $this->_setItemAttributeValue($valueInfo);
+            }
+        };
+        
+        $testCollection->publicSetItemAttributeValue([
+            'entity_id' => 1,
+            'attribute_id' => 123,
+            'value' => null,
+        ]);
+        
+        $this->assertSame('', $testCollection->getData()[1]['foo']);
     }
 }
