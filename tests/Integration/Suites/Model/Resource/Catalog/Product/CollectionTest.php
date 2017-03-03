@@ -37,8 +37,6 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
 
     public function testIncludesProductInCategoryUrlKeysAsNonCanonicalUrlKeys()
     {
-        $this->markTestSkipped('FIX ME');
-        return;
         $this->collection->setPageSize(25);
         $this->collection->setFlag(
             LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collection::FLAG_ADD_CATEGORY_IDS,
