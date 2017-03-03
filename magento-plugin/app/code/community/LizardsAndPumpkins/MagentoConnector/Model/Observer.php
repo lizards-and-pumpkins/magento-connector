@@ -89,26 +89,6 @@ class LizardsAndPumpkins_MagentoConnector_Model_Observer
     }
 
     /**
-     * @param string[] $skus
-     */
-    private function addProductToExportQueueBySkus(array $skus)
-    {
-        $entityIds = array_reduce(array_chunk($skus, 10000), function (array $carry, array $skusPart) {
-            /** @var Mage_Catalog_Model_Resource_Product_Collection $collection */
-            $collection = Mage::getResourceModel('catalog/product_collection')
-                ->addAttributeToFilter('sku', ['in' => $skusPart])
-                ->load();
-            return array_merge($carry, $collection->getLoadedIds());
-        }, []);
-
-        if (count($entityIds) === 0) {
-            return;
-        }
-        
-        $this->addProductToExportQueueByIds($entityIds);
-    }
-
-    /**
      * @param int[] $ids
      */
     private function addProductToExportQueueByIds(array $ids)
