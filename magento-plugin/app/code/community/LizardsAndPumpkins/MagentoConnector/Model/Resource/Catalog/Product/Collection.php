@@ -329,11 +329,21 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
         }
 
         $select = $simpleProducts->getSelect();
-        $select->joinInner(
-            ['link' => $coreResource->getTableName('catalog/product_super_link')],
-            "e.entity_id=link.product_id AND link.parent_id IN ({$connection->quote($this->productIds)})",
-            ['parent_id' => 'link.parent_id']
+        $select->joinLeft(
+            ['super_link' => $coreResource->getTableName('catalog/product_super_link')],
+            "e.entity_id = super_link.product_id AND super_link.parent_id IN ({$connection->quote($this->productIds)})",
+            []
         );
+        $select->joinLeft(
+            ['link' => $coreResource->getTableName('catalog/product_link')],
+            "e.entity_id = link.linked_product_id AND link.product_id IN ({$connection->quote($this->productIds)})",
+            []
+        );
+
+        $select->columns(
+            new Zend_Db_Expr('IF (link.product_id IS NOT NULL, link.product_id, super_link.parent_id) parent_id')
+        );
+        $select->where('link.product_id IS NOT NULL OR super_link.parent_id IS NOT NULL');
 
         $attributesToCopy = array_merge(
             $this->getRequiredAttributeCodes(),
@@ -341,13 +351,10 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
             $additionalAttributes
         );
 
-        $data = [];
-
-        foreach ($simpleProducts->getData() as $row) {
-            $data[$row['parent_id']][] = $this->getProductAttributes($attributesToCopy, $row);
-        }
-
-        return $data;
+        return array_reduce($simpleProducts->getData(), function (array $carry, array $data) use ($attributesToCopy) {
+            $carry[$data['parent_id']][] = $this->getProductAttributes($attributesToCopy, $data);
+            return $carry;
+        }, []);
     }
 
     /**
