@@ -308,7 +308,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
     /**
      * @return array[]
      */
-    public function loadAssociatedSimpleProductData()
+    private function loadAssociatedSimpleProductData()
     {
         $coreResource = $this->getCoreResource();
         $connection = $this->getConnection();
