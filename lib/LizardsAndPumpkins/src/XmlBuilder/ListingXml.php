@@ -107,7 +107,7 @@ class ListingXml
             $xml->startElement('attribute');
             $xml->writeAttribute('name', $attributeName);
             $xml->startCdata();
-            $xml->text($category->getData($attributeName));
+            $xml->text((string) $category->getData($attributeName));
             $xml->endCdata();
             $xml->endElement();
         }, $attributeNames);

@@ -1,5 +1,6 @@
 <?php
-declare(strict_types=1);
+
+declare(strict_types = 1);
 
 class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collection
     extends Mage_Catalog_Model_Resource_Product_Collection
@@ -322,7 +323,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
         $simpleProducts->addAttributeToSelect($configurableAttributes);
 
         $configValue = Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/associated_product_attributes');
-        $additionalAttributes = array_filter(preg_split('/\s*,\s*/', trim($configValue), -1, PREG_SPLIT_NO_EMPTY));
+        $additionalAttributes = array_filter(preg_split('/\s*,\s*/', trim((string) $configValue), -1, PREG_SPLIT_NO_EMPTY));
         if (count($additionalAttributes) > 0) {
             $simpleProducts->addAttributeToSelect($additionalAttributes);
         }
@@ -654,45 +655,43 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
         $rawValue = $valueInfo['value'];
         $attributeCode = array_search($attributeId, $this->_selectAttributes);
 
-        if ($this->hasOptions($attributeId)) {
-            $value = $this->getValuesFromOptions($attributeId, $rawValue);
-        } else {
-            $value = $rawValue;
-        }
+        $values = $this->getValues($attributeId, $rawValue);
+
         if ('tax_class_id' === $attributeCode) {
-            $this->_data[$valueInfo['entity_id']]['tax_class'] = $value;
+            $this->_data[$valueInfo['entity_id']]['tax_class'] = $values;
             $this->_data[$valueInfo['entity_id']]['tax_class_id'] = $rawValue;
         } else {
-            $this->_data[$valueInfo['entity_id']][$attributeCode] = $value;
+            $this->_data[$valueInfo['entity_id']][$attributeCode] = $values;
         }
+
+        return $this;
     }
 
     /**
      * @param int $attributeId
-     * @return bool
-     */
-    private function hasOptions($attributeId)
-    {
-        return count($this->getEavAttributeOptions($attributeId)) > 0;
-    }
-
-    /**
-     * @param int $attributeId
-     * @param string $rawValue
+     * @param string|null $rawValue
      * @return string[]|string
      */
-    private function getValuesFromOptions($attributeId, $rawValue)
+    private function getValues($attributeId, $rawValue)
     {
-        $options = $this->getEavAttributeOptions($attributeId);
+        if (null === $rawValue) {
+            return '';
+        }
+
+        $options = array_values($this->getEavAttributeOptions($attributeId));
+
+        if ([] === $options) {
+            return $rawValue;
+        }
+
         $values = explode(',', $rawValue);
         if (count($values) > 1) {
-            $value = array_map(function ($optionId) use ($options) {
+            return array_map(function ($optionId) use ($options) {
                 return $this->getOptionValue($options, $optionId);
             }, $values);
-        } else {
-            $value = $this->getOptionValue($options, $rawValue);
         }
-        return $value;
+
+        return $this->getOptionValue($options, $rawValue);
     }
 
     /**
@@ -702,25 +701,21 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
      */
     private function getOptionValue(array $options, $optionId)
     {
-        return isset($options[$optionId]) ?
-            $options[$optionId] :
-            $optionId;
+        return $options[$optionId] ?? $optionId;
     }
 
-    /**
-     * @return Mage_Core_Model_Resource
-     */
-    private function getCoreResource()
+    private function getCoreResource(): Mage_Core_Model_Resource
     {
-        return Mage::getSingleton('core/resource');
+        /** @var Mage_Core_Model_Resource $resource */
+        $resource = Mage::getSingleton('core/resource');
+        return $resource;
     }
 
-    /**
-     * @return Mage_Eav_Model_Config
-     */
-    private function getEavConfig()
+    private function getEavConfig(): Mage_Eav_Model_Config
     {
-        return Mage::getSingleton('eav/config');
+        /** @var Mage_Eav_Model_Config $eavConfig */
+        $eavConfig = Mage::getSingleton('eav/config');
+        return $eavConfig;
     }
 
     /**

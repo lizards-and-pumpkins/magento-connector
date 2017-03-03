@@ -64,7 +64,7 @@ abstract class AbstractInitializableEntityExportTest
             'lizardsAndPumpkins/magentoconnector/local_path_for_product_export',
             'file://' . dirname($exportFile) . '/'
         );
-        $store->setConfig('lizardsAndPumpkins/magentoconnector/local_filename_template', basename($exportFile));
+        $store->setConfig('lizardsAndPumpkins/magentoconnector/local_filename_template_override', basename($exportFile));
     }
 
     /**
