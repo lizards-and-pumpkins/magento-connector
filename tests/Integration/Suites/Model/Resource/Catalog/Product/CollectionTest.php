@@ -52,7 +52,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
         $this->assertArrayHasKey('non_canonical_url_key', $productData, $missingKeyMessage);
 
         $nonCanonicalUrlKeys = $productData['non_canonical_url_key'];
-        $categoryUrlSuffixLength = strlen(Mage::getStoreConfig('catalog/seo/category_url_suffix'));
+        $urlSuffix = Mage::getStoreConfig('catalog/seo/category_url_suffix');
+        $urlSuffix = '.' === $urlSuffix[0] ? $urlSuffix : '.' . $urlSuffix;
+        $categoryUrlSuffixLength = strlen($urlSuffix);
 
         foreach ($productData['categories'] as $categoryUrlPath) {
             $categoryUrlKey = substr($categoryUrlPath, 0, -1 * $categoryUrlSuffixLength);
@@ -82,5 +84,45 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
         ]);
         
         $this->assertSame('', $testCollection->getData()[1]['foo']);
+    }
+
+    public function testProductUrlKeySuffixIsAppendedToUrlKeySeparatedByADot()
+    {
+        $storeId = 1;
+        $this->collection->setStore($storeId);
+        $this->collection->addAttributeToSelect('url_key');
+        $urlKeySuffix = 'html';
+        Mage::app()->getStore($storeId)->setConfig('catalog/seo/product_url_suffix', $urlKeySuffix);
+        $this->collection->setPageSize(5);
+        
+        foreach ($this->collection->getData() as $productData) {
+            $this->assertStringEndsWith('.' . $urlKeySuffix, $productData['url_key']);
+        }
+    }
+
+    public function testProductUrlPathIsSeparatedFromUrlKeySuffixByADot()
+    {
+        $storeId = 1;
+        $this->collection->setStore($storeId);
+        $this->collection->addAttributeToSelect('url_path');
+        $urlKeySuffix = 'html';
+        Mage::app()->getStore($storeId)->setConfig('catalog/seo/product_url_suffix', $urlKeySuffix);
+        $this->collection->setPageSize(5);
+        
+        foreach ($this->collection->getData() as $productData) {
+            $this->assertStringEndsWith('.' . $urlKeySuffix, $productData['url_key']);
+        }
+    }
+
+    public function testRawCatalogProductViewPathIsUsedIfNoUrlKeyOrPathIsAddedToSelect()
+    {
+        $storeId = 1;
+        $this->collection->setStore($storeId);
+        Mage::app()->getStore($storeId)->setConfig('catalog/seo/product_url_suffix', 'html');
+        $this->collection->setPageSize(10);
+        
+        foreach ($this->collection->getData() as $productData) {
+            $this->assertSame('catalog/product/view/id/' . $productData['entity_id'], $productData['url_key']);
+        }
     }
 }

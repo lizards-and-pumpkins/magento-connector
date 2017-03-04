@@ -91,7 +91,9 @@ abstract class LizardsAndPumpkins_MagentoConnector_Model_Export_AbstractCategory
                 }, $ancestorIds);
 
                 $urlPath = array_filter($categoryIdsReplacedWithUrlKeys);
-                $category->setData('url_path', implode('/', $urlPath) . $this->config->getCategoryUrlSuffix());
+                $categoryUrlSuffix = $this->config->getCategoryUrlSuffix();
+                if ($categoryUrlSuffix[0] !== '.') $categoryUrlSuffix = '.' . $categoryUrlSuffix;
+                $category->setData('url_path', implode('/', $urlPath) . $categoryUrlSuffix);
             } catch (RuntimeException $e) {
                 if ($e->getCode() === 404) {
                     unset($category);
