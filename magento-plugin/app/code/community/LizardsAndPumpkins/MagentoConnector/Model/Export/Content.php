@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 use LizardsAndPumpkins\MagentoConnector\Api\Api;
+use LizardsAndPumpkins\MagentoConnector\Api\GuzzleHttpApiClient;
 
 class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
 {
@@ -87,7 +88,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
     {
         if (null === $this->memoizedApi) {
             $apiUrl = Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/api_url');
-            $this->memoizedApi = new Api($apiUrl);
+            $this->memoizedApi = new Api($apiUrl, new GuzzleHttpApiClient());
         }
 
         return $this->memoizedApi;
