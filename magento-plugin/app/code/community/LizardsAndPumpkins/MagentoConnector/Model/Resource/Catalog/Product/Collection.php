@@ -329,21 +329,11 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
         }
 
         $select = $simpleProducts->getSelect();
-        $select->joinLeft(
-            ['super_link' => $coreResource->getTableName('catalog/product_super_link')],
-            "e.entity_id = super_link.product_id AND super_link.parent_id IN ({$connection->quote($this->productIds)})",
-            []
+        $select->joinInner(
+            ['r' => $coreResource->getTableName('catalog/product_relation')],
+            "e.entity_id = r.child_id AND r.parent_id IN ({$connection->quote($this->productIds)})",
+            ['parent_id' => 'r.parent_id']
         );
-        $select->joinLeft(
-            ['link' => $coreResource->getTableName('catalog/product_link')],
-            "e.entity_id = link.linked_product_id AND link.product_id IN ({$connection->quote($this->productIds)})",
-            []
-        );
-
-        $select->columns(
-            new Zend_Db_Expr('IF (link.product_id IS NOT NULL, link.product_id, super_link.parent_id) parent_id')
-        );
-        $select->where('link.product_id IS NOT NULL OR super_link.parent_id IS NOT NULL');
 
         $attributesToCopy = array_merge(
             $this->getRequiredAttributeCodes(),
