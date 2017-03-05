@@ -87,8 +87,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
     private function getApi()
     {
         if (null === $this->memoizedApi) {
-            $apiUrl = Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/api_url');
-            $this->memoizedApi = new Api($apiUrl, new GuzzleHttpApiClient());
+            /** @var \LizardsAndPumpkins_MagentoConnector_Helper_Factory $helper */
+            $helper = Mage::helper('lizardsAndPumpkins_magentoconnector/factory');
+            $this->memoizedApi = $helper->createLizardsAndPumpkinsApi();
         }
 
         return $this->memoizedApi;

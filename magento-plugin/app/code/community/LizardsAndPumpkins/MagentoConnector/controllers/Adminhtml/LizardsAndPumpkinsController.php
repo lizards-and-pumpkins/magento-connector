@@ -79,7 +79,8 @@ class LizardsAndPumpkins_MagentoConnector_Adminhtml_LizardsAndPumpkinsController
      */
     private function triggerCatalogUpdateApi($filename)
     {
-        $apiUrl = Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/api_url');
-        (new Api($apiUrl))->triggerProductImport($filename);
+        /** @var \LizardsAndPumpkins_MagentoConnector_Helper_Factory $helper */
+        $helper = Mage::helper('lizardsAndPumpkins_magentoconnector/factory');
+        $helper->createLizardsAndPumpkinsApi()->triggerProductImport($filename);
     }
 }
