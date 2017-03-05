@@ -684,7 +684,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
             return '';
         }
 
-        $options = array_values($this->getEavAttributeOptions($attributeId));
+        $options = $this->getEavAttributeOptions($attributeId);
 
         if ([] === $options) {
             return $rawValue;
