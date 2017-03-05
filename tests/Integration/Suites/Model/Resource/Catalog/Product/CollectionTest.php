@@ -125,4 +125,13 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
             $this->assertSame('catalog/product/view/id/' . $productData['entity_id'], $productData['url_key']);
         }
     }
+
+    public function testSetsTheCorrectTaxClassOnProducts()
+    {
+        $this->collection->setPageSize(10);
+
+        foreach ($this->collection->getData() as $productData) {
+            $this->assertSame('Taxable Goods', $productData['tax_class']);
+        }
+    }
 }
