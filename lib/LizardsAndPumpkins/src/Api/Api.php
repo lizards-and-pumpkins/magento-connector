@@ -57,14 +57,6 @@ class Api
         }
     }
 
-    public function triggerProductStockImport(string $filename)
-    {
-        $headers = ['Accept' => 'application/vnd.lizards-and-pumpkins.multiple_product_stock_quantity.v1+json'];
-
-        $url = $this->url . self::API_ENDPOINT_STOCK_UPDATE;
-        $this->sendApiRequestWithFilename($filename, $url, $headers);
-    }
-
     /**
      * @param string   $id
      * @param string   $content
@@ -88,7 +80,7 @@ class Api
     {
         $headers = ['Accept' => 'application/vnd.lizards-and-pumpkins.current_version.v1+json'];
         $url = $this->url . self::API_ENDPOINT_CURRENT_VERSION;
-        $response = $this->client->getRequest($url, '', $headers);
+        $response = $this->client->getRequest($url, $headers);
 
         return json_decode($response, true);
     }

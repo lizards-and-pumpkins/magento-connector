@@ -43,11 +43,10 @@ class ApiTest extends \PHPUnit_Framework_TestCase
 
         $headers = ['Accept' => 'application/vnd.lizards-and-pumpkins.current_version.v1+json'];
         $url = $this->host . '/current_version';
-        $body = '';
 
         $this->httpClient->expects($this->once())
             ->method('getRequest')
-            ->with($url, $body, $headers)
+            ->with($url, $headers)
             ->willReturn($responseBody);
 
         $response = $this->api->getCurrentVersion();
