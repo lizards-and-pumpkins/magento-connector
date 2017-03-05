@@ -21,10 +21,13 @@ class LizardsAndPumpkins_MagentoConnector_Adminhtml_LizardsAndPumpkins_VersionCo
         Api $api = null
     ) {
         parent::__construct($request, $response, $invokeArgs);
-        $this->api = $api ?? new Api(
-                Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/api_url'),
-                new GuzzleHttpApiClient()
-            );
+        if ($api) {
+            $this->api = $api;
+        } else {
+            /** @var \LizardsAndPumpkins_MagentoConnector_Helper_Factory $helper */
+            $helper = Mage::helper('lizardsAndPumpkins_magentoconnector/factory');
+            $this->api = $helper->createLizardsAndPumpkinsApi();
+        }
     }
 
     public function indexAction()

@@ -217,12 +217,17 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
     private function getUrlKey(array $productData)
     {
         static $productUrlKeySuffix;
+        
+        if (isset($productData['url_path'])) {
+            return $productData['url_path'];
+        }
+        
         $storeId = $this->getStoreId();
         if (is_null($productUrlKeySuffix) || !isset($productUrlKeySuffix[$storeId])) {
             $productUrlKeySuffix[$storeId] = Mage::getStoreConfig('catalog/seo/product_url_suffix', $storeId);
         }
         return isset($productData['url_key']) && $productUrlKeySuffix[$storeId] ?
-            $productData['url_key'] . $productUrlKeySuffix[$storeId] :
+            $productData['url_key'] . '.' . $productUrlKeySuffix[$storeId] :
             'catalog/product/view/id/' . $productData['entity_id'];
     }
 
@@ -323,7 +328,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
         $simpleProducts->addAttributeToSelect($configurableAttributes);
 
         $configValue = Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/associated_product_attributes');
-        $additionalAttributes = array_filter(preg_split('/\s*,\s*/', trim($configValue), -1, PREG_SPLIT_NO_EMPTY));
+        $additionalAttributes = array_filter(preg_split('/\s*,\s*/', trim((string) $configValue), -1, PREG_SPLIT_NO_EMPTY));
         if (count($additionalAttributes) > 0) {
             $simpleProducts->addAttributeToSelect($additionalAttributes);
         }
@@ -438,9 +443,10 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
     private function getCategoryUrlPathsForId($categoryId)
     {
         $categoryUrlKeys = $this->getCategoryUrlKeysForId($categoryId);
-        $suffix = Mage::getStoreConfig('catalog/seo/category_url_suffix', $this->getStoreId());
-        return array_map(function ($urlKey) use ($suffix) {
-            return $urlKey . $suffix;
+        $urlSuffix = Mage::getStoreConfig('catalog/seo/category_url_suffix', $this->getStoreId());
+        $urlSuffix = '.' === $urlSuffix[0] ? $urlSuffix : '.' . $urlSuffix;
+        return array_map(function ($urlKey) use ($urlSuffix) {
+            return $urlKey . $urlSuffix;
         }, $categoryUrlKeys);
     }
 
@@ -675,7 +681,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
             return '';
         }
 
-        $options = array_values($this->getEavAttributeOptions($attributeId));
+        $options = $this->getEavAttributeOptions($attributeId);
 
         if ([] === $options) {
             return $rawValue;

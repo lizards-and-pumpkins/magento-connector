@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 use LizardsAndPumpkins\MagentoConnector\Api\Api;
+use LizardsAndPumpkins\MagentoConnector\Api\GuzzleHttpApiClient;
 
 require __DIR__ . '/../../vendor/autoload.php';
 require 'abstract.php';
@@ -62,8 +63,9 @@ class LizardsAndPumpkins_Export extends Mage_Shell_Abstract
         if (!$this->catalogExporter->wasSomethingExported()) {
             return;
         }
-        $apiUrl = Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/api_url');
-        (new Api($apiUrl))->triggerProductImport($filename);
+        /** @var \LizardsAndPumpkins_MagentoConnector_Helper_Factory $helper */
+        $helper = Mage::helper('lizardsAndPumpkins_magentoconnector/factory');
+        $helper->createLizardsAndPumpkinsApi()->triggerProductImport($filename);
     }
 
     /**
