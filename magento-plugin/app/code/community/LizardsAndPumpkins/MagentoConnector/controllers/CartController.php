@@ -77,7 +77,7 @@ class LizardsAndPumpkins_MagentoConnector_CartController extends Mage_Checkout_C
         ) {
             $this->getResponse()->setRedirect($backUrl);
         } else {
-            if (($this->getRequest()->getActionName() == 'add') && !$this->getRequest()->getParam('in_cart')) {
+            if (($this->getRequest()->getActionName() === 'add') && !$this->getRequest()->getParam('in_cart')) {
                 $this->getSession()->setContinueShoppingUrl($this->_getRefererUrl());
             }
             $this->_redirect('checkout/cart');
