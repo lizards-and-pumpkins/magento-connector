@@ -22,8 +22,9 @@ class PollsExportQueue
             $filename = $exporter->exportProductsInQueue();
             if ($exporter->wasSomethingExported()) {
                 sleep(10);
-                $apiUrl = Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/api_url');
-                (new Api($apiUrl))->triggerProductImport($filename);
+                /** @var \LizardsAndPumpkins_MagentoConnector_Helper_Factory $helper */
+                $helper = Mage::helper('lizardsAndPumpkins_magentoconnector/factory');
+                $helper->createLizardsAndPumpkinsApi()->triggerProductImport($filename);
             }
 
             usleep(self::$sleepMicroSeconds);

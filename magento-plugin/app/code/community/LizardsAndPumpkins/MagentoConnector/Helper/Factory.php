@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+use LizardsAndPumpkins\MagentoConnector\Api\Api;
+use LizardsAndPumpkins\MagentoConnector\Api\GuzzleHttpApiClient;
 use LizardsAndPumpkins\MagentoConnector\Images\ImageLinker;
 use LizardsAndPumpkins\MagentoConnector\Images\ImagesCollector;
 use LizardsAndPumpkins\MagentoConnector\XmlBuilder\CatalogMerge;
@@ -181,5 +183,16 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Factory
     private function getCategoryCollection()
     {
         return Mage::getResourceSingleton('lizardsAndPumpkins_magentoconnector/catalog_category_collection');
+    }
+
+    /**
+     * @return Api
+     */
+    public function createLizardsAndPumpkinsApi()
+    {
+        return new Api(
+            Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/api_url'),
+            new GuzzleHttpApiClient()
+        );
     }
 }
