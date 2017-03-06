@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace LizardsAndPumpkins\MagentoConnector\Api;
 
@@ -45,7 +45,7 @@ class ApiTest extends \PHPUnit_Framework_TestCase
         $url = $this->host . '/current_version';
 
         $this->httpClient->expects($this->once())
-            ->method('getRequest')
+            ->method('doGetRequest')
             ->with($url, $headers)
             ->willReturn($responseBody);
 
@@ -63,7 +63,7 @@ class ApiTest extends \PHPUnit_Framework_TestCase
         $body = ['current_version' => $newVersion];
 
         $this->httpClient->expects($this->once())
-            ->method('putRequest')
+            ->method('doPutRequest')
             ->with($url, json_encode($body), $headers)
             ->willReturn('');
 
@@ -91,7 +91,7 @@ class ApiTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->httpClient->expects($this->once())
-            ->method('putRequest')
+            ->method('doPutRequest')
             ->with($url, $body, $headers)
             ->willReturn($responseBody);
 
@@ -107,7 +107,7 @@ class ApiTest extends \PHPUnit_Framework_TestCase
         $body = json_encode(['fileName' => 'catalog.xml']);
 
         $this->httpClient->expects($this->once())
-            ->method('putRequest')
+            ->method('doPutRequest')
             ->with($url, $body, $headers)
             ->willReturn($responseBody);
 

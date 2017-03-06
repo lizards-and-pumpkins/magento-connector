@@ -25,6 +25,11 @@ class PhpStreamHttpApiClient implements HttpApiClient
         return $this->doHttpRequest($url, $httpRequestContext);
     }
 
+    /**
+     * @param string $url
+     * @param resource $httpRequestContext
+     * @return string
+     */
     private function doHttpRequest(string $url, $httpRequestContext): string
     {
         $this->validateUrl($url);
@@ -56,6 +61,10 @@ class PhpStreamHttpApiClient implements HttpApiClient
         }
     }
 
+    /**
+     * @param string[] $httpResponseHeaders
+     * @return int
+     */
     private function parseResponseStatusCode(array $httpResponseHeaders): int
     {
         foreach ($httpResponseHeaders as $header) {
@@ -85,7 +94,7 @@ class PhpStreamHttpApiClient implements HttpApiClient
      */
     private function concatHeaderNamesAndValues(array $headerNameToValueMap): array
     {
-        return array_map(function ($headerName, $headerValue) {
+        return array_map(function (string $headerName, string $headerValue) {
             return $headerName . ': ' . $headerValue;
         }, array_keys($headerNameToValueMap), array_values($headerNameToValueMap));
     }

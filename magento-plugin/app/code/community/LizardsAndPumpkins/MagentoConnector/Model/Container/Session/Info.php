@@ -1,5 +1,6 @@
 <?php
-declare(strict_types=1);
+
+declare(strict_types = 1);
 
 class LizardsAndPumpkins_MagentoConnector_Model_Container_Session_Info
     extends Enterprise_PageCache_Model_Container_Abstract

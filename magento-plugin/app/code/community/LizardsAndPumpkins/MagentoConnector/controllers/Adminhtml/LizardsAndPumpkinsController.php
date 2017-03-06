@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 class LizardsAndPumpkins_MagentoConnector_Adminhtml_LizardsAndPumpkinsController
     extends Mage_Adminhtml_Controller_Action
