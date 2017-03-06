@@ -6,7 +6,7 @@ namespace LizardsAndPumpkins\MagentoConnector\Api;
 
 class PhpStreamHttpApiClient implements HttpApiClient
 {
-    public function putRequest(string $url, string $body, array $headers): string
+    public function doPutRequest(string $url, string $body, array $headers): string
     {
         $httpRequestContext = stream_context_create(['http' => [
             'method' => 'PUT',
@@ -16,7 +16,7 @@ class PhpStreamHttpApiClient implements HttpApiClient
         return $this->doHttpRequest($url, $httpRequestContext);
     }
 
-    public function getRequest(string $url, array $headers): string
+    public function doGetRequest(string $url, array $headers): string
     {
         $httpRequestContext = stream_context_create(['http' => [
             'method' => 'GET',

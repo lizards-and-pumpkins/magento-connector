@@ -43,7 +43,7 @@ class Api
     {
         $this->validateFilename($filename);
         $body = json_encode(['fileName' => $filename]);
-        $this->client->putRequest($url, $body, $headers);
+        $this->client->doPutRequest($url, $body, $headers);
     }
 
     /**
@@ -73,14 +73,14 @@ class Api
         $url = $this->url . self::API_ENDPOINT_CONTENT_BLOCK_UPDATE . $id;
         $body = json_encode(array_merge(['content' => $content, 'context' => $context], $keyGeneratorParameters));
 
-        $this->client->putRequest($url, $body, $headers);
+        $this->client->doPutRequest($url, $body, $headers);
     }
 
     public function getCurrentVersion(): array
     {
         $headers = ['Accept' => 'application/vnd.lizards-and-pumpkins.current_version.v1+json'];
         $url = $this->url . self::API_ENDPOINT_CURRENT_VERSION;
-        $response = $this->client->getRequest($url, $headers);
+        $response = $this->client->doGetRequest($url, $headers);
 
         return json_decode($response, true);
     }
@@ -91,6 +91,6 @@ class Api
         $url = $this->url . self::API_ENDPOINT_CURRENT_VERSION;
         $body = json_encode(['current_version' => $newVersion]);
 
-        $this->client->putRequest($url, $body, $headers);
+        $this->client->doPutRequest($url, $body, $headers);
     }
 }

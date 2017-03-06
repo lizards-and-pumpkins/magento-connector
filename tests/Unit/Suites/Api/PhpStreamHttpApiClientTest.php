@@ -49,7 +49,7 @@ class PhpStreamHttpApiClientTest extends TestCase
         $this->expectException(InvalidUrlException::class);
         $this->expectExceptionMessage('Lizards & Pumpkins API URL must not be empty.');
         
-        (new PhpStreamHttpApiClient())->getRequest('', []);
+        (new PhpStreamHttpApiClient())->doGetRequest('', []);
     }
 
     public function testThrowsExceptionIfPutUrlIsEmpty()
@@ -57,7 +57,7 @@ class PhpStreamHttpApiClientTest extends TestCase
         $this->expectException(InvalidUrlException::class);
         $this->expectExceptionMessage('Lizards & Pumpkins API URL must not be empty.');
         
-        (new PhpStreamHttpApiClient())->putRequest('', '', []);
+        (new PhpStreamHttpApiClient())->doPutRequest('', '', []);
     }
 
     public function testThrowsExceptionIfGetUrlCanNotBeParsed()
@@ -67,7 +67,7 @@ class PhpStreamHttpApiClientTest extends TestCase
         $this->expectException(InvalidUrlException::class);
         $this->expectExceptionMessage('Unable to parse Lizards & Pumpkins API URL "<foo this invalid url!>".');
 
-        (new PhpStreamHttpApiClient())->getRequest('<foo this invalid url!>', []);
+        (new PhpStreamHttpApiClient())->doGetRequest('<foo this invalid url!>', []);
     }
 
     public function testThrowsExceptionIfGetUrlWithoutHostIsSpecified()
@@ -75,7 +75,7 @@ class PhpStreamHttpApiClientTest extends TestCase
         $this->expectException(InvalidUrlException::class);
         $this->expectExceptionMessage('Unable to parse host from Lizards & Pumpkins API URL "/foo".');
         
-        (new PhpStreamHttpApiClient())->getRequest('/foo', []);
+        (new PhpStreamHttpApiClient())->doGetRequest('/foo', []);
     }
 
     public function testThrowsExceptionForNonHttpSchemaGetUrl()
@@ -83,7 +83,7 @@ class PhpStreamHttpApiClientTest extends TestCase
         $this->expectException(InvalidUrlException::class);
         $this->expectExceptionMessage('Lizards & Pumpkins API URL must start with "http" or "https", got "ssh://foo".');
 
-        (new PhpStreamHttpApiClient())->getRequest('ssh://foo', []);
+        (new PhpStreamHttpApiClient())->doGetRequest('ssh://foo', []);
     }
 
     /**
@@ -98,7 +98,7 @@ class PhpStreamHttpApiClientTest extends TestCase
         self::$simulateHttpResponseBody = '';
         
         $failingTestApiClient = $this->createTestApiClientWithResponseCode('HTTP/1.1 ' . $failureHttpStatus);
-        $failingTestApiClient->getRequest('http://foo.com/rest/bar', []);
+        $failingTestApiClient->doGetRequest('http://foo.com/rest/bar', []);
     }
 
     public function failureHttpStatusProvider(): array
@@ -117,7 +117,7 @@ class PhpStreamHttpApiClientTest extends TestCase
     {
         $testApiClient = $this->createTestApiClientWithResponseCode('HTTP/1.1 ' . $successHttpStatus);
         self::$simulateHttpResponseBody = 'baz';
-        $this->assertSame('baz', $testApiClient->getRequest('http://foo.com/rest/bar', []));
+        $this->assertSame('baz', $testApiClient->doGetRequest('http://foo.com/rest/bar', []));
     }
 
     public function successHttpStatusProvider(): array
@@ -133,7 +133,7 @@ class PhpStreamHttpApiClientTest extends TestCase
     {
         $testApiClient = $this->createTestApiClientWithResponseCode('HTTP/1.1 200 OK');
         self::$simulateHttpResponseBody = 'baz';
-        $testApiClient->getRequest('http://bar.foo', []);
+        $testApiClient->doGetRequest('http://bar.foo', []);
 
         $this->assertSame('GET', self::$streamContextOptionsSpy['http']['method']);
     }
@@ -142,7 +142,7 @@ class PhpStreamHttpApiClientTest extends TestCase
     {
         $testApiClient = $this->createTestApiClientWithResponseCode('HTTP/1.1 200 OK');
         self::$simulateHttpResponseBody = 'baz';
-        $testApiClient->getRequest('http://bar.foo', []);
+        $testApiClient->doGetRequest('http://bar.foo', []);
         
         $this->assertArrayNotHasKey('content', self::$streamContextOptionsSpy['http']);
     }
@@ -151,7 +151,7 @@ class PhpStreamHttpApiClientTest extends TestCase
     {
         $testApiClient = $this->createTestApiClientWithResponseCode('HTTP/1.1 200 OK');
         self::$simulateHttpResponseBody = 'qux';
-        $testApiClient->getRequest('http://bar.foo', ['Foo-Bar' => 'Baz']);
+        $testApiClient->doGetRequest('http://bar.foo', ['Foo-Bar' => 'Baz']);
 
         $this->assertSame(['Foo-Bar: Baz'], self::$streamContextOptionsSpy['http']['header']);
     }
@@ -160,14 +160,14 @@ class PhpStreamHttpApiClientTest extends TestCase
     {
         $testApiClient = $this->createTestApiClientWithResponseCode('HTTP/1.1 200 OK');
         self::$simulateHttpResponseBody = 'qux';
-        $this->assertSame('qux', $testApiClient->putRequest('http://foo.com/rest/bar', '', []));
+        $this->assertSame('qux', $testApiClient->doPutRequest('http://foo.com/rest/bar', '', []));
     }
 
     public function testUsesHttpPUTMethodForPutRequest()
     {
         $testApiClient = $this->createTestApiClientWithResponseCode('HTTP/1.1 200 OK');
         self::$simulateHttpResponseBody = 'baz';
-        $testApiClient->putRequest('http://bar.foo', '', []);
+        $testApiClient->doPutRequest('http://bar.foo', '', []);
 
         $this->assertSame('PUT', self::$streamContextOptionsSpy['http']['method']);
     }
@@ -176,7 +176,7 @@ class PhpStreamHttpApiClientTest extends TestCase
     {
         $testApiClient = $this->createTestApiClientWithResponseCode('HTTP/1.1 200 OK');
         self::$simulateHttpResponseBody = 'qux';
-        $testApiClient->putRequest('http://bar.foo', 'baz', []);
+        $testApiClient->doPutRequest('http://bar.foo', 'baz', []);
 
         $this->assertSame('baz', self::$streamContextOptionsSpy['http']['content']);
     }
@@ -185,7 +185,7 @@ class PhpStreamHttpApiClientTest extends TestCase
     {
         $testApiClient = $this->createTestApiClientWithResponseCode('HTTP/1.1 200 OK');
         self::$simulateHttpResponseBody = 'qux';
-        $testApiClient->putRequest('http://bar.foo', '', ['Foo-Bar' => 'Baz', 'Fizz' => 'Buz']);
+        $testApiClient->doPutRequest('http://bar.foo', '', ['Foo-Bar' => 'Baz', 'Fizz' => 'Buz']);
         
         $this->assertSame([
             'Foo-Bar: Baz',
@@ -202,7 +202,7 @@ class PhpStreamHttpApiClientTest extends TestCase
         self::$simulateHttpResponseBody = '';
 
         $failingTestApiClient = $this->createTestApiClientWithResponseCode('HTTP/1.1 500 Server Error');
-        $failingTestApiClient->putRequest('http://foo.bar/rest', '', []);
+        $failingTestApiClient->doPutRequest('http://foo.bar/rest', '', []);
     }
 }
 

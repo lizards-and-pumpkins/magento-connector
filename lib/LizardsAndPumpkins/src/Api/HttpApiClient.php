@@ -18,7 +18,7 @@ interface HttpApiClient
      * @return string
      * @throws \LizardsAndPumpkins\MagentoConnector\Api\InvalidUrlException
      */
-    public function putRequest(string $url, string $body, array $headers): string;
+    public function doPutRequest(string $url, string $body, array $headers): string;
 
     /**
      * Headers array format:
@@ -31,5 +31,5 @@ interface HttpApiClient
      * @return string
      * @throws \LizardsAndPumpkins\MagentoConnector\Api\InvalidUrlException
      */
-    public function getRequest(string $url, array $headers): string;
+    public function doGetRequest(string $url, array $headers): string;
 }
