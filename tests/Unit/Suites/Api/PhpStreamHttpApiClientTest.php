@@ -86,23 +86,47 @@ class PhpStreamHttpApiClientTest extends TestCase
         (new PhpStreamHttpApiClient())->getRequest('ssh://foo', []);
     }
 
-    public function testThrowsAnExceptionOnNonSuccessfulGetRequests()
+    /**
+     * @dataProvider failureHttpStatusProvider
+     */
+    public function testThrowsAnExceptionOnNonSuccessfulGetRequests(string $failureHttpStatus)
     {
         $this->expectException(RequestFailedException::class);
         $expectedMessage = 'The HTTP response status code of the Lizards & Pumpkins API ' .
-                   'is not within the expected 200-299 range, got 403';
+                   'is not within the expected 200-207 range, got ' . (int) $failureHttpStatus;
         $this->expectExceptionMessage($expectedMessage);
         self::$simulateHttpResponseBody = '';
         
-        $failingTestApiClient = $this->createTestApiClientWithResponseCode('HTTP/1.1 403 Forbidden');
+        $failingTestApiClient = $this->createTestApiClientWithResponseCode('HTTP/1.1 ' . $failureHttpStatus);
         $failingTestApiClient->getRequest('http://foo.com/rest/bar', []);
     }
 
-    public function testReturnsTheResponseBodyForGetRequest()
+    public function failureHttpStatusProvider(): array
     {
-        $testApiClient = $this->createTestApiClientWithResponseCode('HTTP/1.1 200 OK');
+        return [
+            'Lower boundary' => ['199 Unreal Status Code'],
+            'Upper boundary' => ['208 Already Reported'],
+            'Beyond upper boundary' => ['403 Forbidden']
+        ];
+    }
+
+    /**
+     * @dataProvider successHttpStatusProvider
+     */
+    public function testReturnsTheResponseBodyForGetRequest(string $successHttpStatus)
+    {
+        $testApiClient = $this->createTestApiClientWithResponseCode('HTTP/1.1 ' . $successHttpStatus);
         self::$simulateHttpResponseBody = 'baz';
         $this->assertSame('baz', $testApiClient->getRequest('http://foo.com/rest/bar', []));
+    }
+
+    public function successHttpStatusProvider(): array
+    {
+        return [
+            'Lower boundary' => ['200 OK'],
+            'Within bounds' => ['201 Accepted'],
+            'Upper boundary' => ['207 Multi-Status'],
+        ];
     }
 
     public function testUsesHttpGETMethodForGetRequest()
@@ -173,7 +197,7 @@ class PhpStreamHttpApiClientTest extends TestCase
     {
         $this->expectException(RequestFailedException::class);
         $expectedMessage = 'The HTTP response status code of the Lizards & Pumpkins API ' .
-                          'is not within the expected 200-299 range, got 500';
+                          'is not within the expected 200-207 range, got 500';
         $this->expectExceptionMessage($expectedMessage);
         self::$simulateHttpResponseBody = '';
 

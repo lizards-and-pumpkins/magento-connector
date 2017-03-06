@@ -70,10 +70,10 @@ class PhpStreamHttpApiClient implements HttpApiClient
     private function validateHttpResponse(array $http_response_header = null)
     {
         $httpResponseStatusCode = $this->parseResponseStatusCode($this->getRawResponseHeaders($http_response_header));
-        if ($httpResponseStatusCode < 200 || $httpResponseStatusCode >= 300) {
+        if ($httpResponseStatusCode < 200 || $httpResponseStatusCode >= 208) {
             $message = sprintf(
                 'The HTTP response status code of the Lizards & Pumpkins API ' .
-                'is not within the expected 200-299 range, got %d', $httpResponseStatusCode
+                'is not within the expected 200-207 range, got %d', $httpResponseStatusCode
             );
             throw new RequestFailedException($message);
         }
