@@ -67,9 +67,9 @@ class PhpStreamHttpApiClient implements HttpApiClient
         return 0;
     }
 
-    private function validateHttpResponse(array $http_response_header = null)
+    private function validateHttpResponse(array $phpResponseHeaders = null)
     {
-        $httpResponseStatusCode = $this->parseResponseStatusCode($this->getRawResponseHeaders($http_response_header));
+        $httpResponseStatusCode = $this->parseResponseStatusCode($this->getRawResponseHeaders($phpResponseHeaders));
         if ($httpResponseStatusCode < 200 || $httpResponseStatusCode >= 208) {
             $message = sprintf(
                 'The HTTP response status code of the Lizards & Pumpkins API ' .
