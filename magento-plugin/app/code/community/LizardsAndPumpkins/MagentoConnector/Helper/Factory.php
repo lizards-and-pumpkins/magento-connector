@@ -1,8 +1,9 @@
 <?php
-declare(strict_types=1);
+
+declare(strict_types = 1);
 
 use LizardsAndPumpkins\MagentoConnector\Api\Api;
-use LizardsAndPumpkins\MagentoConnector\Api\GuzzleHttpApiClient;
+use LizardsAndPumpkins\MagentoConnector\Api\PhpStreamHttpApiClient;
 use LizardsAndPumpkins\MagentoConnector\Images\ImageLinker;
 use LizardsAndPumpkins\MagentoConnector\Images\ImagesCollector;
 use LizardsAndPumpkins\MagentoConnector\XmlBuilder\CatalogMerge;
@@ -28,10 +29,33 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Factory
      * @var LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig
      */
     private $config;
+    
+    private static $autoloaderRegistered = false; 
 
     public function __construct()
     {
         $this->setImageExportStrategySymlink();
+        
+        $this->registerLibraryAutoloader();
+    }
+
+    private function registerLibraryAutoloader()
+    {
+        if (self::$autoloaderRegistered) {
+            return;
+        }
+        self::$autoloaderRegistered = true;
+        spl_autoload_register(function ($class) {
+            $prefix = 'LizardsAndPumpkins\\';
+            if (strncmp($prefix, $class, strlen($prefix)) !== 0) {
+                return;
+            }
+            $classFile = str_replace('\\', '/', $class) . '.php';
+            $file = BP . '/lib/' . $classFile;
+            if (file_exists($file)) {
+                require $file;
+            }
+        }, false, true);
     }
     
     public function reset()
@@ -192,7 +216,7 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Factory
     {
         return new Api(
             Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/api_url'),
-            new GuzzleHttpApiClient()
+            new PhpStreamHttpApiClient()
         );
     }
 }

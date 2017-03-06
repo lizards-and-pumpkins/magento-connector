@@ -1,9 +1,8 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 use LizardsAndPumpkins\MagentoConnector\Api\Api;
-use LizardsAndPumpkins\MagentoConnector\Api\GuzzleHttpApiClient;
 use LizardsAndPumpkins\MagentoConnector\Api\RequestFailedException;
 
 class LizardsAndPumpkins_MagentoConnector_Adminhtml_LizardsAndPumpkins_VersionController

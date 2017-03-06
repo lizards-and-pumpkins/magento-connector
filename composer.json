@@ -18,9 +18,6 @@
       "email": "fabian@lizardsandpumpkins.com"
     }
   ],
-  "require": {
-    "guzzlehttp/guzzle": "~6.0"
-  },
   "require-dev": {
     "phpunit/phpunit": "^5.2"
   },

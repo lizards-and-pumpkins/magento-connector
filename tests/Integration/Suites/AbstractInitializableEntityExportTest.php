@@ -1,5 +1,6 @@
 <?php
-declare(strict_types=1);
+
+declare(strict_types = 1);
 
 abstract class AbstractInitializableEntityExportTest
     extends \PHPUnit_Framework_TestCase

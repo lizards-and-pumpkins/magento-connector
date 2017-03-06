@@ -1,5 +1,6 @@
 <?php
-declare(strict_types=1);
+
+declare(strict_types = 1);
 
 class LizardsAndPumpkins_MagentoConnector_Helper_Export
     implements LizardsAndPumpkins_MagentoConnector_Helper_ProductsToUpdateQueueReader

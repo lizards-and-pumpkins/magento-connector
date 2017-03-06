@@ -1,10 +1,7 @@
 <?php
-declare(strict_types=1);
 
-use LizardsAndPumpkins\MagentoConnector\Api\Api;
-use LizardsAndPumpkins\MagentoConnector\Api\GuzzleHttpApiClient;
+declare(strict_types = 1);
 
-require __DIR__ . '/../../vendor/autoload.php';
 require 'abstract.php';
 
 class LizardsAndPumpkins_Export extends Mage_Shell_Abstract

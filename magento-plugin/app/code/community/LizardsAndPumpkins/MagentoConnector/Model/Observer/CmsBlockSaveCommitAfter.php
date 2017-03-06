@@ -1,7 +1,6 @@
 <?php
-declare(strict_types=1);
 
-require_once __DIR__ . '/../../../../../../../../vendor/autoload.php';
+declare(strict_types = 1);
 
 class LizardsAndPumpkins_MagentoConnector_Model_Observer_CmsBlockSaveCommitAfter
 {

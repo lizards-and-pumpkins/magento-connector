@@ -1,9 +1,6 @@
 #!/usr/bin/env php
 <?php
 
-use LizardsAndPumpkins\MagentoConnector\Api\Api;
-
-require __DIR__ . '/vendor/autoload.php';
 require 'app/Mage.php';
 Mage::app();
 

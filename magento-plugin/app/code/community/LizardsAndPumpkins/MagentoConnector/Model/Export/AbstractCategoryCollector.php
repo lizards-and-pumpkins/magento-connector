@@ -1,5 +1,6 @@
 <?php
-declare(strict_types=1);
+
+declare(strict_types = 1);
 
 abstract class LizardsAndPumpkins_MagentoConnector_Model_Export_AbstractCategoryCollector
     implements LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryCollector
