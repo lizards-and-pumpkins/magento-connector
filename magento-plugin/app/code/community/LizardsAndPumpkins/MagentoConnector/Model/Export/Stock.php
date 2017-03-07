@@ -24,7 +24,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Stock
     public function export()
     {
         $helper = Mage::helper('lizardsAndPumpkins_magentoconnector/export');
-        $stockBuilder = new StockBuilder();
+        $stockBuilder = $this->getFactory()->createStockBuilder();
 
         /* @var $messages Zend_Queue_Message_Iterator */
         $messages = $helper->getStockUpdatesToExport();
@@ -39,6 +39,14 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Stock
         $filename = $this->getStockUploader()->getFileName();
         $helper->deleteStockMessages($this->messagesToDelete);
         return $filename;
+    }
+
+    /**
+     * @return \LizardsAndPumpkins_MagentoConnector_Helper_Factory
+     */
+    private function getFactory()
+    {
+        return Mage::helper('lizardsAndPumpkins_magentoconnector/factory');
     }
 
     /**

@@ -3,7 +3,6 @@
 declare(strict_types = 1);
 
 use LizardsAndPumpkins\MagentoConnector\XmlBuilder\CatalogMerge;
-use LizardsAndPumpkins\MagentoConnector\XmlBuilder\ProductBuilder;
 
 class LizardsAndPumpkins_MagentoConnector_Model_Export_PrepareProductDataForXmlBuilder
 {
@@ -44,7 +43,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_PrepareProductDataForXmlB
      */
     public function process(array $productData)
     {
-        $productBuilder = new ProductBuilder(
+        $productBuilder = $this->getFactory()->createProductBuilder(
             $this->transformData($productData),
             $this->getContextData($productData)
         );
@@ -52,6 +51,14 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_PrepareProductDataForXmlB
         $this->merge->addProduct($xmlString);
         $partialXmlString = $this->merge->getPartialXmlString() . "\n";
         $this->getUploader()->writePartialXmlString($partialXmlString);
+    }
+
+    /**
+     * @return LizardsAndPumpkins_MagentoConnector_Helper_Factory
+     */
+    private function getFactory()
+    {
+        return Mage::helper('lizardsAndPumpkins_magentoconnector/factory');
     }
 
     /**
