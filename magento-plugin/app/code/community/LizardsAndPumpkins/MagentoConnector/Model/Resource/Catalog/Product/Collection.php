@@ -637,7 +637,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
     /**
      * @param bool $printQuery
      * @param bool $logQuery
-     * @return $this
+     * @return Mage_Catalog_Model_Resource_Product_Collection
      */
     public function _loadAttributes($printQuery = false, $logQuery = false)
     {
