@@ -2,8 +2,6 @@
 
 declare(strict_types = 1);
 
-use LizardsAndPumpkins\MagentoConnector\Model\Catalog\Exception\InvalidCategoryIdException;
-
 class LizardsAndPumpkins_MagentoConnector_Model_Catalog_CategoryUrlKeyService
 {
     /**
@@ -30,7 +28,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Catalog_CategoryUrlKeyService
         $intId = (int) $categoryId;
         if (0 === $intId) {
             $message = sprintf('The category ID has to be an integer, got "%s"', $this->getType($categoryId));
-            throw new InvalidCategoryIdException($message);
+            throw new LizardsAndPumpkins_MagentoConnector_Model_Catalog_Exception_InvalidCategoryIdException($message);
         }
         $categoriesData = $this->categories->getDataForStore($store);
         if (!isset($categoriesData[$intId])) {

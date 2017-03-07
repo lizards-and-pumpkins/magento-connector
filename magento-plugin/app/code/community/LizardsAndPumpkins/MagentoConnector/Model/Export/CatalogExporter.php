@@ -3,8 +3,6 @@
 declare(strict_types = 1);
 
 use LizardsAndPumpkins\MagentoConnector\Images\ImagesCollector;
-use LizardsAndPumpkins\MagentoConnector\XmlBuilder\CatalogMerge;
-use LizardsAndPumpkins\MagentoConnector\XmlBuilder\ListingXml;
 
 class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
 {
@@ -216,11 +214,10 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
     public function exportCategories(
         LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryCollector $categoryCollector
     ) {
-        $xmlMerge = new CatalogMerge();
-        $config = $this->getMagentoConfig();
+        $xmlMerge = $this->getFactory()->createCatalogMerge();
 
         $uploader = new LizardsAndPumpkins_MagentoConnector_Model_ProductXmlUploader();
-        $listingXml = new ListingXml($config);
+        $listingXml = $this->getFactory()->createListingXml();
 
         while ($category = $categoryCollector->getCategory()) {
             $categoryXml = $listingXml->buildXml($category);
@@ -328,6 +325,6 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
      */
     private function getMagentoConfig()
     {
-        return Mage::getModel('lizardsAndPumpkins_magentoconnector/export_magentoConfig');
+        return $this->getFactory()->getConfig();
     }
 }

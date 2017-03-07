@@ -2,8 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace LizardsAndPumpkins\MagentoConnector\Model\Catalog\Exception;
-
-class InvalidCategoryIdException extends \InvalidArgumentException
+class LizardsAndPumpkins_MagentoConnector_Model_Catalog_Exception_InvalidCategoryIdException
+        extends \InvalidArgumentException
 {
 }

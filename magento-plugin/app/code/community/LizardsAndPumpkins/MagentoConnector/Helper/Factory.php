@@ -7,6 +7,9 @@ use LizardsAndPumpkins\MagentoConnector\Api\PhpStreamHttpApiClient;
 use LizardsAndPumpkins\MagentoConnector\Images\ImageLinker;
 use LizardsAndPumpkins\MagentoConnector\Images\ImagesCollector;
 use LizardsAndPumpkins\MagentoConnector\XmlBuilder\CatalogMerge;
+use LizardsAndPumpkins\MagentoConnector\XmlBuilder\ListingXml;
+use LizardsAndPumpkins\MagentoConnector\XmlBuilder\ProductBuilder;
+use LizardsAndPumpkins\MagentoConnector\XmlBuilder\StockBuilder;
 
 class LizardsAndPumpkins_MagentoConnector_Helper_Factory
 {
@@ -73,6 +76,22 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Factory
             $this->catalogMerge = new CatalogMerge();
         }
         return $this->catalogMerge;
+    }
+
+    /**
+     * @return CatalogMerge
+     */
+    public function createCatalogMerge()
+    {
+        return new CatalogMerge();
+    }
+
+    /**
+     * @return ListingXml
+     */
+    public function createListingXml()
+    {
+        return new ListingXml($this->getConfig());
     }
 
     /**
@@ -176,12 +195,22 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Factory
     /**
      * @return LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig
      */
-    private function getConfig()
+    public function getConfig()
     {
         if (null === $this->config) {
             $this->config = new LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig();
         }
         return $this->config;
+    }
+
+    /**
+     * @param mixed[] $productData
+     * @param string[] $context
+     * @return ProductBuilder
+     */
+    public function createProductBuilder(array $productData, array $context)
+    {
+        return new ProductBuilder($productData, $context);
     }
 
     /**
@@ -218,5 +247,13 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Factory
             Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/api_url'),
             new PhpStreamHttpApiClient()
         );
+    }
+
+    /**
+     * @return StockBuilder
+     */
+    public function createStockBuilder()
+    {
+        return new StockBuilder();
     }
 }

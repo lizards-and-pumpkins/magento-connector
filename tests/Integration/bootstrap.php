@@ -6,7 +6,21 @@ error_reporting(E_ALL);
 
 require __DIR__ . '/../../vendor/autoload.php';
 
-$pathToMage = $_SERVER['MAGENTO_ROOT_PATH'] . '/app/Mage.php';
+$pathToMage = (function () {
+    if (isset($_SERVER['MAGENTO_ROOT_PATH'])) {
+        return $_SERVER['MAGENTO_ROOT_PATH'] . '/app/Mage.php';
+    }
+    // if code is within src/magento-extensions/magento-connector
+    if (file_exists(__DIR__ . '/../../../../magento/app/Mage.php')) {
+        return __DIR__ . '/../../../../magento/app/Mage.php';
+    }
+    // if code is within .modman within the magento base directory 
+    if (file_exists(__DIR__ . '/../app/Mage.php')) {
+        return __DIR__ . '/../magento/app/Mage.php';
+    }
+    return 'app/Mage.php';
+})();
+
 if (! file_exists($pathToMage)) {
     throw new \RuntimeException(
         sprintf('%s does not exist. Maybe "MAGENTO_ROOT_PATH" is not set in phpunit.xml?', $pathToMage)
