@@ -14,6 +14,9 @@ class FactoryTest extends \PHPUnit\Framework\TestCase
     
     public function testReturnsALizardsAndPumpkinsApiInstance()
     {
+        $fixtureApiUrl = 'http://example.com';
+        Mage::app()->getStore()->setConfig('lizardsAndPumpkins/magentoconnector/api_url', $fixtureApiUrl);
+        
         $result = $this->factoryHelper->createLizardsAndPumpkinsApi();
         $this->assertInstanceOf(\LizardsAndPumpkins\MagentoConnector\Api\Api::class, $result);
     }
