@@ -67,49 +67,6 @@ class LizardsAndPumpkins_MagentoConnector_Model_Observer
         $this->addProductToExportQueueByIds($productIds);
     }
 
-    public function cobbyAfterProductImport(Varien_Event_Observer $observer)
-    {
-        $skus = array_keys($observer->getData('entities'));
-        $this->addProductToExportQueueBySkus($skus);
-    }
-
-    public function cobbyAfterProductStockImport(Varien_Event_Observer $observer)
-    {
-        $this->addProductToExportQueueByIds($observer->getData('products'));
-    }
-
-    public function cobbyAfterProductCategoryImport(Varien_Event_Observer $observer)
-    {
-        $this->addProductToExportQueueByIds($observer->getData('products'));
-    }
-
-    public function cobbyAfterProductMediaImport(Varien_Event_Observer $observer)
-    {
-        $this->addProductToExportQueueByIds($observer->getData('products'));
-    }
-
-    public function cobbyAfterProductUrlImport(Varien_Event_Observer $observer)
-    {
-        $this->addProductToExportQueueByIds($observer->getData('products'));
-    }
-
-    public function cobbyAfterProductConfigurableImport(Varien_Event_Observer $observer)
-    {
-        $this->addProductToExportQueueByIds($observer->getData('products'));
-    }
-
-    public function magmiStockWasUpdated(Varien_Event_Observer $observer)
-    {
-        $skus = $observer->getData('skus');
-        $this->addProductToExportQueueBySkus($skus);
-    }
-
-    public function magmiProductsWereUpdated(Varien_Event_Observer $observer)
-    {
-        $skus = $observer->getData('skus');
-        $this->addProductToExportQueueBySkus($skus);
-    }
-
     public function controllerActionPredispatchCheckoutCartAdd(Varien_Event_Observer $observer)
     {
         $formKey = Mage::getSingleton('core/session')->getFormKey();
@@ -130,26 +87,6 @@ class LizardsAndPumpkins_MagentoConnector_Model_Observer
         return array_map(function (Varien_Object $itemHolder) {
             return $itemHolder->getData('product_id');
         }, $itemHolder->getAllItems());
-    }
-
-    /**
-     * @param string[] $skus
-     */
-    private function addProductToExportQueueBySkus(array $skus)
-    {
-        $entityIds = array_reduce(array_chunk($skus, 10000), function (array $carry, array $skusPart) {
-            /** @var Mage_Catalog_Model_Resource_Product_Collection $collection */
-            $collection = Mage::getResourceModel('catalog/product_collection')
-                ->addAttributeToFilter('sku', ['in' => $skusPart])
-                ->load();
-            return array_merge($carry, $collection->getLoadedIds());
-        }, []);
-
-        if (count($entityIds) === 0) {
-            return;
-        }
-        
-        $this->addProductToExportQueueByIds($entityIds);
     }
 
     /**

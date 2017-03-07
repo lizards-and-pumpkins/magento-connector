@@ -68,22 +68,12 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector implemen
             return null;
         }
 
-        $products = $this->getProductDataForCurrentBatch();
-
+        $products = $this->createProductCollectionForCurrentBatch()->getData();
         $this->productIterator = new \ArrayIterator($products);
 
         return $this->hasIteratorProductForCurrentStore() ?
             $this->productIterator->current() :
             $this->getProduct();
-    }
-
-    /**
-     * @return array[]
-     */
-    private function getProductDataForCurrentBatch()
-    {
-        $products = $this->createProductCollectionForCurrentBatch();
-        return $products->getData();
     }
 
     /**

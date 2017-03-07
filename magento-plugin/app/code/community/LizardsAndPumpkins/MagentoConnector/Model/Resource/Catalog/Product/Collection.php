@@ -313,7 +313,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
     /**
      * @return array[]
      */
-    public function loadAssociatedSimpleProductData()
+    private function loadAssociatedSimpleProductData()
     {
         $coreResource = $this->getCoreResource();
         $connection = $this->getConnection();
@@ -335,9 +335,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
 
         $select = $simpleProducts->getSelect();
         $select->joinInner(
-            ['link' => $coreResource->getTableName('catalog/product_super_link')],
-            "e.entity_id=link.product_id AND link.parent_id IN ({$connection->quote($this->productIds)})",
-            ['parent_id' => 'link.parent_id']
+            ['r' => $coreResource->getTableName('catalog/product_relation')],
+            "e.entity_id = r.child_id AND r.parent_id IN ({$connection->quote($this->productIds)})",
+            ['parent_id' => 'r.parent_id']
         );
 
         $attributesToCopy = array_merge(
@@ -346,13 +346,10 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
             $additionalAttributes
         );
 
-        $data = [];
-
-        foreach ($simpleProducts->getData() as $row) {
-            $data[$row['parent_id']][] = $this->getProductAttributes($attributesToCopy, $row);
-        }
-
-        return $data;
+        return array_reduce($simpleProducts->getData(), function (array $carry, array $data) use ($attributesToCopy) {
+            $carry[$data['parent_id']][] = $this->getProductAttributes($attributesToCopy, $data);
+            return $carry;
+        }, []);
     }
 
     /**
@@ -640,7 +637,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
     /**
      * @param bool $printQuery
      * @param bool $logQuery
-     * @return $this
+     * @return Mage_Catalog_Model_Resource_Product_Collection
      */
     public function _loadAttributes($printQuery = false, $logQuery = false)
     {
