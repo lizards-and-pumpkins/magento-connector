@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * @var LizardsAndPumpkins_MagentoConnector_Block_Session_Info $this
  * @var Mage_Sales_Model_Quote_Item $item
@@ -7,8 +10,8 @@
 <script>
 
     var cartItems = [];
-
-    <?php foreach ($this->getItems() as $item) : ?>
+    
+    <?php foreach ($this->getItems() as $item): ?>
 
     cartItems.push({
         "id": "<?= $item->getSku() ?>",
@@ -22,8 +25,9 @@
 
     var lizardsAndPumpkinsTransport = {
         "cartItems": cartItems,
-        "cartTotal": "<?php echo $this->getFormattedCartTotal() ?>",
-        "isCustomerLoggedIn": <?php echo (int) $this->isCustomerLoggedIn() ?>
+        "cartTotal": "<?= $this->getFormattedCartTotal() ?>",
+        "isCustomerLoggedIn": <?= (int) $this->isCustomerLoggedIn() ?>,
+        "customerName": "<?= $this->getCustomerName() ?>"
     };
 
 </script>
