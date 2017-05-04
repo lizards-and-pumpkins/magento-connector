@@ -19,19 +19,7 @@ class PhpStreamHttpApiClientTest extends TestCase
      */
     private function createTestApiClientWithResponseCode($responseStatus)
     {
-        return new class($responseStatus) extends PhpStreamHttpApiClient {
-            private $testResponseStatus;
-
-            public function __construct($testResponseStatus)
-            {
-                $this->testResponseStatus = $testResponseStatus;
-            }
-            
-            protected function getRawResponseHeaders(array $httpResponseHeaders = null)
-            {
-                return [$this->testResponseStatus];
-            }
-        };
+        return new StubPhpStreamHttpApiClient($responseStatus);
     }
 
     protected function tearDown()
@@ -231,4 +219,18 @@ function stream_context_create(array $options = null, array $params = null)
 {
     PhpStreamHttpApiClientTest::$streamContextOptionsSpy = $options;
     return \stream_context_create($options, $params);
+}
+
+class StubPhpStreamHttpApiClient extends PhpStreamHttpApiClient {
+    private $testResponseStatus;
+
+    public function __construct($testResponseStatus)
+    {
+        $this->testResponseStatus = $testResponseStatus;
+    }
+
+    protected function getRawResponseHeaders(array $httpResponseHeaders = null)
+    {
+        return [$this->testResponseStatus];
+    }
 }
