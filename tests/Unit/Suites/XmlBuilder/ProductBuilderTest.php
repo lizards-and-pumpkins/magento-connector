@@ -74,17 +74,6 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertXmlAttribute('cs_CZ', 'locale', $productNode->attributes->attribute);
     }
 
-    public function testXmlWithEmptyNodeName()
-    {
-        $this->expectException(\TypeError::class);
-        $productData = [
-            'attributes' => [
-                'url_key',
-            ],
-        ];
-        $this->getProductBuilderXml($productData, $this->getValidContext());
-    }
-
     public function testImageNode()
     {
         $productData = [
