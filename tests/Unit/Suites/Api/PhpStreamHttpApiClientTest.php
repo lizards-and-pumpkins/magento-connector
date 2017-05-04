@@ -15,17 +15,21 @@ class PhpStreamHttpApiClientTest extends TestCase
     public static $simulateHttpResponseBody = null;
     public static $streamContextOptionsSpy = null;
 
-    private function createTestApiClientWithResponseCode(string $responseStatus): PhpStreamHttpApiClient
+    /**
+     * @param string $responseStatus
+     * @return PhpStreamHttpApiClient
+     */
+    private function createTestApiClientWithResponseCode($responseStatus)
     {
         return new class($responseStatus) extends PhpStreamHttpApiClient {
             private $testResponseStatus;
 
-            public function __construct(string $testResponseStatus)
+            public function __construct($testResponseStatus)
             {
                 $this->testResponseStatus = $testResponseStatus;
             }
             
-            protected function getRawResponseHeaders(array $httpResponseHeaders = null): array
+            protected function getRawResponseHeaders(array $httpResponseHeaders = null)
             {
                 return [$this->testResponseStatus];
             }
@@ -88,8 +92,9 @@ class PhpStreamHttpApiClientTest extends TestCase
 
     /**
      * @dataProvider failureHttpStatusProvider
+     * @param string $failureHttpStatus
      */
-    public function testThrowsAnExceptionOnNonSuccessfulGetRequests(string $failureHttpStatus)
+    public function testThrowsAnExceptionOnNonSuccessfulGetRequests($failureHttpStatus)
     {
         $this->expectException(RequestFailedException::class);
         $expectedMessage = 'The HTTP response status code of the Lizards & Pumpkins API ' .
@@ -101,7 +106,7 @@ class PhpStreamHttpApiClientTest extends TestCase
         $failingTestApiClient->doGetRequest('http://foo.com/rest/bar', []);
     }
 
-    public function failureHttpStatusProvider(): array
+    public function failureHttpStatusProvider()
     {
         return [
             'Lower boundary' => ['199 Unreal Status Code'],
@@ -112,15 +117,16 @@ class PhpStreamHttpApiClientTest extends TestCase
 
     /**
      * @dataProvider successHttpStatusProvider
+     * @param string $successHttpStatus
      */
-    public function testReturnsTheResponseBodyForGetRequest(string $successHttpStatus)
+    public function testReturnsTheResponseBodyForGetRequest($successHttpStatus)
     {
         $testApiClient = $this->createTestApiClientWithResponseCode('HTTP/1.1 ' . $successHttpStatus);
         self::$simulateHttpResponseBody = 'baz';
         $this->assertSame('baz', $testApiClient->doGetRequest('http://foo.com/rest/bar', []));
     }
 
-    public function successHttpStatusProvider(): array
+    public function successHttpStatusProvider()
     {
         return [
             'Lower boundary' => ['200 OK'],

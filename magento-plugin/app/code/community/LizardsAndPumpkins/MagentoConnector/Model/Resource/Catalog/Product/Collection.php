@@ -704,17 +704,23 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
      */
     private function getOptionValue(array $options, $optionId)
     {
-        return $options[$optionId] ?? $optionId;
+        return isset($options[$optionId]) ? $options[$optionId] : $optionId;
     }
 
-    private function getCoreResource(): Mage_Core_Model_Resource
+    /**
+     * @return Mage_Core_Model_Resource
+     */
+    private function getCoreResource()
     {
         /** @var Mage_Core_Model_Resource $resource */
         $resource = Mage::getSingleton('core/resource');
         return $resource;
     }
 
-    private function getEavConfig(): Mage_Eav_Model_Config
+    /**
+     * @return Mage_Eav_Model_Config
+     */
+    private function getEavConfig()
     {
         /** @var Mage_Eav_Model_Config $eavConfig */
         $eavConfig = Mage::getSingleton('eav/config');

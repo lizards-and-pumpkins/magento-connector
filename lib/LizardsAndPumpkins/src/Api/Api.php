@@ -20,13 +20,20 @@ class Api
      */
     private $client;
 
-    public function __construct(string $url, HttpApiClient $client)
+    /**
+     * @param string $url
+     * @param HttpApiClient $client
+     */
+    public function __construct($url, HttpApiClient $client)
     {
         $this->url = rtrim($url, '/') . '/';
         $this->client = $client;
     }
 
-    public function triggerProductImport(string $filename)
+    /**
+     * @param string $filename
+     */
+    public function triggerProductImport($filename)
     {
         $headers = ['Accept' => 'application/vnd.lizards-and-pumpkins.catalog_import.v1+json'];
 
@@ -35,11 +42,11 @@ class Api
     }
 
     /**
-     * @param string   $filename
-     * @param string   $url
+     * @param string $filename
+     * @param string $url
      * @param string[] $headers
      */
-    private function sendApiRequestWithFilename(string $filename, string $url, array $headers)
+    private function sendApiRequestWithFilename($filename, $url, array $headers)
     {
         $this->validateFilename($filename);
         $body = json_encode(['fileName' => $filename]);
@@ -49,7 +56,7 @@ class Api
     /**
      * @param string $filename
      */
-    private function validateFilename(string $filename)
+    private function validateFilename($filename)
     {
         $dir = dirname($filename);
         if ($dir !== '.') {
@@ -58,12 +65,12 @@ class Api
     }
 
     /**
-     * @param string   $id
-     * @param string   $content
+     * @param string $id
+     * @param string $content
      * @param string[] $context
      * @param string[] $keyGeneratorParameters
      */
-    public function triggerCmsBlockUpdate(string $id, string $content, array $context, array $keyGeneratorParameters)
+    public function triggerCmsBlockUpdate($id, $content, array $context, array $keyGeneratorParameters)
     {
         if (!is_string($id)) {
             throw new InvalidUrlException();
@@ -76,7 +83,10 @@ class Api
         $this->client->doPutRequest($url, $body, $headers);
     }
 
-    public function getCurrentVersion(): array
+    /**
+     * @return mixed[]
+     */
+    public function getCurrentVersion()
     {
         $headers = ['Accept' => 'application/vnd.lizards-and-pumpkins.current_version.v1+json'];
         $url = $this->url . self::API_ENDPOINT_CURRENT_VERSION;
@@ -85,7 +95,10 @@ class Api
         return json_decode($response, true);
     }
 
-    public function setCurrentVersion(string $newVersion)
+    /**
+     * @param string $newVersion
+     */
+    public function setCurrentVersion($newVersion)
     {
         $headers = ['Accept' => 'application/vnd.lizards-and-pumpkins.current_version.v1+json'];
         $url = $this->url . self::API_ENDPOINT_CURRENT_VERSION;

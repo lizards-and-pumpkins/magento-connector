@@ -118,10 +118,10 @@ class ProductBuilder
     }
 
     /**
-     * @param string          $attributeName
+     * @param string $attributeName
      * @param string|string[] $attributeValue
      */
-    private function createAttributeNode(string $attributeName, $attributeValue)
+    private function createAttributeNode($attributeName, $attributeValue)
     {
         $values = !is_array($attributeValue) ? [$attributeValue] : $attributeValue;
 
@@ -140,7 +140,11 @@ class ProductBuilder
         }
     }
 
-    private function isCDataNeeded(string $value): bool
+    /**
+     * @param string $value
+     * @return bool
+     */
+    private function isCDataNeeded($value)
     {
         $xmlUnsafeCharacters = ['&', '<', '"', "'", '>'];
 
