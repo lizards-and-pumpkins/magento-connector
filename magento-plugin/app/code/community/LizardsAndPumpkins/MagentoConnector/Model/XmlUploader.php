@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types = 1);
-
 abstract class LizardsAndPumpkins_MagentoConnector_Model_XmlUploader
 {
     const PROTOCOL_DELIMITER = '://';

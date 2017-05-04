@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types = 1);
-
 use LizardsAndPumpkins\MagentoConnector\Api\Api;
 use LizardsAndPumpkins\MagentoConnector\Api\RequestFailedException;
 

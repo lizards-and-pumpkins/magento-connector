@@ -1,9 +1,5 @@
 <?php
 
-declare(strict_types = 1);
-
-use LizardsAndPumpkins\MagentoConnector\Model\Catalog\Exception\InvalidCategoryIdException;
-
 class LizardsAndPumpkins_MagentoConnector_Model_Catalog_CategoryUrlKeyServiceTest
     extends \PHPUnit_Framework_TestCase
 {

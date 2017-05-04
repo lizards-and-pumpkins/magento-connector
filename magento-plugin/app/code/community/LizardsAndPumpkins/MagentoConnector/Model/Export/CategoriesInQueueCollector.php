@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types = 1);
-
 class LizardsAndPumpkins_MagentoConnector_Model_Export_CategoriesInQueueCollector
     extends LizardsAndPumpkins_MagentoConnector_Model_Export_AbstractCategoryCollector
 {

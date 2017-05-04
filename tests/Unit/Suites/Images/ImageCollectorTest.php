@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types = 1);
-
 namespace LizardsAndPumpkins\MagentoConnector\Images;
 
 require_once __DIR__ . '/../RemoveDirectory.php';

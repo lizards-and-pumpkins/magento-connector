@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types = 1);
-
 use LizardsAndPumpkins\MagentoConnector\XmlBuilder\StockBuilder;
 
 class LizardsAndPumpkins_MagentoConnector_Model_Export_Stock

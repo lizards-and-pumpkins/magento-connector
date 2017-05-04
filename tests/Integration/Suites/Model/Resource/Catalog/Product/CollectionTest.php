@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types = 1);
-
 class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_CollectionTest
     extends \PHPUnit_Framework_TestCase
 {

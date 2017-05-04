@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types = 1);
-
 require_once 'Mage/Checkout/controllers/CartController.php';
 
 class LizardsAndPumpkins_MagentoConnector_CartController extends Mage_Checkout_CartController
