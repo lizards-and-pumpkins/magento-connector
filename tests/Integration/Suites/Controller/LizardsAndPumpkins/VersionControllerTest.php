@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types = 1);
-
 use LizardsAndPumpkins\MagentoConnector\Api\Api;
 use LizardsAndPumpkins\MagentoConnector\Api\RequestFailedException;
 
@@ -162,7 +160,10 @@ class LizardsAndPumpkins_MagentoConnector_VersionControllerTest extends PHPUnit_
         $this->controller->dispatch('save');
     }
 
-    private function dispatchUpdate(string $newVersion)
+    /**
+     * @param string $newVersion
+     */
+    private function dispatchUpdate($newVersion)
     {
         $this->request->method('getRequestedActionName')->willReturn('save');
         $this->request->method('getActionName')->willReturn('save');

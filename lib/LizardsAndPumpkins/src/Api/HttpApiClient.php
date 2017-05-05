@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types = 1);
-
 namespace LizardsAndPumpkins\MagentoConnector\Api;
 
 interface HttpApiClient
@@ -16,9 +14,8 @@ interface HttpApiClient
      * @param string $body
      * @param string[] $headers
      * @return string
-     * @throws \LizardsAndPumpkins\MagentoConnector\Api\InvalidUrlException
      */
-    public function doPutRequest(string $url, string $body, array $headers): string;
+    public function doPutRequest($url, $body, array $headers);
 
     /**
      * Headers array format:
@@ -29,7 +26,6 @@ interface HttpApiClient
      * @param string $url
      * @param string[] $headers
      * @return string
-     * @throws \LizardsAndPumpkins\MagentoConnector\Api\InvalidUrlException
      */
-    public function doGetRequest(string $url, array $headers): string;
+    public function doGetRequest($url, array $headers);
 }

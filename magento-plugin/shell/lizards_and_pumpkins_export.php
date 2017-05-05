@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types = 1);
-
 require 'abstract.php';
 
 class LizardsAndPumpkins_Export extends Mage_Shell_Abstract

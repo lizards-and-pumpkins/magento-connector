@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types = 1);
-
 /**
  * @covers LizardsAndPumpkins_MagentoConnector_Model_XmlUploader
  */

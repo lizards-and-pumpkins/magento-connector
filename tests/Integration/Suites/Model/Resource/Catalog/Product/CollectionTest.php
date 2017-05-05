@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types = 1);
-
 class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_CollectionTest
     extends \PHPUnit_Framework_TestCase
 {
@@ -66,16 +64,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
 
     public function testAttributeNullValuesAreSetAsEmptyStrings()
     {
-        $testCollection = new class
-            extends LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collection
-        {
-            protected $_selectAttributes = ['foo' => 123];
-            
-            public function publicSetItemAttributeValue(array $valueInfo)
-            {
-                return $this->_setItemAttributeValue($valueInfo);
-            }
-        };
+        $testCollection = new StubCollection();
         
         $testCollection->publicSetItemAttributeValue([
             'entity_id' => 1,
@@ -133,5 +122,15 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
         foreach ($this->collection->getData() as $productData) {
             $this->assertSame('Taxable Goods', $productData['tax_class']);
         }
+    }
+}
+
+class StubCollection extends LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collection
+{
+    protected $_selectAttributes = ['foo' => 123];
+
+    public function publicSetItemAttributeValue(array $valueInfo)
+    {
+        return $this->_setItemAttributeValue($valueInfo);
     }
 }

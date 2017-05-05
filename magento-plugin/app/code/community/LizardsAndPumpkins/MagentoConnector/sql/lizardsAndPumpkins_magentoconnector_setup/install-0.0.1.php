@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types = 1);
-
 /* @var $this Mage_Core_Model_Resource_Setup */
 $this->startSetup();
 

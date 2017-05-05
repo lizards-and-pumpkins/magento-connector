@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types = 1);
-
 namespace LizardsAndPumpkins\MagentoConnector\XmlBuilder;
 
 /**
@@ -74,17 +72,6 @@ class ProductBuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($productData['attributes']['url_key'], (string)$productNode->attributes->attribute);
         $this->assertXmlAttribute('url_key', 'name', $productNode->attributes->attribute);
         $this->assertXmlAttribute('cs_CZ', 'locale', $productNode->attributes->attribute);
-    }
-
-    public function testXmlWithEmptyNodeName()
-    {
-        $this->expectException(\TypeError::class);
-        $productData = [
-            'attributes' => [
-                'url_key',
-            ],
-        ];
-        $this->getProductBuilderXml($productData, $this->getValidContext());
     }
 
     public function testImageNode()

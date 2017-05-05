@@ -1,12 +1,16 @@
 <?php
 
-declare(strict_types = 1);
-
 namespace LizardsAndPumpkins\MagentoConnector\Api;
 
 class PhpStreamHttpApiClient implements HttpApiClient
 {
-    public function doPutRequest(string $url, string $body, array $headers): string
+    /**
+     * @param string $url
+     * @param string $body
+     * @param string[] $headers
+     * @return string
+     */
+    public function doPutRequest($url, $body, array $headers)
     {
         $httpRequestContext = stream_context_create(['http' => [
             'method' => 'PUT',
@@ -16,7 +20,12 @@ class PhpStreamHttpApiClient implements HttpApiClient
         return $this->doHttpRequest($url, $httpRequestContext);
     }
 
-    public function doGetRequest(string $url, array $headers): string
+    /**
+     * @param string $url
+     * @param string[] $headers
+     * @return string
+     */
+    public function doGetRequest($url, array $headers)
     {
         $httpRequestContext = stream_context_create(['http' => [
             'method' => 'GET',
@@ -30,7 +39,7 @@ class PhpStreamHttpApiClient implements HttpApiClient
      * @param resource $httpRequestContext
      * @return string
      */
-    private function doHttpRequest(string $url, $httpRequestContext): string
+    private function doHttpRequest($url, $httpRequestContext)
     {
         $this->validateUrl($url);
         $http_response_header = null;
@@ -40,7 +49,10 @@ class PhpStreamHttpApiClient implements HttpApiClient
         return (string) $responseBody;
     }
 
-    private function validateUrl(string $url)
+    /**
+     * @param string $url
+     */
+    private function validateUrl($url)
     {
         if ('' === $url) {
             throw new InvalidUrlException('Lizards & Pumpkins API URL must not be empty.');
@@ -65,7 +77,7 @@ class PhpStreamHttpApiClient implements HttpApiClient
      * @param string[] $httpResponseHeaders
      * @return int
      */
-    private function parseResponseStatusCode(array $httpResponseHeaders): int
+    private function parseResponseStatusCode(array $httpResponseHeaders)
     {
         foreach ($httpResponseHeaders as $header) {
             if (preg_match('#HTTP/\S+ (?<responseCode>\d+)#', $header, $matches)) {
@@ -92,9 +104,9 @@ class PhpStreamHttpApiClient implements HttpApiClient
      * @param string[] $headerNameToValueMap
      * @return string[]
      */
-    private function concatHeaderNamesAndValues(array $headerNameToValueMap): array
+    private function concatHeaderNamesAndValues(array $headerNameToValueMap)
     {
-        return array_map(function (string $headerName, string $headerValue) {
+        return array_map(function ($headerName, $headerValue) {
             return $headerName . ': ' . $headerValue;
         }, array_keys($headerNameToValueMap), array_values($headerNameToValueMap));
     }
@@ -105,7 +117,7 @@ class PhpStreamHttpApiClient implements HttpApiClient
      * @param string[]|null $httpResponseHeaders
      * @return string[]
      */
-    protected function getRawResponseHeaders(array $httpResponseHeaders = null): array
+    protected function getRawResponseHeaders(array $httpResponseHeaders = null)
     {
         return (array) $httpResponseHeaders;
     }

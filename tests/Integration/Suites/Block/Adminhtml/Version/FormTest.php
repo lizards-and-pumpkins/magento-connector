@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types = 1);
-
 class LizardsAndPumpkins_MagentoConnector_Block_Adminhtml_Version_FormTest extends PHPUnit_Framework_TestCase
 {
     protected function setUp()

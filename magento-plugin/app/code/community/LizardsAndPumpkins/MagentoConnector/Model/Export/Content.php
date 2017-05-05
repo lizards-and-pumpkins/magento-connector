@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types = 1);
-
 use LizardsAndPumpkins\MagentoConnector\Api\Api;
 
 class LizardsAndPumpkins_MagentoConnector_Model_Export_Content

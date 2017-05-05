@@ -1,5 +1,4 @@
 <?php
-declare(strict_types = 1);
 
 class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Category_Collection
     extends Mage_Catalog_Model_Resource_Category_Collection

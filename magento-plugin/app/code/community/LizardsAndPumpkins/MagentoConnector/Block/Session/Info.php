@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types = 1);
-
 class LizardsAndPumpkins_MagentoConnector_Block_Session_Info extends Mage_Checkout_Block_Cart_Sidebar
 {
     /**

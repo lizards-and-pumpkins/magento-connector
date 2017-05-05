@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types = 1);
-
 class LizardsAndPumpkins_MagentoConnector_Model_Observer_CmsBlockSaveCommitAfter
 {
     public function observe(Varien_Event_Observer $observer)
