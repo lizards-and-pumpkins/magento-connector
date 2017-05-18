@@ -191,6 +191,7 @@
             <magentoconnector>
                 <local_filename_template><![CDATA[magento-%s.xml]]></local_filename_template>
                 <cms_special_blocks>top.menu</cms_special_blocks>
+                <disable_tls_peer_verification>0</disable_tls_peer_verification>
             </magentoconnector>
         </lizardsAndPumpkins>
     </default>

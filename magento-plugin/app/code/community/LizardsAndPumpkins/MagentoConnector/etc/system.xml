@@ -27,7 +27,7 @@
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
                         </api_url>
-                        <local_path_for_product_export>
+                        <local_path_for_product_export translate="label comment">
                             <label>Path for product XML</label>
                             <comment>
                                 <![CDATA[Path from magentos viewpoint. Here is the product XML generated/uploaded to.]]>
@@ -38,18 +38,16 @@
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
                         </local_path_for_product_export>
-                        <local_filename_template>
+                        <local_filename_template translate="label comment">
                             <label>Filename Template</label>
-                            <comment>
-                                <![CDATA[Filename template for product export XML.]]>
-                            </comment>
+                            <comment><![CDATA[Filename template for product export XML.]]></comment>
                             <frontend_type>text</frontend_type>
                             <sort_order>20</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
                         </local_filename_template>
-                        <image_target>
+                        <image_target translate="label comment">
                             <label>Image export directory</label>
                             <comment><![CDATA[Directory where the images are linked into.]]></comment>
                             <frontend_type>text</frontend_type>
@@ -78,7 +76,7 @@
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
                         </stores_to_export>
-                        <associated_product_attributes>
+                        <associated_product_attributes translate="label comment">
                             <label>Child Product Attributes</label>
                             <comment><![CDATA[Additional (comma separated) attributes to add to exported associated simplple products.]]></comment>
                             <sort_order>80</sort_order>
@@ -86,6 +84,15 @@
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
                         </associated_product_attributes>
+                        <disable_tls_peer_verification translate="label">
+                            <label>Disable HTTPS certificate verification for API requests</label>
+                            <sort_order>100</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                        </disable_tls_peer_verification>
                     </fields>
                 </magentoconnector>
             </groups>

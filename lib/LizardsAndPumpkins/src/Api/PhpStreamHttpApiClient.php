@@ -12,11 +12,11 @@ class PhpStreamHttpApiClient implements HttpApiClient
      */
     public function doPutRequest($url, $body, array $headers)
     {
-        $httpRequestContext = stream_context_create(['http' => [
-            'method' => 'PUT',
-            'header' => $this->concatHeaderNamesAndValues($headers),
+        $httpRequestContext = stream_context_create(['http' => $this->buildStreamContextOptions([
+            'method'  => 'PUT',
+            'header'  => $this->concatHeaderNamesAndValues($headers),
             'content' => $body,
-        ]]);
+        ])]);
         return $this->doHttpRequest($url, $httpRequestContext);
     }
 
@@ -27,10 +27,10 @@ class PhpStreamHttpApiClient implements HttpApiClient
      */
     public function doGetRequest($url, array $headers)
     {
-        $httpRequestContext = stream_context_create(['http' => [
+        $httpRequestContext = stream_context_create(['http' => $this->buildStreamContextOptions([
             'method' => 'GET',
             'header' => $this->concatHeaderNamesAndValues($headers),
-        ]]);
+        ])]);
         return $this->doHttpRequest($url, $httpRequestContext);
     }
 
@@ -120,5 +120,14 @@ class PhpStreamHttpApiClient implements HttpApiClient
     protected function getRawResponseHeaders(array $httpResponseHeaders = null)
     {
         return (array) $httpResponseHeaders;
+    }
+
+    /**
+     * @param mixed[] $streamContextOptions
+     * @return mixed[]
+     */
+    protected function buildStreamContextOptions(array $streamContextOptions)
+    {
+        return $streamContextOptions;
     }
 }
