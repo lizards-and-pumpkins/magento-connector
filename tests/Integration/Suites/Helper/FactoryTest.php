@@ -1,5 +1,8 @@
 <?php
 
+use LizardsAndPumpkins\MagentoConnector\Api\InsecurePhpStreamHttpApiClient;
+use LizardsAndPumpkins\MagentoConnector\Api\PhpStreamHttpApiClient;
+
 class FactoryTest extends \PHPUnit\Framework\TestCase
 {
     /**
@@ -19,6 +22,20 @@ class FactoryTest extends \PHPUnit\Framework\TestCase
         
         $result = $this->factoryHelper->createLizardsAndPumpkinsApi();
         $this->assertInstanceOf(\LizardsAndPumpkins\MagentoConnector\Api\Api::class, $result);
+    }
+
+    public function testReturnsHttpApiClient()
+    {
+        $result = $this->factoryHelper->createHttpApiClient();
+        $this->assertInstanceOf(PhpStreamHttpApiClient::class, $result);
+        $this->assertNotInstanceOf(InsecurePhpStreamHttpApiClient::class, $result);
+    }
+
+    public function testReturnsinsecureHttpApiClientIfRequestedInSystemConfig()
+    {
+        Mage::app()->getStore()->setConfig('lizardsAndPumpkins/magentoconnector/disable_tls_peer_verification', '1');
+        $result = $this->factoryHelper->createHttpApiClient();
+        $this->assertInstanceOf(InsecurePhpStreamHttpApiClient::class, $result);
     }
 
     public function testReturnsACatalogMergeInstance()
