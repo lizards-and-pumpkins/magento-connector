@@ -4,29 +4,25 @@ namespace LizardsAndPumpkins\MagentoConnector\Api;
 
 use PHPUnit\Framework\TestCase;
 
+require_once __DIR__ . '/testOverloadedFunctionsInApiNamespace.php';
+
 /**
  * @covers \LizardsAndPumpkins\MagentoConnector\Api\PhpStreamHttpApiClient
  */
 class PhpStreamHttpApiClientTest extends TestCase
 {
-    public static $simulateFailureParsingUrl = false;
-    public static $simulateHttpResponseBody = null;
-    public static $streamContextOptionsSpy = null;
-
     /**
      * @param string $responseStatus
      * @return PhpStreamHttpApiClient
      */
     private function createTestApiClientWithResponseCode($responseStatus)
     {
-        return new StubPhpStreamHttpApiClient($responseStatus);
+        return new TestPhpStreamHttpApiClient($responseStatus);
     }
 
     protected function tearDown()
     {
-        self::$simulateFailureParsingUrl = false;
-        self::$simulateHttpResponseBody = null;
-        self::$streamContextOptionsSpy = null;
+        ApiTestOverloadedPhpFunctions::clear();
     }
     
     public function testImplementsHttpApiClient()
@@ -52,7 +48,7 @@ class PhpStreamHttpApiClientTest extends TestCase
 
     public function testThrowsExceptionIfGetUrlCanNotBeParsed()
     {
-        self::$simulateFailureParsingUrl = true;
+        ApiTestOverloadedPhpFunctions::$simulateFailureParsingUrl = true;
         
         $this->expectException(InvalidUrlException::class);
         $this->expectExceptionMessage('Unable to parse Lizards & Pumpkins API URL "<foo this invalid url!>".');
@@ -86,7 +82,7 @@ class PhpStreamHttpApiClientTest extends TestCase
         $expectedMessage = 'The HTTP response status code of the Lizards & Pumpkins API ' .
                    'is not within the expected 200-207 range, got ' . (int) $failureHttpStatus;
         $this->expectExceptionMessage($expectedMessage);
-        self::$simulateHttpResponseBody = '';
+        ApiTestOverloadedPhpFunctions::$simulateHttpResponseBody = '';
         
         $failingTestApiClient = $this->createTestApiClientWithResponseCode('HTTP/1.1 ' . $failureHttpStatus);
         $failingTestApiClient->doGetRequest('http://foo.com/rest/bar', []);
@@ -108,7 +104,7 @@ class PhpStreamHttpApiClientTest extends TestCase
     public function testReturnsTheResponseBodyForGetRequest($successHttpStatus)
     {
         $testApiClient = $this->createTestApiClientWithResponseCode('HTTP/1.1 ' . $successHttpStatus);
-        self::$simulateHttpResponseBody = 'baz';
+        ApiTestOverloadedPhpFunctions::$simulateHttpResponseBody = 'baz';
         $this->assertSame('baz', $testApiClient->doGetRequest('http://foo.com/rest/bar', []));
     }
 
@@ -124,65 +120,65 @@ class PhpStreamHttpApiClientTest extends TestCase
     public function testUsesHttpGETMethodForGetRequest()
     {
         $testApiClient = $this->createTestApiClientWithResponseCode('HTTP/1.1 200 OK');
-        self::$simulateHttpResponseBody = 'baz';
+        ApiTestOverloadedPhpFunctions::$simulateHttpResponseBody = 'baz';
         $testApiClient->doGetRequest('http://bar.foo', []);
 
-        $this->assertSame('GET', self::$streamContextOptionsSpy['http']['method']);
+        $this->assertSame('GET', ApiTestOverloadedPhpFunctions::$streamContextOptionsSpy['http']['method']);
     }
     
     public function testSetsAnEmptyRequestBodyForGetRequests()
     {
         $testApiClient = $this->createTestApiClientWithResponseCode('HTTP/1.1 200 OK');
-        self::$simulateHttpResponseBody = 'baz';
+        ApiTestOverloadedPhpFunctions::$simulateHttpResponseBody = 'baz';
         $testApiClient->doGetRequest('http://bar.foo', []);
         
-        $this->assertArrayNotHasKey('content', self::$streamContextOptionsSpy['http']);
+        $this->assertArrayNotHasKey('content', ApiTestOverloadedPhpFunctions::$streamContextOptionsSpy['http']);
     }
 
     public function testSetsTheSpecifiedHeadersOnGetRequests()
     {
         $testApiClient = $this->createTestApiClientWithResponseCode('HTTP/1.1 200 OK');
-        self::$simulateHttpResponseBody = 'qux';
+        ApiTestOverloadedPhpFunctions::$simulateHttpResponseBody = 'qux';
         $testApiClient->doGetRequest('http://bar.foo', ['Foo-Bar' => 'Baz']);
 
-        $this->assertSame(['Foo-Bar: Baz'], self::$streamContextOptionsSpy['http']['header']);
+        $this->assertSame(['Foo-Bar: Baz'], ApiTestOverloadedPhpFunctions::$streamContextOptionsSpy['http']['header']);
     }
 
     public function testReturnsTheResponseBodyForPutRequest()
     {
         $testApiClient = $this->createTestApiClientWithResponseCode('HTTP/1.1 200 OK');
-        self::$simulateHttpResponseBody = 'qux';
+        ApiTestOverloadedPhpFunctions::$simulateHttpResponseBody = 'qux';
         $this->assertSame('qux', $testApiClient->doPutRequest('http://foo.com/rest/bar', '', []));
     }
 
     public function testUsesHttpPUTMethodForPutRequest()
     {
         $testApiClient = $this->createTestApiClientWithResponseCode('HTTP/1.1 200 OK');
-        self::$simulateHttpResponseBody = 'baz';
+        ApiTestOverloadedPhpFunctions::$simulateHttpResponseBody = 'baz';
         $testApiClient->doPutRequest('http://bar.foo', '', []);
 
-        $this->assertSame('PUT', self::$streamContextOptionsSpy['http']['method']);
+        $this->assertSame('PUT', ApiTestOverloadedPhpFunctions::$streamContextOptionsSpy['http']['method']);
     }
 
     public function testSetsTheSpecifiedRequestBodyForPutRequests()
     {
         $testApiClient = $this->createTestApiClientWithResponseCode('HTTP/1.1 200 OK');
-        self::$simulateHttpResponseBody = 'qux';
+        ApiTestOverloadedPhpFunctions::$simulateHttpResponseBody = 'qux';
         $testApiClient->doPutRequest('http://bar.foo', 'baz', []);
 
-        $this->assertSame('baz', self::$streamContextOptionsSpy['http']['content']);
+        $this->assertSame('baz', ApiTestOverloadedPhpFunctions::$streamContextOptionsSpy['http']['content']);
     }
 
     public function testSetsTheSpecifiedHeadersOnPutRequests()
     {
         $testApiClient = $this->createTestApiClientWithResponseCode('HTTP/1.1 200 OK');
-        self::$simulateHttpResponseBody = 'qux';
+        ApiTestOverloadedPhpFunctions::$simulateHttpResponseBody = 'qux';
         $testApiClient->doPutRequest('http://bar.foo', '', ['Foo-Bar' => 'Baz', 'Fizz' => 'Buz']);
         
         $this->assertSame([
             'Foo-Bar: Baz',
             'Fizz: Buz'
-        ], self::$streamContextOptionsSpy['http']['header']);
+        ], ApiTestOverloadedPhpFunctions::$streamContextOptionsSpy['http']['header']);
     }
     
     public function testThrowsAnExceptionOnNonSuccessfulPutRequests()
@@ -191,37 +187,15 @@ class PhpStreamHttpApiClientTest extends TestCase
         $expectedMessage = 'The HTTP response status code of the Lizards & Pumpkins API ' .
                           'is not within the expected 200-207 range, got 500';
         $this->expectExceptionMessage($expectedMessage);
-        self::$simulateHttpResponseBody = '';
+        ApiTestOverloadedPhpFunctions::$simulateHttpResponseBody = '';
 
         $failingTestApiClient = $this->createTestApiClientWithResponseCode('HTTP/1.1 500 Server Error');
         $failingTestApiClient->doPutRequest('http://foo.bar/rest', '', []);
     }
 }
 
-function parse_url($url, $component = -1)
+class TestPhpStreamHttpApiClient extends PhpStreamHttpApiClient
 {
-    if (PhpStreamHttpApiClientTest::$simulateFailureParsingUrl) {
-        return false;
-    }
-    return \parse_url($url, $component);
-}
-
-
-function file_get_contents($filename, $flags = null, $context = null)
-{
-    if (null !== PhpStreamHttpApiClientTest::$simulateHttpResponseBody) {
-        return PhpStreamHttpApiClientTest::$simulateHttpResponseBody;
-    }
-    return \file_get_contents($filename, $flags, $context);
-}
-
-function stream_context_create(array $options = null, array $params = null)
-{
-    PhpStreamHttpApiClientTest::$streamContextOptionsSpy = $options;
-    return \stream_context_create($options, $params);
-}
-
-class StubPhpStreamHttpApiClient extends PhpStreamHttpApiClient {
     private $testResponseStatus;
 
     public function __construct($testResponseStatus)
