@@ -1,6 +1,7 @@
 <?php
 
 use LizardsAndPumpkins\MagentoConnector\Api\Api;
+use LizardsAndPumpkins\MagentoConnector\Api\HttpApiClient;
 use LizardsAndPumpkins\MagentoConnector\Api\InsecurePhpStreamHttpApiClient;
 use LizardsAndPumpkins\MagentoConnector\Api\PhpStreamHttpApiClient;
 use LizardsAndPumpkins\MagentoConnector\Images\ImageLinker;
@@ -256,6 +257,9 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Factory
         return new StockBuilder();
     }
 
+    /**
+     * @return HttpApiClient
+     */
     public function createHttpApiClient()
     {
         return Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/disable_tls_peer_verification') ?

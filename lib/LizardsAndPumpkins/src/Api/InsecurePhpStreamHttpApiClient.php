@@ -6,7 +6,11 @@ namespace LizardsAndPumpkins\MagentoConnector\Api;
 
 class InsecurePhpStreamHttpApiClient extends PhpStreamHttpApiClient
 {
-    protected function buildStreamContextOptions(array $streamContextOptions)
+    /**
+     * @param mixed[] $streamContextOptions
+     * @return mixed[]
+     */
+    final protected function buildStreamContextOptions(array $streamContextOptions)
     {
         return array_merge(
             parent::buildStreamContextOptions($streamContextOptions),
