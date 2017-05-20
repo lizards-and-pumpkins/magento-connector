@@ -20,4 +20,14 @@ class LizardsAndPumpkins_MagentoConnector_Block_Session_Info extends Mage_Checko
     {
         return !empty($this->getCustomer()->getId());
     }
+
+    /**
+     * @return string
+     */
+    public function getCustomerName()
+    {
+        return $this->isCustomerLoggedIn() ?
+            trim($this->getCustomer()->getName()) :
+            '';
+    }
 }
