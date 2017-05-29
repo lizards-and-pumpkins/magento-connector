@@ -42,6 +42,8 @@ class PhpStreamHttpApiClient implements HttpApiClient
     private function doHttpRequest($url, $httpRequestContext)
     {
         $this->validateUrl($url);
+        // The variable $http_response_header is set by PHP when using HTTP stream wrappers.
+        // See http://php.net/manual/en/reserved.variables.httpresponseheader.php for details.
         $http_response_header = null;
         $responseBody = file_get_contents($url, false, $httpRequestContext);
         $this->validateHttpResponse($http_response_header);
