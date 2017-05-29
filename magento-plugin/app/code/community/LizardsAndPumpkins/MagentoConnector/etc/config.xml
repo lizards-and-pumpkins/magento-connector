@@ -193,6 +193,9 @@
                 <cms_special_blocks>top.menu</cms_special_blocks>
                 <disable_tls_peer_verification>0</disable_tls_peer_verification>
             </magentoconnector>
+            <data_version>
+                <for_export>-1</for_export>
+            </data_version>
         </lizardsAndPumpkins>
     </default>
 </config>
