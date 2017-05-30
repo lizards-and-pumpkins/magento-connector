@@ -127,14 +127,14 @@ abstract class LizardsAndPumpkins_MagentoConnector_Model_Export_AbstractCategory
     {
         if (empty($this->storesToExportInCurrentLoop)) {
             $this->storesToExportInCurrentLoop = $this->getStoresToExport();
-            $this->categoriesToExport = $this->getCategoryIdsToExport();
+            $this->categoriesToExport = $this->getCategoriesToExportGroupedByDataVersion();
         }
     }
 
     /**
      * @return int[]
      */
-    abstract protected function getCategoryIdsToExport();
+    abstract protected function getCategoriesToExportGroupedByDataVersion();
 
     /**
      * @return Mage_Core_Model_Store[]

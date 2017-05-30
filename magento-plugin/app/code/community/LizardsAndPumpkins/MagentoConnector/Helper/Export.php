@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @deprecated
+ * @see LizardsAndPumpkins_MagentoConnector_Model_ExportQueue
+ */
 class LizardsAndPumpkins_MagentoConnector_Helper_Export
     implements LizardsAndPumpkins_MagentoConnector_Helper_ProductsToUpdateQueueReader
 {

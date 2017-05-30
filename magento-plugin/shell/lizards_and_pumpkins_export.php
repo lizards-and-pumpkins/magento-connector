@@ -58,9 +58,8 @@ class LizardsAndPumpkins_Export extends Mage_Shell_Abstract
         if (!$this->catalogExporter->wasSomethingExported()) {
             return;
         }
-        /** @var \LizardsAndPumpkins_MagentoConnector_Helper_Factory $helper */
-        $helper = Mage::helper('lizardsAndPumpkins_magentoconnector/factory');
-        $helper->createLizardsAndPumpkinsApi()->triggerProductImport($filename);
+        
+        $this->getFactory()->createLizardsAndPumpkinsApi()->triggerProductImport($filename);
     }
 
     /**
@@ -87,9 +86,9 @@ USAGE;
 
     private function outputStatistics()
     {
-        $stats = new LizardsAndPumpkins_MagentoConnector_Model_Statistics(Mage::getSingleton('core/resource'));
-        echo sprintf('%s queued products.' . "\n", $stats->getQueuedProductCount());
-        echo sprintf('%s queued categories.' . "\n", $stats->getQueuedCategoriesCount());
+        $queue = $this->getFactory()->createExportQueue();
+        echo sprintf('%s queued products.' . "\n", $queue->getProductQueueCount());
+        echo sprintf('%s queued categories.' . "\n", $queue->getCategoryQueueCount());
     }
 
     /**
@@ -154,6 +153,14 @@ USAGE;
             exit(2);
         }
         return $website;
+    }
+
+    /**
+     * @return LizardsAndPumpkins_MagentoConnector_Helper_Factory
+     */
+    private function getFactory()
+    {
+        return Mage::helper('lizardsAndPumpkins_magentoconnector/factory');
     }
 }
 

@@ -266,4 +266,12 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Factory
             new InsecurePhpStreamHttpApiClient() :
             new PhpStreamHttpApiClient();
     }
+
+    /**
+     * @return LizardsAndPumpkins_MagentoConnector_Model_ExportQueue
+     */
+    public function createExportQueue()
+    {
+        return Mage::getModel('lizardsAndPumpkins_magentoconnector/exportQueue');
+    }
 }

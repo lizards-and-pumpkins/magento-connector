@@ -8,47 +8,14 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CategoriesInQueueCollecto
      * @var Zend_Queue_Message_Iterator
      */
     private $messageIterator;
-    
-    /**
-     * @return int[]
-     */
-    final protected function getCategoryIdsToExport()
-    {
-        return $this->getQueuedCategoryIds();
-    }
 
     /**
-     * @return int[]
+     * @return LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueue_Message_Collection[]
      */
-    private function getQueuedCategoryIds()
+    final protected function getCategoriesToExportGroupedByDataVersion()
     {
-        /** @var LizardsAndPumpkins_MagentoConnector_Helper_Export $exportHelper */
-        $exportHelper = Mage::helper('lizardsAndPumpkins_magentoconnector/export');
+        $exportQueue = Mage::helper('lizardsAndPumpkins_magentoconnector/factory')->createExportQueue();
 
-        $this->messageIterator = $exportHelper->getCategoryUpdatesToExport();
-        $categoryIds = [];
-        foreach ($this->messageIterator as $item) {
-            /** @var $item Zend_Queue_Message */
-            $categoryIds[] = $item->body;
-        }
-        if ($categoryIds) {
-            $this->deleteMessages();
-        }
-
-        return $categoryIds;
-    }
-
-    private function deleteMessages()
-    {
-        $ids = [];
-        foreach ($this->messageIterator as $message) {
-            $ids[] = (int) $message->message_id;
-        }
-
-        $ids = implode(',', $ids);
-
-        /** @var Mage_Core_Model_Resource $resource */
-        $resource = Mage::getSingleton('core/resource');
-        $resource->getConnection('core_write')->delete('message', "message_id IN ($ids)");
+        return $exportQueue->getQueuedCategoryUpdatesGroupedByDataVersion();
     }
 }

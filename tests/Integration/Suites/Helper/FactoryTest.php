@@ -3,7 +3,7 @@
 use LizardsAndPumpkins\MagentoConnector\Api\InsecurePhpStreamHttpApiClient;
 use LizardsAndPumpkins\MagentoConnector\Api\PhpStreamHttpApiClient;
 
-class FactoryTest extends \PHPUnit\Framework\TestCase
+class LizardsAndPumpkins_MagentoConnector_Helper_FactoryTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var \LizardsAndPumpkins_MagentoConnector_Helper_Factory
@@ -68,5 +68,11 @@ class FactoryTest extends \PHPUnit\Framework\TestCase
     {
         $result = $this->factoryHelper->createStockBuilder();
         $this->assertInstanceOf(\LizardsAndPumpkins\MagentoConnector\XmlBuilder\StockBuilder::class, $result);
+    }
+
+    public function testReturnsExportQueueInstance()
+    {
+        $result = $this->factoryHelper->createExportQueue();
+        $this->assertInstanceOf(LizardsAndPumpkins_MagentoConnector_Model_ExportQueue::class, $result);
     }
 }

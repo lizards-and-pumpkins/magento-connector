@@ -19,7 +19,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_SpecificCategoryCollector
     /**
      * @return int[]
      */
-    protected function getCategoryIdsToExport()
+    protected function getCategoriesToExportGroupedByDataVersion()
     {
         $categoryIds = $this->categoryIdsToExport;
         $this->categoryIdsToExport = [];

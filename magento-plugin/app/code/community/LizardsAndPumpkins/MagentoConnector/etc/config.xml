@@ -2,7 +2,7 @@
 <config>
     <modules>
         <LizardsAndPumpkins_MagentoConnector>
-            <version>0.0.6</version>
+            <version>0.0.7</version>
         </LizardsAndPumpkins_MagentoConnector>
     </modules>
     <global>
@@ -18,6 +18,11 @@
             </lizardsAndPumpkins_magentoconnector>
             <lizardsAndPumpkins_magentoconnector_resource>
                 <class>LizardsAndPumpkins_MagentoConnector_Model_Resource</class>
+                <entities>
+                    <queue>
+                        <table>lizards_pumpkins_export_queue</table>
+                    </queue>
+                </entities>
             </lizardsAndPumpkins_magentoconnector_resource>
             <cms>
                 <rewrite>

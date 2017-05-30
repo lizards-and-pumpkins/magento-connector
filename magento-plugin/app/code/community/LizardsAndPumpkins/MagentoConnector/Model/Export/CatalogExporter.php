@@ -38,11 +38,6 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
     private $imageCollector;
 
     /**
-     * @var LizardsAndPumpkins_MagentoConnector_Helper_Export
-     */
-    private $memoizedExportHelper;
-
-    /**
      * @param bool $enableProgressDisplay
      */
     public function setShowProgress($enableProgressDisplay)
@@ -66,11 +61,22 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
      */
     public function exportAllCategories()
     {
-        $helper = $this->getExportHelper();
-        $helper->addAllCategoryIdsToCategoryQueue();
+        $targetDataVersion = $this->getTargetDataVersion();
+        $this->getExportQueue()->addAllCategoryIdsToCategoryQueue($targetDataVersion);
 
         $filename = $this->exportCategoriesInQueue();
         return $filename;
+    }
+
+    /**
+     * @return string
+     */
+    private function getTargetDataVersion()
+    {
+        /** @var LizardsAndPumpkins_MagentoConnector_Helper_DataVersion $dataVersionHelper */
+        $dataVersionHelper = Mage::helper('lizardsAndPumpkins_magentoconnector/dataVersion');
+        
+        return $dataVersionHelper->getTargetVersion();
     }
     
     /**
@@ -78,9 +84,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
      */
     public function exportAllProducts()
     {
-        $helper = $this->getExportHelper();
-        $helper->addAllProductIdsToProductUpdateQueue();
-
+        $targetDataVersion = $this->getTargetDataVersion();
+        $this->getExportQueue()->addAllProductIdsToProductUpdateQueue($targetDataVersion);
+        
         $filename = $this->exportProductsInQueue();
         return $filename;
     }
@@ -91,9 +97,10 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
      */
     public function exportOneStore(Mage_Core_Model_Store $store)
     {
-        $helper = $this->getExportHelper();
-        $helper->addAllProductIdsFromWebsiteToProductUpdateQueue($store->getWebsite());
-
+        $targetDataVersion = $this->getTargetDataVersion();
+        $website = $store->getWebsite();
+        $this->getExportQueue()->addAllProductIdsFromWebsiteToProductUpdateQueue($website, $targetDataVersion);
+        
         $collector = $this->createProductCollector();
         $collector->setStoresToExport([$store]);
 
@@ -107,8 +114,8 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
      */
     public function exportOneWebsite(Mage_Core_Model_Website $website)
     {
-        $helper = $this->getExportHelper();
-        $helper->addAllProductIdsFromWebsiteToProductUpdateQueue($website);
+        $targetDataVersion = $this->getTargetDataVersion();
+        $this->getExportQueue()->addAllProductIdsFromWebsiteToProductUpdateQueue($website, $targetDataVersion);
 
         $collector = $this->createProductCollector();
         $collector->setStoresToExport($website->getStores());
@@ -244,17 +251,13 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
     {
         return $this->numberOfProductsExported;
     }
-
+    
     /**
-     * @return LizardsAndPumpkins_MagentoConnector_Helper_Export
+     * @return LizardsAndPumpkins_MagentoConnector_Model_ExportQueue
      */
-    private function getExportHelper()
+    private function getExportQueue()
     {
-        if (null === $this->memoizedExportHelper) {
-            $this->memoizedExportHelper = Mage::helper('lizardsAndPumpkins_magentoconnector/export');
-        }
-
-        return $this->memoizedExportHelper;
+        return Mage::helper('lizardsAndPumpkins_magentoconnector/factory')->createExportQueue();
     }
 
     /**
@@ -303,11 +306,8 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
 
     private function refreshNumberOfProductsInQueue()
     {
-        /** @var Mage_Core_Model_Resource $resource */
-        $resource = Mage::getSingleton('core/resource');
-
-        $stats = new LizardsAndPumpkins_MagentoConnector_Model_Statistics($resource);
-        $this->numberOfProductsInQueue = $stats->getQueuedProductCount();
+        $queue = $this->getFactory()->createExportQueue();
+        $this->numberOfProductsInQueue = $queue->getProductQueueCount();
     }
 
     /**
