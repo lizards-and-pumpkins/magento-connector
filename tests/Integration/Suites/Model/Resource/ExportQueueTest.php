@@ -327,4 +327,26 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueueTest extends
         
         $this->assertSame(2, $this->createExportQueueReader()->getCategoryQueueCount());
     }
+
+    public function testDeletesTheSpecifiedMessagesFromTheQueue()
+    {
+        $targetDataVersion = 'baz';
+
+        $product1 = $this->createCatalogProduct('foo');
+        $product2 = $this->createCatalogProduct('bar');
+        $productIds = [$product1->getId(), $product2->getId()];
+
+        $this->createExportQueue()->addProductUpdatesToQueue($productIds, $targetDataVersion);
+        
+        $collections = $this->createExportQueueReader()->getQueuedProductUpdatesGroupedByDataVersion();
+        $this->assertCount(1, $collections);
+        
+        foreach ($collections as $collection) {
+            $this->createExportQueue()->removeMessages($collection->getAllIds());
+        }
+
+        $this->assertSame([], $this->createExportQueueReader()->getQueuedProductUpdatesGroupedByDataVersion());
+        
+        
+    }
 }

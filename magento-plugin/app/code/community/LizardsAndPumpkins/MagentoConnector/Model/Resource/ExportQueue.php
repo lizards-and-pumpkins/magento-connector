@@ -114,7 +114,8 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueue
      */
     public function removeMessages(array $messageIds)
     {
-        
+        $condition = $this->connection->quoteInto(QueueMessageResource::ID_FIELD . ' IN (?)', $messageIds);
+        $this->connection->delete($this->queueTable(), $condition);
     }
 
     /**
