@@ -1,8 +1,8 @@
 <?php
 
-require_once __DIR__ . '/AbstractInitializableEntityExportTest.php';
+require_once __DIR__ . '/AbstractInitializableProductExportTest.php';
 
-class ConfigurableEntityExportTest extends AbstractInitializableEntityExportTest
+class ConfigurableProductExportTest extends AbstractInitializableProductExportTest
 {
     private static $expectedXmlFile = __DIR__ . '/expected/configurable-product.xml';
     private static $configurableProductIdFile = __DIR__ . '/expected/configurable-product-id.php';
@@ -20,7 +20,7 @@ class ConfigurableEntityExportTest extends AbstractInitializableEntityExportTest
     /**
      * @return string
      */
-    public function getEntityIdsForInitialization()
+    public function getProductIdsForInitialization()
     {
         if (null === $this->productIdForInitialization) {
             /** @var Mage_Catalog_Model_Resource_Product_Collection $configurableProductCollection */
@@ -45,7 +45,7 @@ class ConfigurableEntityExportTest extends AbstractInitializableEntityExportTest
     /**
      * @return string
      */
-    final protected function getEntityIdsFixtureFileName()
+    final protected function getProductIdsFixtureFileName()
     {
         return self::$configurableProductIdFile;
     }
@@ -63,7 +63,7 @@ class ConfigurableEntityExportTest extends AbstractInitializableEntityExportTest
      */
     private function getConfigurableProductId()
     {
-        return require $this->getEntityIdsFixtureFileName();
+        return require $this->getProductIdsFixtureFileName();
     }
 
     protected function setUp()
@@ -81,23 +81,13 @@ class ConfigurableEntityExportTest extends AbstractInitializableEntityExportTest
         @rmdir(dirname($this->testExportFile));
     }
 
+    /**
+     * @group fixture
+     */
     public function testExportConfigurableProduct()
     {
-        $this->markTestIncomplete('until queue is refactored');
         $this->exportToFile($this->testExportFile, [$this->getConfigurableProductId()]);
         
         $this->assertFileEquals($this->getExpectationFileName(), $this->testExportFile);
-    }
-    
-    /**
-     * @param LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter $exporter
-     * @param int[] $entityIds
-     * @return mixed
-     */
-    public function exportEntities(
-        LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter $exporter,
-        $entityIds
-    ) {
-        $exporter->exportProducts($this->createProductCollectorForIds($entityIds));
     }
 }

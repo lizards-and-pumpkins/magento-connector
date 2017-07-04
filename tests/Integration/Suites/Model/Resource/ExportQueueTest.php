@@ -4,6 +4,10 @@ use LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueue as ExportQueu
 use LizardsAndPumpkins_MagentoConnector_Model_ExportQueue_Message as ExportQueueMessage;
 use LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueue_Message_Collection as ExportQueueMessageCollection;
 
+/**
+ * @covers LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueue
+ * @covers LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueueReader
+ */
 class LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueueTest extends \PHPUnit\Framework\TestCase
 {
     /**
@@ -15,16 +19,31 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueueTest extends
      * @param string $sku
      * @return Mage_Catalog_Model_Product
      */
-    private function createCatalogProduct($sku)
+    private function createCatalogProduct($sku, array $additionalData = [])
     {
+        $currentStore = Mage::app()->getStore()->getCode();
+        Mage::app()->setCurrentStore(Mage_Core_Model_Store::ADMIN_CODE);
+        $this->deleteProductBySkuIfExists($sku);
         $product = Mage::getModel('catalog/product');
         $product->setData('sku', $sku);
         $product->setData('status', Mage_Catalog_Model_Product_Status::STATUS_ENABLED);
         $product->setData('type_id', Mage_Catalog_Model_Product_Type::TYPE_SIMPLE);
         $product->setData('attribute_set_id', $product->getDefaultAttributeSetId());
+        $product->addData($additionalData);
         $product->save();
+        Mage::app()->setCurrentStore($currentStore);
 
         return $product;
+    }
+
+    private function deleteProductBySkuIfExists($sku)
+    {
+        $id = Mage::getResourceModel('catalog/product')->getIdBySku($sku);
+        if ($id) {
+            $productToDelete = Mage::getModel('catalog/product');
+            $productToDelete->setId($id);
+            $productToDelete->delete();
+        }
     }
 
     /**
@@ -213,14 +232,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueueTest extends
         $website1Id = $this->createWebsite('foo1')->getId();
         $website2Id = $this->createWebsite('foo2')->getId();
 
-        $product1 = $this->createCatalogProduct('foo');
-        $product2 = $this->createCatalogProduct('bar');
+        $product1 = $this->createCatalogProduct('foo', ['website_ids' => [$website1Id, $website2Id]]);
+        $product2 = $this->createCatalogProduct('bar', ['website_ids' => [$website1Id]]);
         
-        $product1->setData('website_ids', [$website1Id, $website2Id]);
-        $product2->setData('website_ids', [$website1Id]);
-        $product1->save();
-        $product2->save();
-
         $this->createExportQueue()->addAllProductIdsFromWebsiteToProductUpdateQueue($website1Id, $targetVersionWeb1);
         $this->createExportQueue()->addAllProductIdsFromWebsiteToProductUpdateQueue($website2Id, $targetVersionWeb2);
 
@@ -284,6 +298,26 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueueTest extends
 
         $this->assertContainsCategoryWithDataVersion($category1, $targetVersion, $queuedCategoriesByDataVersion);
         $this->assertContainsCategoryWithDataVersion($category2, $targetVersion, $queuedCategoriesByDataVersion);
+    }
+
+    public function testReturnsMessagesOfAllTypes()
+    {
+        $targetDataVersion = 'baz';
+
+        $category = $this->createCatalogCategory('foo');
+        $product = $this->createCatalogProduct('foo');
+
+        $this->createExportQueue()->addProductUpdateToQueue($product->getId(), $targetDataVersion);
+        $this->createExportQueue()->addCategoryToQueue($category->getId(), $targetDataVersion);
+        
+        $queuedUpdatesByDataVersion = $this->createExportQueueReader()->getQueuedCatalogUpdatesGroupedByDataVersion();
+        
+        $this->assertInternalType('array', $queuedUpdatesByDataVersion);
+        $this->assertCount(1, $queuedUpdatesByDataVersion);
+        $this->assertContainsOnlyInstancesOf(ExportQueueMessageCollection::class, $queuedUpdatesByDataVersion);
+
+        $this->assertContainsCategoryWithDataVersion($category, $targetDataVersion, $queuedUpdatesByDataVersion);
+        $this->assertContainsProductWithDataVersion($product, $targetDataVersion, $queuedUpdatesByDataVersion);
     }
 
     public function testAddsSingleCategoryToTheUpdateQueue()

@@ -34,8 +34,8 @@ class CatalogMergeTest extends \PHPUnit_Framework_TestCase
     public function testProductIsAdded()
     {
         $expectedXml = '<product>my product</product>';
-        $this->merge->addProduct(new XmlString('<?xml version="1.0"?>' . $expectedXml));
-        $xml = $this->merge->finish();
+        $xmlStart = $this->merge->addProduct(new XmlString('<?xml version="1.0"?>' . $expectedXml));
+        $xml = $xmlStart . $this->merge->finish();
         $this->assertContains($expectedXml, $xml);
         $this->assertRegExp('#<products>#', $xml);
     }
@@ -43,14 +43,36 @@ class CatalogMergeTest extends \PHPUnit_Framework_TestCase
     public function testPartialString()
     {
         $expectedXml = '<product>my product</product>';
-        $this->merge->addProduct(new XmlString('<?xml version="1.0"?>' . $expectedXml));
-        $xml = $this->merge->getPartialXmlString();
-        $this->assertContains($expectedXml, $xml);
-        $this->assertRegExp('#<products>#', $xml);
-        $this->assertNotContains('</products>', $xml);
+        $xmlStart = $this->merge->addProduct(new XmlString('<?xml version="1.0"?>' . $expectedXml));
+        $this->assertContains($expectedXml, $xmlStart);
+        $this->assertRegExp('#<products>#', $xmlStart);
+        $this->assertNotContains('</products>', $xmlStart);
 
-        $xml = $this->merge->finish();
-        $this->assertContains('</products>', $xml);
-        $this->assertContains('</catalog>', $xml);
+        $xmlEnd = $this->merge->finish();
+        $this->assertContains('</products>', $xmlEnd);
+        $this->assertContains('</catalog>', $xmlEnd);
+    }
+
+    public function testAddsCategoryXmlString()
+    {
+        $expectedXml = '<listing>foo listing</listing>';
+        $xmlStart = $this->merge->addCategory(new XmlString('<?xml version="1.0"?>' . $expectedXml));
+        $xml = $xmlStart . $this->merge->finish();
+        $this->assertContains($expectedXml, $xml);
+        $this->assertRegExp('#<listings>#', $xml);
+    }
+
+    public function testThrowsExceptionsIfProductsAreAddedAfterCategories()
+    {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage(
+            'Products can only be added during product mode, this means BEFORE any category is added.'
+        );
+
+        $dummyCategoryXml = '<listing>foo</listing>';
+        $dummyProductXml = '<product>foo</product>';
+        $this->merge->addCategory(new XmlString('<?xml version="1.0"?>' . $dummyCategoryXml));
+        $this->merge->addProduct(new XmlString($dummyProductXml));
+        
     }
 }

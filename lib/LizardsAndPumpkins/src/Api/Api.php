@@ -30,24 +30,26 @@ class Api
 
     /**
      * @param string $filename
+     * @param string $dataVersion
      */
-    public function triggerProductImport($filename)
+    public function triggerCatalogImport($filename, $dataVersion)
     {
-        $headers = ['Accept' => 'application/vnd.lizards-and-pumpkins.catalog_import.v1+json'];
+        $headers = ['Accept' => 'application/vnd.lizards-and-pumpkins.catalog_import.v2+json'];
 
         $url = $this->url . self::API_ENDPOINT_CATALOG_IMPORT;
-        $this->sendApiRequestWithFilename($filename, $url, $headers);
+        $this->sendApiRequestWithFilename($filename, $dataVersion, $url, $headers);
     }
 
     /**
      * @param string $filename
+     * @param string $dataVersion
      * @param string $url
      * @param string[] $headers
      */
-    private function sendApiRequestWithFilename($filename, $url, array $headers)
+    private function sendApiRequestWithFilename($filename, $dataVersion, $url, array $headers)
     {
         $this->validateFilename($filename);
-        $body = json_encode(['fileName' => $filename]);
+        $body = json_encode(['fileName' => $filename, 'dataVersion' => $dataVersion]);
         $this->client->doPutRequest($url, $body, $headers);
     }
 

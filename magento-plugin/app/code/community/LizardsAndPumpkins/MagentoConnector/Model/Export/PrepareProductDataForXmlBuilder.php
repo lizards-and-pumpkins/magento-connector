@@ -1,27 +1,20 @@
 <?php
 
-use LizardsAndPumpkins\MagentoConnector\XmlBuilder\CatalogMerge;
-
 class LizardsAndPumpkins_MagentoConnector_Model_Export_PrepareProductDataForXmlBuilder
 {
-    /**
-     * @var CatalogMerge
-     */
-    private $merge;
-
-    /**
-     * @var LizardsAndPumpkins_MagentoConnector_Model_XmlUploader
-     */
-    private $uploader;
-
     private $attributesToExclude = ['tax_class_id'];
 
-    public function __construct(
-        CatalogMerge $merge,
-        LizardsAndPumpkins_MagentoConnector_Model_XmlUploader $uploader
-    ) {
-        $this->merge = $merge;
-        $this->uploader = $uploader;
+    /**
+     * @var LizardsAndPumpkins_MagentoConnector_Helper_Factory
+     */
+    private $factory;
+
+    /**
+     * @param LizardsAndPumpkins_MagentoConnector_Helper_Factory $factory
+     */
+    public function __construct($factory = null)
+    {
+        $this->factory = $factory ?: Mage::helper('lizardsAndPumpkins_magentoconnector/factory');
     }
 
     /**
@@ -41,32 +34,15 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_PrepareProductDataForXmlB
      */
     public function process(array $productData)
     {
-        $productBuilder = $this->getFactory()->createProductBuilder(
+        $productBuilder = $this->factory->createProductBuilder(
             $this->transformData($productData),
             $this->getContextData($productData)
         );
-        $xmlString = $productBuilder->getXmlString();
-        $this->merge->addProduct($xmlString);
-        $partialXmlString = $this->merge->getPartialXmlString() . "\n";
-        $this->getUploader()->writePartialXmlString($partialXmlString);
-    }
 
-    /**
-     * @return LizardsAndPumpkins_MagentoConnector_Helper_Factory
-     */
-    private function getFactory()
-    {
-        return Mage::helper('lizardsAndPumpkins_magentoconnector/factory');
+        return $productBuilder->getXmlString();
+        
     }
-
-    /**
-     * @return LizardsAndPumpkins_MagentoConnector_Model_XmlUploader
-     */
-    private function getUploader()
-    {
-        return $this->uploader;
-    }
-
+    
     /**
      * @param mixed[] $productData
      * @return bool

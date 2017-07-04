@@ -2,10 +2,13 @@
 
 use LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueue as ExportQueue;
 use LizardsAndPumpkins_MagentoConnector_Model_ExportQueue_Message as QueueMessage;
+use LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueue_Message as QueueMessageResource;
 use LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueue_Message_Collection as QueueMessageCollection;
 
 class LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueueReader
 {
+    const MAX_QUEUE_MESSAGE_BATCH_SIZE = 1000;
+
     /**
      * @var Mage_Core_Model_Resource
      */
@@ -43,11 +46,25 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueueReader
         return $this->getQueuedItemsOfTypeGroupedByDataVersion(ExportQueue::TYPE_CATEGORY, $versions);
     }
 
-    private function getQueuedItemsOfTypeGroupedByDataVersion($type, $versions)
+    /**
+     * @return QueueMessageCollection[]
+     */
+    public function getQueuedCatalogUpdatesGroupedByDataVersion()
+    {
+        $versions = $this->getDataVersions();
+        return $this->getQueuedItemsGroupedByDataVersion($versions);
+    }
+
+    /**
+     * @param string $type
+     * @param string[] $versions
+     * @return QueueMessageCollection[]
+     */
+    private function getQueuedItemsOfTypeGroupedByDataVersion($type, array $versions)
     {
         $collections = [];
         foreach ($versions as $dataVersion) {
-            $collections[$dataVersion] = $this->createQueuedItemCollectionForDataVersion($dataVersion, $type);
+            $collections[$dataVersion] = $this->createQueuedItemTypeCollectionForDataVersion($dataVersion, $type);
         }
         return $collections;
     }
@@ -57,11 +74,34 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueueReader
      * @param string $type
      * @return LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueue_Message_Collection
      */
-    private function createQueuedItemCollectionForDataVersion($dataVersion, $type)
+    private function createQueuedItemTypeCollectionForDataVersion($dataVersion, $type)
+    {
+        $collection = $this->createQueuedItemCollectionForDataVersion($dataVersion);
+        $collection->addFieldToFilter(QueueMessage::TYPE, $type);
+        return $collection;
+    }
+
+    /**
+     * @param string[] $versions
+     * @return QueueMessageCollection[]
+     */
+    private function getQueuedItemsGroupedByDataVersion(array $versions)
+    {
+        $collections = [];
+        foreach ($versions as $dataVersion) {
+            $collections[$dataVersion] = $this->createQueuedItemCollectionForDataVersion($dataVersion);
+        }
+        return $collections;
+    }
+
+    /**
+     * @param string $dataVersion
+     * @return QueueMessageCollection
+     */
+    private function createQueuedItemCollectionForDataVersion($dataVersion)
     {
         $collection = $this->createCollection();
         $collection->addFieldToFilter(QueueMessage::DATA_VERSION, $dataVersion);
-        $collection->addFieldToFilter(QueueMessage::TYPE, $type);
         return $collection;
     }
 
@@ -90,17 +130,34 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueueReader
     }
 
     /**
+     * @return string[]
+     */
+    private function getDataVersions()
+    {
+        return $this->connection->fetchCol($this->getDataVersionsSelect());
+    }
+
+    /**
      * @param string $type
      * @return string[]
      */
     private function getDataVersionsByType($type)
     {
+        $select = $this->getDataVersionsSelect()->where(QueueMessage::TYPE . '=?', $type);
+
+        return $this->connection->fetchCol($select);
+    }
+
+    /**
+     * @return Varien_Db_Select
+     */
+    private function getDataVersionsSelect()
+    {
         $select = $this->connection->select();
         $select->distinct();
         $select->from($this->queueTable(), [QueueMessage::DATA_VERSION]);
-        $select->where(QueueMessage::TYPE . '=?', $type);
-
-        return $this->connection->fetchCol($select);
+        
+        return $select;
     }
 
     /**
@@ -108,7 +165,12 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueueReader
      */
     private function createCollection()
     {
-        return Mage::getResourceModel('lizardsAndPumpkins_magentoconnector/exportQueue_message_collection');
+        $collection = Mage::getResourceModel('lizardsAndPumpkins_magentoconnector/exportQueue_message_collection');
+        $collection->setOrder(QueueMessageResource::ID_FIELD, QueueMessageCollection::SORT_ORDER_ASC);
+        $collection->setPageSize(self::MAX_QUEUE_MESSAGE_BATCH_SIZE);
+        $collection->setCurPage(1);
+
+        return $collection;
     }
 
     public function getProductQueueCount()

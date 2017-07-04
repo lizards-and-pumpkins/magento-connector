@@ -76,8 +76,10 @@ class LizardsAndPumpkins_MagentoConnector_Adminhtml_LizardsAndPumpkinsController
      */
     private function triggerCatalogUpdateApi($filename)
     {
-        /** @var \LizardsAndPumpkins_MagentoConnector_Helper_Factory $helper */
-        $helper = Mage::helper('lizardsAndPumpkins_magentoconnector/factory');
-        $helper->createLizardsAndPumpkinsApi()->triggerProductImport($filename);
+        /** @var \LizardsAndPumpkins_MagentoConnector_Helper_Factory $factory */
+        $factory = Mage::helper('lizardsAndPumpkins_magentoconnector/factory');
+        /** @var \LizardsAndPumpkins_MagentoConnector_Helper_DataVersion $dataVersion */
+        $dataVersion = Mage::helper('lizardsAndPumpkins_magentoconnector/dataVersion');
+        $factory->createLizardsAndPumpkinsApi()->triggerCatalogImport($filename, $dataVersion->getTargetVersion());
     }
 }

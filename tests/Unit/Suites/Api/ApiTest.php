@@ -96,13 +96,13 @@ class ApiTest extends \PHPUnit_Framework_TestCase
         $this->api->triggerCmsBlockUpdate('123', $content, $context, $keyGeneratorParameters);
     }
 
-    public function testTriggerProductImport()
+    public function testTriggerCatalogImport()
     {
         $responseBody = '';
 
-        $headers = ['Accept' => 'application/vnd.lizards-and-pumpkins.catalog_import.v1+json'];
+        $headers = ['Accept' => 'application/vnd.lizards-and-pumpkins.catalog_import.v2+json'];
         $url = $this->host . '/catalog_import/';
-        $body = json_encode(['fileName' => 'catalog.xml']);
+        $body = json_encode(['fileName' => 'catalog.xml', 'dataVersion' => 'foo']);
 
         $this->httpClient->expects($this->once())
             ->method('doPutRequest')
@@ -110,6 +110,6 @@ class ApiTest extends \PHPUnit_Framework_TestCase
             ->willReturn($responseBody);
 
 
-        $this->api->triggerProductImport('catalog.xml');
+        $this->api->triggerCatalogImport('catalog.xml', 'foo');
     }
 }

@@ -5,7 +5,7 @@ require 'abstract.php';
 class LizardsAndPumpkins_Export extends Mage_Shell_Abstract
 {
     /**
-     * @var LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
+     * @var LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_Exporter
      */
     private $catalogExporter;
 
@@ -18,7 +18,7 @@ class LizardsAndPumpkins_Export extends Mage_Shell_Abstract
     {
         parent::__construct();
         $this->contentExporter = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_content');
-        $this->catalogExporter = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_catalogExporter');
+        $this->catalogExporter = Mage::getModel('lizardsAndPumpkins_magentoconnector/catalogExport_exporter');
     }
 
     protected function _applyPhpVariables()
@@ -59,7 +59,7 @@ class LizardsAndPumpkins_Export extends Mage_Shell_Abstract
             return;
         }
         
-        $this->getFactory()->createLizardsAndPumpkinsApi()->triggerProductImport($filename);
+        $this->getFactory()->createLizardsAndPumpkinsApi()->triggerCatalogImport($filename);
     }
 
     /**

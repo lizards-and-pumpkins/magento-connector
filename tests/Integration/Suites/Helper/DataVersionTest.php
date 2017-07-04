@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @covers LizardsAndPumpkins_MagentoConnector_Helper_DataVersion
+ */
 class LizardsAndPumpkins_MagentoConnector_Helper_DataVersionTest extends \PHPUnit\Framework\TestCase
 {
     public function testReturnsTheConfiguredTargetDataVersion()

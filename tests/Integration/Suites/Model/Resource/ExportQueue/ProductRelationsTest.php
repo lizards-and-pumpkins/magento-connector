@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @covers LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueue_ProductRelations
+ * @group bisect
+ */
 class LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueue_ProductRelationsTest extends \PHPUnit\Framework\TestCase
 {
     /**
@@ -13,22 +17,28 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueue_ProductRela
      */
     private function createSimpleProduct($sku)
     {
+        $currentStore = Mage::app()->getStore()->getCode();
+        Mage::app()->setCurrentStore(Mage_Core_Model_Store::ADMIN_CODE);
         $simple = Mage::getModel('catalog/product');
         $simple->setData('sku', $sku);
         $simple->setData('status', Mage_Catalog_Model_Product_Status::STATUS_ENABLED);
         $simple->setData('type_id', Mage_Catalog_Model_Product_Type::TYPE_SIMPLE);
         $simple->setData('attribute_set_id', $simple->getDefaultAttributeSetId());
         $simple->save();
+        Mage::app()->setCurrentStore($currentStore);
 
         return $simple;
     }
 
     /**
      * @param string $sku
+     * @param int[] $simpleProductIds
      * @return Mage_Catalog_Model_Product
      */
     private function createConfigurableProduct($sku, array $simpleProductIds)
     {
+        $currentStore = Mage::app()->getStore()->getCode();
+        Mage::app()->setCurrentStore(Mage_Core_Model_Store::ADMIN_CODE);
         $configurable = Mage::getModel('catalog/product');
         $configurable->setData('sku', $sku);
         $configurable->setData('status', Mage_Catalog_Model_Product_Status::STATUS_ENABLED);
@@ -38,6 +48,8 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueue_ProductRela
 
         Mage::getResourceModel('catalog/product_type_configurable')
             ->saveProducts($configurable, $simpleProductIds);
+        
+        Mage::app()->setCurrentStore($currentStore);
 
         return $configurable;
     }

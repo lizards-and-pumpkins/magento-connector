@@ -6,6 +6,9 @@ use LizardsAndPumpkins\MagentoConnector\Api\RequestFailedException;
 require Mage::getModuleDir('controllers', 'LizardsAndPumpkins_MagentoConnector')
     . '/Adminhtml/LizardsAndPumpkins/VersionController.php';
 
+/**
+ * @covers LizardsAndPumpkins_MagentoConnector_Adminhtml_LizardsAndPumpkins_VersionController
+ */
 class LizardsAndPumpkins_MagentoConnector_VersionControllerTest extends PHPUnit_Framework_TestCase
 {
     /**

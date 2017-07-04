@@ -3,7 +3,7 @@
 use LizardsAndPumpkins\MagentoConnector\XmlBuilder\StockBuilder;
 
 /**
- * @deprecated 
+ * @deprecated without replacement
  */
 class LizardsAndPumpkins_MagentoConnector_Model_Export_Stock
 {

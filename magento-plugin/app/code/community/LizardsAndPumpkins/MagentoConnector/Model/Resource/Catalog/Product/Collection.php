@@ -19,6 +19,11 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
         return false;
     }
 
+    public function getIterator()
+    {
+        return new \ArrayIterator($this->getData());
+    }
+
     /**
      * @param bool $printQuery
      * @param bool $logQuery

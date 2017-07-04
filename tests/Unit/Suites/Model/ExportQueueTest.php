@@ -4,6 +4,9 @@ use LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueue as ExportQueu
 use LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueueReader as ExportQueueResourceReader;
 use LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueue_Message_Collection as ExportQueueMessageCollection;
 
+/**
+ * @covers LizardsAndPumpkins_MagentoConnector_Model_ExportQueue
+ */
 class LizardsAndPumpkins_MagentoConnector_Model_ExportQueueTest extends \PHPUnit\Framework\TestCase
 {
     /**
@@ -170,6 +173,25 @@ class LizardsAndPumpkins_MagentoConnector_Model_ExportQueueTest extends \PHPUnit
             ->with([3, 4, 6, 7]);
         
         $result = $this->createExportQueue()->popQueuedCategoryUpdatesGroupedByDataVersion();
+        
+        $this->assertSame([$stubCollection1, $stubCollection2], $result);
+    }
+
+    public function testRemovesFetchedExportQueueMessages()
+    {
+        $stubCollection1 = $this->createMock(ExportQueueMessageCollection::class);
+        $stubCollection1->method('getAllIds')->willReturn([3, 4]);
+        $stubCollection2 = $this->createMock(ExportQueueMessageCollection::class);
+        $stubCollection2->method('getAllIds')->willReturn([6, 7]);
+
+        $this->mockResourceModelReader->method('getQueuedCatalogUpdatesGroupedByDataVersion')
+            ->willReturn([$stubCollection1, $stubCollection2]);
+        
+        $this->mockResourceModel->expects($this->once())
+            ->method('removeMessages')
+            ->with([3, 4, 6, 7]);
+        
+        $result = $this->createExportQueue()->popQueuedUpdatesGroupedByDataVersion();
         
         $this->assertSame([$stubCollection1, $stubCollection2], $result);
     }

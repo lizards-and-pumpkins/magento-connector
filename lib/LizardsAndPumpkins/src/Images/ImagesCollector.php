@@ -19,6 +19,14 @@ class ImagesCollector implements \IteratorAggregate
     }
 
     /**
+     * @return bool
+     */
+    public function hasImages()
+    {
+        return count($this->images) > 0;
+    }
+
+    /**
      * @return string[]
      */
     public function getImages()

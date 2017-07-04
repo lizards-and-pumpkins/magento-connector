@@ -12,9 +12,8 @@ class LizardsAndPumpkins_MagentoConnector_Model_XmlUploaderTest extends PHPUnit_
      */
     public function testAllowProtocols($protocol)
     {
-        $target = $protocol . 'some/path';
-        $config = $this->getConfigStub($target);
-        $uploader = new LizardsAndPumpkins_MagentoConnector_Model_ProductXmlUploader($config);
+        $target = $protocol . 'some/path/magento.xml';
+        $uploader = new LizardsAndPumpkins_MagentoConnector_Model_XmlUploader($target);
         $this->assertInstanceOf(LizardsAndPumpkins_MagentoConnector_Model_XmlUploader::class, $uploader);
     }
 
@@ -26,9 +25,8 @@ class LizardsAndPumpkins_MagentoConnector_Model_XmlUploaderTest extends PHPUnit_
     {
         $this->expectException(Mage_Core_Exception::class);
 
-        $target = $protocol . 'some/path';
-        $config = $this->getConfigStub($target);
-        new LizardsAndPumpkins_MagentoConnector_Model_ProductXmlUploader($config);
+        $target = $protocol . 'some/path/magento.xml';
+        new LizardsAndPumpkins_MagentoConnector_Model_ProductXmlUploader($target);
     }
 
     /**
@@ -67,17 +65,5 @@ class LizardsAndPumpkins_MagentoConnector_Model_XmlUploaderTest extends PHPUnit_
             'ssh2.tunnel' => ['ssh2.tunnel://'],
         ];
 
-    }
-
-    /**
-     * @param string $target
-     * @return LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig|PHPUnit_Framework_MockObject_MockObject
-     */
-    private function getConfigStub($target)
-    {
-        $config = $this->createMock(LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig::class);
-        $config->method('getLocalPathForProductExport')->willReturn($target);
-        $config->method('getLocalFilenameTemplate')->willReturn('magento.xml');
-        return $config;
     }
 }

@@ -5,7 +5,7 @@
  * @see LizardsAndPumpkins_MagentoConnector_Model_ExportQueue
  */
 class LizardsAndPumpkins_MagentoConnector_Helper_Export
-    implements LizardsAndPumpkins_MagentoConnector_Helper_ProductsToUpdateQueueReader
+    implements LizardsAndPumpkins_MagentoConnector_Model_Export_IdsToExport
 {
     const QUEUE_STOCK_UPDATES = "stockUpdates";
     const QUEUE_PRODUCT_UPDATES = "productUpdates";
@@ -240,7 +240,7 @@ SQL;
     /**
      * @return string[]
      */
-    public function getQueuedProductIds()
+    public function getIdsToExport()
     {
         $messageIterator = $this->getProductUpdatesToExport();
         $productIds = [];

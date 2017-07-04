@@ -1,6 +1,6 @@
 <?php
 
-abstract class LizardsAndPumpkins_MagentoConnector_Model_XmlUploader
+class LizardsAndPumpkins_MagentoConnector_Model_XmlUploader
 {
     const PROTOCOL_DELIMITER = '://';
 
@@ -17,7 +17,7 @@ abstract class LizardsAndPumpkins_MagentoConnector_Model_XmlUploader
     /**
      * @param string $target
      */
-    protected function __construct($target)
+    public function __construct($target)
     {
         $this->checkTarget($target);
         $this->target = $target;

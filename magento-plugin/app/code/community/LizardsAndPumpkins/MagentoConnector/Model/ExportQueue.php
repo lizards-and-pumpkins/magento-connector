@@ -110,12 +110,29 @@ class LizardsAndPumpkins_MagentoConnector_Model_ExportQueue
         return $categoryUpdatesGroupedByDataVersion;
     }
 
+    public function popQueuedUpdatesGroupedByDataVersion()
+    {
+        $catalogUpdatesGroupedByDataVersion = $this->getQueuedCatalogUpdatesGroupedByDataVersion();
+        
+        $this->removeMessages(...$catalogUpdatesGroupedByDataVersion);
+        
+        return $catalogUpdatesGroupedByDataVersion;
+    }
+
     /**
      * @return ExportQueueMessageCollection[]
      */
     public function getQueuedCategoryUpdatesGroupedByDataVersion()
     {
         return $this->exportQueueReader->getQueuedCategoryUpdatesGroupedByDataVersion();
+    }
+
+    /**
+     * @return ExportQueueMessageCollection[]
+     */
+    private function getQueuedCatalogUpdatesGroupedByDataVersion()
+    {
+        return $this->exportQueueReader->getQueuedCatalogUpdatesGroupedByDataVersion();
     }
 
     /**
