@@ -60,10 +60,10 @@ class LizardsAndPumpkins_MagentoConnector_Model_Observer
 
     public function cataloginventoryStockItemSaveCommitAfter(Varien_Event_Observer $observer)
     {
-        /** @var Mage_Catalog_Model_Product $product */
-        $product = $observer->getData('product');
+        /** @var Mage_CatalogInventory_Model_Stock_Item $item */
+        $item = $observer->getData('item');
 
-        $this->addProductToExportQueueByIds([$product->getId()]);
+        $this->addProductToExportQueueByIds([$item->getProductId()]);
     }
 
     public function salesOrderItemCancel(Varien_Event_Observer $observer)
