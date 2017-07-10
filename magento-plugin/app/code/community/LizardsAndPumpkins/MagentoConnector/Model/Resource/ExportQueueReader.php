@@ -64,7 +64,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueueReader
     {
         $collections = [];
         foreach ($versions as $dataVersion) {
-            $collections[$dataVersion] = $this->createQueuedItemTypeCollectionForDataVersion($dataVersion, $type);
+            $collection = $this->createQueuedItemTypeCollectionForDataVersion($dataVersion, $type);
+            $collection->load();
+            $collections[$dataVersion] = $collection;
         }
         return $collections;
     }
