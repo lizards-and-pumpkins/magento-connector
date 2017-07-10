@@ -1,6 +1,6 @@
 <?php
 
-require 'abstract.php';
+require dirname(isset($_SERVER['PHP_SELF']) ? $_SERVER['PHP_SELF'] : '.') . '/abstract.php';
 
 class LizardsAndPumpkins_Export extends Mage_Shell_Abstract
 {

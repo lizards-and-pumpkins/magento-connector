@@ -96,7 +96,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_ExportQueue
     {
         $productUpdatesGroupedByDataVersion = $this->getQueuedProductUpdatesGroupedByDataVersion();
 
-        $this->removeMessages(...$productUpdatesGroupedByDataVersion);
+        $this->removeMessages(...array_values($productUpdatesGroupedByDataVersion));
         
         return $productUpdatesGroupedByDataVersion;
     }
@@ -105,7 +105,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_ExportQueue
     {
         $categoryUpdatesGroupedByDataVersion = $this->getQueuedCategoryUpdatesGroupedByDataVersion();
 
-        $this->removeMessages(...$categoryUpdatesGroupedByDataVersion);
+        $this->removeMessages(...array_values($categoryUpdatesGroupedByDataVersion));
 
         return $categoryUpdatesGroupedByDataVersion;
     }
@@ -114,7 +114,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_ExportQueue
     {
         $catalogUpdatesGroupedByDataVersion = $this->getQueuedCatalogUpdatesGroupedByDataVersion();
         
-        $this->removeMessages(...$catalogUpdatesGroupedByDataVersion);
+        $this->removeMessages(...array_values($catalogUpdatesGroupedByDataVersion));
         
         return $catalogUpdatesGroupedByDataVersion;
     }
@@ -153,7 +153,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_ExportQueue
 
     private function removeMessages(ExportQueueMessageCollection ...$queueMessageCollections)
     {
-        $allMessageIds = array_merge(...array_map(function (ExportQueueMessageCollection $collection) {
+        $allMessageIds = array_merge([], ...array_map(function (ExportQueueMessageCollection $collection) {
             return $collection->getAllIds();
         }, $queueMessageCollections));
 

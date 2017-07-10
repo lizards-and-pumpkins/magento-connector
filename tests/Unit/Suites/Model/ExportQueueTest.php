@@ -158,6 +158,18 @@ class LizardsAndPumpkins_MagentoConnector_Model_ExportQueueTest extends \PHPUnit
         $this->assertSame([$stubCollection1, $stubCollection2], $result);
     }
 
+    public function testDoesNothingIfNothingIsQueued()
+    {
+        $this->mockResourceModelReader->method('getQueuedProductUpdatesGroupedByDataVersion')
+            ->willReturn([]);
+        
+        $this->mockResourceModel->expects($this->once())
+            ->method('removeMessages')
+            ->with();
+        
+        $this->createExportQueue()->popQueuedProductUpdatesGroupedByDataVersion();
+    }
+
     public function testRemovesFetchedCategoryQueueMessages()
     {
         $stubCollection1 = $this->createMock(ExportQueueMessageCollection::class);

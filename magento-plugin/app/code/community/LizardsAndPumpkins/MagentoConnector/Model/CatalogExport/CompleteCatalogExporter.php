@@ -33,18 +33,25 @@ class LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_CompleteCatalogExp
      */
     private $dataVersion;
 
+    /**
+     * @param ExportFileWriter $exportFileWriter
+     * @param EntityIdCollector $entityIdCollector
+     * @param ExportFilenameGenerator $exportFilenameGenerator
+     * @param DataVersion $dataVersion
+     * @param LizardsAndPumpkinsApi $api
+     */
     public function __construct(
-        ExportFileWriter $exportFileWriter,
-        EntityIdCollector $entityIdCollector,
-        ExportFilenameGenerator $exportFilenameGenerator,
-        DataVersion $dataVersion,
-        LizardsAndPumpkinsApi $api
+        $exportFileWriter,
+        EntityIdCollector $entityIdCollector = null,
+        ExportFilenameGenerator $exportFilenameGenerator = null,
+        DataVersion $dataVersion = null,
+        LizardsAndPumpkinsApi $api = null
     ) {
-        $this->exportFileWriter = $exportFileWriter;
-        $this->entityIdCollector = $entityIdCollector;
-        $this->exportFilenameGenerator = $exportFilenameGenerator;
-        $this->dataVersion = $dataVersion;
-        $this->api = $api;
+        $this->exportFileWriter = $exportFileWriter ? $exportFileWriter : Mage::helper('lizardsAndPumpkins_magentoconnector/factory')->createExportFileWriter();
+        $this->entityIdCollector = $entityIdCollector ? $entityIdCollector : Mage::getModel('lizardsAndPumpkins_magentoconnector/resource_catalogExport_catalogEntityIdCollector');
+        $this->exportFilenameGenerator = $exportFilenameGenerator ? $exportFilenameGenerator : Mage::getModel('lizardsAndPumpkins_magentoconnector/catalogExport_exportFilenameGenerator');
+        $this->dataVersion = $dataVersion ? $dataVersion : Mage::helper('lizardsAndPumpkins_magentoconnector/dataVersion');
+        $this->api = $api ? $api : Mage::helper('lizardsAndPumpkins_magentoconnector/factory')->createLizardsAndPumpkinsApi();
     }
 
     public function exportAllProducts()
@@ -81,6 +88,6 @@ class LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_CompleteCatalogExp
     {
         $filename = $this->exportFilenameGenerator->getNewFilename();
         $this->exportFileWriter->write($productIds, $categoryIds, $filename);
-        $this->api->triggerCatalogImport($filename, $this->dataVersion->getTargetVersion());
+        $this->api->triggerCatalogImport(basename($filename), $this->dataVersion->getTargetVersion());
     }
 }

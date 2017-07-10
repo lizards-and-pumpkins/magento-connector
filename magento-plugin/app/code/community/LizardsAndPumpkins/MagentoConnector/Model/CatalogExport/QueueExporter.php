@@ -30,15 +30,15 @@ class LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_QueueExporter
     private $filenameGenerator;
 
     public function __construct(
-        ExportQueue $exportQueue,
-        ExportFilenameGenerator $filenameGenerator,
-        ExportFileWriter $exportWriter,
-        Api $api
+        $exportQueue,
+        ExportFilenameGenerator $filenameGenerator = null,
+        ExportFileWriter $exportWriter = null,
+        Api $api = null
     ) {
-        $this->exportQueue = $exportQueue;
-        $this->filenameGenerator = $filenameGenerator;
-        $this->exportWriter = $exportWriter;
-        $this->api = $api;
+        $this->exportQueue = $exportQueue ? $exportQueue : Mage::helper('lizardsAndPumpkins_magentoconnector/factory')->createExportQueue();
+        $this->filenameGenerator = $filenameGenerator ? $filenameGenerator : Mage::getModel('lizardsAndPumpkins_magentoconnector/catalogExport_exportFilenameGenerator');
+        $this->exportWriter = $exportWriter ? $exportWriter : Mage::helper('lizardsAndPumpkins_magentoconnector/factory')->createExportFileWriter();
+        $this->api = $api ? $api : Mage::helper('lizardsAndPumpkins_magentoconnector/factory')->createLizardsAndPumpkinsApi();
     }
 
     public function exportQueuedProducts()
@@ -80,7 +80,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_QueueExporter
     {
         $filename = $this->filenameGenerator->getNewFilename();
         $this->exportWriter->write($productIds, $categoryIds, $filename);
-        $this->api->triggerCatalogImport($filename, $targetDataVersion);
+        $this->api->triggerCatalogImport(basename($filename), $targetDataVersion);
     }
 
     /**
