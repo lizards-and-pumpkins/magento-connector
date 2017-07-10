@@ -80,7 +80,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_QueueExporter
     {
         $filename = $this->filenameGenerator->getNewFilename();
         $this->exportWriter->write($productIds, $categoryIds, $filename);
-        $this->api->triggerCatalogImport(basename($filename), $targetDataVersion);
+        if (count($productIds) + count($categoryIds) > 0) {
+            $this->api->triggerCatalogImport(basename($filename), $targetDataVersion);
+        }
     }
 
     /**

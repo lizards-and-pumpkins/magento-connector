@@ -108,9 +108,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_QueueExporterTest 
         $dummyDataVersion2 = 'bar';
 
         $stubCollection1 = $this->createMock(ExportQueueMessageCollection::class);
-        $stubCollection1->method('getObjectIdsByType')->willReturn([]);
+        $stubCollection1->method('getObjectIdsByType')->willReturn([1, 2, 3]);
         $stubCollection2 = $this->createMock(ExportQueueMessageCollection::class);
-        $stubCollection2->method('getObjectIdsByType')->willReturn([]);
+        $stubCollection2->method('getObjectIdsByType')->willReturn([4, 5, 6]);
 
         $this->mockExportQueue->method('popQueuedProductUpdatesGroupedByDataVersion')
             ->willReturn([$dummyDataVersion1 => $stubCollection1, $dummyDataVersion2 => $stubCollection2]);
@@ -122,6 +122,23 @@ class LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_QueueExporterTest 
                 ['a.xml', $dummyDataVersion1],
                 ['b.xml', $dummyDataVersion2]
             );
+
+        $this->createExporter()->exportQueuedProducts();
+    }
+
+    public function testDoesNotCallApiIfNoEntityIdsWhereExported()
+    {
+        $dummyDataVersion = 'foo';
+        
+        $stubCollection = $this->createMock(ExportQueueMessageCollection::class);
+        $stubCollection->method('getObjectIdsByType')->willReturn([]);
+
+        $this->mockExportQueue->method('popQueuedProductUpdatesGroupedByDataVersion')
+            ->willReturn([$dummyDataVersion => $stubCollection]);
+
+        $this->stubExportFilenameGenerator->method('getNewFilename')->willReturn('a.xml');
+
+        $this->mockApi->expects($this->never())->method('triggerCatalogImport');
 
         $this->createExporter()->exportQueuedProducts();
     }
