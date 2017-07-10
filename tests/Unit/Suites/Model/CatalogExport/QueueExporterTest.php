@@ -7,9 +7,9 @@ use LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_ExportFilenameGenera
 use LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueue_Message_Collection as ExportQueueMessageCollection;
 
 /**
- * @covers LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_Exporter
+ * @covers LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_QueueExporter
  */
-class LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_ExporterTest extends \PHPUnit\Framework\TestCase
+class LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_QueueExporterTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var ExportQueue|\PHPUnit_Framework_MockObject_MockObject
@@ -32,11 +32,11 @@ class LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_ExporterTest exten
     private $stubExportFilenameGenerator;
 
     /**
-     * @return LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_Exporter
+     * @return LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_QueueExporter
      */
     private function createExporter()
     {
-        return new LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_Exporter(
+        return new LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_QueueExporter(
             $this->mockExportQueue,
             $this->stubExportFilenameGenerator,
             $this->mockFileWriter,

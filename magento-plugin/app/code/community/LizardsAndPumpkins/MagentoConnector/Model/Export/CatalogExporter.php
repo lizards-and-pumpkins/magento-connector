@@ -4,7 +4,7 @@ use LizardsAndPumpkins\MagentoConnector\Images\ImagesCollector;
 
 /**
  * @deprecated
- * @see LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_Exporter
+ * @see LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_QueueExporter
  */
 class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
 {

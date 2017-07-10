@@ -7,7 +7,7 @@ use LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_ExportFileWriter as 
 use LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_ExportFilenameGenerator as ExportFilenameGenerator;
 use LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueue_Message_Collection as ExportQueueMessageCollection;
 
-class LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_Exporter
+class LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_QueueExporter
 {
     /**
      * @var LizardsAndPumpkins_MagentoConnector_Model_ExportQueue
@@ -58,21 +58,29 @@ class LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_Exporter
         $catalogUpdatesGroupedByDataVersion = $this->exportQueue->popQueuedUpdatesGroupedByDataVersion();
         $this->processExportQueueMessagesGroupedByDataVersion($catalogUpdatesGroupedByDataVersion);
     }
-
+    
     /**
      * @param ExportQueueMessageCollection[] $exportMessageCollections
      */
     private function processExportQueueMessagesGroupedByDataVersion(array $exportMessageCollections)
     {
         foreach ($exportMessageCollections as $targetDataVersion => $queueMessageCollection) {
-            $filename = $this->filenameGenerator->getNewFilename();
-            $this->exportWriter->write(
-                $this->getProductIds($queueMessageCollection),
-                $this->getCategoryIds($queueMessageCollection),
-                $filename
-            );
-            $this->api->triggerCatalogImport($filename, $targetDataVersion);
+            $productIds = $this->getProductIds($queueMessageCollection);
+            $categoryIds = $this->getCategoryIds($queueMessageCollection);
+            $this->exportProductsAndCategoriesWithVersion($productIds, $categoryIds, $targetDataVersion);
         }
+    }
+
+    /**
+     * @param int[] $productIds
+     * @param int[] $categoryIds
+     * @param string $targetDataVersion
+     */
+    private function exportProductsAndCategoriesWithVersion(array $productIds, array $categoryIds, $targetDataVersion)
+    {
+        $filename = $this->filenameGenerator->getNewFilename();
+        $this->exportWriter->write($productIds, $categoryIds, $filename);
+        $this->api->triggerCatalogImport($filename, $targetDataVersion);
     }
 
     /**

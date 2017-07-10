@@ -4,7 +4,8 @@
  * @covers LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueue_ProductRelations
  * @group bisect
  */
-class LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueue_ProductRelationsTest extends \PHPUnit\Framework\TestCase
+class LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueue_ProductRelationsTest
+    extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var Mage_Core_Model_Resource

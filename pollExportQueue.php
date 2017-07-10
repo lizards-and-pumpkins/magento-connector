@@ -12,8 +12,8 @@ class PollsExportQueue
     {
         $iteration = 0;
         do {
-            /** @var LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_Exporter $exporter */
-            $exporter = Mage::getModel('lizardsAndPumpkins_magentoconnector/catalogExport_exporter');
+            /** @var LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_QueueExporter $exporter */
+            $exporter = Mage::getModel('lizardsAndPumpkins_magentoconnector/catalogExport_queueExporter');
             $exporter->exportQueuedProductsAndCategories();
             sleep(10);
         } while ($iteration++ < self::$iterationsUntilExit);
