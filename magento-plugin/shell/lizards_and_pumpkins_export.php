@@ -10,7 +10,7 @@ class LizardsAndPumpkins_Export extends Mage_Shell_Abstract
     private $queueExporter;
 
     /**
-     * @var LizardsAndPumpkins_MagentoConnector_Model_Export_Content
+     * @var LizardsAndPumpkins_MagentoConnector_Model_CmsExport_BlockExport
      */
     private $contentExporter;
 
@@ -22,7 +22,7 @@ class LizardsAndPumpkins_Export extends Mage_Shell_Abstract
     public function __construct()
     {
         parent::__construct();
-        $this->contentExporter = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_content');
+        $this->contentExporter = Mage::getModel('lizardsAndPumpkins_magentoconnector/cmsExport_blockExport');
         $this->queueExporter = Mage::getModel('lizardsAndPumpkins_magentoconnector/catalogExport_queueExporter');
         $this->catalogExporter = Mage::getModel('lizardsAndPumpkins_magentoconnector/catalogExport_completeCatalogExporter');
     }

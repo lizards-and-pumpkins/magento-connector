@@ -2,11 +2,7 @@
 
 use LizardsAndPumpkins\MagentoConnector\Api\Api;
 
-/**
- * @deprecated 
- * @see LizardsAndPumpkins_MagentoConnector_Model_CmsExport_BlockExport
- */
-class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
+class LizardsAndPumpkins_MagentoConnector_Model_CmsExport_BlockExport
 {
     const SNIPPET_KEY_REPLACE_PATTERN = '#[^a-zA-Z0-9:_\-]#';
 

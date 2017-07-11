@@ -319,7 +319,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
     }
 
     /**
-     * @return LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig
+     * @return LizardsAndPumpkins_MagentoConnector_Model_MagentoConfig
      */
     private function getMagentoConfig()
     {

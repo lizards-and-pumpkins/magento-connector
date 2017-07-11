@@ -1,6 +1,6 @@
 <?php
 
-require_once 'Mage/Checkout/controllers/CartController.php';
+require_once Mage::getModuleDir('controllers', 'Mage_Checkout') . '/CartController.php';
 
 class LizardsAndPumpkins_MagentoConnector_CartController extends Mage_Checkout_CartController
 {

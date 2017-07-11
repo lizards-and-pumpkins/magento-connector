@@ -1,16 +1,16 @@
 <?php
 
-use LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig as MagentoConfig;
+use LizardsAndPumpkins_MagentoConnector_Model_MagentoConfig as MagentoConfig;
 
 class LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_ExportFilenameGenerator
 {
     /**
-     * @var LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig
+     * @var MagentoConfig
      */
     private $config;
 
     /**
-     * @param \LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig
+     * @param MagentoConfig
      */
     public function __construct($config)
     {

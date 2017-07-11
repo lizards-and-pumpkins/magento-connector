@@ -10,6 +10,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Observer
         $this->getExportQueue()->addCategoryToQueue($category->getId(), $this->getTargetVersion());
     }
 
+    /**
+     * @todo Logic Error: Use before_delete event
+     */
     public function catalogCategoryDeleteCommitAfter(Varien_Event_Observer $observer)
     {
         /** @var Mage_Catalog_Model_Category $category */
@@ -34,6 +37,11 @@ class LizardsAndPumpkins_MagentoConnector_Model_Observer
         $this->addProductToExportQueueByIds([$product->getId()]);
     }
 
+    /**
+     * @todo Logic Error: Replace with before_delete event.
+     * 
+     * Otherwise the product is already gone and the parent product ID lookup fails.
+     */
     public function catalogProductDeleteCommitAfter(Varien_Event_Observer $observer)
     {
         /** @var Mage_Catalog_Model_Product $product */
@@ -50,6 +58,11 @@ class LizardsAndPumpkins_MagentoConnector_Model_Observer
         $this->addProductToExportQueueByIds([$product->getId()]);
     }
 
+    /**
+     * @todo Replace with something that happens before the product data is deleted
+     * 
+     * Otherwise the product is already gone and the parent product ID lookup fails.
+     */
     public function catalogControllerProductDelete(Varien_Event_Observer $observer)
     {
         /** @var Mage_Catalog_Model_Product $product */

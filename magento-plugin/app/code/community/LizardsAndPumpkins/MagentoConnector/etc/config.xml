@@ -26,7 +26,7 @@
             </lizardsAndPumpkins_magentoconnector_resource>
             <cms>
                 <rewrite>
-                    <block>LizardsAndPumpkins_MagentoConnector_Model_Block</block>
+                    <block>LizardsAndPumpkins_MagentoConnector_Model_Cms_Block</block>
                 </rewrite>
             </cms>
         </models>

@@ -56,7 +56,7 @@ class LizardsAndPumpkins_MagentoConnector_Helper_FactoryTest extends \PHPUnit\Fr
     public function testReturnsAConnectorConfigInstance()
     {
         $result = $this->factory->getConfig();
-        $this->assertInstanceOf(\LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig::class, $result);
+        $this->assertInstanceOf(\LizardsAndPumpkins_MagentoConnector_Model_MagentoConfig::class, $result);
     }
 
     public function testReturnsAProductBuilderInstance()

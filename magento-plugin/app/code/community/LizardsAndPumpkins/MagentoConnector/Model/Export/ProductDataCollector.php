@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @deprecated 
+ * @see \LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_DataCollector_ProductDataCollectionFactory
+ */
 class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductDataCollector implements \IteratorAggregate
 {
     /**

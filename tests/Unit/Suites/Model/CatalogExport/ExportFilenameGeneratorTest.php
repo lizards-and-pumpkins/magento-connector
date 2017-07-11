@@ -1,6 +1,6 @@
 <?php
 
-use LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig as MagentoConfig;
+use LizardsAndPumpkins_MagentoConnector_Model_MagentoConfig as MagentoConfig;
 use LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_ExportFilenameGenerator as ExportFilenameGenerator;
 use PHPUnit\Framework\TestCase;
 

@@ -19,7 +19,7 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Factory
     private $imageExporterFactory;
 
     /**
-     * @var LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig
+     * @var LizardsAndPumpkins_MagentoConnector_Model_MagentoConfig
      */
     private $config;
 
@@ -76,16 +76,17 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Factory
     }
 
     /**
-     * @return LizardsAndPumpkins_MagentoConnector_Model_Export_PrepareProductDataForXmlBuilder
+     * @return LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_PrepareProductDataForXmlBuilder
      */
     public function createPrepareProductDataForXmlBuilder()
     {
-        return new LizardsAndPumpkins_MagentoConnector_Model_Export_PrepareProductDataForXmlBuilder($this);
+        return new LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_PrepareProductDataForXmlBuilder($this);
     }
 
     /**
      * @param int[] $productIds
      * @return LizardsAndPumpkins_MagentoConnector_Model_Export_ProductDataCollector
+     * @deprecated 
      */
     public function createProductDataCollector(array $productIds)
     {
@@ -96,6 +97,7 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Factory
     /**
      * @param int[] $categoryIds
      * @return LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryCollector
+     * @deprecated 
      */
     public function createCategoryCollector(array $categoryIds)
     {
@@ -178,12 +180,12 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Factory
     }
 
     /**
-     * @return LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig
+     * @return LizardsAndPumpkins_MagentoConnector_Model_MagentoConfig
      */
     public function getConfig()
     {
         if (null === $this->config) {
-            $this->config = new LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig();
+            $this->config = new LizardsAndPumpkins_MagentoConnector_Model_MagentoConfig();
         }
 
         return $this->config;

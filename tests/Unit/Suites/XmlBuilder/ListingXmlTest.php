@@ -3,7 +3,7 @@
 namespace LizardsAndPumpkins\MagentoConnector\XmlBuilder;
 
 use LizardsAndPumpkins\MagentoConnector\XmlBuilder\Exception\StoreNotSetOnCategoryException;
-use LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig;
+use LizardsAndPumpkins_MagentoConnector_Model_MagentoConfig as MagentoConfig;
 use Mage_Catalog_Model_Category;
 use Mage_Core_Model_Store;
 use Mage_Core_Model_Website;
@@ -14,7 +14,7 @@ use Mage_Core_Model_Website;
 class ListingXmlTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig|\PHPUnit_Framework_MockObject_MockObject
+     * @var MagentoConfig|\PHPUnit_Framework_MockObject_MockObject
      */
     private $stubConfig;
 
@@ -63,7 +63,7 @@ class ListingXmlTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->stubConfig = $this->createMock(LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig::class);
+        $this->stubConfig = $this->createMock(MagentoConfig::class);
         $this->stubConfig->method('getLocaleFrom')->willReturn('de_DE');
         $this->listingXml = new ListingXml($this->stubConfig);
 

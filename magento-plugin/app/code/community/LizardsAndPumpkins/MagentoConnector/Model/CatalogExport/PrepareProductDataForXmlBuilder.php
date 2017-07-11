@@ -1,10 +1,6 @@
 <?php
 
-/**
- * @deprecated 
- * @see \LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_PrepareProductDataForXmlBuilder
- */
-class LizardsAndPumpkins_MagentoConnector_Model_Export_PrepareProductDataForXmlBuilder
+class LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_PrepareProductDataForXmlBuilder
 {
     private $attributesToExclude = ['tax_class_id'];
 

@@ -13,11 +13,12 @@ EOM;
     exit(2);
 }
 
+$factory = Mage::helper('lizardsAndPumpkins_magentoconnector/factory');
+$dataVersion = Mage::helper('lizardsAndPumpkins_magentoconnector/dataVersion');
+
 if ('all' === $argv[1]) {
-    
-    $helper = Mage::helper('lizardsAndPumpkins_magentoconnector/export');
-    $helper->addAllProductIdsToProductUpdateQueue();
-    echo "Added all product ids to the export queue\n";
+    $factory->createExportQueue()->addAllProductIdsToProductUpdateQueue($dataVersion);
+    echo "Added all product IDs to the export queue\n";
     
 } else {
 
@@ -42,9 +43,8 @@ EOM;
     $select->columns('entity_id');
     $select->limit($numberOfProducts);
 
-    Mage::helper('lizardsAndPumpkins_magentoconnector/export')->addProductUpdatesToQueue(
-        $collection->getConnection()->fetchCol($select)
-    );
-
-    echo "Added {$numberOfProducts} product id(s) to the export queue\n";
+    $productIds = $collection->getConnection()->fetchCol($select);
+    $factory->createExportQueue()->addProductUpdatesToQueue($productIds, $dataVersion->getTargetVersion());
+    
+    echo "Added {$numberOfProducts} product ID(s) to the export queue\n";
 }

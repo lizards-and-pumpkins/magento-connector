@@ -26,7 +26,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_XmlUploaderTest extends PHPUnit_
         $this->expectException(Mage_Core_Exception::class);
 
         $target = $protocol . 'some/path/magento.xml';
-        new LizardsAndPumpkins_MagentoConnector_Model_ProductXmlUploader($target);
+        new LizardsAndPumpkins_MagentoConnector_Model_XmlUploader($target);
     }
 
     /**

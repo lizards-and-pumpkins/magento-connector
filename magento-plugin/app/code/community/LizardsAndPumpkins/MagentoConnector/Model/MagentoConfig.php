@@ -1,10 +1,6 @@
 <?php
 
-/**
- * @deprecated 
- * @see \LizardsAndPumpkins_MagentoConnector_Model_MagentoConfig
- */
-class LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig
+class LizardsAndPumpkins_MagentoConnector_Model_MagentoConfig
 {
     /**
      * @param string $store
