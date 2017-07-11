@@ -66,19 +66,23 @@ class Api
 
     /**
      * @param string $id
+     * @param string $dataVersion
      * @param string $content
      * @param string[] $context
      * @param string[] $keyGeneratorParameters
      */
-    public function triggerCmsBlockUpdate($id, $content, array $context, array $keyGeneratorParameters)
+    public function triggerCmsBlockUpdate($id, $dataVersion, $content, array $context, array $keyGeneratorParameters)
     {
         if (!is_string($id)) {
-            throw new InvalidUrlException();
+            throw new InvalidUrlException(sprintf('The CMS Block ID/URL has to be a string, got %s', gettype($id)));
         }
 
-        $headers = ['Accept' => 'application/vnd.lizards-and-pumpkins.content_blocks.v1+json'];
+        $headers = ['Accept' => 'application/vnd.lizards-and-pumpkins.content_blocks.v2+json'];
         $url = $this->url . self::API_ENDPOINT_CONTENT_BLOCK_UPDATE . $id;
-        $body = json_encode(array_merge(['content' => $content, 'context' => $context], $keyGeneratorParameters));
+        $body = json_encode(array_merge(
+            ['content' => $content, 'context' => $context, 'data_version' => $dataVersion],
+            $keyGeneratorParameters
+        ));
 
         $this->client->doPutRequest($url, $body, $headers);
     }

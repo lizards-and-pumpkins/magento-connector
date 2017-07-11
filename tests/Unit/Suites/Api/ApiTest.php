@@ -71,18 +71,20 @@ class ApiTest extends \PHPUnit_Framework_TestCase
     public function testTriggerCmsBlockUpdate()
     {
         $responseBody = '';
-
+        
         $context = ['locale' => 'de_DE', 'website' => 'WEBSITE'];
         $content = 'content';
+        $dataVersion = 'foo';
         $keyGeneratorParameters = ['url_key' => 'super-url'];
 
-        $headers = ['Accept' => 'application/vnd.lizards-and-pumpkins.content_blocks.v1+json'];
+        $headers = ['Accept' => 'application/vnd.lizards-and-pumpkins.content_blocks.v2+json'];
         $url = $this->host . '/content_blocks/123';
         $body = json_encode(
             array_merge(
                 [
                     'content' => $content,
                     'context' => $context,
+                    'data_version' => $dataVersion,
                 ],
                 $keyGeneratorParameters
             )
@@ -93,7 +95,7 @@ class ApiTest extends \PHPUnit_Framework_TestCase
             ->with($url, $body, $headers)
             ->willReturn($responseBody);
 
-        $this->api->triggerCmsBlockUpdate('123', $content, $context, $keyGeneratorParameters);
+        $this->api->triggerCmsBlockUpdate('123', $dataVersion, $content, $context, $keyGeneratorParameters);
     }
 
     public function testTriggerCatalogImport()

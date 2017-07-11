@@ -28,11 +28,13 @@ class LizardsAndPumpkins_MagentoConnector_Model_CmsExport_BlockExport
     {
         if (preg_match('/^content_block_.+/', $block->getIdentifier())) {
             $this->exportCmsBlock($block);
+
             return;
         }
 
         if (preg_match('/^product_listing_content_block_.+/', $block->getIdentifier())) {
             $this->exportProductListingCmsBlock($block);
+
             return;
         }
     }
@@ -107,15 +109,17 @@ class LizardsAndPumpkins_MagentoConnector_Model_CmsExport_BlockExport
     {
         if ($block->getData('store_id') !== '0') {
             $blockId = $this->normalizeIdentifier($block->getIdentifier());
+            $dataVersion = $this->getDataVersion();
             $content = $this->getBlockContent($block);
             $context = $this->getBlockContext($block);
             $keyGeneratorParameters = [];
 
-            $this->getApi()->triggerCmsBlockUpdate($blockId, $content, $context, $keyGeneratorParameters);
+            $this->getApi()->triggerCmsBlockUpdate($blockId, $dataVersion, $content, $context, $keyGeneratorParameters);
+
             return;
         }
 
-        array_map(function(Mage_Core_Model_Store $store) use ($block) {
+        array_map(function (Mage_Core_Model_Store $store) use ($block) {
             $block->setData('store_id', $store->getId());
             $this->exportCmsBlock($block);
         }, Mage::app()->getStores());
@@ -133,12 +137,14 @@ class LizardsAndPumpkins_MagentoConnector_Model_CmsExport_BlockExport
             $blockId = $this->normalizeIdentifier($blockIdStringWithoutLastVariableToken);
             $content = $this->getBlockContent($block);
             $context = $this->getBlockContext($block);
+            $dataVersion = $this->getDataVersion();
 
-            $this->getApi()->triggerCmsBlockUpdate($blockId, $content, $context, $keyGeneratorParameters);
+            $this->getApi()->triggerCmsBlockUpdate($blockId, $dataVersion, $content, $context, $keyGeneratorParameters);
+
             return;
         }
 
-        array_map(function(Mage_Core_Model_Store $store) use ($block) {
+        array_map(function (Mage_Core_Model_Store $store) use ($block) {
             $block->setData('store_id', $store->getId());
             $this->exportProductListingCmsBlock($block);
         }, Mage::app()->getStores());
@@ -179,15 +185,22 @@ class LizardsAndPumpkins_MagentoConnector_Model_CmsExport_BlockExport
 
                 $blockId = 'content_block_' . $this->normalizeIdentifier($block->getNameInLayout());
                 $content = $block->toHtml();
+                $dataVersion = $this->getDataVersion();
                 $context = [
                     'locale'  => Mage::getStoreConfig('general/locale/code', $store->getId()),
-                    'website' => $store->getCode()
+                    'website' => $store->getCode(),
                 ];
                 $keyGeneratorParameters = [];
 
                 $appEmulation->stopEnvironmentEmulation($initialEnvironmentInfo);
 
-                $this->getApi()->triggerCmsBlockUpdate($blockId, $content, $context, $keyGeneratorParameters);
+                $this->getApi()->triggerCmsBlockUpdate(
+                    $blockId,
+                    $dataVersion,
+                    $content,
+                    $context,
+                    $keyGeneratorParameters
+                );
             }, $this->getMagentoConfig()->getStoresToExport());
         }, explode(',', Mage::getStoreConfig(self::XML_SPECIAL_BLOCKS)));
     }
@@ -232,7 +245,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_CmsExport_BlockExport
 
         return $layout;
     }
-    
+
     /**
      * @return LizardsAndPumpkins_MagentoConnector_Model_MagentoConfig
      */
@@ -247,7 +260,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_CmsExport_BlockExport
      */
     private function getBlockContent(Mage_Cms_Model_Block $block)
     {
-        if (!$block->getIsActive()) {
+        if (! $block->getIsActive()) {
             return '';
         }
 
@@ -277,5 +290,10 @@ class LizardsAndPumpkins_MagentoConnector_Model_CmsExport_BlockExport
         $cmsHelper = Mage::helper('cms');
 
         return $cmsHelper->getPageTemplateProcessor();
+    }
+
+    private function getDataVersion()
+    {
+        return Mage::helper('lizardsAndPumpkins_magentoconnector/dataVersion')->getTargetVersion();
     }
 }
