@@ -73,6 +73,10 @@ class ConfigurableProductExportTest extends AbstractInitializableProductExportTe
         if (! file_exists($imagesDir)) {
             mkdir($imagesDir, 0700, true);
         }
+        Mage::app()->getStore()->setConfig(
+            'lizardsAndPumpkins/magentoconnector/local_path_for_product_export',
+            dirname($imagesDir)
+        );
     }
 
     protected function tearDown()

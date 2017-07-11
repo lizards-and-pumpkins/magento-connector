@@ -4,7 +4,6 @@
  * @covers LizardsAndPumpkins_MagentoConnector_Model_ExportQueue_Message
  * @covers LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueue_Message
  * @covers LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueue_Message_Collection
- * @group bisect
  */
 class ExportQueueMessageOrmEntityTest extends \PHPUnit\Framework\TestCase
 {
