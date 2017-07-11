@@ -66,17 +66,18 @@ class ConfigurableProductExportTest extends AbstractInitializableProductExportTe
         return require $this->getProductIdsFixtureFileName();
     }
 
-    protected function setUp()
+    private function prepareImagesExportDir()
     {
-        $this->testExportFile = sys_get_temp_dir() . '/lizards-and-pumpkins/magento-connector/configurable-product-test.xml';
-        $imagesDir = sys_get_temp_dir() . '/lizards-and-pumpkins/magento-connector/product-images';
+        $imagesDir = dirname($this->testExportFile) . '/product-images';
         if (! file_exists($imagesDir)) {
             mkdir($imagesDir, 0700, true);
         }
-        Mage::app()->getStore()->setConfig(
-            'lizardsAndPumpkins/magentoconnector/local_path_for_product_export',
-            dirname($imagesDir)
-        );
+        Mage::app()->getStore()->setConfig('lizardsAndPumpkins/magentoconnector/image_target', $imagesDir);
+    }
+
+    protected function setUp()
+    {
+        $this->testExportFile = sys_get_temp_dir() . '/lizards-and-pumpkins/magento-connector/configurable-product-test.xml';
     }
 
     protected function tearDown()
@@ -90,6 +91,8 @@ class ConfigurableProductExportTest extends AbstractInitializableProductExportTe
      */
     public function testExportConfigurableProduct()
     {
+        $this->prepareImagesExportDir();
+        
         $this->exportToFile($this->testExportFile, [$this->getConfigurableProductId()]);
         
         $this->assertFileEquals($this->getExpectationFileName(), $this->testExportFile);

@@ -280,7 +280,8 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Factory
     public function createCatalogDataforStoresCollector()
     {
         return new LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_CatalogDataForStoresCollector(
-            $this->getStoresToExport());
+            $this->getStoresToExport()
+        );
     }
 
     /**

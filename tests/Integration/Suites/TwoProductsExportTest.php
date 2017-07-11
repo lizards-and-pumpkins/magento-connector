@@ -80,6 +80,7 @@ class TwoProductsExportTest extends AbstractInitializableProductExportTest
      */
     public function testExportTwoProducts()
     {
+        $this->getFactory()->disableImageExport();
         $this->exportToFile($this->testExportFile, $this->getProductIds());
         
         $this->assertFileEquals($this->getExpectationFileName(), $this->testExportFile);

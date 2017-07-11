@@ -81,6 +81,7 @@ class LizardsAndPumpkins_MagentoConnector_Helper_FactoryTest extends \PHPUnit\Fr
 
     public function testReturnsExportFileWriterInstance()
     {
+        $this->factory->disableImageExport();
         $result = $this->factory->createExportFileWriter();
         $this->assertInstanceOf(
             LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_ExportFileWriter::class,

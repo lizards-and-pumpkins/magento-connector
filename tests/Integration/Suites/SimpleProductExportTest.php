@@ -81,6 +81,7 @@ class SimpleProductExportTest extends AbstractInitializableProductExportTest
      */
     public function testExportSimpleProduct()
     {
+        $this->getFactory()->disableImageExport();
         $this->exportToFile($this->testExportFile, [$this->getSimpleProductId()]);
         
         $this->assertFileEquals($this->getExpectationFileName(), $this->testExportFile);
