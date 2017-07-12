@@ -18,6 +18,11 @@ class LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_DataCollector_Cate
             ->getCategoryUrlSuffix();
     }
 
+    /**
+     * @param Mage_Core_Model_Store $store
+     * @param array $categoryIdsToExport
+     * @return Mage_Catalog_Model_Resource_Category_Collection
+     */
     public function createCollection(Mage_Core_Model_Store $store, array $categoryIdsToExport)
     {
         /** @var $collection Mage_Catalog_Model_Resource_Category_Collection */
