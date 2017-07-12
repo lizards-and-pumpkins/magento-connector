@@ -176,6 +176,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueueReader
         return $collection;
     }
 
+    /**
+     * @return int
+     */
     public function getProductQueueCount()
     {
         $collection = $this->createCollection();
@@ -183,6 +186,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueueReader
         return $collection->getSize();
     }
 
+    /**
+     * @return int
+     */
     public function getCategoryQueueCount()
     {
         $collection = $this->createCollection();
