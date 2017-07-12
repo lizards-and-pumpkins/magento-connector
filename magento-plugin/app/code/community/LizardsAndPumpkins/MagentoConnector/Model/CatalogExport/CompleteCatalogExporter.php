@@ -47,11 +47,11 @@ class LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_CompleteCatalogExp
         DataVersion $dataVersion = null,
         LizardsAndPumpkinsApi $api = null
     ) {
-        $this->exportFileWriter = $exportFileWriter ? $exportFileWriter : Mage::helper('lizardsAndPumpkins_magentoconnector/factory')->createExportFileWriter();
-        $this->entityIdCollector = $entityIdCollector ? $entityIdCollector : Mage::getModel('lizardsAndPumpkins_magentoconnector/resource_catalogExport_catalogEntityIdCollector');
-        $this->exportFilenameGenerator = $exportFilenameGenerator ? $exportFilenameGenerator : Mage::getModel('lizardsAndPumpkins_magentoconnector/catalogExport_exportFilenameGenerator');
-        $this->dataVersion = $dataVersion ? $dataVersion : Mage::helper('lizardsAndPumpkins_magentoconnector/dataVersion');
-        $this->api = $api ? $api : Mage::helper('lizardsAndPumpkins_magentoconnector/factory')->createLizardsAndPumpkinsApi();
+        $this->exportFileWriter = $exportFileWriter ?: Mage::helper('lizardsAndPumpkins_magentoconnector/factory')->createExportFileWriter();
+        $this->entityIdCollector = $entityIdCollector ?: Mage::getModel('lizardsAndPumpkins_magentoconnector/resource_catalogExport_catalogEntityIdCollector');
+        $this->exportFilenameGenerator = $exportFilenameGenerator ?: Mage::getModel('lizardsAndPumpkins_magentoconnector/catalogExport_exportFilenameGenerator');
+        $this->dataVersion = $dataVersion ?: Mage::helper('lizardsAndPumpkins_magentoconnector/dataVersion');
+        $this->api = $api ?: Mage::helper('lizardsAndPumpkins_magentoconnector/factory')->createLizardsAndPumpkinsApi();
     }
 
     public function exportAllProducts()

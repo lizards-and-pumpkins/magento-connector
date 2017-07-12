@@ -42,13 +42,13 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryCollector impleme
     private $categoryUrlSuffix;
 
     /**
-     * @var array|int[]
+     * @var int[]
      */
     private $categoryIdsToExport;
 
     /**
      * @param int[] $categoryIdsToExport
-     * @param $categoryUrlSuffix
+     * @param string $categoryUrlSuffix
      */
     final public function __construct(array $categoryIdsToExport, $categoryUrlSuffix)
     {

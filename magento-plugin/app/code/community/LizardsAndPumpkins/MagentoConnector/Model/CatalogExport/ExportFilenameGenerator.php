@@ -14,7 +14,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_ExportFilenameGene
      */
     public function __construct($config)
     {
-        $this->config = $config ? $config : Mage::helper('lizardsAndPumpkins_magentoconnector/factory')->getConfig();
+        $this->config = $config ?: Mage::helper('lizardsAndPumpkins_magentoconnector/factory')->getConfig();
     }
 
     /**

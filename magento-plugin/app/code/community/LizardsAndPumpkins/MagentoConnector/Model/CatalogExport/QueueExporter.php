@@ -41,10 +41,10 @@ class LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_QueueExporter
         ExportFileWriter $exportWriter = null,
         Api $api = null
     ) {
-        $this->exportQueue = $exportQueue ? $exportQueue : Mage::helper('lizardsAndPumpkins_magentoconnector/factory')->createExportQueue();
-        $this->filenameGenerator = $filenameGenerator ? $filenameGenerator : Mage::getModel('lizardsAndPumpkins_magentoconnector/catalogExport_exportFilenameGenerator');
-        $this->exportWriter = $exportWriter ? $exportWriter : Mage::helper('lizardsAndPumpkins_magentoconnector/factory')->createExportFileWriter();
-        $this->api = $api ? $api : Mage::helper('lizardsAndPumpkins_magentoconnector/factory')->createLizardsAndPumpkinsApi();
+        $this->exportQueue = $exportQueue ?: Mage::helper('lizardsAndPumpkins_magentoconnector/factory')->createExportQueue();
+        $this->filenameGenerator = $filenameGenerator ?: Mage::getModel('lizardsAndPumpkins_magentoconnector/catalogExport_exportFilenameGenerator');
+        $this->exportWriter = $exportWriter ?: Mage::helper('lizardsAndPumpkins_magentoconnector/factory')->createExportFileWriter();
+        $this->api = $api ?: Mage::helper('lizardsAndPumpkins_magentoconnector/factory')->createLizardsAndPumpkinsApi();
     }
 
     public function exportQueuedProducts()

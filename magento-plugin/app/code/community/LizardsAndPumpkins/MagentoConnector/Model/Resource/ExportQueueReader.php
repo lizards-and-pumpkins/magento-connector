@@ -18,9 +18,10 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueueReader
      * @var Varien_Db_Adapter_Interface
      */
     private $connection;
-    
+
     /**
      * @param Mage_Core_Model_Resource $resource
+     * @param Varien_Db_Adapter_Interface $connection
      */
     public function __construct($resource = null, Varien_Db_Adapter_Interface $connection = null)
     {

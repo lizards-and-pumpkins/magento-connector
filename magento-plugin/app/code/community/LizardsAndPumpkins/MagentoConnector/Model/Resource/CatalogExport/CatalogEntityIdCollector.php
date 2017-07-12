@@ -18,8 +18,8 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_CatalogExport_CatalogEn
      */
     public function __construct($resource = null, Mage_Core_Model_App $app = null)
     {
-        $this->resource = $resource ? $resource : Mage::getSingleton('core/resource');
-        $this->app = $app ? $app : Mage::app();
+        $this->resource = $resource ?: Mage::getSingleton('core/resource');
+        $this->app = $app ?: Mage::app();
     }
 
     /**
