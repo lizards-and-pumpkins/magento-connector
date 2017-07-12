@@ -36,7 +36,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_DataCollector_Prod
     /**
      * @return LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collection
      */
-    protected function instantiateNewCollection()
+    private function instantiateNewCollection()
     {
         return Mage::getResourceModel('lizardsAndPumpkins_magentoconnector/catalog_product_collection');
     }
