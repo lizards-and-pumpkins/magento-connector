@@ -9,8 +9,6 @@ class CatalogMerge
      */
     private $xml;
 
-    private $started = false;
-
     private $mode = 'product';
 
     public function __construct()
@@ -25,6 +23,7 @@ class CatalogMerge
 
     /**
      * @param XmlString $product
+     * @return string
      */
     public function addProduct(XmlString $product)
     {
@@ -34,10 +33,12 @@ class CatalogMerge
             );
         }
         $this->addXml($product);
+        return $this->getPartialXmlString();
     }
 
     /**
      * @param XmlString $category
+     * @return string
      */
     public function addCategory(XmlString $category)
     {
@@ -45,6 +46,7 @@ class CatalogMerge
             $this->setCategoryMode();
         }
         $this->addXml($category);
+        return $this->getPartialXmlString();
     }
 
     /**
@@ -53,14 +55,13 @@ class CatalogMerge
     public function finish()
     {
         $this->endXml();
-
         return $this->getPartialXmlString();
     }
 
     /**
      * @return string
      */
-    public function getPartialXmlString()
+    private function getPartialXmlString()
     {
         return $this->xml->flush();
     }
@@ -75,7 +76,7 @@ class CatalogMerge
     /**
      * @return bool
      */
-    public function isCategoryMode()
+    private function isCategoryMode()
     {
         return 'category' === $this->mode;
     }
@@ -83,17 +84,13 @@ class CatalogMerge
     /**
      * @return bool
      */
-    public function isProductMode()
+    private function isProductMode()
     {
         return 'product' === $this->mode;
     }
 
     private function startXml()
     {
-        if ($this->started) {
-            return;
-        }
-        $this->started = true;
         $this->xml->startElement('catalog');
 
         $attributes = [

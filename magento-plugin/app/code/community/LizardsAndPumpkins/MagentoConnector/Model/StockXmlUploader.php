@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @deprecated without replacement
+ */
 class LizardsAndPumpkins_MagentoConnector_Model_StockXmlUploader
     extends LizardsAndPumpkins_MagentoConnector_Model_XmlUploader
 {

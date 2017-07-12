@@ -30,24 +30,26 @@ class Api
 
     /**
      * @param string $filename
+     * @param string $dataVersion
      */
-    public function triggerProductImport($filename)
+    public function triggerCatalogImport($filename, $dataVersion)
     {
-        $headers = ['Accept' => 'application/vnd.lizards-and-pumpkins.catalog_import.v1+json'];
+        $headers = ['Accept' => 'application/vnd.lizards-and-pumpkins.catalog_import.v2+json'];
 
         $url = $this->url . self::API_ENDPOINT_CATALOG_IMPORT;
-        $this->sendApiRequestWithFilename($filename, $url, $headers);
+        $this->sendApiRequestWithFilename($filename, $dataVersion, $url, $headers);
     }
 
     /**
      * @param string $filename
+     * @param string $dataVersion
      * @param string $url
      * @param string[] $headers
      */
-    private function sendApiRequestWithFilename($filename, $url, array $headers)
+    private function sendApiRequestWithFilename($filename, $dataVersion, $url, array $headers)
     {
         $this->validateFilename($filename);
-        $body = json_encode(['fileName' => $filename]);
+        $body = json_encode(['fileName' => $filename, 'dataVersion' => $dataVersion]);
         $this->client->doPutRequest($url, $body, $headers);
     }
 
@@ -64,19 +66,23 @@ class Api
 
     /**
      * @param string $id
+     * @param string $dataVersion
      * @param string $content
      * @param string[] $context
      * @param string[] $keyGeneratorParameters
      */
-    public function triggerCmsBlockUpdate($id, $content, array $context, array $keyGeneratorParameters)
+    public function triggerCmsBlockUpdate($id, $dataVersion, $content, array $context, array $keyGeneratorParameters)
     {
         if (!is_string($id)) {
-            throw new InvalidUrlException();
+            throw new InvalidUrlException(sprintf('The CMS Block ID/URL has to be a string, got %s', gettype($id)));
         }
 
-        $headers = ['Accept' => 'application/vnd.lizards-and-pumpkins.content_blocks.v1+json'];
+        $headers = ['Accept' => 'application/vnd.lizards-and-pumpkins.content_blocks.v2+json'];
         $url = $this->url . self::API_ENDPOINT_CONTENT_BLOCK_UPDATE . $id;
-        $body = json_encode(array_merge(['content' => $content, 'context' => $context], $keyGeneratorParameters));
+        $body = json_encode(array_merge(
+            ['content' => $content, 'context' => $context, 'data_version' => $dataVersion],
+            $keyGeneratorParameters
+        ));
 
         $this->client->doPutRequest($url, $body, $headers);
     }

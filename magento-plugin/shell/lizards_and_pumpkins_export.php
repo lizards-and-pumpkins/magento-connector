@@ -1,24 +1,30 @@
 <?php
 
-require 'abstract.php';
+require dirname(isset($_SERVER['PHP_SELF']) ? $_SERVER['PHP_SELF'] : '.') . '/abstract.php';
 
 class LizardsAndPumpkins_Export extends Mage_Shell_Abstract
 {
     /**
-     * @var LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter
+     * @var LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_QueueExporter
      */
-    private $catalogExporter;
+    private $queueExporter;
 
     /**
-     * @var LizardsAndPumpkins_MagentoConnector_Model_Export_Content
+     * @var LizardsAndPumpkins_MagentoConnector_Model_CmsExport_BlockExport
      */
     private $contentExporter;
+
+    /**
+     * @var false|LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_CompleteCatalogExporter
+     */
+    private $catalogExporter;
 
     public function __construct()
     {
         parent::__construct();
-        $this->contentExporter = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_content');
-        $this->catalogExporter = Mage::getModel('lizardsAndPumpkins_magentoconnector/export_catalogExporter');
+        $this->contentExporter = Mage::getModel('lizardsAndPumpkins_magentoconnector/cmsExport_blockExport');
+        $this->queueExporter = Mage::getModel('lizardsAndPumpkins_magentoconnector/catalogExport_queueExporter');
+        $this->catalogExporter = Mage::getModel('lizardsAndPumpkins_magentoconnector/catalogExport_completeCatalogExporter');
     }
 
     protected function _applyPhpVariables()
@@ -28,19 +34,14 @@ class LizardsAndPumpkins_Export extends Mage_Shell_Abstract
 
     public function run()
     {
-        /** @var LizardsAndPumpkins_MagentoConnector_Model_Export_CatalogExporter $exporter */
         if ($this->getArg('all-products')) {
-            $filename = $this->exportProducts();
-            $this->triggerCatalogUpdateApiIfSomethingWasExported($filename);
+            $this->exportProducts();
         } elseif ($this->getArg('queued-products')) {
-            $filename = $this->catalogExporter->exportProductsInQueue();
-            $this->triggerCatalogUpdateApiIfSomethingWasExported($filename);
+            $this->queueExporter->exportQueuedProducts();
         } elseif ($this->getArg('queued-categories')) {
-            $filename = $this->catalogExporter->exportCategoriesInQueue();
-            $this->triggerCatalogUpdateApiIfSomethingWasExported($filename);
+            $this->queueExporter->exportQueuedCategories();
         } elseif ($this->getArg('all-categories')) {
-            $filename = $this->catalogExporter->exportAllCategories();
-            $this->triggerCatalogUpdateApiIfSomethingWasExported($filename);
+            $this->exportAllCategories();
         } elseif ($this->getArg('blocks')) {
             $this->contentExporter->export();
         } elseif ($this->getArg('stats')) {
@@ -51,16 +52,39 @@ class LizardsAndPumpkins_Export extends Mage_Shell_Abstract
     }
 
     /**
-     * @param string $filename
+     * @return string
      */
-    private function triggerCatalogUpdateApiIfSomethingWasExported($filename)
+    private function exportProducts()
     {
-        if (!$this->catalogExporter->wasSomethingExported()) {
-            return;
+        if ($this->getStoreFromArguments()) {
+            $website = $this->getStoreFromArguments()->getWebsite();
+            $this->catalogExporter->exportProductsForWebsite($website);
+        } elseif ($this->getWebsiteFromArgument()) {
+            $website = $this->getWebsiteFromArgument();
+            $this->catalogExporter->exportProductsForWebsite($website);
+        } else {
+            $this->catalogExporter->exportAllProducts();
         }
-        /** @var \LizardsAndPumpkins_MagentoConnector_Helper_Factory $helper */
-        $helper = Mage::helper('lizardsAndPumpkins_magentoconnector/factory');
-        $helper->createLizardsAndPumpkinsApi()->triggerProductImport($filename);
+    }
+
+    private function exportAllCategories()
+    {
+        if ($this->getStoreFromArguments()) {
+            $website = $this->getStoreFromArguments()->getWebsite();
+            $this->catalogExporter->exportCategoriesForWebsite($website);
+        } elseif ($this->getWebsiteFromArgument()) {
+            $website = $this->getWebsiteFromArgument();
+            $this->catalogExporter->exportCategoriesForWebsite($website);
+        } else {
+            $this->catalogExporter->exportAllCategories();
+        }
+    }
+
+    private function outputStatistics()
+    {
+        $queue = $this->getFactory()->createExportQueue();
+        echo sprintf('%s queued products.' . "\n", $queue->getProductQueueCount());
+        echo sprintf('%s queued categories.' . "\n", $queue->getCategoryQueueCount());
     }
 
     /**
@@ -85,13 +109,6 @@ Usage:  php $filename -- [options]
 USAGE;
     }
 
-    private function outputStatistics()
-    {
-        $stats = new LizardsAndPumpkins_MagentoConnector_Model_Statistics(Mage::getSingleton('core/resource'));
-        echo sprintf('%s queued products.' . "\n", $stats->getQueuedProductCount());
-        echo sprintf('%s queued categories.' . "\n", $stats->getQueuedCategoriesCount());
-    }
-
     /**
      * @param string|int $store
      */
@@ -106,22 +123,6 @@ USAGE;
     private function validateWebsite($website)
     {
         Mage::app()->getWebsite($website);
-    }
-
-    /**
-     * @return string
-     */
-    private function exportProducts()
-    {
-        if ($store = $this->getStoreFromArguments()) {
-            return $this->catalogExporter->exportOneStore(Mage::app()->getStore($store));
-        }
-
-        if ($website = $this->getWebsiteFromArgument()) {
-            return $this->catalogExporter->exportOneWebsite(Mage::app()->getWebsite($website));
-        }
-
-        return $this->catalogExporter->exportAllProducts();
     }
 
     /**
@@ -153,7 +154,16 @@ USAGE;
             echo "Error: {$e->getMessage()}" . PHP_EOL;
             exit(2);
         }
+        
         return $website;
+    }
+
+    /**
+     * @return LizardsAndPumpkins_MagentoConnector_Helper_Factory
+     */
+    private function getFactory()
+    {
+        return Mage::helper('lizardsAndPumpkins_magentoconnector/factory');
     }
 }
 

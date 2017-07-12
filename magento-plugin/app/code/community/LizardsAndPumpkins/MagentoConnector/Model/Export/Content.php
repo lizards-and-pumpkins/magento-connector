@@ -2,6 +2,10 @@
 
 use LizardsAndPumpkins\MagentoConnector\Api\Api;
 
+/**
+ * @deprecated 
+ * @see LizardsAndPumpkins_MagentoConnector_Model_CmsExport_BlockExport
+ */
 class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
 {
     const SNIPPET_KEY_REPLACE_PATTERN = '#[^a-zA-Z0-9:_\-]#';
@@ -109,9 +113,10 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
             $blockId = $this->normalizeIdentifier($block->getIdentifier());
             $content = $this->getBlockContent($block);
             $context = $this->getBlockContext($block);
+            $dataVersion = $this->getDataVersion();
             $keyGeneratorParameters = [];
 
-            $this->getApi()->triggerCmsBlockUpdate($blockId, $content, $context, $keyGeneratorParameters);
+            $this->getApi()->triggerCmsBlockUpdate($blockId, $dataVersion, $content, $context, $keyGeneratorParameters);
             return;
         }
 
@@ -133,8 +138,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
             $blockId = $this->normalizeIdentifier($blockIdStringWithoutLastVariableToken);
             $content = $this->getBlockContent($block);
             $context = $this->getBlockContext($block);
+            $dataVersion = $this->getDataVersion();
 
-            $this->getApi()->triggerCmsBlockUpdate($blockId, $content, $context, $keyGeneratorParameters);
+            $this->getApi()->triggerCmsBlockUpdate($blockId, $dataVersion, $content, $context, $keyGeneratorParameters);
             return;
         }
 
@@ -179,6 +185,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
 
                 $blockId = 'content_block_' . $this->normalizeIdentifier($block->getNameInLayout());
                 $content = $block->toHtml();
+                $dataVersion = $this->getDataVersion();
                 $context = [
                     'locale'  => Mage::getStoreConfig('general/locale/code', $store->getId()),
                     'website' => $store->getCode()
@@ -187,7 +194,13 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
 
                 $appEmulation->stopEnvironmentEmulation($initialEnvironmentInfo);
 
-                $this->getApi()->triggerCmsBlockUpdate($blockId, $content, $context, $keyGeneratorParameters);
+                $this->getApi()->triggerCmsBlockUpdate(
+                    $blockId,
+                    $dataVersion,
+                    $content,
+                    $context,
+                    $keyGeneratorParameters
+                );
             }, $this->getMagentoConfig()->getStoresToExport());
         }, explode(',', Mage::getStoreConfig(self::XML_SPECIAL_BLOCKS)));
     }
@@ -234,11 +247,11 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
     }
     
     /**
-     * @return LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig
+     * @return LizardsAndPumpkins_MagentoConnector_Model_MagentoConfig
      */
     private function getMagentoConfig()
     {
-        return Mage::getModel('lizardsAndPumpkins_magentoconnector/export_magentoConfig');
+        return Mage::getModel('lizardsAndPumpkins_magentoconnector/magentoConfig');
     }
 
     /**
@@ -277,5 +290,13 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
         $cmsHelper = Mage::helper('cms');
 
         return $cmsHelper->getPageTemplateProcessor();
+    }
+
+    /**
+     * @return string
+     */
+    private function getDataVersion()
+    {
+        return Mage::helper('lizardsAndPumpkins_magentoconnector/dataVersion')->getTargetVersion();
     }
 }

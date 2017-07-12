@@ -6,6 +6,9 @@ use PHPUnit\Framework\TestCase;
 
 require_once __DIR__ . '/testOverloadedFunctionsInApiNamespace.php';
 
+/**
+ * @covers \LizardsAndPumpkins\MagentoConnector\Api\InsecurePhpStreamHttpApiClient
+ */
 class InsecurePhpStreamHttpApiClientTest extends TestCase
 {
     protected function tearDown()

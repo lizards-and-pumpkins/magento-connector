@@ -3,7 +3,7 @@
 namespace LizardsAndPumpkins\MagentoConnector\XmlBuilder;
 
 use LizardsAndPumpkins\MagentoConnector\XmlBuilder\Exception\StoreNotSetOnCategoryException;
-use LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig;
+use LizardsAndPumpkins_MagentoConnector_Model_MagentoConfig as MagentoConfig;
 use Mage_Catalog_Model_Category;
 use Mage_Core_Model_Store;
 
@@ -13,11 +13,11 @@ class ListingXml
     const URL_KEY_REPLACE_PATTERN = '#[^a-zA-Z0-9:_\-./]#';
 
     /**
-     * @var LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig
+     * @var MagentoConfig
      */
     private $config;
 
-    public function __construct(LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig $config)
+    public function __construct(MagentoConfig $config)
     {
         $this->config = $config;
     }

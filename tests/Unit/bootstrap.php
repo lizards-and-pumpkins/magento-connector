@@ -25,7 +25,7 @@ if (! file_exists($pathToMage)) {
 require $pathToMage;
 
 set_error_handler(function ($errno, $errstr, $errfile) {
-    return substr($errfile, -19) == 'Varien/Autoload.php' ? null : false;
+    return substr($errfile, -19) === 'Varien/Autoload.php' ? null : false;
 });
 
 spl_autoload_register(function ($classname) {

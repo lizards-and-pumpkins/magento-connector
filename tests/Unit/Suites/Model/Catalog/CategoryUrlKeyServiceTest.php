@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @covers LizardsAndPumpkins_MagentoConnector_Model_Catalog_CategoryUrlKeyService
+ */
 class LizardsAndPumpkins_MagentoConnector_Model_Catalog_CategoryUrlKeyServiceTest
     extends \PHPUnit_Framework_TestCase
 {

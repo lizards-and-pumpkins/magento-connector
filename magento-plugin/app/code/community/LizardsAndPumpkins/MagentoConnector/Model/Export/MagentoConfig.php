@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @deprecated 
+ * @see \LizardsAndPumpkins_MagentoConnector_Model_MagentoConfig
+ */
 class LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig
 {
     /**
@@ -22,7 +26,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig
     /**
      * @return string
      */
-    public function getLocalFilenameTemplate()
+    public function getLocalFilename()
     {
         if ($filename = Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/local_filename_template_override')) {
             return $filename;

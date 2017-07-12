@@ -12,7 +12,7 @@ $filteredDirectoryIterator = new RegexIterator(
 $getInitializableCatalogEntityExportTestClass = function ($testFile) {
     if (preg_match('/^class (\w+)/mi', file_get_contents($testFile), $matches)) {
         require_once $testFile;
-        if (in_array(\InitializableCatalogEntityExportTest::class, class_implements($matches[1]))) {
+        if (in_array(\InitializableCatalogProductExportTest::class, class_implements($matches[1]))) {
             return $matches[1];
         }
     }
@@ -20,13 +20,12 @@ $getInitializableCatalogEntityExportTestClass = function ($testFile) {
 
 $factory = Mage::helper('lizardsAndPumpkins_magentoconnector/factory');
 $factory->disableImageExport();
-$queueProductCollector = $factory->createProductCollector();
 
 foreach ($filteredDirectoryIterator as $testFile) {
     if ($testClass = $getInitializableCatalogEntityExportTestClass($testFile[0])) {
-        /** @var \InitializableCatalogEntityExportTest $testToInitialize */
+        /** @var \InitializableCatalogProductExportTest $testToInitialize */
         $testToInitialize = new $testClass();
-        $entityIds = $testToInitialize->getEntityIdsForInitialization();
+        $entityIds = $testToInitialize->getProductIdsForInitialization();
         printf(
             "Exporting the entities [%s] to the test fixture file %s\n",
             is_array($entityIds) ? implode(',', $entityIds) : $entityIds,
@@ -34,7 +33,6 @@ foreach ($filteredDirectoryIterator as $testFile) {
         );
 
         $testToInitialize->initTestExpectations();
-        $testToInitialize->resetFactory();
     }
 }
 echo "Test data initialized.\n";

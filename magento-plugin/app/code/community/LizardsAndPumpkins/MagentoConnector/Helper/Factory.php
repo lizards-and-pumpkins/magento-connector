@@ -6,6 +6,7 @@ use LizardsAndPumpkins\MagentoConnector\Api\InsecurePhpStreamHttpApiClient;
 use LizardsAndPumpkins\MagentoConnector\Api\PhpStreamHttpApiClient;
 use LizardsAndPumpkins\MagentoConnector\Images\ImageLinker;
 use LizardsAndPumpkins\MagentoConnector\Images\ImagesCollector;
+use LizardsAndPumpkins\MagentoConnector\Images\NullImageExporter;
 use LizardsAndPumpkins\MagentoConnector\XmlBuilder\CatalogMerge;
 use LizardsAndPumpkins\MagentoConnector\XmlBuilder\ListingXml;
 use LizardsAndPumpkins\MagentoConnector\XmlBuilder\ProductBuilder;
@@ -19,26 +20,16 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Factory
     private $imageExporterFactory;
 
     /**
-     * @var CatalogMerge
-     */
-    private $catalogMerge;
-
-    /**
-     * @var LizardsAndPumpkins_MagentoConnector_Model_ProductXmlUploader
-     */
-    private $productXmlUploader;
-
-    /**
-     * @var LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig
+     * @var LizardsAndPumpkins_MagentoConnector_Model_MagentoConfig
      */
     private $config;
-    
-    private static $autoloaderRegistered = false; 
+
+    private static $autoloaderRegistered = false;
 
     public function __construct()
     {
         $this->setImageExportStrategySymlink();
-        
+
         $this->registerLibraryAutoloader();
     }
 
@@ -60,23 +51,6 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Factory
             }
         }, false, true);
     }
-    
-    public function reset()
-    {
-        $this->catalogMerge = null;
-        $this->productXmlUploader = null;
-    }
-
-    /**
-     * @return CatalogMerge
-     */
-    public function getCatalogMerge()
-    {
-        if (null === $this->catalogMerge) {
-            $this->catalogMerge = new CatalogMerge();
-        }
-        return $this->catalogMerge;
-    }
 
     /**
      * @return CatalogMerge
@@ -95,53 +69,65 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Factory
     }
 
     /**
-     * @return LizardsAndPumpkins_MagentoConnector_Model_ProductXmlUploader
+     * @param string $xmlFilename
+     * @return LizardsAndPumpkins_MagentoConnector_Model_XmlUploader
      */
-    public function getProductXmlUploader()
+    public function createXmlUploader($xmlFilename)
     {
-        if (null === $this->productXmlUploader) {
-            $this->productXmlUploader = new LizardsAndPumpkins_MagentoConnector_Model_ProductXmlUploader();
-        }
-        return $this->productXmlUploader;
+        return new LizardsAndPumpkins_MagentoConnector_Model_XmlUploader($xmlFilename);
     }
 
     /**
-     * @return string
-     */
-    public function getProductXmlFilename()
-    {
-        return $this->getProductXmlUploader()->getFilename();
-    }
-
-    /**
-     * @return LizardsAndPumpkins_MagentoConnector_Model_Export_PrepareProductDataForXmlBuilder
+     * @return LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_PrepareProductDataForXmlBuilder
      */
     public function createPrepareProductDataForXmlBuilder()
     {
-        return new LizardsAndPumpkins_MagentoConnector_Model_Export_PrepareProductDataForXmlBuilder(
-            $this->getCatalogMerge(),
-            $this->getProductXmlUploader()
-        );
+        return new LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_PrepareProductDataForXmlBuilder($this);
     }
 
     /**
-     * @return LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector
+     * @param int[] $productIds
+     * @return LizardsAndPumpkins_MagentoConnector_Model_Export_ProductDataCollector
+     * @deprecated
      */
-    public function createProductCollector()
+    public function createProductDataCollector(array $productIds)
     {
-        $helper = Mage::helper('lizardsAndPumpkins_magentoconnector/export');
-        $collector = new LizardsAndPumpkins_MagentoConnector_Model_Export_ProductCollector($helper);
+        $stores = $this->getStoresToExport();
 
-        if ($config = Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/stores_to_export')) {
-            $stores = array_map(
-                function ($storeId) {
-                    return Mage::app()->getStore($storeId);
-                },
-                array_filter(explode(',', $config))
-            );
+        return new LizardsAndPumpkins_MagentoConnector_Model_Export_ProductDataCollector($productIds, $stores);
+    }
+
+    /**
+     * @param int[] $categoryIds
+     * @return LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryCollector
+     * @deprecated
+     */
+    public function createCategoryCollector(array $categoryIds)
+    {
+        $collector = new LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryCollector(
+            $categoryIds,
+            $this->getConfig()->getCategoryUrlSuffix()
+        );
+
+        if ($stores = $this->getStoresToExport()) {
             $collector->setStoresToExport($stores);
         }
+
         return $collector;
+    }
+
+    /**
+     * @return Mage_Core_Model_Store[]
+     */
+    private function getStoresToExport()
+    {
+        if ($config = Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/stores_to_export')) {
+            return array_map(function ($storeId) {
+                return Mage::app()->getStore($storeId);
+            }, array_filter(explode(',', $config)));
+        }
+
+        return array_values(Mage::app()->getStores());
     }
 
     /**
@@ -162,9 +148,10 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Factory
             $targetDir = $this->getConfig()->getLocalPathForProductExport() . '/product-images';
         }
         $factory = $this->getImageExporterFactory();
+
         return $factory($targetDir);
     }
-    
+
     public function setImageExporterFactory(callable $imageExporterFactory)
     {
         $this->imageExporterFactory = $imageExporterFactory;
@@ -173,7 +160,7 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Factory
     public function disableImageExport()
     {
         $this->setImageExporterFactory(function () {
-            return new \LizardsAndPumpkins\MagentoConnector\Images\NullImageExporter();
+            return new NullImageExporter();
         });
     }
 
@@ -191,15 +178,16 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Factory
     {
         return $this->imageExporterFactory;
     }
-    
+
     /**
-     * @return LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig
+     * @return LizardsAndPumpkins_MagentoConnector_Model_MagentoConfig
      */
     public function getConfig()
     {
         if (null === $this->config) {
-            $this->config = new LizardsAndPumpkins_MagentoConnector_Model_Export_MagentoConfig();
+            $this->config = Mage::getModel('lizardsAndPumpkins_magentoconnector/magentoConfig');
         }
+
         return $this->config;
     }
 
@@ -219,7 +207,7 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Factory
      */
     private function validateDirectory($targetDir)
     {
-        return !is_string($targetDir) || !is_dir($targetDir);
+        return ! is_string($targetDir) || ! is_dir($targetDir);
     }
 
     /**
@@ -265,5 +253,52 @@ class LizardsAndPumpkins_MagentoConnector_Helper_Factory
         return Mage::getStoreConfig('lizardsAndPumpkins/magentoconnector/disable_tls_peer_verification') ?
             new InsecurePhpStreamHttpApiClient() :
             new PhpStreamHttpApiClient();
+    }
+
+    /**
+     * @return LizardsAndPumpkins_MagentoConnector_Model_ExportQueue
+     */
+    public function createExportQueue()
+    {
+        return Mage::getModel('lizardsAndPumpkins_magentoconnector/exportQueue');
+    }
+
+    /**
+     * @return LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_ExportFileWriter
+     */
+    public function createExportFileWriter()
+    {
+        return new LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_ExportFileWriter(
+            $this,
+            $this->createCatalogDataforStoresCollector()
+        );
+    }
+
+    /**
+     * @return LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_CatalogDataForStoresCollector
+     */
+    public function createCatalogDataforStoresCollector()
+    {
+        return new LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_CatalogDataForStoresCollector(
+            $this->getStoresToExport()
+        );
+    }
+
+    /**
+     * @return LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_DataCollector_CategoryDataCollectionFactory
+     */
+    public function createCategoryDataCollectionFactory()
+    {
+        return new LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_DataCollector_CategoryDataCollectionFactory(
+            $this->getConfig()->getCategoryUrlSuffix()
+        );
+    }
+
+    /**
+     * @return LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_DataCollector_ProductDataCollectionFactory
+     */
+    public function createProductDataCollectionFactory()
+    {
+        return Mage::getModel('lizardsAndPumpkins_magentoconnector/catalogExport_dataCollector_productDataCollectionFactory');
     }
 }

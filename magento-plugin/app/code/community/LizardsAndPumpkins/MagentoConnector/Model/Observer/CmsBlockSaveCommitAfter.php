@@ -17,10 +17,10 @@ class LizardsAndPumpkins_MagentoConnector_Model_Observer_CmsBlockSaveCommitAfter
     }
 
     /**
-     * @return LizardsAndPumpkins_MagentoConnector_Model_Export_Content
+     * @return LizardsAndPumpkins_MagentoConnector_Model_CmsExport_BlockExport
      */
     private function getCmsBlockExporter()
     {
-        return Mage::getModel('lizardsAndPumpkins_magentoconnector/export_content');
+        return Mage::getModel('lizardsAndPumpkins_magentoconnector/cmsExport_blockExport');
     }
 }
