@@ -29,6 +29,12 @@ class LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_QueueExporter
      */
     private $filenameGenerator;
 
+    /**
+     * @param LizardsAndPumpkins_MagentoConnector_Model_ExportQueue $exportQueue
+     * @param LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_ExportFilenameGenerator $filenameGenerator
+     * @param LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_ExportFileWriter $exportWriter
+     * @param Api $api
+     */
     public function __construct(
         $exportQueue,
         ExportFilenameGenerator $filenameGenerator = null,
@@ -78,11 +84,12 @@ class LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_QueueExporter
      */
     private function exportProductsAndCategoriesWithVersion(array $productIds, array $categoryIds, $targetDataVersion)
     {
+        if (count($productIds) + count($categoryIds) === 0) {
+            return;
+        }
         $filename = $this->filenameGenerator->getNewFilename();
         $this->exportWriter->write($productIds, $categoryIds, $filename);
-        if (count($productIds) + count($categoryIds) > 0) {
-            $this->api->triggerCatalogImport(basename($filename), $targetDataVersion);
-        }
+        $this->api->triggerCatalogImport(basename($filename), $targetDataVersion);
     }
 
     /**
