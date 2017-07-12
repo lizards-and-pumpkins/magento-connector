@@ -284,6 +284,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_CmsExport_BlockExport
         return Mage::getSingleton('core/app_emulation');
     }
 
+    /**
+     * @return Varien_Filter_Template
+     */
     private function getCmsContentProcessor()
     {
         /** @var Mage_Cms_Helper_Data $cmsHelper */
@@ -292,6 +295,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_CmsExport_BlockExport
         return $cmsHelper->getPageTemplateProcessor();
     }
 
+    /**
+     * @return string
+     */
     private function getDataVersion()
     {
         return Mage::helper('lizardsAndPumpkins_magentoconnector/dataVersion')->getTargetVersion();
