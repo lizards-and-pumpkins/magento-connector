@@ -78,13 +78,12 @@ class LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_PrepareProductData
     private function getMainProductImage(array $productData)
     {
         if ($this->isMainImageSet($productData)) {
-            $mainImage = $productData['image'];
-        } elseif ($this->hasMediaGalleryImages($productData)) {
-            $mainImage = $this->getFirstImageFromMediaGallery($productData);
-        } else {
-            $mainImage = '';
+            return $productData['image'];
         }
-        return $mainImage;
+        if ($this->hasMediaGalleryImages($productData)) {
+            return $this->getFirstImageFromMediaGallery($productData);
+        }
+        return '';
     }
 
     /**
