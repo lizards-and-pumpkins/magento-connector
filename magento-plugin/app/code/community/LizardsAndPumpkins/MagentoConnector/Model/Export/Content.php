@@ -292,6 +292,9 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_Content
         return $cmsHelper->getPageTemplateProcessor();
     }
 
+    /**
+     * @return string
+     */
     private function getDataVersion()
     {
         return Mage::helper('lizardsAndPumpkins_magentoconnector/dataVersion')->getTargetVersion();
