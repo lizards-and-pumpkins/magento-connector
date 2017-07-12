@@ -1,6 +1,8 @@
 <?php
 
 /**
+ * @deprecated without direct replacement 
+ * @see \LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_DataCollector_ProductDataCollectionFactoryTest
  * @covers LizardsAndPumpkins_MagentoConnector_Model_Export_ProductDataCollector
  */
 class LizardsAndPumpkins_MagentoConnector_Model_Export_ProductDataCollectorTest extends \PHPUnit\Framework\TestCase

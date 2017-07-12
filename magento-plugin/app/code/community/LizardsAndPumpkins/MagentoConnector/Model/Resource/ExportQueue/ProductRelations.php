@@ -22,6 +22,10 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueue_ProductRela
         $this->connection = $connection ?: $this->resource->getConnection('default_write');
     }
 
+    /**
+     * @param int[] $productIds
+     * @return int[]
+     */
     public function replaceWithParentProductIds(array $productIds)
     {
         $childToParentMap = $this->getChildToParentIdMapOfGivenIds($productIds);
@@ -30,6 +34,10 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueue_ProductRela
         }, $productIds);
     }
 
+    /**
+     * @param int[] $productIds
+     * @return int[]
+     */
     private function getChildToParentIdMapOfGivenIds(array $productIds)
     {
         $tableName = $this->resource->getTableName('catalog/product_super_link');

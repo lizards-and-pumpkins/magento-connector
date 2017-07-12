@@ -1,24 +1,26 @@
 <?php
 
+use LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueue as ExportQueueResource;
 use LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueue_Message_Collection as ExportQueueMessageCollection;
+use LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueueReader as ExportQueueReader;
 
 class LizardsAndPumpkins_MagentoConnector_Model_ExportQueue
 {
     /**
-     * @var LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueue
+     * @var ExportQueueResource
      */
     private $resourceModel;
 
     /**
-     * @var LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueueReader
+     * @var ExportQueueReader
      */
     private $exportQueueReader;
 
     /**
-     * @param LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueue $exportQueue
-     * @param LizardsAndPumpkins_MagentoConnector_Model_Resource_ExportQueueReader $exportQueueReader
+     * @param ExportQueueResource $exportQueue
+     * @param ExportQueueReader $exportQueueReader
      */
-    public function __construct($exportQueue = null, $exportQueueReader = null)
+    public function __construct($exportQueue = null, ExportQueueReader $exportQueueReader = null)
     {
         $this->resourceModel = $exportQueue ?: Mage::getResourceModel('lizardsAndPumpkins_magentoconnector/exportQueue');
         $this->exportQueueReader = $exportQueueReader ?: Mage::getResourceModel('lizardsAndPumpkins_magentoconnector/exportQueueReader');
