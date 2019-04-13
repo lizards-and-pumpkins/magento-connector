@@ -450,7 +450,8 @@ class LizardsAndPumpkins_MagentoConnector_Model_Resource_Catalog_Product_Collect
     {
         $categoryUrlKeys = $this->getCategoryUrlKeysForId($categoryId);
         $urlSuffix = Mage::getStoreConfig('catalog/seo/category_url_suffix', $this->getStoreId());
-        $urlSuffix = '.' === $urlSuffix[0] ? $urlSuffix : '.' . $urlSuffix;
+        $urlSuffix = '.' . ltrim($urlSuffix, '.');
+
         return array_map(function ($urlKey) use ($urlSuffix) {
             return $urlKey . $urlSuffix;
         }, $categoryUrlKeys);

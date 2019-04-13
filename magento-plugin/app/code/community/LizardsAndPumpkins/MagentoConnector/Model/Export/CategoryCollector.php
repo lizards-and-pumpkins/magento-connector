@@ -52,10 +52,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_Export_CategoryCollector impleme
      */
     final public function __construct(array $categoryIdsToExport, $categoryUrlSuffix)
     {
-        if ($categoryUrlSuffix[0] !== '.') {
-            $categoryUrlSuffix = '.' . ltrim($categoryUrlSuffix, '.');
-        }
-        $this->categoryUrlSuffix = $categoryUrlSuffix;
+        $this->categoryUrlSuffix = '.' . ltrim($categoryUrlSuffix, '.');
         $this->categoryIdsToExport = $categoryIdsToExport;
     }
 
