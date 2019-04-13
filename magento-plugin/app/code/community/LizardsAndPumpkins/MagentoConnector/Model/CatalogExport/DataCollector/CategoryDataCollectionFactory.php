@@ -60,7 +60,7 @@ class LizardsAndPumpkins_MagentoConnector_Model_CatalogExport_DataCollector_Cate
                 }, $ancestorIds);
 
                 $urlPath = array_filter($categoryIdsReplacedWithUrlKeys);
-                $category->setData('url_path', implode('/', $urlPath) . '.' .  $this->categoryUrlSuffix);
+                $category->setData('url_path', implode('/', $urlPath) . '.' .  ltrim($this->categoryUrlSuffix, '.'));
             } catch (RuntimeException $e) {
                 if ($e->getCode() === 404) {
                     unset($category);
